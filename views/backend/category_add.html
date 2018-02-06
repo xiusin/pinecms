@@ -1,0 +1,140 @@
+<!--suppress ALL -->
+<script src="/backend/jquery.upload.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $('#category_category_add_dialog_form_parentid').combotree({url: "/b/category/category-select"});
+        $.formValidator.initConfig({
+            formID: "category_category_add_dialog_form",
+            onError: function (msg) {
+            },
+            onSuccess: categoryCategoryAddDialogFormSubmit,
+            submitAfterAjaxPrompt: '有数据正在异步验证，请稍等...',
+            inIframe: true
+        });
+        $("#category_category_add_dialog_form_parentid").formValidator({
+            onShow: "请选择上级栏目",
+            onFocus: "上级栏目不能为空"
+        }).inputValidator({min: 0, type: 'value', onError: "上级栏目不能为空"}).defaultPassed();
+        $("#category_category_add_dialog_form_catname").formValidator({
+            onShow: "请输入栏目名称",
+            onFocus: "栏目名称不能为空",
+            onCorrect: "输入正确"
+        }).inputValidator({
+            min: 1,
+            empty: {leftEmpty: false, rightEmpty: false, emptyError: '栏目名称不能有空格'},
+            onError: "栏目名称不能为空"
+        });
+    })
+    function categoryCategoryAddDialogFormSubmit() {
+        $.post("/b/category/category-add", $("#category_category_add_dialog_form").serialize(), function (res) {
+            if (res.errcode) {
+                $.messager.alert('提示信息', res.errmsg, 'error');
+            } else {
+                $.messager.alert('提示信息', res.errmsg, 'info');
+                $('#category_category_add_dialog').dialog('close');
+                categoryCategoryListRefresh();
+            }
+        })
+    }
+    function categoryCategoryAddDialogFormTypeChange(val) {
+        var category_category_add_dialog_form_url = $('#category_category_add_dialog_form_url');
+        if (val === parseInt('2')) {
+            category_category_add_dialog_form_url.show();
+        } else {
+            category_category_add_dialog_form_url.val('');
+            category_category_add_dialog_form_url.hide();
+        }
+    }
+</script>
+<form id="category_category_add_dialog_form">
+    <table width="100%" class="mdoutable">
+        <tr>
+            <td width="80">上级栏目：</td>
+            <td><input id="category_category_add_dialog_form_parentid" name="parentid" class="easyui-combotree"
+                       value="{{ .parentid }}" style="width:180px;height:26px"/></td>
+            <td>
+                <div id="category_category_add_dialog_form_parentidTip"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>栏目名称：</td>
+            <td><input id="category_category_add_dialog_form_catname" name="catname" type="text"
+                       style="width:178px;height:22px"/></td>
+            <td>
+                <div id="category_category_add_dialog_form_catnameTip"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>栏目类型：</td>
+            <td>
+                <select id="category_category_add_dialog_form_type" name="type" class="easyui-combobox"
+                        data-options="editable:false,panelHeight:'auto',onChange:categoryCategoryAddDialogFormTypeChange"
+                        style="width:80px">
+                    {{range $i,$v := .typelist}}
+                    <option value="{{$i}}">{{$v}}</option>
+                    {{end}}
+                </select>
+                <span style="color:gray;padding-left:15px">设置后不可修改</span>
+            </td>
+            <td>
+                <div id="category_category_add_dialog_form_typeTip"></div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>缩略图：</td>
+            <td>
+                <input id="content_add_news_form_thumb_input" type="image" src="" alt="点击上传缩略图"
+                       style="width:200px;height:100px;display:block;border:1px solid #ddd;padding:2px"/>
+                <input type="hidden" name="thumb"/>
+            </td>
+            <td></td>
+        </tr>
+
+        <tr id="category_category_add_dialog_form_url" style="display:none">
+            <td>链接：</td>
+            <td><input name="url" type="text" style="width:100%;height:22px"/></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>描述：</td>
+            <td><textarea name="description" style="width:100%;height:60px"></textarea></td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>是否启用：</td>
+            <td colspan="2">
+                <label><input name="ismenu" value="1" type="radio" checked/>是</label>
+                <label><input name="ismenu" value="0" type="radio"/>否</label>
+            </td>
+        </tr>
+    </table>
+</form>
+<script>
+
+    $('#content_add_news_form_thumb_input').click(function (e) {
+        doUpload(this);
+        return false;
+    });
+    /*文件上传*/
+    function doUpload(obj) {
+        $.upload({
+            url: "/public/upload",
+            fileName: 'filedata',
+            params: {},
+            dataType: 'json',
+            onSend: function () {
+                return true;
+            },
+            onComplate: function (data) {
+                if (!data.errcode) {
+                    $(obj).attr('src', data.errmag);
+                    $(obj).next('input:hidden').val(data.errmag);
+                } else {
+                    parent.$.messager.alert('提示信息', data.errmsg, 'error');
+                }
+            }
+        });
+    }
+</script>

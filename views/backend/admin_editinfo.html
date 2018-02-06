@@ -1,0 +1,70 @@
+<div class="easyui-panel" data-options="fit:true,title:'{{.title}}',border:false">
+    <script type="text/javascript">
+        $(function () {
+            $('#admin_public_editinfo_form_submit').click(function () {
+                $('#admin_public_editinfo_form').submit()
+            });
+            $.formValidator.initConfig({
+                formID: "admin_public_editinfo_form",
+                onSuccess: adminPublicEditinfoFormSubmit,
+                submitAfterAjaxPrompt: '有数据正在异步验证，请稍等...',
+                inIframe: true
+            });
+            $("#admin_public_editinfo_form_realname").formValidator({
+                onShow: "请输入真实姓名",
+                onFocus: "真实姓名应该为2-20位之间"
+            }).inputValidator({
+                min: 2,
+                max: 20,
+                empty: {leftEmpty: false, rightEmpty: false, emptyError: "姓名两边不能有空格"},
+                onError: "真实姓名应该为2-20位之间"
+            });
+            $("#admin_public_editinfo_form_email").formValidator({
+                onShow: "请输入E-mail",
+                onFocus: "请输入E-mail"
+            });
+        })
+        function adminPublicEditinfoFormSubmit() {
+            $.post('/b/admin/public-editinfo', $("#admin_public_editinfo_form").serialize(), function (res) {
+                if (!res.errcode) {
+                    $.messager.alert('提示信息', res.errmsg, 'info');
+                } else {
+                    $.messager.alert('提示信息', res.errmsg, 'error');
+                }
+            })
+        }
+    </script>
+    <form id="admin_public_editinfo_form">
+        <table cellspacing="10" class='mdoutable'>
+            <tr>
+                <td width="90">用户名：</td>
+                <td>{{.info.Username}}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>最后登录IP</td>
+                <td>{{ .info.Lastloginip }}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>真实姓名</td>
+                <td><input id="admin_public_editinfo_form_realname" type="text" name="realname"
+                           value="{{.info.Realname}}" style="width:180px;height:22px"/></td>
+                <td>
+                    <div id="admin_public_editinfo_form_realnameTip"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>E-mail：</td>
+                <td><input id="admin_public_editinfo_form_email" type="text" name="email" value="{{.info.Email}}"
+                           style="width:180px;height:22px"/></td>
+                <td>
+                    <div id="admin_public_editinfo_form_emailTip"></div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3"><a id="admin_public_editinfo_form_submit" class="easyui-linkbutton">提交</a></td>
+            </tr>
+        </table>
+    </form>
+</div>

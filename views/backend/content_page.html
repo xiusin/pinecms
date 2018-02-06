@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="author" content="wangdong">
+    <title>单页内容发布</title>
+    <style>
+        .dialogtable {
+            width: 100%;
+        }
+
+        .dialogtable td {
+            border-width: 0 1px 1px 0;
+            border-style: dotted;
+            border-color: #ccc;
+            /*margin: 0;*/
+            padding: 3px;
+        }
+    </style>
+    {{template "backend/public_javascript.html"}}
+    {{template "backend/public_umeditor.html"}}
+</head>
+<body>
+<form id="content_page_form" onsubmit="return contentPageFormSubmit()">
+    <table width="100%" cellpadding="2" class="dialogtable">
+        <tr>
+            <td width="60">标题：</td>
+            <td width="450"><input type="text" name="title" value="{{.info.Title}}" style="width:100%"/></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>关键字：</td>
+            <td><input type="text" name="keywords" value="{{.info.Keywords}}" style="width:100%"/></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>内容：</td>
+            <td colspan="2">
+                <textarea id="content_page_form_textarea_editor"
+                          name="content"
+                          style="width:90%;height:360px">{{.info.Content}}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3"><a class="easyui-linkbutton" onclick="$('#content_page_form').submit()">提交</a></td>
+        </tr>
+    </table>
+</form>
+<script type="text/javascript">
+    UM.getEditor('content_page_form_textarea_editor');
+    function contentPageFormSubmit() {
+        $.post('/b/content/page?catid={{.catid}}', $("#content_page_form").serialize(), function (res) {
+            if (res.errcode) {
+                parent.$.messager.alert('提示信息', res.errmsg, 'error');
+            } else {
+                parent.$.messager.alert('提示信息', res.errmsg, 'info');
+            }
+        });
+        return false;
+    }
+</script>
+
+</body>
+</html>

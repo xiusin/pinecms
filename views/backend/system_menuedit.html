@@ -1,0 +1,96 @@
+<style>
+    .dialogtable{
+        width: 100%;
+    }
+
+    .dialogtable td{
+        border-width: 0 1px 1px 0;
+        border-style: dotted;
+        border-color: #ccc;
+        padding: 3px;
+    }
+</style>
+<script type="text/javascript">
+    $(function(){
+        $('#system_menu_form_edit_parentid').combotree({url:"/b/system/menu-tree"});
+        $.formValidator.initConfig({formID:"system_menu_edit_dialog_form",onError:function(msg){/*$.messager.alert('错误提示', msg, 'error');*/},onSuccess:systemMenuEditDialogFormSubmit,submitAfterAjaxPrompt:'有数据正在异步验证，请稍等...',inIframe:true});
+        $("#system_menu_form_edit_parentid").formValidator({onShow:"请选择上级菜单",onFocus:"上级菜单不能为空"}).inputValidator({min:0,type:'value',onError:"上级菜单不能为空"}).defaultPassed();
+        $("#system_menu_form_edit_name").formValidator({onShow:"请输入菜单名称",onFocus:"菜单名称不能为空",onCorrect:"输入正确"}).inputValidator({min:1,empty:{leftEmpty:false,rightEmpty:false,emptyError:'菜单名称不能有空格'},onError:"菜单名称不能为空"}).ajaxValidator({
+            type : "post",
+            url : "/b/system/menu-check",
+            data : {name:function(){return $("#system_menu_form_edit_name").val()},default:'<{$data.name}>' },
+            datatype : "json",
+            async:'false',
+            success : function(res){
+                var json = $.parseJSON(res);
+                return json.status == 1 ? false : true;
+            },
+            onError : "菜单名称已存在",
+            onWait : "请稍候..."
+        }).defaultPassed();
+        $("#system_menu_form_edit_c").formValidator({onShow:"请输入模块名",onFocus:"模块名不能少于2个字符"}).inputValidator({min:2,empty:{leftEmpty:false,rightEmpty:false,emptyError:'模块名不能有空格'},onError:"模块名不能少于2个字符"}).regexValidator({
+            regExp:"^([A-Z][a-z1-9]+)+$",
+            param : "",
+            dataType:"string",
+            onError:"必须为首字母大写的驼峰法命名"
+        }).defaultPassed();
+        $("#system_menu_form_edit_a").formValidator({onShow:"请输入方法名",onFocus:"方法名不能少于2个字符"}).inputValidator({min:2,empty:{leftEmpty:false,rightEmpty:false,emptyError:'方法名不能有空格'},onError:"方法名不能少于2个字符"}).regexValidator({
+            regExp:"^[a-z][a-z1-9_]+([A-Z][a-z1-9]+)?$",
+            param : "",
+            dataType:"string",
+            onError:"必须为首字母小写的驼峰法命名"
+        }).defaultPassed();
+    })
+    function systemMenuEditDialogFormSubmit(){
+        $.post('System/menu-edit?id={{.data.Id}}', $("#system_menu_edit_dialog_form").serialize(), function(res){
+            if(!res.status){
+                $.messager.alert('提示信息', res.info, 'error');
+            }else{
+                $.messager.alert('提示信息', res.info, 'info');
+                $('#system_menu_edit_dialog').dialog('close');
+                systemMenuRefresh();
+            }
+        })
+    }
+</script>
+<form id="system_menu_edit_dialog_form">
+    <table class="dialogtable">
+        <tr>
+            <td width="100">上级菜单：</td>
+            <td><input id="system_menu_form_edit_parentid" name="parentid" value="{{.data.Parentid}}" class="easyui-combotree" style="width:180px;height:26px" /></td>
+            <td><div id="system_menu_form_edit_parentidTip"></div></td>
+        </tr>
+        <tr>
+            <td>菜单名称：</td>
+            <td><input id="system_menu_form_edit_name" name="name" value="{{.data.Name}}" type="text" style="width:178px;height:22px" /></td>
+            <td><div id="system_menu_form_edit_nameTip"></div></td>
+        </tr>
+        <tr>
+            <td>模块名：</td>
+            <td><input id="system_menu_form_edit_c" name="c" value="{{.data.C}}" type="text" style="width:178px;height:22px" /></td>
+            <td><div id="system_menu_form_edit_cTip"></div></td>
+        </tr>
+        <tr>
+            <td>方法名：</td>
+            <td><input id="system_menu_form_edit_a" name="a" value="{{.data.A}}" type="text" style="width:178px;height:22px" /></td>
+            <td><div id="system_menu_form_edit_aTip"></div></td>
+        </tr>
+        <tr>
+            <td>附加参数：</td>
+            <td><input class="input_show" name="data" value="{{.data.Data}}" type="text" style="width:178px;height:22px" /></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>是否显示菜单：</td>
+            <td colspan="2">
+                {{if eq 1 .data.Display}}
+                <label><input name="display" value="1" type="radio" checked />是</label>
+                <label><input name="display" value="0" type="radio"  />否</label>
+                {{else}}
+                <label><input name="display" value="1" type="radio" />是</label>
+                <label><input name="display" value="0" type="radio" checked />否</label>
+                {{end}}
+            </td>
+        </tr>
+    </table>
+</form>

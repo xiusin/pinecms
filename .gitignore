@@ -1,0 +1,8 @@
+# Created by .ignore support plugin (hsz.mobi)
+sessions
+vendor
+iriscms
+iriscms.exe
+iriscms.exe~
+*.log
+resources/configs/database.yml

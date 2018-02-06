@@ -1,0 +1,26 @@
+@CHARSET "UTF-8";
+body{margin:0; padding:0;background:none;font-size:13px;font-family:sans-serif;}
+a{color:#08c;text-decoration:none}
+a:hover,a:focus{color:#005580;text-decoration:underline}
+a:focus,a:hover,a:active {outline: 0;}
+.word-wrap{word-wrap: break-word;word-break: break-all;}
+.messager-body{word-wrap: break-word;word-break: break-all;}
+.datagrid-row-selected a{color:#000} /* 解决列表选中部分a标签看不见问题 */
+.panel input,.panel form{font-size:12px} /* 表单中字体问题 */
+
+/* 表单样式 */
+form{font-size:13px}
+textarea,input[type="text"],input[type="password"],input[type="datetime"],input[type="datetime-local"],input[type="date"],input[type="month"],input[type="time"],input[type="week"],input[type="number"],input[type="email"],input[type="url"],input[type="search"],input[type="tel"],input[type="color"]{background-color: #ffffff;border: 1px solid #dddddd;}
+input[type="radio"],input[type="checkbox"] {margin: 4px 0 0;margin-top: 1px \9;*margin-top: 0;line-height: normal;}
+input[type="file"],input[type="image"],input[type="submit"],input[type="reset"],input[type="button"],input[type="radio"],input[type="checkbox"] {width: auto;}
+
+/* 首页样式 */
+#toparea{background-color:#FFFFFF;}
+#topmenu{display:inline;background:none;}
+#topmenu .logo{color:#777777;display:block;float:left;font-size:20px;text-decoration:none;cursor:default;font-weight: 200;padding:7px 17px 5px;text-shadow: 0 1px 0 #FFFFFF;}
+#topmenu .nav{float:left;margin:0;padding:0;list-style:none}
+#topmenu .nav li{float:left;margin:0;padding:0}
+#topmenu .nav li a{color:#777777;padding:13px 15px;text-decoration:none;text-shadow:0 1px 0 #FFFFFF;display: block;}
+#topmenu .nav li a.focus{background-color:#E5EFF2;color:#555555;text-decoration:none;}
+#topmenu .nav-right{margin:8px 5px 0;padding:0;list-style:none;float:right}
+#topmenu .nav-right li{float:left;margin:0 5px;padding:0;}
