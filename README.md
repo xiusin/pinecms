@@ -7,8 +7,11 @@ go get -u -v github.com/lazy007/iriscms
 glide i
 go build main.go
 ./main.exe
-http://domain.com/b`ex # 登陆后台地址
 ```
+
+# 访问 http://domain.com/b/login/index
+
+后台管理相关的链接统统以`/b/`为前缀
 
 # 数据库配置 #
 
