@@ -17,9 +17,9 @@ import (
 	"github.com/kataras/iris/middleware/recover"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
-	"github.com/kataras/iris/sessions/sessiondb/file"
 	"github.com/kataras/iris/view"
 	"gopkg.in/yaml.v2"
+	"github.com/kataras/iris/sessions/sessiondb/badger"
 )
 
 var app *iris.Application
@@ -48,9 +48,9 @@ func initDatabase() {
 		panic(err.Error())
 	}
 	XOrmEngine = _orm
-	XOrmEngine.Logger().SetLevel(core.LOG_DEBUG)
-	XOrmEngine.ShowSQL(dbconfig.Orm.ShowSql)
-	XOrmEngine.ShowExecTime(dbconfig.Orm.ShowExecTime)
+	XOrmEngine.Logger().SetLevel(core.LOG_ERR)
+	//XOrmEngine.ShowSQL(dbconfig.Orm.ShowSql)
+	//XOrmEngine.ShowExecTime(dbconfig.Orm.ShowExecTime)
 	XOrmEngine.SetMaxOpenConns(int(dbconfig.Orm.MaxOpenConns))
 	XOrmEngine.SetMaxIdleConns(int(dbconfig.Orm.MaxIdleConns))
 }
@@ -149,7 +149,7 @@ func BaseMvc(config *Application) func(app *mvc.Application) {
 		Decode:  secureCookie.Decode,
 		Expires: config.Session.Expires * time.Second,
 	})
-	db, _ := file.New("./sessions/", 0755)
+	db, _ := badger.New("./sessions/")
 	sess.UseDatabase(db)
 	return func(app *mvc.Application) {
 		app.Register(sess.Start, XOrmEngine)

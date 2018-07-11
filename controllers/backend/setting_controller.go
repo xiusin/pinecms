@@ -2,7 +2,6 @@ package backend
 
 import (
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris/context"
 	"iriscms/controllers/backend/helper"
 	"html/template"
 	"iriscms/models/tables"
@@ -10,6 +9,7 @@ import (
 	"iriscms/models"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
+	"github.com/kataras/iris"
 )
 
 type ConfigItem map[string]string
@@ -17,7 +17,7 @@ type ConfigItem map[string]string
 type ConfigStruct map[string]ConfigItem
 
 type SettingController struct {
-	Ctx context.Context
+	Ctx iris.Context
 	Orm *xorm.Engine
 	Session *sessions.Session
 }

@@ -7,14 +7,13 @@ import (
 
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
 )
 
 type LoginController struct {
 	Orm         *xorm.Engine
-	Ctx         context.Context
+	Ctx         iris.Context
 	Session     *sessions.Session
 }
 

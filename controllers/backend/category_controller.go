@@ -5,16 +5,16 @@ import (
 	"iriscms/controllers/backend/helper"
 
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris/context"
 	"iriscms/models"
 	"strconv"
 	"iriscms/models/tables"
 	"github.com/kataras/iris/sessions"
 	"github.com/kataras/iris/mvc"
+	"github.com/kataras/iris"
 )
 
 type CategoryController struct {
-	Ctx context.Context
+	Ctx iris.Context
 	Orm *xorm.Engine
 	Session *sessions.Session
 }

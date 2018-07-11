@@ -1,5 +1,5 @@
 <!--suppress ALL -->
-<script src="/backend/jquery.upload.js"></script>
+<script src="/backend/static/jquery.upload.js"></script>
 <script type="text/javascript">
     $(function () {
         $('#category_category_add_dialog_form_parentid').combotree({url: "/b/category/category-select"});
@@ -84,7 +84,7 @@
         <tr>
             <td>缩略图：</td>
             <td>
-                <input id="content_add_news_form_thumb_input" type="image" src="" alt="点击上传缩略图"
+                <input id="content_add_news_form_thumb_input" type="image" src="" onerror="this.src='/backend/static/nopic.jpg'" alt="点击上传缩略图"
                        style="width:200px;height:100px;display:block;border:1px solid #ddd;padding:2px"/>
                 <input type="hidden" name="thumb"/>
             </td>
@@ -114,6 +114,7 @@
 <script>
 
     $('#content_add_news_form_thumb_input').click(function (e) {
+        e.preventDefault();
         doUpload(this);
         return false;
     });

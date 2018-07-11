@@ -3,7 +3,6 @@ package backend
 import (
 	"strconv"
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris/context"
 	"runtime"
 	"iriscms/models"
 	"io/ioutil"
@@ -14,7 +13,7 @@ import (
 )
 
 type IndexController struct {
-	Ctx context.Context	
+	Ctx iris.Context
 	Orm *xorm.Engine
 	Session *sessions.Session
 }
@@ -29,7 +28,11 @@ func (c *IndexController) BeforeActivation(b mvc.BeforeActivation) {
 
 
 func (this *IndexController) Index() {
-	roleid := this.Ctx.Values().Get("roleid").(int64)
+	roleid,_ := this.Ctx.Values().GetInt64("roleid")
+	if roleid == -1 {
+		this.Ctx.Redirect("/b/login/index")
+		return
+	}
 	menus := models.NewMenuModel(this.Orm).GetMenu(0, roleid) //读取一级菜单
 	this.Ctx.ViewData("menus", menus)
 	this.Ctx.ViewData("username", this.Session.Get("username").(string))

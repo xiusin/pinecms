@@ -2,8 +2,8 @@ package backend
 
 import (
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/sessions"
+	"github.com/kataras/iris"
 )
 
 type ErrorController struct {
@@ -11,7 +11,7 @@ type ErrorController struct {
 	Session *sessions.Session
 }
 
-func (_ ErrorController) ServerError(this context.Context) {
+func (_ ErrorController) ServerError(this iris.Context) {
 	if this.IsAjax() {
 		this.JSON(map[string]interface{}{"error": 1})
 	} else {
@@ -20,7 +20,7 @@ func (_ ErrorController) ServerError(this context.Context) {
 	}
 }
 
-func (_ ErrorController) StatusNotFound(ctx context.Context)  {
+func (_ ErrorController) StatusNotFound(ctx iris.Context)  {
 	if ctx.IsAjax() {
 		ctx.JSON(map[string]interface{}{"error": 1})
 	} else {

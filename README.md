@@ -1,12 +1,15 @@
 # 介绍 #
-iriscms 一个简单的cms框架, 比较简陋, 本人go语言也不是很熟练. 是最开始学习GO的时候的一个即兴代码产品. 结合了easyui开发的后台管理框架.
+iriscms 一个简单的cms框架,基础的cms管理功能.
+开发不实现相关的前端功能
+
+
 
 # 下载部署 #
 ```
 go get -u -v github.com/lazy007/iriscms
 glide i
 go build main.go
-./main.exe
+./main.exe or ./main
 ```
 
 # 访问 http://domain.com/b/login/index
@@ -33,7 +36,6 @@ password : admin888
 
 - easyui
 - github.com/kataras/iris#v10 
-- glide0.31.0
 - github.com/go-xorm/xorm
 - github.com/afocus/captcha
 

@@ -11,13 +11,13 @@ import (
 
 	"github.com/afocus/captcha"
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
+	"github.com/kataras/iris"
 )
 
 type PublicController struct {
-	Ctx context.Context
+	Ctx iris.Context
 	Orm *xorm.Engine
 	Session *sessions.Session
 }
@@ -138,7 +138,7 @@ func (this *PublicController) VerifyCode() {
 }
 
 
-func uploadAjax(ctx context.Context, uploadData map[string]string, isEditor bool) {
+func uploadAjax(ctx iris.Context, uploadData map[string]string, isEditor bool) {
 	if !isEditor {
 		errmsg, ok := uploadData["errmsg"]
 		if !ok {

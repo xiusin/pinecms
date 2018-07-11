@@ -158,7 +158,7 @@ CREATE TABLE `iriscms_log`  (
   `userid` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
   `username` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `ip` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `time` datetime NOT NULL ,
   PRIMARY KEY (`logid`) USING BTREE,
   INDEX `module`(`controller`, `action`) USING BTREE,
   INDEX `username`(`username`) USING BTREE

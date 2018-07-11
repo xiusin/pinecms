@@ -2,17 +2,17 @@ package backend
 
 import (
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris/context"
 	"iriscms/models"
 	"iriscms/controllers/backend/helper"
 	"html/template"
 	"fmt"
 	"github.com/kataras/iris/sessions"
 	"github.com/kataras/iris/mvc"
+	"github.com/kataras/iris"
 )
 
 type ContentController struct {
-	Ctx context.Context
+	Ctx iris.Context
 	Orm *xorm.Engine
 	Session *sessions.Session
 }
@@ -54,7 +54,7 @@ func (this *ContentController) NewsList() {
 	page, _ := this.Ctx.URLParamInt64("page")
 	rows, _ := this.Ctx.URLParamInt64("rows")
 	fmt.Println(rows)
-	if page != 0 {
+	if page > 0 {
 		this.Ctx.JSON(map[string]interface{}{"rows":[]string{}, "total":0});
 		return
 	}

@@ -1,32 +1,30 @@
 package main
 
 import (
-	//"fmt"
-	 . "iriscms/config"
-	//"os"
-	//"plugin"
-	//"runtime"
-
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	. "iriscms/config"
+	"github.com/landoop/tableprinter"
+	"os"
+	"github.com/kataras/tablewriter"
 )
 
+type author struct {
+	Name  string `header:"Name"`
+	Value string `header:"Value"`
+}
+
 func main() {
-	app:= newApp()
-	go app.Run(iris.Addr("0.0.0.0:8089"))
-	StartApplication()
-
-}
-
-/**
-测试服务
- */
-func newApp() *iris.Application {
-	app := iris.New()
-	app.Get("/", func(ctx context.Context) {
-		ctx.WriteString("Hello World")
+	printer := tableprinter.New(os.Stdout)
+	printer.BorderTop, printer.BorderBottom, printer.BorderLeft, printer.BorderRight = true, true, true, true
+	printer.CenterSeparator = "│"
+	printer.ColumnSeparator = "│"
+	printer.RowSeparator = "─"
+	printer.HeaderBgColor = tablewriter.BgBlackColor // set header background color for all headers.
+	printer.HeaderFgColor = tablewriter.FgGreenColor // set header foreground color for all headers.
+	printer.Print([]author{
+		{Name: "Framework", Value: "Iriscms"},
+		{Name: "Author", Value: "Lazy007"},
+		{Name: "Github", Value: "https://github.com/lazy007/iriscms"},
+		{Name: "QQ", Value: "826466266@qq.com"},
 	})
-
-	return app
+	StartApplication()
 }
-

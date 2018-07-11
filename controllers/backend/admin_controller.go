@@ -5,7 +5,6 @@ import (
 	"iriscms/controllers/backend/helper"
 	"iriscms/models"
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris/context"
 	"strconv"
 	"log"
 	"strings"
@@ -13,11 +12,12 @@ import (
 	"fmt"
 	"github.com/kataras/iris/sessions"
 	"github.com/kataras/iris/mvc"
+	"github.com/kataras/iris"
 )
 
 type AdminController struct {
 	Orm *xorm.Engine
-	Ctx context.Context	//存在则自动绑定
+	Ctx iris.Context	//存在则自动绑定
 	Session *sessions.Session
 }
 
@@ -60,7 +60,7 @@ type memberlist struct {
 }
 
 func (this *AdminController) PublicEditInfo() {
-	aid, _ := this.Session.Get("adminid").(int64) //检测是否设置过session
+	aid, _ := this.Ctx.Values().GetInt64("adminid") //检测是否设置过session
 	if this.Ctx.Method() == "POST" {
 		info := tables.IriscmsAdmin{
 			Userid:aid,
@@ -71,11 +71,15 @@ func (this *AdminController) PublicEditInfo() {
 		} else {
 			info.Realname = this.Ctx.PostValue("realname")
 			info.Email = this.Ctx.PostValue("email")
-			res, _ := this.Orm.Id(aid).Update(info)
-			if res > 0 {
-				helper.Ajax("修改资料成功", 0, this.Ctx)
+			res, err := this.Orm.Id(aid).Update(info)
+			if err != nil {
+				helper.Ajax("修改资料失败" + err.Error() , 1, this.Ctx)
 			} else {
-				helper.Ajax("修改资料失败", 1, this.Ctx)
+				if res > 0 {
+					helper.Ajax("修改资料成功", 0, this.Ctx)
+				} else {
+					helper.Ajax("修改资料失败" , 1, this.Ctx)
+				}
 			}
 		}
 		return
@@ -155,7 +159,7 @@ func (this *AdminController) Memberlist() {
 }
 
 func (this *AdminController) PublicEditpwd() {
-	aid := this.Ctx.Values().Get("adminid").(int64)
+	aid, _ := this.Ctx.Values().GetInt64("adminid")
 	menuid, _ := this.Ctx.URLParamInt64("menuid")
 	info := tables.IriscmsAdmin{Userid: int64(aid)}
 	has, _ := this.Orm.Get(&info)
