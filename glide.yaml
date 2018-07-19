@@ -1,10 +1,12 @@
 package: iriscms
 homepage: https://github.com/lazy007
 license: MIT
-owners: 
+owners:
 - name: SiuSin
   email: chenchengbin92@gmail.com
   homepage: https://github.com/lazy007
+ignore:
+- google.golang.org/appengine/cloudsql
 import:
 - package: github.com/afocus/captcha
 - package: github.com/go-sql-driver/mysql
@@ -29,5 +31,5 @@ import:
 - package: golang.org/x/image/draw
 - package: gopkg.in/yaml.v2
   version: ~2.2.1
-ignore:
-- google.golang.org/appengine/cloudsql
+- package: github.com/golang/groupcache
+- package: github.com/go-ffmt/ffmt

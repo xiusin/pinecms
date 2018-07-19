@@ -6,9 +6,11 @@ iriscms 一个简单的cms框架,基础的cms管理功能.
 
 # 下载部署 #
 ```
-go get -u -v github.com/lazy007/iriscms
+go get github.com/lazy007/iriscms
 glide i
-go build main.go
+// 热更新
+go get -u -v github.com/pilu/fresh
+fresh
 ./main.exe or ./main
 ```
 

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" class="ace ace-card-on ace-tab-nav-on ace-main-nav-on ace-sidebar-on" data-theme-color="#c0e3e7">
+  {{ render "frontend/_includes/head.html" }}
+  <body>
+    <div class="ace-wrapper">
+      
+      <header id="ace-header" class="ace-container-shift ace-logo-in ace-head-boxed ace-nav-right">
+         <div class="ace-head-inner">
+         </div>
+      </header>
+
+      {{ render "frontend/_includes/personal.html" }}
+
+      {{ yield }}
+      
+      {{ render "frontend/_includes/footer.html" }}
+    
+    </div><!-- .ace-wrapper -->
+
+    <!-- Scripts -->
+    <script type="text/javascript" src="/jianli/styles/js/vendor/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="/jianli/styles/js/plugins/highlight/highlight.pack.js"></script>
+    <script type="text/javascript" src="/jianli/styles/js/plugins/jquery.mCustomScrollbar.min.js"></script>
+    <script type="text/javascript" src="/jianli/styles/js/plugins/isotope.pkgd.min.js"></script>
+    <script type="text/javascript" src="/jianli/styles/js/plugins/progressbar.min.js"></script>
+    <script type="text/javascript" src="/jianli/styles/js/plugins/slick.min.js"></script>
+
+    <script type="text/javascript" src="/jianli/styles/js/options.js"></script>
+    <script type="text/javascript" src="/jianli/styles/js/main.js"></script>
+
+  </body>
+</html>

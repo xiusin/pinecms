@@ -123,6 +123,7 @@ func registerStatic() {
 	app.StaticWeb("/uploads", filepath.FromSlash("./assets/uploads"))
 	app.StaticWeb("/frontend", filepath.FromSlash("./assets/frontend"))
 	app.StaticWeb("/backend", filepath.FromSlash("./assets/backend"))
+	app.StaticWeb("/jianli", filepath.FromSlash("./assets/jianli"))
 }
 
 func runServe(config *Application) {
@@ -151,6 +152,7 @@ func BaseMvc(config *Application) func(app *mvc.Application) {
 	})
 	db, _ := badger.New("./sessions/")
 	sess.UseDatabase(db)
+	defer db.Close()
 	return func(app *mvc.Application) {
 		app.Register(sess.Start, XOrmEngine)
 	}

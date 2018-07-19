@@ -1,5 +1,5 @@
-hash: 80f5108c9cf5598095f995639d572b9dd8ae3936a798a0e4d63014e90ea6003e
-updated: 2018-07-19T16:28:44.754746711+08:00
+hash: 461b93c7e10be2ed773788d0dcd2ae1d6a018125bba076ca4d7edb587c40121e
+updated: 2018-07-19T22:19:08.116421045+08:00
 imports:
 - name: github.com/afocus/captcha
   version: 6d694b359d1a516aa04d30efe3ffe5d1361b63ef
@@ -33,6 +33,8 @@ imports:
   version: ebf56d35bba727c68ac77f56f2fcf90b181851aa
 - name: github.com/flosch/pongo2
   version: 67f4ff8560dfa2b00920118f228c0a2f68760631
+- name: github.com/go-ffmt/ffmt
+  version: d5299f5a65baf4ae65710c057a77826638cdc034
 - name: github.com/go-sql-driver/mysql
   version: d523deb1b23d913de5bdada721a6071e71283618
 - name: github.com/go-xorm/builder
@@ -46,6 +48,8 @@ imports:
   subpackages:
   - raster
   - truetype
+- name: github.com/golang/groupcache
+  version: 24b0969c4cb722950103eed87108c8d291a8df00
 - name: github.com/golang/protobuf
   version: 14aad3d5ea4c323bcd7a2137e735da24a76e814c
   subpackages:

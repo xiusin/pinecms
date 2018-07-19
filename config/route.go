@@ -2,6 +2,7 @@ package config
 
 import (
 	"iriscms/controllers/backend"
+	"iriscms/controllers/frontend"
 	"iriscms/controllers/middleware"
 
 	"github.com/kataras/iris"
@@ -10,7 +11,7 @@ import (
 
 //利用中间件执行控制器前置操作
 func registerBackendRoutes() {
-	config := BaseMvc(ApplicationConfig)	//会话管理器使用同一个 否则无法获取内容
+	config := BaseMvc(ApplicationConfig) //会话管理器使用同一个 否则无法获取内容
 	mvc.New(app).Configure(config).Party(
 		"/b/",
 		middleware.ViewRequestPath(app),
@@ -27,9 +28,9 @@ func registerBackendRoutes() {
 }
 
 func registerFrontendRoutes() {
-
+	config := BaseMvc(ApplicationConfig)
+	mvc.New(app).Configure(config).Party("/").Handle(new(frontend.IndexController))
 }
-
 func registerErrorRoutes() {
 	err := new(backend.ErrorController)
 	app.OnErrorCode(iris.StatusInternalServerError, err.ServerError)
