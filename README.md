@@ -32,6 +32,12 @@ password : admin888
 现在开发的只有基本框架, 内容编辑当时想的是根据需求添加不同不页面模板扩展. 前端也没写 简单实现
 
 
+```
+google.golang.org/appengine/cloudsql 在glide 排除在glide.yaml
+```
+
+
+
 # 相关扩展 #
 
 - easyui
