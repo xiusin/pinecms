@@ -31,21 +31,20 @@ password : admin888
 
 # 其他 #
 
-现在开发的只有基本框架, 内容编辑当时想的是根据需求添加不同不页面模板扩展. 前端也没写 简单实现
+现在开发的只有基本框架, 内容编辑当时想的是根据需求添加不同不页面模板扩展. 目前暂定使用自动生成模型的方式构建文档模型
 
 
-```
-google.golang.org/appengine/cloudsql 在glide 排除在glide.yaml
-```
-
-
-
-# 相关扩展 #
-
-- easyui
-- github.com/kataras/iris#v10 
-- github.com/go-xorm/xorm
-- github.com/afocus/captcha
+# 预览 #
+![登录界面](snapshot/01.png)
+![首页](snapshot/02.png)
+![修改个人信息](snapshot/03.png)
+![修改密码](snapshot/04.png)
+![栏目列表_添加栏目](snapshot/05.png)
+![菜单管理](snapshot/06.png)
+![日志管理](snapshot/07.png)
+![站点属性设置](snapshot/08.png)
+![管理员设置](snapshot/09.png)
+![角色设置](snapshot/10.png)
 
 
 
