@@ -6,3 +6,4 @@ iriscms.exe~
 *.log
 tmp
 resources/configs/database.yml
+.idea
