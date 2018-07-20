@@ -13,7 +13,7 @@ import (
 func registerBackendRoutes() {
 	config := BaseMvc(ApplicationConfig) //会话管理器使用同一个 否则无法获取内容
 	mvc.New(app).Configure(config).Party(
-		"/b/",
+		ApplicationConfig.BackendRouteParty,
 		middleware.ViewRequestPath(app),
 		middleware.CheckAdminLoginAndAccess(sess, XOrmEngine)).
 		Handle(new(backend.AdminController)).
