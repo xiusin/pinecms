@@ -16,7 +16,7 @@ fresh
 ```
 后台管理相关的链接统统以`resources/configs/application.yml`下的`backend_route_party`的值为前缀
 
-> 访问 http://domain.com/`:backend_route_party:`/login/index
+> 访问 http://domain.com/:backend_route_party:/login/index
 
 # 数据库配置 #
 
