@@ -1,16 +1,16 @@
 <article id="ace-card" class="ace-card bg-primary">
   <div class="ace-card-inner text-center">
-    <img class="avatar avatar-195" src="/jianli/styles/img/personal.png" width="195" height="195" alt="">
+    <img class="avatar avatar-195" src="/resume/styles/img/personal.jpg" width="195" height="195" alt="">
     <h1>{{ .site.name }}</h1>
     <p class="text-muted">{{ .site.location }} | {{ .site.company }} | {{ .site.position }}</p>
     <ul class="ace-social clear-list">
       <li><a href="{{ .site.github }}" title="{{ .site.github }}" target="_blank"><span class="ace-icon ace-icon-github"></span></a></li>
-      <li><a href="{{ .site.facebook }}" title="{{ .site.facebook }}" target="_blank"><span class="ace-icon ace-icon-facebook"></span></a></li>
+      <!-- <li><a href="{{ .site.facebook }}" title="{{ .site.facebook }}" target="_blank"><span class="ace-icon ace-icon-facebook"></span></a></li> -->
       <li><a title="{{ .site.phone }}"><span class="ace-icon ace-icon-phone"></span></a></li>
       <li><a href="mailto: {{ .site.email }}" title="{{ .site.email }}"><span class="ace-icon ace-icon-contact"></span></a></li>
     </ul>
   </div>
   <footer class="ace-card-footer">
-    <a class="btn btn-lg btn-block btn-thin btn-upper" href="javascript:void(0)" onclick="window.print()">Download Resume</a>
+    <a class="btn btn-lg btn-block btn-thin btn-upper" href="javascript:void(0)" onclick="window.print()">打印简历</a>
   </footer>
 </article>

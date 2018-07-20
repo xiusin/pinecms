@@ -3,6 +3,7 @@ package main //github.com/lazy007/iriscms
 import (
 	. "iriscms/config"
 	"os"
+	"runtime"
 
 	"github.com/kataras/iris"
 	"github.com/kataras/tablewriter"
@@ -31,5 +32,6 @@ func main() {
 		{Name: "Framework", Value: "iris"},
 		{Name: "IrisVersion", Value: iris.Version},
 	})
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	StartApplication()
 }

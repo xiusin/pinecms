@@ -12,7 +12,7 @@ session:
   expires: 0
 port: 2017
 pprof:
-  open: false
+  open: true
   port: 6060
   route: "/debug/pprof/*action"
 log_path: "logs"

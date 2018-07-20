@@ -46,10 +46,9 @@ func CheckAdminLoginAndAccess(sess *sessions.Sessions, xorm *xorm.Engine) func(t
 			} else {
 				if roleId > 1 && CheckPriv(this, sess, xorm) == false {
 					helper.Ajax("您没有操作权限", 1, this)
-				} else {
-					ManageLog(this, xorm)
-					this.Next()
+					return
 				}
+				ManageLog(this, xorm)
 			}
 		}
 		this.Next()

@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"path/filepath"
 	"strconv"
+	"sync"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql" // 初始化 Mysql 驱动
 	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
 	"github.com/gorilla/securecookie"
@@ -17,17 +18,18 @@ import (
 	"github.com/kataras/iris/middleware/recover"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
+	"github.com/kataras/iris/sessions/sessiondb/badger"
 	"github.com/kataras/iris/view"
 	"gopkg.in/yaml.v2"
-	"github.com/kataras/iris/sessions/sessiondb/badger"
 )
 
 var app *iris.Application
-var XOrmEngine *xorm.Engine
+var XOrmEngine *xorm.Engine // XOrmEngine 全局 Xorm 引擎对象
 var databaseYml = "resources/configs/database.yml"
 var applicationYml = "resources/configs/application.yml"
 var sess *sessions.Sessions
-var ApplicationConfig *Application
+var ApplicationConfig *Application // ApplicationConfig 全局配置文件对象
+var sessionInitSync sync.Once
 
 func initDatabase() {
 	dbconfig := new(DatabaseConfig)
@@ -123,7 +125,7 @@ func registerStatic() {
 	app.StaticWeb("/uploads", filepath.FromSlash("./assets/uploads"))
 	app.StaticWeb("/frontend", filepath.FromSlash("./assets/frontend"))
 	app.StaticWeb("/backend", filepath.FromSlash("./assets/backend"))
-	app.StaticWeb("/jianli", filepath.FromSlash("./assets/jianli"))
+	app.StaticWeb("/resume", filepath.FromSlash("./assets/resume"))
 }
 
 func runServe(config *Application) {
@@ -140,19 +142,21 @@ func runServe(config *Application) {
 	app.Run(iris.Addr(":"+port), iris.WithCharset(config.Charset))
 }
 
+// BaseMvc 构造 mvc基础,分离相关session
 func BaseMvc(config *Application) func(app *mvc.Application) {
-	hashKey := []byte(config.HashKey)
-	blockKey := []byte(config.BlockKey)
-	secureCookie := securecookie.New(hashKey, blockKey)
-	sess = sessions.New(sessions.Config{
-		Cookie:  config.Session.Name,
-		Encode:  secureCookie.Encode,
-		Decode:  secureCookie.Decode,
-		Expires: config.Session.Expires * time.Second,
+	sessionInitSync.Do(func() {
+		hashKey := []byte(config.HashKey)
+		blockKey := []byte(config.BlockKey)
+		secureCookie := securecookie.New(hashKey, blockKey)
+		sess = sessions.New(sessions.Config{
+			Cookie:  config.Session.Name,
+			Encode:  secureCookie.Encode,
+			Decode:  secureCookie.Decode,
+			Expires: config.Session.Expires * time.Second,
+		})
+		db, _ := badger.New("./sessions/") //优化性能, 如果分离前后端session 会使内存使用量增加一倍.
+		sess.UseDatabase(db)
 	})
-	db, _ := badger.New("./sessions/")
-	sess.UseDatabase(db)
-	defer db.Close()
 	return func(app *mvc.Application) {
 		app.Register(sess.Start, XOrmEngine)
 	}
