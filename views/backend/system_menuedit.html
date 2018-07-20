@@ -29,10 +29,10 @@
             onWait : "请稍候..."
         }).defaultPassed();
         $("#system_menu_form_edit_c").formValidator({onShow:"请输入模块名",onFocus:"模块名不能少于2个字符"}).inputValidator({min:2,empty:{leftEmpty:false,rightEmpty:false,emptyError:'模块名不能有空格'},onError:"模块名不能少于2个字符"}).regexValidator({
-            regExp:"^([A-Z][a-z1-9]+)+$",
+            regExp:"^([a-z][a-z1-9]+)+$",
             param : "",
             dataType:"string",
-            onError:"必须为首字母大写的驼峰法命名"
+            onError:"必须以字母开头"
         }).defaultPassed();
         $("#system_menu_form_edit_a").formValidator({onShow:"请输入方法名",onFocus:"方法名不能少于2个字符"}).inputValidator({min:2,empty:{leftEmpty:false,rightEmpty:false,emptyError:'方法名不能有空格'},onError:"方法名不能少于2个字符"}).regexValidator({
             regExp:"^[a-z][a-z1-9_]+([A-Z][a-z1-9]+)?$",
@@ -42,11 +42,11 @@
         }).defaultPassed();
     })
     function systemMenuEditDialogFormSubmit(){
-        $.post('System/menu-edit?id={{.data.Id}}', $("#system_menu_edit_dialog_form").serialize(), function(res){
-            if(!res.status){
-                $.messager.alert('提示信息', res.info, 'error');
+        $.post('/b/system/menu-edit?id={{.data.Id}}', $("#system_menu_edit_dialog_form").serialize(), function(res){
+            if(res.errcode){
+                $.messager.alert('提示信息', res.errmsg, 'error');
             }else{
-                $.messager.alert('提示信息', res.info, 'info');
+                $.messager.alert('提示信息', res.errmsg, 'info');
                 $('#system_menu_edit_dialog').dialog('close');
                 systemMenuRefresh();
             }

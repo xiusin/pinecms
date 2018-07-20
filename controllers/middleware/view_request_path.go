@@ -11,14 +11,13 @@ import (
 func ViewRequestPath(app *iris.Application) func(ctx context.Context) {
 	return func(ctx context.Context) {
 		app.Logger().SetOutput(newLogFile())
-		//fmt.Println(ctx.Path())
 		ctx.Next()
 	}
 }
 
 func todayFilename() string {
 	today := time.Now().Format("2006-01-02")
-	return today + ".log"
+	return "logs/" + today + ".log"
 }
 
 func newLogFile() *os.File {
@@ -27,6 +26,5 @@ func newLogFile() *os.File {
 	if err != nil {
 		panic(err)
 	}
-
 	return f
 }

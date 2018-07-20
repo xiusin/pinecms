@@ -1,9 +1,11 @@
 package models
 
 import (
-	"github.com/go-xorm/xorm"
-	"iriscms/models/tables"
 	"fmt"
+	"iriscms/models/tables"
+
+	"github.com/go-ffmt/ffmt"
+	"github.com/go-xorm/xorm"
 )
 
 type LogModel struct {
@@ -11,7 +13,7 @@ type LogModel struct {
 }
 
 func NewLogModel(orm *xorm.Engine) *LogModel {
-	return &LogModel{Orm:orm}
+	return &LogModel{Orm: orm}
 }
 
 func (this *LogModel) GetList(page, limit int64) ([]tables.IriscmsLog, int64) {
@@ -27,7 +29,11 @@ func (this *LogModel) GetList(page, limit int64) ([]tables.IriscmsLog, int64) {
 }
 
 func (this *LogModel) DeleteBeforeByDate(date string) bool {
-	res, _ := this.Orm.Where("`time` <= ? ", date).Delete(&tables.IriscmsLog{})
+	res, err := this.Orm.Where("`time` <= ? ", date).Delete(&tables.IriscmsLog{})
+	if err != nil {
+		ffmt.Println(err.Error())
+		return false
+	}
 	if res > 0 {
 		return true
 	}

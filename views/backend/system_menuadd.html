@@ -73,10 +73,10 @@
     })
     function systemMenuAddDialogFormSubmit() {
         $.post('/b/system/menu-add', $("#system_menu_add_dialog_form").serialize(), function (res) {
-            if (!res.status) {
-                $.messager.alert('提示信息', res.info, 'error');
+            if (res.errcode) {
+                $.messager.alert('提示信息', res.errmsg, 'error');
             } else {
-                $.messager.alert('提示信息', res.info, 'info');
+                $.messager.alert('提示信息', res.errmsg, 'info');
                 $('#system_menu_add_dialog').dialog('close');
                 systemMenuRefresh();
             }

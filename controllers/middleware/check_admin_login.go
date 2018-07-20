@@ -48,7 +48,7 @@ func CheckAdminLoginAndAccess(sess *sessions.Sessions, xorm *xorm.Engine) func(t
 					helper.Ajax("您没有操作权限", 1, this)
 					return
 				}
-				ManageLog(this, xorm)
+				go ManageLog(this, xorm)
 			}
 		}
 		this.Next()

@@ -28,6 +28,8 @@ func GetRootPath() string {
 	return pwd
 }
 
+var location, _ = time.LoadLocation("Local")
+
 //Krand 随机字符串
 func Krand(size int, kind int) []byte {
 	ikind, kinds, result := kind, [][]int{[]int{10, 48}, []int{26, 97}, []int{26, 65}}, make([]byte, size)
@@ -62,13 +64,13 @@ func Ajax(errmsg interface{}, errcode int64, this context.Context) {
 
 //GetTimeStamp 获取时间戳
 func GetTimeStamp() int {
-	timestamp := time.Now().Unix()
+	timestamp := time.Now().In(location).Unix()
 	return int(timestamp)
 }
 
 //NowDate 当前时间 Y m d H:i:s
 func NowDate(str string) string {
-	t := time.Now().UTC()
+	t := time.Now().In(location)
 	str = strings.Replace(str, "Y", "2006", 1)
 	str = strings.Replace(str, "m", "01", 1)
 	str = strings.Replace(str, "d", "02", 1)
@@ -80,7 +82,7 @@ func NowDate(str string) string {
 
 //FormatTime 时间戳格式化时间
 func FormatTime(timestamp int64) string {
-	t := time.Unix(timestamp, 0).UTC()
+	t := time.Unix(timestamp, 0).In(location)
 	str := "Y-m-d H:i:s"
 	str = strings.Replace(str, "Y", "2006", 1)
 	str = strings.Replace(str, "m", "01", 1)

@@ -40,11 +40,11 @@
     function systemMenuOperateFormatter(id, arr) {
         var btn = [];
         if (arr.is_system === 1) {
-            btn.push('<a href="javascript:;" onclick="systemMenuAdd(' + id + ')">添加子菜单</a>');
+            // btn.push('<a href="javascript:;" onclick="systemMenuAdd(' + id + ')">添加子菜单</a>');
             btn.push('修改');
             btn.push('删除');
         } else {
-            btn.push('<a href="javascript:;" onclick="systemMenuAdd(' + id + ')">添加子菜单</a>');
+            // btn.push('<a href="javascript:;" onclick="systemMenuAdd(' + id + ')">添加子菜单</a>');
             btn.push('<a href="javascript:;" onclick="systemMenuEdit(' + id + ')">修改</a>');
             btn.push('<a href="javascript:;" onclick="systemMenuDelete(' + id + ')">删除</a>');
         }
@@ -52,7 +52,7 @@
     }
     //刷新
     function systemMenuRefresh() {
-        $('#system_menulist_treegrid').treegrid('reload');
+        $('#system_menu_list').treegrid('reload');
     }
     //添加
     function systemMenuAdd(parentid) {
@@ -84,10 +84,10 @@
         $.messager.confirm('提示信息', '确定要删除吗？', function (result) {
             if (!result) return false;
             $.post('/b/system/menu-delete', {id: id}, function (res) {
-                if (!res.status) {
-                    $.messager.alert('提示信息', res.info, 'error');
+                if (res.errcode) {
+                    $.messager.alert('提示信息', res.errmsg, 'error');
                 } else {
-                    $.messager.alert('提示信息', res.info, 'info');
+                    $.messager.alert('提示信息', res.errmsg, 'info');
                     systemMenuRefresh();
                 }
             }, 'json');
@@ -96,10 +96,10 @@
     //排序
     function systemMenuOrder() {
         $.post('/b/system/menu-order', $('.system_menu_order_input').serialize(), function (res) {
-            if (!res.status) {
-                $.messager.alert('提示信息', res.info, 'error');
+            if (res.errcode) {
+                $.messager.alert('提示信息', res.errmsg, 'error');
             } else {
-                $.messager.alert('提示信息', res.info, 'info');
+                $.messager.alert('提示信息', res.errmsg, 'info');
                 systemMenuRefresh();
             }
         }, 'json');
