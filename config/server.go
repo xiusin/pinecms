@@ -122,7 +122,7 @@ func StartApplication() {
 }
 
 func registerStatic() {
-	app.StaticWeb("/uploads", filepath.FromSlash("./assets/uploads"))
+	app.StaticWeb("/upload", filepath.FromSlash("./upload"))
 	app.StaticWeb("/frontend", filepath.FromSlash("./assets/frontend"))
 	app.StaticWeb("/backend", filepath.FromSlash("./assets/backend"))
 	app.StaticWeb("/resume", filepath.FromSlash("./assets/resume"))

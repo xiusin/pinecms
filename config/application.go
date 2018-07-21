@@ -14,6 +14,10 @@ type Application struct {
 	HashKey           string  `yaml:"hashkey"`
 	BlockKey          string  `yaml:"blockkey"`
 	BackendRouteParty string  `yaml:"backend_route_party"`
+	Upload            struct {
+		Engine   string `yaml:"engine"`
+		BasePath string `yaml:"base_path"`
+	} `yaml:"upload"`
 }
 
 type Session struct {

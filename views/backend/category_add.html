@@ -115,11 +115,11 @@
 
     $('#content_add_news_form_thumb_input').click(function (e) {
         e.preventDefault();
-        doUpload(this);
+        doUpload();
         return false;
     });
     /*文件上传*/
-    function doUpload(obj) {
+    function doUpload() {
         $.upload({
             url: "/public/upload",
             fileName: 'filedata',
@@ -130,8 +130,8 @@
             },
             onComplate: function (data) {
                 if (!data.errcode) {
-                    $(obj).attr('src', data.errmag);
-                    $(obj).next('input:hidden').val(data.errmag);
+                    $("#content_add_news_form_thumb_input").attr('src', data.errmsg);
+                    $("#content_add_news_form_thumb_input").next('input:hidden').val(data.errmsg);
                 } else {
                     parent.$.messager.alert('提示信息', data.errmsg, 'error');
                 }

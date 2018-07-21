@@ -1,8 +1,12 @@
-hash: 461b93c7e10be2ed773788d0dcd2ae1d6a018125bba076ca4d7edb587c40121e
-updated: 2018-07-19T22:19:08.116421045+08:00
+hash: c2a23b7af3a828625b7f244a39feaff08ff4457821d68733e46c037d6eb26541
+updated: 2018-07-21T13:06:11.091391972+08:00
 imports:
 - name: github.com/afocus/captcha
   version: 6d694b359d1a516aa04d30efe3ffe5d1361b63ef
+- name: github.com/aliyun/aliyun-oss-go-sdk
+  version: 36bf7aa2f916f274137aedd05d1d36f6a3c0f4a6
+  subpackages:
+  - oss
 - name: github.com/AndreasBriese/bbloom
   version: 28f7e881ca57bc00e028f9ede9f0d9104cfeef5e
 - name: github.com/aymerick/raymond
@@ -34,7 +38,7 @@ imports:
 - name: github.com/flosch/pongo2
   version: 67f4ff8560dfa2b00920118f228c0a2f68760631
 - name: github.com/go-ffmt/ffmt
-  version: d5299f5a65baf4ae65710c057a77826638cdc034
+  version: d2d9e0c93db9a7d248a3887ff36d7efd3e921699
 - name: github.com/go-sql-driver/mysql
   version: d523deb1b23d913de5bdada721a6071e71283618
 - name: github.com/go-xorm/builder
@@ -51,11 +55,15 @@ imports:
 - name: github.com/golang/groupcache
   version: 24b0969c4cb722950103eed87108c8d291a8df00
 - name: github.com/golang/protobuf
-  version: 14aad3d5ea4c323bcd7a2137e735da24a76e814c
+  version: 427e165155e0a4ff5993a36657c1f733f5b0f782
   subpackages:
   - proto
+- name: github.com/gorilla/context
+  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/securecookie
   version: e59506cc896acb7f7bf732d4fdf5e25f7ccd8983
+- name: github.com/gorilla/sessions
+  version: 03b6f63cc43ef9c7240a635a5e22b13180e822b8
 - name: github.com/hashicorp/go-version
   version: 270f2f71b1ee587f3b609f00f422b76a6b28f348
 - name: github.com/iris-contrib/formBinder
@@ -144,6 +152,8 @@ imports:
   version: abc90934186a77966e2beeac62ed966aac0561d5
 - name: github.com/satori/go.uuid
   version: 36e9d2ebbde5e3f13ab2e25625fd453271d6522e
+- name: github.com/shirou/gopsutil
+  version: 4a180b209f5f494e5923cfce81ea30ba23915877
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 86672fcb3f950f35f2e675df2240550f2a50762f
 - name: golang.org/x/crypto/acme/autocert
@@ -155,9 +165,9 @@ imports:
 - name: golang.org/x/image/math/fixed
   version: c73c2afc3b812cdd6385de5a50616511c4a3d458
 - name: golang.org/x/net/html
-  version: 81d44fd177a98d09fe3bc40a5a78d495d3f042ea
+  version: a680a1efc54dd51c040b3b5ce4939ea3cf2ea0d1
 - name: golang.org/x/net/trace
-  version: 81d44fd177a98d09fe3bc40a5a78d495d3f042ea
+  version: a680a1efc54dd51c040b3b5ce4939ea3cf2ea0d1
 - name: golang.org/x/sys/unix
   version: ac767d655b305d4e9612f5f6e33120b9176c4ad4
 - name: gopkg.in/russross/blackfriday.v2

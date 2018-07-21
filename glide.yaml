@@ -33,3 +33,5 @@ import:
   version: ~2.2.1
 - package: github.com/golang/groupcache
 - package: github.com/go-ffmt/ffmt
+- package: github.com/shirou/gopsutil
+  version: ^2.18.6

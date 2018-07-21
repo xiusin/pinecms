@@ -1,34 +1,33 @@
 package backend
 
 import (
-	"strconv"
-	"github.com/go-xorm/xorm"
-	"runtime"
-	"iriscms/models"
 	"io/ioutil"
+	"iriscms/models"
+	"runtime"
+	"strconv"
 	"strings"
+
+	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
-	"github.com/kataras/iris/sessions"
 	"github.com/kataras/iris/mvc"
+	"github.com/kataras/iris/sessions"
 )
 
 type IndexController struct {
-	Ctx iris.Context
-	Orm *xorm.Engine
+	Ctx     iris.Context
+	Orm     *xorm.Engine
 	Session *sessions.Session
 }
 
-
 func (c *IndexController) BeforeActivation(b mvc.BeforeActivation) {
-	b.Handle("ANY","/index/index", "Index")
-	b.Handle("ANY","/index/menu", "Menu")
-	b.Handle("ANY","/index/main", "Main")
-	b.Handle("ANY","/index/sessionlife", "Sessionlife")
+	b.Handle("ANY", "/index/index", "Index")
+	b.Handle("ANY", "/index/menu", "Menu")
+	b.Handle("ANY", "/index/main", "Main")
+	b.Handle("ANY", "/index/sessionlife", "Sessionlife")
 }
 
-
 func (this *IndexController) Index() {
-	roleid,_ := this.Ctx.Values().GetInt64("roleid")
+	roleid, _ := this.Ctx.Values().GetInt64("roleid")
 	if roleid == -1 {
 		this.Ctx.Redirect("/b/login/index")
 		return
@@ -46,14 +45,18 @@ func (this *IndexController) Main() {
 	for _, file := range files {
 		filesize = filesize + file.Size()
 	}
+
+	//vm , _ := mem.VirtualMemory()
+
 	//要转换的值，fmt方式，切割长度如果为-1则显示最大长度，64是float64
-	siteSize := strconv.FormatFloat(float64(filesize) / 1024 / 1024, 'f', 3, 64) + " MB"
+	siteSize := strconv.FormatFloat(float64(filesize)/1024/1024, 'f', 3, 64) + " MB"
 	this.Ctx.ViewData("SiteSize", siteSize)
 	this.Ctx.ViewData("NumCPU", runtime.NumCPU())
 	this.Ctx.ViewData("GoVersion", strings.ToUpper(runtime.Version()))
 	this.Ctx.ViewData("IrisVersion", iris.Version)
 	this.Ctx.ViewData("Goos", strings.ToUpper(runtime.GOOS))
 	this.Ctx.ViewData("Grountues", runtime.NumGoroutine())
+	//this.Ctx.ViewData("Mem", vm.Total)
 	this.Ctx.View("backend/index_main.html")
 }
 
@@ -64,7 +67,7 @@ func (this *IndexController) Menu() {
 	}
 	roleid := this.Ctx.Values().Get("roleid").(int64)
 	menus := models.NewMenuModel(this.Orm).GetMenu(int64(meid), roleid) //获取menuid内容
-	menujs := []map[string]interface{}{}    //要返回json的对象
+	menujs := []map[string]interface{}{}                                //要返回json的对象
 	for _, v := range menus {
 		menu := models.NewMenuModel(this.Orm).GetMenu(v.Id, roleid)
 		if len(menu) == 0 {
