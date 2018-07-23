@@ -37,5 +37,5 @@ func (s *FileUploader) Upload(storageName string, LocalFile io.Reader) (string, 
 	if err != nil {
 		return "", err
 	}
-	return "/" + strings.Replace(storageName,"assets/","",1), nil
+	return "/" + strings.Replace(storageName,"resources/assets/","",1), nil
 }

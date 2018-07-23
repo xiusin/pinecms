@@ -38,7 +38,7 @@ func (this *PublicController) Upload() {
 		isEditor = true
 	}
 	//生成要保存到目录和名称
-	uploadDir := "assets/upload/" + mid
+	uploadDir := "resources/assets/upload/" + mid
 	nowTime := helper.NowDate("Ymd")
 	uploadDir = uploadDir + "/" + nowTime
 	file, fs, err := this.Ctx.FormFile("filedata")
