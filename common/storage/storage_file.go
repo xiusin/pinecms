@@ -8,10 +8,15 @@ import (
 )
 
 type FileUploader struct {
+	cutStr  string
+	BaseDir string
 }
 
 func NewFileUploader() *FileUploader {
-	return &FileUploader{}
+	return &FileUploader{
+		cutStr:  "resources/assets",
+		BaseDir: "resources/assets/upload/",
+	}
 }
 
 // Upload 上传图片
@@ -37,5 +42,5 @@ func (s *FileUploader) Upload(storageName string, LocalFile io.Reader) (string, 
 	if err != nil {
 		return "", err
 	}
-	return "/" + strings.Replace(storageName,"resources/assets/","",1), nil
+	return strings.Replace(storageName, s.cutStr, "", 1), nil
 }

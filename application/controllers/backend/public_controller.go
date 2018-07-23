@@ -37,8 +37,9 @@ func (this *PublicController) Upload() {
 		//百度编辑器的返回内容
 		isEditor = true
 	}
+	uploader := storage.NewFileUploader()
 	//生成要保存到目录和名称
-	uploadDir := "resources/assets/upload/" + mid
+	uploadDir := uploader.BaseDir + mid
 	nowTime := helper.NowDate("Ymd")
 	uploadDir = uploadDir + "/" + nowTime
 	file, fs, err := this.Ctx.FormFile("filedata")
@@ -71,7 +72,7 @@ func (this *PublicController) Upload() {
 	}
 	filename := string(helper.Krand(10, 3)) + "." + ext
 	storageName := uploadDir + "/" + filename
-	path, err := storage.NewFileUploader().Upload(storageName, file)
+	path, err := uploader.Upload(storageName, file)
 	if err != nil {
 		uploadAjax(this.Ctx, map[string]string{
 			"errmsg":  "上传失败:" + err.Error(),

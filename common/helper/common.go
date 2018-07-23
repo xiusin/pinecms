@@ -32,7 +32,7 @@ var location, _ = time.LoadLocation("Local")
 
 //Krand 随机字符串
 func Krand(size int, kind int) []byte {
-	ikind, kinds, result := kind, [][]int{[]int{10, 48}, []int{26, 97}, []int{26, 65}}, make([]byte, size)
+	ikind, kinds, result := kind, [][]int{{10, 48}, {26, 97}, {26, 65}}, make([]byte, size)
 	isAll := kind > 2 || kind < 0
 	//随机种子 (如果不以时间戳作为时间种子, 可能每次生成的随机数每次都相同)
 	rand.Seed(time.Now().UnixNano())
@@ -74,7 +74,7 @@ func NowDate(str string) string {
 	str = strings.Replace(str, "Y", "2006", 1)
 	str = strings.Replace(str, "m", "01", 1)
 	str = strings.Replace(str, "d", "02", 1)
-	str = strings.Replace(str, "H", "15", 1)
+	str = strings.Replace(str, "H", "13", 1)
 	str = strings.Replace(str, "i", "04", 1)
 	str = strings.Replace(str, "s", "05", 1)
 	return t.Format(str)
@@ -87,7 +87,7 @@ func FormatTime(timestamp int64) string {
 	str = strings.Replace(str, "Y", "2006", 1)
 	str = strings.Replace(str, "m", "01", 1)
 	str = strings.Replace(str, "d", "02", 1)
-	str = strings.Replace(str, "H", "15", 1)
+	str = strings.Replace(str, "H", "13", 1)
 	str = strings.Replace(str, "i", "04", 1)
 	str = strings.Replace(str, "s", "05", 1)
 	return t.Format(str)
@@ -242,7 +242,7 @@ func MultiUpload(data []string) string {
 		    }else{
 			$(obj).next().val(data.msg);
 			$(obj).attr('src',data.msg);
-		    }
+		    }	
                 }
             });
             return false;

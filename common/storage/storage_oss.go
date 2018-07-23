@@ -15,20 +15,20 @@ type OssUploader struct {
 }
 
 func NewOssUploader(config map[string]string) *OssUploader {
-	client, err := oss.New("http://oss-cn-shanghai.aliyuncs.com", "LTAI06jdqBkVzLxxxxxxxp2", "PS0Hjxpw6FcmV0xxxxxxxyGuzf0KfxuKCZJUM")
+	client, err := oss.New(config["endPoint"], config["accessKeyID"], config["accessKeySecret"])
 	if err != nil {
 		return &OssUploader{
 			client: client,
 		}
 	}
-	bucket, err := client.Bucket("")
+	bucket, err := client.Bucket(config["bucketName"])
 	if err != nil {
 		return nil
 	}
 	return &OssUploader{
 		client: client,
 		bucket: bucket,
-		host:   "http://blog-assets.mirchen.com",
+		host:   config["host"],
 	}
 }
 
