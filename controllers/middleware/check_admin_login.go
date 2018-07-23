@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"iriscms/controllers/backend/helper"
+	"iriscms/common/helper"
 	"iriscms/models/tables"
 
 	"github.com/go-xorm/xorm"

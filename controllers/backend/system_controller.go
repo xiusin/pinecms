@@ -2,7 +2,7 @@ package backend
 
 import (
 	"html/template"
-	"iriscms/controllers/backend/helper"
+	"iriscms/common/helper"
 	"iriscms/models"
 	"iriscms/models/tables"
 	"strconv"

@@ -2,7 +2,7 @@ package models
 
 import (
 	"errors"
-	"iriscms/controllers/backend/helper"
+	"iriscms/common/helper"
 	"github.com/go-xorm/xorm"
 	"log"
 	"iriscms/models/tables"

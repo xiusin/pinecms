@@ -1,7 +1,7 @@
 package backend
 
 import (
-	"iriscms/controllers/backend/helper"
+	"iriscms/common/helper"
 	"iriscms/models"
 	"strings"
 

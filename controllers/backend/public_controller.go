@@ -5,14 +5,14 @@ import (
 	"strconv"
 	"strings"
 
-	"iriscms/common"
-	"iriscms/controllers/backend/helper"
+	"iriscms/common/helper"
 
 	"github.com/afocus/captcha"
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
+	"iriscms/common/storage"
 )
 
 type PublicController struct {
@@ -38,7 +38,7 @@ func (this *PublicController) Upload() {
 		isEditor = true
 	}
 	//生成要保存到目录和名称
-	uploadDir := "upload/" + mid
+	uploadDir := "assets/upload/" + mid
 	nowTime := helper.NowDate("Ymd")
 	uploadDir = uploadDir + "/" + nowTime
 	file, fs, err := this.Ctx.FormFile("filedata")
@@ -71,7 +71,7 @@ func (this *PublicController) Upload() {
 	}
 	filename := string(helper.Krand(10, 3)) + "." + ext
 	storageName := uploadDir + "/" + filename
-	path, err := common.NewFileUploader().Upload(storageName, file)
+	path, err := storage.NewFileUploader().Upload(storageName, file)
 	if err != nil {
 		uploadAjax(this.Ctx, map[string]string{
 			"errmsg":  "上传失败:" + err.Error(),

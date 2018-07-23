@@ -4,7 +4,7 @@ iriscms
 iriscms.exe
 iriscms.exe~
 *.log
-tmp
+runtime
 resources/configs/database.yml
 .idea
 upload

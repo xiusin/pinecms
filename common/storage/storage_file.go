@@ -1,9 +1,10 @@
-package common
+package storage
 
 import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type FileUploader struct {
@@ -36,5 +37,5 @@ func (s *FileUploader) Upload(storageName string, LocalFile io.Reader) (string, 
 	if err != nil {
 		return "", err
 	}
-	return "/" + storageName, nil
+	return "/" + strings.Replace(storageName,"assets/","",1), nil
 }

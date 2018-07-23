@@ -1,7 +1,6 @@
 package backend
 
 import (
-	"io/ioutil"
 	"iriscms/models"
 	"runtime"
 	"strconv"
@@ -11,6 +10,9 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
+	"github.com/shirou/gopsutil/mem"
+	"github.com/shirou/gopsutil/disk"
+	"iriscms/common/helper"
 )
 
 type IndexController struct {
@@ -40,23 +42,41 @@ func (this *IndexController) Index() {
 
 func (this *IndexController) Main() {
 	//统计尺寸
-	files, _ := ioutil.ReadDir(".")
-	var filesize int64 = 0
-	for _, file := range files {
-		filesize = filesize + file.Size()
+	us, _ := disk.Usage(helper.GetRootPath())
+
+	vm, _ := mem.VirtualMemory()
+
+	formatMem := func(mem uint64) string {
+		fm := map[int64]string{
+			1024:                      "K",
+			1024 * 1024:               "MB",
+			1024 * 1024 * 1024:        "GB",
+			1024 * 1024 * 1024 * 1024: "TB",
+		}
+		for b, s := range fm {
+			res := float64(mem) / float64(b)
+			if res > float64(1024) || res < 1 {
+				continue
+			}
+			return strconv.FormatFloat(res, 'f', 2, 64) + s
+		}
+		return strconv.FormatFloat(float64(mem), 'f', 2, 64) + "Bit"
 	}
 
-	//vm , _ := mem.VirtualMemory()
-
 	//要转换的值，fmt方式，切割长度如果为-1则显示最大长度，64是float64
-	siteSize := strconv.FormatFloat(float64(filesize)/1024/1024, 'f', 3, 64) + " MB"
+	siteSize := formatMem(uint64(us.Total))
+
 	this.Ctx.ViewData("SiteSize", siteSize)
 	this.Ctx.ViewData("NumCPU", runtime.NumCPU())
-	this.Ctx.ViewData("GoVersion", strings.ToUpper(runtime.Version()))
-	this.Ctx.ViewData("IrisVersion", iris.Version)
+	this.Ctx.ViewData("GoVersion", "Version " + strings.ToUpper(runtime.Version()))
+	this.Ctx.ViewData("IrisVersion", "Version " + iris.Version)
 	this.Ctx.ViewData("Goos", strings.ToUpper(runtime.GOOS))
 	this.Ctx.ViewData("Grountues", runtime.NumGoroutine())
-	//this.Ctx.ViewData("Mem", vm.Total)
+	if vm != nil {
+		this.Ctx.ViewData("Mem", "总内存:"+formatMem(vm.Total)+",已使用:"+formatMem(vm.Used))
+	} else {
+		this.Ctx.ViewData("Mem", "未获得内存情况")
+	}
 	this.Ctx.View("backend/index_main.html")
 }
 

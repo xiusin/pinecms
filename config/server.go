@@ -51,8 +51,8 @@ func initDatabase() {
 	}
 	XOrmEngine = _orm
 	XOrmEngine.Logger().SetLevel(core.LOG_ERR)
-	//XOrmEngine.ShowSQL(dbconfig.Orm.ShowSql)
-	//XOrmEngine.ShowExecTime(dbconfig.Orm.ShowExecTime)
+	XOrmEngine.ShowSQL(dbconfig.Orm.ShowSql)
+	XOrmEngine.ShowExecTime(dbconfig.Orm.ShowExecTime)
 	XOrmEngine.SetMaxOpenConns(int(dbconfig.Orm.MaxOpenConns))
 	XOrmEngine.SetMaxIdleConns(int(dbconfig.Orm.MaxIdleConns))
 }
@@ -122,7 +122,7 @@ func StartApplication() {
 }
 
 func registerStatic() {
-	app.StaticWeb("/upload", filepath.FromSlash("./upload"))
+	app.StaticWeb("/upload", filepath.FromSlash("./assets/upload"))
 	app.StaticWeb("/frontend", filepath.FromSlash("./assets/frontend"))
 	app.StaticWeb("/backend", filepath.FromSlash("./assets/backend"))
 	app.StaticWeb("/resume", filepath.FromSlash("./assets/resume"))
@@ -154,7 +154,7 @@ func BaseMvc(config *Application) func(app *mvc.Application) {
 			Decode:  secureCookie.Decode,
 			Expires: config.Session.Expires * time.Second,
 		})
-		db, _ := badger.New("./sessions/") //优化性能, 如果分离前后端session 会使内存使用量增加一倍.
+		db, _ := badger.New("./runtime/sessions/") //优化性能, 如果分离前后端session 会使内存使用量增加一倍.
 		sess.UseDatabase(db)
 	})
 	return func(app *mvc.Application) {

@@ -7,6 +7,16 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
 )
+const logPath = "runtime/logs/"
+func init()  {
+	f, err := os.Stat(logPath)
+	if (err != nil && !os.IsExist(err)) ||  f.IsDir(){
+		err := os.MkdirAll(logPath,os.ModePerm)
+		if err != nil {
+			panic(err)
+		}
+	}
+}
 
 func ViewRequestPath(app *iris.Application) func(ctx context.Context) {
 	return func(ctx context.Context) {
@@ -17,7 +27,7 @@ func ViewRequestPath(app *iris.Application) func(ctx context.Context) {
 
 func todayFilename() string {
 	today := time.Now().Format("2006-01-02")
-	return "logs/" + today + ".log"
+	return logPath + today + ".log"
 }
 
 func newLogFile() *os.File {
