@@ -27,10 +27,10 @@ iriscms 一个基于`IrisGo`和`EasyUI`简单的cms框架吗,基础的后台管�
     
     > 默认账号密码 `用户名: admin 密码: admin888`
 
-8. 使用`Nginx`或者`Caddy`反向代理到`2017`端口即可
+8. 使用`Nginx` 或者`Caddy` 反向代理到`2017`端口即可
 
 # 路由配置与实现 #
-在`config/router.go`中按照已有配置实现相关的前后端路由,在控制器文件内务必实现`func (*XXController) BeforeActivation(b mvc.BeforeActivation)` 进行路由注册, 然后实现各个方法的功能与需求.
+在`config/router.go`中按照已有配置实现相关的前后端路由, 在控制器文件内务必实现`func (*XXController) BeforeActivation(b mvc.BeforeActivation)`进行路由注册, 然后实现各个方法的功能与需求.
 
 # TODO #
 - [ ] error的错误日志
