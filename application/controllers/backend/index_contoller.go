@@ -1,7 +1,7 @@
 package backend
 
 import (
-	"iriscms/models"
+	"iriscms/application/models"
 	"runtime"
 	"strconv"
 	"strings"

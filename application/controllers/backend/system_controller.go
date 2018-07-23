@@ -3,8 +3,8 @@ package backend
 import (
 	"html/template"
 	"iriscms/common/helper"
-	"iriscms/models"
-	"iriscms/models/tables"
+	"iriscms/application/models"
+	"iriscms/application/models/tables"
 	"strconv"
 	"strings"
 	"time"

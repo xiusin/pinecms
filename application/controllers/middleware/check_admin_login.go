@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"iriscms/common/helper"
-	"iriscms/models/tables"
+	"iriscms/application/models/tables"
 
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris/sessions"

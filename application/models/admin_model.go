@@ -5,7 +5,7 @@ import (
 	"iriscms/common/helper"
 	"github.com/go-xorm/xorm"
 	"log"
-	"iriscms/models/tables"
+	"iriscms/application/models/tables"
 )
 
 type AdminModel struct {

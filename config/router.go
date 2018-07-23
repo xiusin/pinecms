@@ -1,9 +1,9 @@
 package config
 
 import (
-	"iriscms/controllers/backend"
-	"iriscms/controllers/frontend"
-	"iriscms/controllers/middleware"
+	"iriscms/application/controllers/backend"
+	"iriscms/application/controllers/frontend"
+	"iriscms/application/controllers/middleware"
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
@@ -31,6 +31,7 @@ func registerFrontendRoutes() {
 	config := BaseMvc(ApplicationConfig)
 	mvc.New(app).Configure(config).Party("/").Handle(new(frontend.IndexController))
 }
+
 func registerErrorRoutes() {
 	err := new(backend.ErrorController)
 	app.OnErrorCode(iris.StatusInternalServerError, err.ServerError)

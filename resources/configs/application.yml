@@ -2,17 +2,17 @@ view:
   reload: true
   engine:
     "django" :
-      path: "views/"
+      path: "./application/views/"
       suffix: ".tpl"
     "html" :
-      path: "views/"
+      path: "./application/views/"
       suffix: ".html"
 session:
   name: "gosessionid"
   expires: 0
 port: 2017
 pprof:
-  open: true
+  open: false
   port: 6060
   route: "/debug/pprof/*action"
 log_path: "logs"

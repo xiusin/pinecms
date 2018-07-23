@@ -5,9 +5,9 @@ import (
 	"iriscms/common/helper"
 
 	"github.com/go-xorm/xorm"
-	"iriscms/models"
+	"iriscms/application/models"
 	"strconv"
-	"iriscms/models/tables"
+	"iriscms/application/models/tables"
 	"github.com/kataras/iris/sessions"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris"

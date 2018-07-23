@@ -2,7 +2,7 @@ package backend
 
 import (
 	"github.com/go-xorm/xorm"
-	"iriscms/models"
+	"iriscms/application/models"
 	"iriscms/common/helper"
 	"html/template"
 	"fmt"

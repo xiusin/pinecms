@@ -4,7 +4,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"strconv"
 	"log"
-	"iriscms/models/tables"
+	"iriscms/application/models/tables"
 	"strings"
 )
 
