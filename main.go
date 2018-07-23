@@ -16,20 +16,16 @@ type author struct {
 }
 
 func main() {
-	printer := tableprinter.New(os.Stdout)
-	printer.BorderTop, printer.BorderBottom, printer.BorderLeft, printer.BorderRight = true, true, true, true
-	printer.CenterSeparator = "│"
-	printer.ColumnSeparator = "│"
-	printer.RowSeparator = "─"
-	printer.HeaderBgColor = tablewriter.BgBlackColor // set header background color for all headers.
-	printer.HeaderFgColor = tablewriter.FgGreenColor // set header foreground color for all headers.
-	printer.Print([]author{
-		{Name: "ProjectName", Value: "Iriscms"},
-		{Name: "ProjectVersion", Value: "Dev"},
+	p := tableprinter.New(os.Stdout)
+	p.BorderTop, p.BorderBottom, p.BorderLeft, p.BorderRight = true, true, true, true
+	p.CenterSeparator, p.ColumnSeparator, p.RowSeparator = "│", "│", "─"
+	p.HeaderBgColor,p.HeaderFgColor = tablewriter.BgBlackColor,tablewriter.FgGreenColor
+	p.Print([]author{
+		{Name: "ProjectName", Value: "IrisCms"},
+		{Name: "ProjectVersion", Value: "Development"},
 		{Name: "Author", Value: "Lazy007"},
 		{Name: "Github", Value: "https://github.com/lazy007/iriscms"},
-		{Name: "QQ", Value: "826466266@qq.com"},
-		{Name: "Framework", Value: "iris"},
+		{Name: "Framework", Value: "IrisGo"},
 		{Name: "IrisVersion", Value: iris.Version},
 	})
 	runtime.GOMAXPROCS(runtime.NumCPU())
