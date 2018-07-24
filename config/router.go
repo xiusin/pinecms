@@ -29,7 +29,7 @@ func registerBackendRoutes() {
 
 func registerFrontendRoutes() {
 	config := BaseMvc(ApplicationConfig)
-	mvc.New(app).Configure(config).Party("/").Handle(new(frontend.IndexController))
+	mvc.New(app).Configure(config).Party("/",middleware.FrontendGlobalViewData(app)).Handle(new(frontend.IndexController))
 }
 
 func registerErrorRoutes() {

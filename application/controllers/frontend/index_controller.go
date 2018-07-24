@@ -19,7 +19,7 @@ func (c *IndexController) BeforeActivation(b mvc.BeforeActivation) {
 }
 
 func (c *IndexController) Index() {
-	c.Ctx.View("frontend/index_index.html")
+	c.Ctx.Redirect("/resume")
 }
 
 func (c *IndexController) Resume() {
