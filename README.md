@@ -4,7 +4,7 @@ iriscms 一个基于`IrisGo`和`EasyUI`简单的cms框架吗,基础的后台管�
 # 下载部署 #
 
 1. 下载源码
-    > go get -u -v github.com/xiusin/iriscms
+    > `go get -u -v github.com/xiusin/iriscms`
 
 2. 数据库配置
     > 导入数据库结构`resources/iriscms.sql`
@@ -12,18 +12,18 @@ iriscms 一个基于`IrisGo`和`EasyUI`简单的cms框架吗,基础的后台管�
     > 修改`resources/configs/database.yml.dist`为`resources/configs/database.yml`
 
 4. 安装依赖
-    > glide i
+    > `glide i`
 
 5. 运行项目
-    > ./main.exe or ./main
+    > `./main.exe` or `./main`
 
 6. 开发期间热部署
-    > go get -u -v github.com/pilu/fresh
+    > `go get -u -v github.com/pilu/fresh`
 
-    > fresh
+    > `fresh`
 
 7. 访问后端登陆页面
-    > 访问 http://localhost:2017/b/login/index
+    > 访问 `http://localhost:2017/b/login/index`
     
     > 默认账号密码 `用户名: admin 密码: admin888`
 
