@@ -41,6 +41,8 @@ iriscms 一个基于`IrisGo`和`EasyUI`简单的cms框架吗,基础的后台管�
 - [x] OSS存储驱动
 - [x] 基本框架
 - [x] 需要开放的公共权限设置(public-,check-)
+- [ ] 开发文档模型 (付费,下载,附表,主表)
+- [ ] 开发会员模块(mongo接入.付费积分)
 - [ ] 添加bench 测试
 - [ ] 打印 pprof 结果根据svg图形优化相关的代码
 - [ ] groupcache 加入
