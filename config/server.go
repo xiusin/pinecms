@@ -4,21 +4,24 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 	"sync"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	_ "github.com/go-sql-driver/mysql" // 初始化 Mysql 驱动
 	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
 	"github.com/gorilla/securecookie"
+	jwtmiddleware "github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/pprof"
 	"github.com/kataras/iris/middleware/recover"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
-	"github.com/kataras/iris/sessions/sessiondb/badger"
+	"github.com/kataras/iris/sessions/sessiondb/boltdb"
 	"github.com/kataras/iris/view"
 	"gopkg.in/yaml.v2"
 )
@@ -110,6 +113,16 @@ func StartApplication() {
 	//配置recover插件
 	app.Use(recover.New())
 	//日志
+	app.Use(jwtmiddleware.New(jwtmiddleware.Config{
+		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+			return []byte("My Secret"), nil
+		},
+		// When set, the middleware verifies that tokens are signed with the specific signing algorithm
+		// If the signing method is not constant the ValidationKeyGetter callback can be used to implement additional checks
+		// Important to avoid security issues described here: https://auth0.com/blog/2015/03/31/critical-vulnerabilities-in-json-web-token-libraries/
+		SigningMethod: jwt.SigningMethodHS256,
+	}).Serve)
+
 	//app.Use(logger.New())
 	//注册错误路由
 	registerErrorRoutes()
@@ -154,7 +167,14 @@ func BaseMvc(config *Application) func(app *mvc.Application) {
 			Decode:  secureCookie.Decode,
 			Expires: config.Session.Expires * time.Second,
 		})
-		db, _ := badger.New("./runtime/sessions/") //优化性能, 如果分离前后端session 会使内存使用量增加一倍.
+		db, err := boltdb.New("./runtime/sessions.db", os.FileMode(0750)) //优化性能, 如果分离前后端session 会使内存使用量增加一倍.
+		if err != nil {
+			panic(err)
+		}
+		// close and unlobkc the database when control+C/cmd+C pressed
+		iris.RegisterOnInterrupt(func() {
+			db.Close()
+		})
 		sess.UseDatabase(db)
 	})
 	return func(app *mvc.Application) {

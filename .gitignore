@@ -6,3 +6,5 @@ iriscms.exe~
 runtime
 resources/configs/database.yml
 .idea
+node_modules/
+tmp/runner-build

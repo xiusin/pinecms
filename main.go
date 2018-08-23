@@ -19,13 +19,12 @@ func main() {
 	p := tableprinter.New(os.Stdout)
 	p.BorderTop, p.BorderBottom, p.BorderLeft, p.BorderRight = true, true, true, true
 	p.CenterSeparator, p.ColumnSeparator, p.RowSeparator = "│", "│", "─"
-	p.HeaderBgColor,p.HeaderFgColor = tablewriter.BgBlackColor,tablewriter.FgGreenColor
+	p.HeaderBgColor, p.HeaderFgColor = tablewriter.BgBlackColor, tablewriter.FgGreenColor
 	p.Print([]author{
-		{Name: "ProjectName", Value: "IrisCms"},
-		{Name: "ProjectVersion", Value: "Development"},
-		{Name: "Author", Value: "Lazy007"},
-		{Name: "Github", Value: "https://github.com/lazy007/iriscms"},
-		{Name: "Framework", Value: "IrisGo"},
+		{Name: "Name", Value: "Xiusin"},
+		{Name: "Version", Value: "Development"},
+		{Name: "Author", Value: "Xiusin"},
+		{Name: "WebSite", Value: "http://www.xiusin.com/"},
 		{Name: "IrisVersion", Value: iris.Version},
 	})
 	runtime.GOMAXPROCS(runtime.NumCPU())
