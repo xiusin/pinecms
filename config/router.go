@@ -7,6 +7,10 @@ import (
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
+	"github.com/kataras/iris/context"
+	"github.com/dgrijalva/jwt-go"
+	jwtmiddleware "github.com/iris-contrib/middleware/jwt"
+
 )
 
 //利用中间件执行控制器前置操作
@@ -29,7 +33,17 @@ func registerBackendRoutes() {
 
 func registerFrontendRoutes() {
 	config := BaseMvc(ApplicationConfig)
-	mvc.New(app).Configure(config).Party("/",middleware.FrontendGlobalViewData(app)).Handle(new(frontend.IndexController))
+	mvc.New(app).Configure(config).Party("/", middleware.FrontendGlobalViewData(app)).Handle(new(frontend.IndexController))
+	mvc.New(app).Configure(config).Party("/api", func(ctx context.Context) {
+		jwtmiddleware.New(jwtmiddleware.Config{
+			ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+				return []byte("MySecret"), nil
+			},
+			SigningMethod:       jwt.SigningMethodHS256,
+			CredentialsOptional: true,	//如果不传递默认未登录状态即可
+		}).Serve(ctx)
+	} , middleware.FrontendGlobalViewData(app)).Handle(new(frontend.ApiController))
+
 }
 
 func registerErrorRoutes() {

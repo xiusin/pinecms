@@ -1,4 +1,4 @@
-package main //github.com/lazy007/iriscms
+package main //github.com/xiusin/iriscms
 
 import (
 	. "iriscms/config"

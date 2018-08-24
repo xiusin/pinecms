@@ -13,6 +13,7 @@ type IndexController struct {
 	Session *sessions.Session
 }
 
+
 func (c *IndexController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("ANY", "/", "Index")
 	b.Handle("ANY", "/resume", "Resume")
