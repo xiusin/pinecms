@@ -21,8 +21,12 @@ type ApiReturnData struct {
 }
 
 func (c *ApiController) BeforeActivation(b mvc.BeforeActivation) {
-	b.Handle("POST", "/user/login", "UserLogin")
-	b.Handle("GET", "/user/center", "UserCenter")
+
+	b.Handle(iris.MethodOptions, "/user/login", "UserLogin")
+	b.Handle(iris.MethodOptions, "/user/center", "UserCenter")
+
+	b.Handle(iris.MethodPost, "/user/login", "UserLogin")
+	b.Handle(iris.MethodGet, "/user/center", "UserCenter")
 }
 
 func (c *ApiController) UserLogin() {
@@ -49,7 +53,7 @@ func (c *ApiController) UserLogin() {
 				SignToken:tokenString,
 				User: map[string]string{
 
-				}
+				},
 			}})
 		}
 	}

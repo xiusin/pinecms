@@ -7,7 +7,7 @@ export function register(account, nickname, password) {
     password
   }
   return request({
-    url: '/register',
+    url: '/user/register',
     method: 'post',
     data
   })
@@ -19,7 +19,7 @@ export function login(account, password) {
     password
   }
   return request({
-    url: '/login',
+    url: '/user/login',
     method: 'post',
     data
   })
@@ -27,7 +27,7 @@ export function login(account, password) {
 
 export function logout() {
   return request({
-    url: '/logout',
+    url: '/user/logout',
     method: 'get'
   })
 }

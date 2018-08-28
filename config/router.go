@@ -11,6 +11,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	jwtmiddleware "github.com/iris-contrib/middleware/jwt"
 
+	"github.com/iris-contrib/middleware/cors"
 )
 
 //利用中间件执行控制器前置操作
@@ -34,15 +35,23 @@ func registerBackendRoutes() {
 func registerFrontendRoutes() {
 	config := BaseMvc(ApplicationConfig)
 	mvc.New(app).Configure(config).Party("/", middleware.FrontendGlobalViewData(app)).Handle(new(frontend.IndexController))
-	mvc.New(app).Configure(config).Party("/api", func(ctx context.Context) {
+
+	crs := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"*"},
+		AllowCredentials: true,
+	})
+
+	frontendApp := mvc.New(app).Configure(config).Party("/api", crs, func(ctx context.Context) {
 		jwtmiddleware.New(jwtmiddleware.Config{
 			ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 				return []byte("MySecret"), nil
 			},
 			SigningMethod:       jwt.SigningMethodHS256,
-			CredentialsOptional: true,	//如果不传递默认未登录状态即可
+			CredentialsOptional: true, //如果不传递默认未登录状态即可
 		}).Serve(ctx)
-	} , middleware.FrontendGlobalViewData(app)).Handle(new(frontend.ApiController))
+	}, middleware.FrontendGlobalViewData(app)).Handle(new(frontend.ApiController))
+	frontendApp.Router.AllowMethods(iris.MethodOptions)
 
 }
 
