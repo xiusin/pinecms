@@ -8,7 +8,6 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"iriscms/application/controllers/api"
-	"github.com/iris-contrib/middleware/cors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/kataras/iris/context"
 	jwt2 "github.com/iris-contrib/middleware/jwt"
@@ -50,11 +49,15 @@ func registerErrorRoutes() {
 
 func registerApiRoutes() {
 
-	middleCors := cors.AllowAll()
-
 	middleToll := tollbooth.NewLimiter(1, nil)	//Api限流
 
-	apiParty := mvc.New(app.Party("/api/v1", middleCors, tollboothic.LimitHandler(middleToll), func(ctx context.Context) {
+	apiParty := mvc.New(app.Party("/api/v1", func(ctx iris.Context){
+		ctx.Header("Access-Control-Allow-Origin", "*")
+		ctx.Header("Access-Control-Request-Headers","Accept,content-type,X-Requested-With,Content-Length,Accept-Encoding,X-CSRF-Token,Authorization,token")
+		ctx.Header("Access-Control-Request-Method","*")
+		// ctx.Header("Access-Control-Expose-Headers","token")
+		ctx.Next()
+	}, tollboothic.LimitHandler(middleToll), func(ctx context.Context) {
 		jwt2.New(jwt2.Config{
 			ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 				return []byte("MySecret"), nil
