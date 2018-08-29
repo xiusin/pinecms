@@ -22,6 +22,7 @@ import (
 	"github.com/kataras/iris/sessions/sessiondb/boltdb"
 	"github.com/kataras/iris/view"
 	"gopkg.in/yaml.v2"
+	"github.com/kataras/iris/middleware/logger"
 )
 
 var app *iris.Application
@@ -80,6 +81,8 @@ func StartApplication() {
 	parseConfig(applicationYml, ApplicationConfig) //解析配置
 	//实例化服务器
 	app = iris.New()
+	//配置前端缓存10秒
+	app.Use(iris.Cache304(10 * time.Second))
 	//配置PPROF
 	if ApplicationConfig.Pprof.Open {
 		app.Get(ApplicationConfig.Pprof.Route, pprof.New())
@@ -111,13 +114,15 @@ func StartApplication() {
 	//配置recover插件
 	app.Use(recover.New())
 	//日志
-	//app.Use(logger.New())
+	app.Use(logger.New())
 	//注册错误路由
 	registerErrorRoutes()
 	//注册后端路由
 	registerBackendRoutes()
 	////注册前端路由
 	registerFrontendRoutes()
+	//注册API路由
+	registerApiRoutes()
 	//构建并且运行应用
 	runServe(ApplicationConfig)
 }
@@ -155,7 +160,7 @@ func BaseMvc(config *Application) func(app *mvc.Application) {
 			Decode:  secureCookie.Decode,
 			Expires: config.Session.Expires * time.Second,
 		})
-		db, err := boltdb.New("./runtime/sessions.db", os.FileMode(0750)) //优化性能, 如果分离前后端session 会使内存使用量增加一倍.
+		db, err := boltdb.New("./runtime/sessions.db", os.FileMode(0750))
 		if err != nil {
 			panic(err)
 		}

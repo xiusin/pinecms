@@ -1,4 +1,4 @@
-package frontend
+package api
 
 import (
 	"github.com/go-xorm/xorm"
@@ -9,32 +9,28 @@ import (
 	"time"
 )
 
-type ApiController struct {
+type UserApiController struct {
 	Orm *xorm.Engine
 	Ctx iris.Context
 }
 
-type ApiReturnData struct {
+type ReturnApiData struct {
 	Status bool        `json:"status"`
 	Msg    string      `json:"msg"`
 	Data   interface{} `json:"data"`
 }
 
-func (c *ApiController) BeforeActivation(b mvc.BeforeActivation) {
-
-	b.Handle(iris.MethodOptions, "/user/login", "UserLogin")
-	b.Handle(iris.MethodOptions, "/user/center", "UserCenter")
-
+func (c *UserApiController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle(iris.MethodPost, "/user/login", "UserLogin")
 	b.Handle(iris.MethodGet, "/user/center", "UserCenter")
 }
 
-func (c *ApiController) UserLogin() {
+func (c *UserApiController) UserLogin() {
 	//生成JwtToken
 	userName := c.Ctx.PostValueTrim("username")
 	password := c.Ctx.PostValueTrim("password")
 	if userName == "" || password == "" {
-		c.Ctx.JSON(ApiReturnData{false, "username or password is empty!", nil})
+		c.Ctx.JSON(ReturnApiData{false, "username or password is empty!", nil})
 	} else {
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{	//为了匹配中间件, 在这里使用相同的配置
 			"username": userName,
@@ -44,9 +40,9 @@ func (c *ApiController) UserLogin() {
 		})
 		tokenString, err := token.SignedString([]byte("MySecret"))
 		if err != nil {
-			c.Ctx.JSON(ApiReturnData{false, err.Error(), nil})
+			c.Ctx.JSON(ReturnApiData{false, err.Error(), nil})
 		} else {
-			c.Ctx.JSON(ApiReturnData{true, "", struct {
+			c.Ctx.JSON(ReturnApiData{true, "", struct {
 				SignToken  string `json:"sign_token"`
 				User map[string]string
 			}{
@@ -60,7 +56,7 @@ func (c *ApiController) UserLogin() {
 
 }
 
-func (c *ApiController) UserCenter() {
+func (c *UserApiController) UserCenter() {
 	user := c.Ctx.Values().Get(jwt2.DefaultContextKey).(*jwt.Token)
-	c.Ctx.JSON(ApiReturnData{true, "", user.Claims})
+	c.Ctx.JSON(ReturnApiData{true, "", user.Claims})
 }
