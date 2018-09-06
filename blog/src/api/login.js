@@ -14,14 +14,15 @@ export function register(account, nickname, password) {
 }
 
 export function login(account, password) {
-  const data = {
-    account,
-    password
-  }
+  // const data = {
+  //   account,
+  //   password
+  // }
   return request({
     url: '/user/login',
     method: 'post',
-    data
+    account,
+    password
   })
 }
 

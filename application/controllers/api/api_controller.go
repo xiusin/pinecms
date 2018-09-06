@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
@@ -26,6 +27,7 @@ func (c *UserApiController) BeforeActivation(b mvc.BeforeActivation) {
 }
 
 func (c *UserApiController) UserLogin() {
+	fmt.Println(c.Ctx.String())
 	//生成JwtToken
 	userName := c.Ctx.PostValueTrim("username")
 	password := c.Ctx.PostValueTrim("password")

@@ -15,6 +15,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/gorilla/securecookie"
 	"github.com/kataras/iris"
+	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/pprof"
 	"github.com/kataras/iris/middleware/recover"
 	"github.com/kataras/iris/mvc"
@@ -22,7 +23,6 @@ import (
 	"github.com/kataras/iris/sessions/sessiondb/boltdb"
 	"github.com/kataras/iris/view"
 	"gopkg.in/yaml.v2"
-	"github.com/kataras/iris/middleware/logger"
 )
 
 var app *iris.Application
@@ -57,6 +57,14 @@ func initDatabase() {
 	XOrmEngine.ShowExecTime(dbconfig.Orm.ShowExecTime)
 	XOrmEngine.SetMaxOpenConns(int(dbconfig.Orm.MaxOpenConns))
 	XOrmEngine.SetMaxIdleConns(int(dbconfig.Orm.MaxIdleConns))
+}
+
+func initRedis() {
+
+}
+
+func initMongodb() {
+
 }
 
 func parseConfig(path string, out interface{}) {
@@ -164,7 +172,6 @@ func BaseMvc(config *Application) func(app *mvc.Application) {
 		if err != nil {
 			panic(err)
 		}
-		// close and unlobkc the database when control+C/cmd+C pressed
 		iris.RegisterOnInterrupt(func() {
 			db.Close()
 		})
