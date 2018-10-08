@@ -1,12 +1,13 @@
 package api
 
 import (
-	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/go-xorm/xorm"
+	jwt2 "github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"github.com/dgrijalva/jwt-go"
-	jwt2 "github.com/iris-contrib/middleware/jwt"
+	"github.com/segmentio/objconv/json"
+	"iriscms/application/models/tables"
 	"time"
 )
 
@@ -27,38 +28,60 @@ func (c *UserApiController) BeforeActivation(b mvc.BeforeActivation) {
 }
 
 func (c *UserApiController) UserLogin() {
-	fmt.Println(c.Ctx.String())
 	//生成JwtToken
-	userName := c.Ctx.PostValueTrim("username")
-	password := c.Ctx.PostValueTrim("password")
-	if userName == "" || password == "" {
+	dd := map[string]string{}
+	err := c.Ctx.UnmarshalBody(&dd, iris.UnmarshalerFunc(json.Unmarshal)) //todo 解析body字符串
+	if err != nil {
+		c.Ctx.JSON(ReturnApiData{false, err.Error(), nil})
+		return
+	}
+	if dd["account"] == "" || dd["password"] == "" {
 		c.Ctx.JSON(ReturnApiData{false, "username or password is empty!", nil})
 	} else {
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{	//为了匹配中间件, 在这里使用相同的配置
-			"username": userName,
-			"password": password,
-			"exp": time.Now().Add(time.Hour * time.Duration(1)).Unix(),	//过期时间
-			"iat": time.Now().Unix(),	// 当前时间戳
-		})
-		tokenString, err := token.SignedString([]byte("MySecret"))
-		if err != nil {
-			c.Ctx.JSON(ReturnApiData{false, err.Error(), nil})
-		} else {
-			c.Ctx.JSON(ReturnApiData{true, "", struct {
-				SignToken  string `json:"sign_token"`
-				User map[string]string
-			}{
-				SignToken:tokenString,
-				User: map[string]string{
-
-				},
-			}})
+		var user tables.IriscmsMember
+		ok, err := c.Orm.Where("account = ? and password = ?", dd["account"], dd["password"]).Get(&user)
+		if !ok || err != nil {
+			c.Ctx.JSON(ReturnApiData{false, "login failed!", nil})
+			return
 		}
-	}
 
+		claims := jwt.MapClaims{ //为了匹配中间件, 在这里使用相同的配置
+			"user": user,
+			"exp":  time.Now().Add(time.Hour * time.Duration(1)).Unix(), //过期时间
+			"iat":  time.Now().Unix(),                                   // 当前时间戳
+		}
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+		tokenString, err := token.SignedString([]byte("MySecret"))
+		c.Ctx.JSON(ReturnApiData{true, "login success!", struct {
+			SignToken string `json:"sign_token"`
+		}{SignToken: tokenString}})
+	}
 }
 
 func (c *UserApiController) UserCenter() {
-	user := c.Ctx.Values().Get(jwt2.DefaultContextKey).(*jwt.Token)
-	c.Ctx.JSON(ReturnApiData{true, "", user.Claims})
+	user, ok := c.Ctx.Values().Get(jwt2.DefaultContextKey).(*jwt.Token)
+	if !ok {
+		c.Ctx.JSON(ReturnApiData{false, "author error", nil})
+		return
+	}
+	userC, ok := user.Claims.(jwt.MapClaims)
+	if !ok {
+		c.Ctx.JSON(ReturnApiData{false, "author error", nil})
+		return
+	}
+	c.Ctx.JSON(ReturnApiData{true, "", userC["user"]})
+}
+
+func (c *UserApiController) UserCenter() {
+	user, ok := c.Ctx.Values().Get(jwt2.DefaultContextKey).(*jwt.Token)
+	if !ok {
+		c.Ctx.JSON(ReturnApiData{false, "author error", nil})
+		return
+	}
+	userC, ok := user.Claims.(jwt.MapClaims)
+	if !ok {
+		c.Ctx.JSON(ReturnApiData{false, "author error", nil})
+		return
+	}
+	c.Ctx.JSON(ReturnApiData{true, "", userC["user"]})
 }

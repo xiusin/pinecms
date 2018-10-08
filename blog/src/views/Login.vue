@@ -1,8 +1,8 @@
 <template>
   <div id="login" v-title data-title="登录 - For Fun">
-    <!--<video preload="auto" class="me-video-player" autoplay="autoplay" loop="loop">
-          <source src="../../static/vedio/sea.mp4" type="video/mp4">
-      </video>-->
+    <!--<video preload="auto" class="me-video-player" autoplay="autoplay" loop="loop">-->
+          <!--<source src="../../static/vedio/sea.mp4" type="video/mp4">-->
+    <!--</video>-->
 
     <div class="me-login-box me-login-box-radius">
       <h1>ForFun 登录</h1>
@@ -18,16 +18,15 @@
 
         <el-form-item size="small" class="me-login-button">
           <el-button type="primary" @click.native.prevent="login('userForm')">登录</el-button>
+          <br/>
+          <router-link to="/register" style="color: white">
+            <el-button type="primary" >
+              注册
+            </el-button>
+          </router-link>
         </el-form-item>
       </el-form>
 
-      <div class="me-login-design">
-        <p>Designed by
-          <strong>
-            <router-link to="/" class="me-login-design-color">ForFun</router-link>
-          </strong>
-        </p>
-      </div>
 
     </div>
   </div>
@@ -39,8 +38,8 @@
     data() {
       return {
         userForm: {
-          account: '',
-          password: ''
+          account: 'xiusin',
+          password: '159781'
         },
         rules: {
           account: [
@@ -63,6 +62,7 @@
             that.$store.dispatch('login', that.userForm).then(() => {
               that.$router.go(-1)
             }).catch((error) => {
+              console.log(error)
               if (error !== 'error') {
                 that.$message({message: error, type: 'error', showClose: true});
               }

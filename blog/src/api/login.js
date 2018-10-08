@@ -14,15 +14,13 @@ export function register(account, nickname, password) {
 }
 
 export function login(account, password) {
-  // const data = {
-  //   account,
-  //   password
-  // }
   return request({
     url: '/user/login',
     method: 'post',
-    account,
-    password
+    data: {
+      account,
+      password
+    }
   })
 }
 
@@ -35,8 +33,7 @@ export function logout() {
 
 export function getUserInfo() {
   return request({
-    url: '/user/current',
+    url: '/user/center',
     method: 'get'
   })
 }
-

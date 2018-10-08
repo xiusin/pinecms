@@ -98,7 +98,7 @@
       }
     },
     created() {
-      this.getArticles()
+      // this.getArticles()
     }
   }
 </script>

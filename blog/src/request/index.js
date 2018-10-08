@@ -11,7 +11,8 @@ const service = axios.create({
 //request拦截器
 service.interceptors.request.use(config => {
   if (store.state.token) {
-    config.headers['Token'] = getToken()
+    const token = getToken()
+    if (token) config.headers['Authorization'] = "Bearer " + token
   }
   return config
 }, error => {
@@ -25,49 +26,21 @@ service.interceptors.response.use(
     if (response.headers['session_time_out'] == 'timeout') {
       store.dispatch('fedLogOut')
     }
-
     const res = response.data;
-
     //0 为成功状态
-    if (res.code !== 0) {
-
-      //90001 Session超时
-      if (res.code === 90001) {
-        return Promise.reject('error');
-      }
-
-      //401 用户未登录
-      if (res.code === 401) {
-        console.info("用户未登录")
-
-        Message({
-          type: 'warning',
-          showClose: true,
-          message: '未登录或登录超时，请重新登录哦'
-        })
-
-        // store.dispatch('fedLogOut')
-
-        return Promise.reject('error');
-      }
-
-      //70001 权限认证错误
-      if (res.code === 70001) {
-        console.info("权限认证错误")
-        Message({
-          type: 'warning',
-          showClose: true,
-          message: '你没有权限访问哦'
-        })
-        return Promise.reject('error');
-      }
-
+    if (res.status === false) {
+      Message({
+        type: 'warning',
+        showClose: true,
+        message: res.msg
+      })
       return Promise.reject(res.msg);
     } else {
       return response.data;
     }
   },
   error => {
+    console.log(error)
     Message({
       type: 'warning',
       showClose: true,

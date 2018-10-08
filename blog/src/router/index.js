@@ -15,6 +15,7 @@ import BlogCategoryTag from '@/views/blog/BlogCategoryTag'*/
 import {Message} from 'element-ui';
 import {getToken} from '@/request/token'
 import store from '@/store'
+import {removeToken} from "../request/token";
 
 Vue.use(Router)
 
@@ -75,9 +76,7 @@ const router = new Router({
     return {x: 0, y: 0}
   }
 })
-
 router.beforeEach((to, from, next) => {
-
   if (getToken()) { // 有token
     if (to.path === '/login') {
       next({path: '/'})
@@ -86,6 +85,7 @@ router.beforeEach((to, from, next) => {
         store.dispatch('getUserInfo').then(data => { //获取用户信息
           next()
         }).catch(() => {
+          removeToken() //todo 移除token防止死循环一直跳
           next({path: '/'})
         })
       } else {

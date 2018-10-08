@@ -1,20 +1,17 @@
 package config
 
 import (
-	"github.com/didip/tollbooth"
-	"github.com/iris-contrib/middleware/cors"
-	"github.com/iris-contrib/middleware/tollboothic"
-	"iriscms/application/controllers/backend"
-	"iriscms/application/controllers/frontend"
-	"iriscms/application/controllers/middleware"
-
 	"github.com/dgrijalva/jwt-go"
+	"github.com/iris-contrib/middleware/cors"
 	jwt2 "github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/cache"
 	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/mvc"
 	"iriscms/application/controllers/api"
+	"iriscms/application/controllers/backend"
+	"iriscms/application/controllers/frontend"
+	"iriscms/application/controllers/middleware"
 	"time"
 )
 
@@ -49,13 +46,8 @@ func registerErrorRoutes() {
 }
 
 func registerApiRoutes() {
-	middleToll := tollbooth.NewLimiter(100000, nil) //Api限流
-	crs := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
-		AllowCredentials: true,
-	})                                              //先使用注释源代码的方式使用吧,
-
-	apiParty := mvc.New(app.Party("/api/v1", crs, func(ctx context.Context) {
+	//middleToll := tollbooth.NewLimiter(100000, nil) //Api限流
+	apiParty := mvc.New(app.Party("/api/v1", cors.AllowAll(), func(ctx context.Context) {
 		jwt2.New(jwt2.Config{
 			ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 				return []byte("MySecret"), nil
@@ -63,12 +55,9 @@ func registerApiRoutes() {
 			SigningMethod:       jwt.SigningMethodHS256,
 			CredentialsOptional: true, //如果不传递默认未登录状态即可
 		}).Serve(ctx)
-	}, tollboothic.LimitHandler(middleToll), middleware.FrontendGlobalViewData(app)).AllowMethods(iris.MethodOptions))
+	}, /*tollboothic.LimitHandler(middleToll),*/ middleware.FrontendGlobalViewData(app)).AllowMethods(iris.MethodOptions))
 
-
-
-
-	apiParty.Register(XOrmEngine, )
+	apiParty.Register(XOrmEngine)
 
 	apiParty.Handle(new(api.UserApiController))
 }

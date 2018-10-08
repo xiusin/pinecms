@@ -35,8 +35,8 @@ export default new Vuex.Store({
     login({commit}, user) {
       return new Promise((resolve, reject) => {
         login(user.account, user.password).then(data => {
-          commit('SET_TOKEN', data.data['Oauth-Token'])
-          setToken(data.data['Oauth-Token'])
+          commit('SET_TOKEN', data.data['sign_token'])
+          setToken(data.data['sign_token'])
           resolve()
         }).catch(error => {
           reject(error)
@@ -69,7 +69,7 @@ export default new Vuex.Store({
     // 退出
     logout({commit, state}) {
       return new Promise((resolve, reject) => {
-        logout().then(data => {
+        // logout().then(data => {
           commit('SET_TOKEN', '')
           commit('SET_ACCOUNT', '')
           commit('SET_NAME', '')
@@ -77,12 +77,12 @@ export default new Vuex.Store({
           commit('SET_ID', '')
           removeToken()
           resolve()
-        }).catch(error => {
-          reject(error)
-        })
+        // }).catch(error => {
+        //   reject(error)
+        // })
       })
     },
-    // 前端 登出
+    // 前端 登出 todo 后端验证token是否过期
     fedLogOut({commit}) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
@@ -100,8 +100,8 @@ export default new Vuex.Store({
     register({commit}, user) {
       return new Promise((resolve, reject) => {
         register(user.account, user.nickname, user.password).then((data) => {
-          commit('SET_TOKEN', data.data['Oauth-Token'])
-          setToken(data.data['Oauth-Token'])
+          commit('SET_TOKEN', data.data['sign_token'])
+          setToken(data.data['sign_token'])
           resolve()
         }).catch((error) => {
           reject(error)

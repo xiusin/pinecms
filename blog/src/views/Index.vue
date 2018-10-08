@@ -48,43 +48,43 @@
     },
     methods: {
       getHotArtices() {
-        let that = this
-        getHotArtices().then(data => {
-          that.hotArticles = data.data
-        }).catch(error => {
-          if (error !== 'error') {
-            that.$message({type: 'error', message: '最热文章加载失败!', showClose: true})
-          }
-        })
+        // let that = this
+        // getHotArtices().then(data => {
+        //   that.hotArticles = data.data
+        // }).catch(error => {
+        //   if (error !== 'error') {
+        //     that.$message({type: 'error', message: '最热文章加载失败!', showClose: true})
+        //   }
+        // })
       },
       getNewArtices() {
-        let that = this
-        getNewArtices().then(data => {
-          that.newArticles = data.data
-        }).catch(error => {
-          if (error !== 'error') {
-            that.$message({type: 'error', message: '最新文章加载失败!', showClose: true})
-          }
-        })
+        // let that = this
+        // getNewArtices().then(data => {
+        //   that.newArticles = data.data
+        // }).catch(error => {
+        //   if (error !== 'error') {
+        //     that.$message({type: 'error', message: '最新文章加载失败!', showClose: true})
+        //   }
+        // })
       },
       getHotTags() {
-        let that = this
-        getHotTags().then(data => {
-          that.hotTags = data.data
-        }).catch(error => {
-          if (error !== 'error') {
-            that.$message({type: 'error', message: '最热标签加载失败!', showClose: true})
-          }
-        })
+        // let that = this
+        // getHotTags().then(data => {
+        //   that.hotTags = data.data
+        // }).catch(error => {
+        //   if (error !== 'error') {
+        //     that.$message({type: 'error', message: '最热标签加载失败!', showClose: true})
+        //   }
+        // })
       },
       listArchives() {
-        listArchives().then((data => {
-          this.archives = data.data
-        })).catch(error => {
-          if (error !== 'error') {
-            that.$message({type: 'error', message: '文章归档加载失败!', showClose: true})
-          }
-        })
+        // listArchives().then((data => {
+        //   this.archives = data.data
+        // })).catch(error => {
+        //   if (error !== 'error') {
+        //     that.$message({type: 'error', message: '文章归档加载失败!', showClose: true})
+        //   }
+        // })
       }
     },
     created() {
