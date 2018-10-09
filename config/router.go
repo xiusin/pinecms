@@ -60,4 +60,7 @@ func registerApiRoutes() {
 	apiParty.Register(XOrmEngine)
 
 	apiParty.Handle(new(api.UserApiController))
+
+	apiParty.Handle(new(api.CategoryController))
+
 }

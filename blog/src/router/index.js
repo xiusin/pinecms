@@ -42,6 +42,14 @@ const router = new Router({
           component: r => require.ensure([], () => r(require('@/views/Log')), 'log')
         },
         {
+          path: '/free/video/:id?',
+          component: r => require.ensure([], () => r(require('@/views/blog/FreeCategory')), 'free')
+        },
+        {
+          path: '/archives/:year?/:month?',
+          component: r => require.ensure([], () => r(require('@/views/blog/BlogArchive')), 'archives')
+        },
+        {
           path: '/archives/:year?/:month?',
           component: r => require.ensure([], () => r(require('@/views/blog/BlogArchive')), 'archives')
         },

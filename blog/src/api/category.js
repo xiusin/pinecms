@@ -1,32 +1,29 @@
 import request from '@/request'
 
-export function getAllCategorys() {
+export function getAllFreeVideoList() {
   return request({
-    url: '/category/list',
+    url: '/free/video/list',
     method: 'get',
   })
 }
 
-export function getAllCategorysDetail() {
+export function getAllFreeBookList() {
   return request({
-    url: '/category/detail',
+    url: '/free/book/list',
     method: 'get',
   })
 }
 
-export function getCategoryDetail(id) {
+export function getAllPaidVideoList() {
   return request({
-    url: `/category/detail/${id}`,
+    url: '/paid/video/list',
     method: 'get',
   })
 }
 
- /*
-  * 暂时未用到
-  */
-export function getCategory(id) {
+export function getAllPaidBookList() {
   return request({
-    url: `/category/${id}`,
+    url: '/paid/book/list',
     method: 'get',
   })
 }

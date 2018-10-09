@@ -12,13 +12,12 @@
         <el-menu :router=true menu-trigger="click" active-text-color="#5FB878" :default-active="activeIndex"
                  mode="horizontal">
           <el-menu-item index="/">首页</el-menu-item>
-          <el-menu-item index="/category/all">文章分类</el-menu-item>
-          <el-menu-item index="/tag/all">标签</el-menu-item>
-          <el-menu-item index="/archives">文章归档</el-menu-item>
-          <el-menu-item index="/log">日志</el-menu-item>
-          <el-menu-item index="/feedback">留言板</el-menu-item>
+          <el-menu-item index="/free/video">免费视频</el-menu-item>
+          <el-menu-item index="/free/book">免费图书</el-menu-item>
+          <el-menu-item index="/paid/video">付费视频</el-menu-item>
+          <el-menu-item index="/paid/book">付费图书</el-menu-item>
 
-          <el-col :span="2" :offset="1">
+          <el-col :span="2" :offset="1" v-if="user.login">
             <el-menu-item index="/write"><i class="el-icon-edit"></i>写文章</el-menu-item>
           </el-col>
 

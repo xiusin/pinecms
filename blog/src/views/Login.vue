@@ -16,6 +16,20 @@
           <el-input placeholder="密码" v-model="userForm.password"></el-input>
         </el-form-item>
 
+        <el-form-item>
+          <div class="vaptcha-container" id="vaptcha-container" data-config='{"vid": "5bbc46c6fc650e3be06e5869","type": "click"}' style="width:300px;height:36px;">
+            <div class="vaptcha-init-main">
+              <div class="vaptcha-init-loading">
+                <a href="https://vaptcha.com" target="_blank">
+                  <img src="https://cdn.vaptcha.com/vaptcha-loading.gif" />
+                </a>
+                <span class="vaptcha-text"> VAPTCHA启动中...</span>
+              </div>
+            </div>
+          </div>
+        </el-form-item>
+
+
         <el-form-item size="small" class="me-login-button">
           <el-button type="primary" @click.native.prevent="login('userForm')">登录</el-button>
           <br/>
@@ -27,19 +41,21 @@
         </el-form-item>
       </el-form>
 
-
     </div>
   </div>
 </template>
 
 <script>
+
   export default {
     name: 'Login',
     data() {
       return {
+        captcha: null,
         userForm: {
           account: 'xiusin',
-          password: '159781'
+          password: '159781',
+          token: ''
         },
         rules: {
           account: [
@@ -49,19 +65,42 @@
           password: [
             {required: true, message: '请输入密码', trigger: 'blur'},
             {max: 10, message: '不能大于10个字符', trigger: 'blur'}
+          ],
+          token: [
+            {required: true, message: '请先验证人机操作'},
+            {min: 1, message: '请先验证人机操作'}
           ]
         }
       }
     },
+    mounted:function () {
+      this.createVcaptcha()
+    },
     methods: {
+      createVcaptcha() {
+        let that = this
+        window.vaptcha({
+          //配置参数
+          vid: '5bbc46c6fc650e3be06e5869', // 验证单元id
+          type: 'click', // 展现类型 点击式
+          container: window.document.getElementById("vaptcha-container") // 按钮容器，可为Element 或者 selector
+        }).then((vaptchaObj) => {
+          that.captcha = vaptchaObj
+          console.log(that.userForm)
+          vaptchaObj.listen('pass', function() {
+            that.userForm.token = vaptchaObj.getToken()
+          })
+          vaptchaObj.render()// 调用验证实例 vaptchaObj 的 render 方法加载验证按钮
+        })
+      },
       login(formName) {
         let that = this
-
         this.$refs[formName].validate((valid) => {
           if (valid) {
             that.$store.dispatch('login', that.userForm).then(() => {
-              that.$router.go(-1)
+              that.$router.push({path: "/"})
             }).catch((error) => {
+              that.captcha.reset()
               console.log(error)
               if (error !== 'error') {
                 that.$message({message: error, type: 'error', showClose: true});
@@ -97,7 +136,7 @@
   .me-login-box {
     position: absolute;
     width: 300px;
-    height: 260px;
+    height: 300px;
     background-color: white;
     margin-top: 150px;
     margin-left: -180px;
@@ -106,7 +145,6 @@
   }
 
   .me-login-box-radius {
-    border-radius: 10px;
     box-shadow: 0px 0px 1px 1px rgba(161, 159, 159, 0.1);
   }
 
@@ -133,6 +171,38 @@
 
   .me-login-button button {
     width: 100%;
+  }
+
+
+  .vaptcha-init-main {
+    display: table;
+    width: 100%;
+    height: 100%;
+    background-color: #EEEEEE;
+  }
+  ​
+  .vaptcha-init-loading {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center
+  }
+  ​
+  .vaptcha-init-loading>a {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: none;
+  }
+  ​
+  .vaptcha-init-loading>a img {
+    vertical-align: middle
+  }
+  ​
+  .vaptcha-init-loading .vaptcha-text {
+    font-family: sans-serif;
+    font-size: 12px;
+    color: #CCCCCC;
+    vertical-align: middle
   }
 
 </style>

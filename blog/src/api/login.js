@@ -13,13 +13,14 @@ export function register(account, nickname, password) {
   })
 }
 
-export function login(account, password) {
+export function login(account, password, token) {
   return request({
     url: '/user/login',
     method: 'post',
     data: {
       account,
-      password
+      password,
+      token
     }
   })
 }

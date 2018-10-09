@@ -10,7 +10,7 @@ type IriscmsCategory struct {
 	Url         string
 	Listorder   int64
 	Ismenu      int64
-	Tpl         string
+	TplPrefix   string
 	HomeTpl     string
 	ContentTpl  string
 }

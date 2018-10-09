@@ -34,7 +34,7 @@ export default new Vuex.Store({
     // 登录
     login({commit}, user) {
       return new Promise((resolve, reject) => {
-        login(user.account, user.password).then(data => {
+        login(user.account, user.password, user.token).then(data => {
           commit('SET_TOKEN', data.data['sign_token'])
           setToken(data.data['sign_token'])
           resolve()
