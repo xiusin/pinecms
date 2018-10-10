@@ -46,44 +46,15 @@
 
       <el-main style="width: 800px; float: right;background-color: #fff; margin-left: 20px; padding: 30px;">
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-          <el-form-item label="登录名" prop="account" size="mini" style="width: 450px;">
+          <el-form-item label="原密码" prop="account" size="mini" style="width: 450px;">
             <el-input v-model="ruleForm.name" disabled></el-input>
           </el-form-item>
 
-          <el-form-item label="邮箱" prop="email" size="mini" style="width: 450px;">
+          <el-form-item label="新密码" prop="email" size="mini" style="width: 450px;">
             <el-input v-model="ruleForm.name"></el-input>
           </el-form-item>
 
-          <el-form-item label="手机" prop="telphone" size="mini" style="width: 450px;">
-            <el-input v-model="ruleForm.name"></el-input>
-          </el-form-item>
-
-          <el-form-item label="头像" prop="account">
-            <el-upload
-              action="https://jsonplaceholder.typicode.com/posts/"
-              list-type="picture-card"
-              :on-preview="handlePictureCardPreview"
-              :on-remove="handleRemove">
-              <i class="el-icon-plus"></i>
-            </el-upload>
-            <el-dialog :visible.sync="dialogVisible">
-              <img width="100%" :src="dialogImageUrl" alt="">
-            </el-dialog>
-          </el-form-item>
-
-          <el-form-item label="注册时间" prop="reg_time" size="mini" style="width: 450px;">
-            <el-input v-model="ruleForm.name"></el-input>
-          </el-form-item>
-
-          <el-form-item label="网址" prop="url" size="mini" style="width: 450px;">
-            <el-input v-model="ruleForm.name" placeholder="github或个人网站"></el-input>
-          </el-form-item>
-
-          <el-form-item label="QQ" prop="qq" size="mini" style="width: 450px;">
-            <el-input v-model="ruleForm.name"></el-input>
-          </el-form-item>
-
-          <el-form-item label="微信" prop="wechat" size="mini" style="width: 450px;">
+          <el-form-item label="确认新密码" prop="telphone" size="mini" style="width: 450px;">
             <el-input v-model="ruleForm.name"></el-input>
           </el-form-item>
 

@@ -38,6 +38,10 @@ const router = new Router({
           component: r => require.ensure([], () => r(require('@/views/usercenter/Index')), 'usercenter')
         },
         {
+          path: '/user/modipwd',
+          component: r => require.ensure([], () => r(require('@/views/usercenter/Password')), 'usercenter')
+        },
+        {
           path: '/',
           component: r => require.ensure([], () => r(require('@/views/Index')), 'index')
         },

@@ -8,6 +8,8 @@ import ElementUI from 'element-ui'
 
 import '@/assets/theme/index.css'
 import '@/assets/icon/iconfont.css'
+import '@/assets/font/iconfont.css'
+import '@/assets/font_867829_lloz596jcc/iconfont.css'
 
 import {formatTime} from "./utils/time";
 
