@@ -35,6 +35,11 @@
         btn.push('<a href="javascript:;" onclick="contentNewsListDelete(' + id + ')">删除</a>');
         return btn.join(' | ');
     }
+
+    function getPwdTypeFormatter(type) {
+        return type == 2 ? "直接获取" : '公众号获取';
+    }
+
     //搜索
     function contentNewsListDatagridSearch(that) {
         var content_datagrid = $('#' + content_newslist_datagrid_id);

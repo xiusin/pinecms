@@ -1,14 +1,15 @@
 package backend
 
 import (
-	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
 	"html/template"
 	"iriscms/application/models"
+	"iriscms/application/models/tables"
 	"iriscms/common/helper"
+	"strconv"
 )
 
 type ContentController struct {
@@ -52,19 +53,23 @@ func (this *ContentController) NewsList() {
 	catid, _ := this.Ctx.URLParamInt64("catid")
 	page, _ := this.Ctx.URLParamInt64("page")
 	rows, _ := this.Ctx.URLParamInt64("rows")
-	fmt.Println(rows)
 	if page > 0 {
-		this.Ctx.JSON(map[string]interface{}{"rows": []string{}, "total": 0})
+		var contents []tables.IriscmsContent
+		total, _ := this.Orm.Where("catid = ?", catid).Limit(int(rows), int((page-1)*rows)).Desc("id").FindAndCount(&contents)
+		this.Ctx.JSON(map[string]interface{}{"rows": contents, "total": total})
 		return
 	}
-	table := helper.Treegrid("category_categorylist_treegrid", "/b/content/news-list?grid=datagrid", helper.EasyuiOptions{
+	table := helper.Datagrid("category_categorylist_treegrid", "/b/content/news-list?grid=datagrid&catid="+strconv.Itoa(int(catid)), helper.EasyuiOptions{
 		"toolbar":      "content_newslist_datagrid_toolbar",
-		"singleSelect": "false",
+		"singleSelect": "true",
 	}, helper.EasyuiGridfields{
-		"排序":   {"field": "listorder", "width": "15", "align": "center", "formatter": "contentNewsListOrderFormatter", "index": "0"},
-		"新闻名称": {"field": "title", "width": "130", "index": "1"},
-		"管理操作": {"field": "catid", "width": "50", "sortable": "true", "align": "center", "index": "2"},
+		"排序":   {"field": "listorder", "width": "15", "formatter": "contentNewsListOrderFormatter", "index": "0"},
+		"资源标题": {"field": "title", "width": "130", "index": "1"},
+		"下载扣分": {"field": "money", "width": "30", "index": "2"},
+		"获密方式": {"field": "pwd_type", "width": "30", "formatter": "getPwdTypeFormatter", "index": "3"},
+		"管理操作": {"field": "catid", "width": "50", "formatter": "contentNewsListOperateFormatter", "index": "4"},
 	})
+
 	this.Ctx.ViewData("DataGrid", template.HTML(table))
 	this.Ctx.ViewData("catid", catid)
 	this.Ctx.View("backend/content_newslist.html")
@@ -101,6 +106,7 @@ func (this *ContentController) Page() {
 		}
 		return
 	}
+
 	this.Ctx.ViewData("catid", catid)
 	this.Ctx.ViewData("info", page)
 	this.Ctx.View("backend/content_page.html")
@@ -109,6 +115,28 @@ func (this *ContentController) Page() {
 
 //添加内容
 func (this *ContentController) AddContent() {
+	if this.Ctx.Method() == "POST" {
+		var content tables.IriscmsContent
+		if err := this.Ctx.ReadForm(&content); err != nil {
+			helper.Ajax("添加失败"+err.Error(), 1, this.Ctx)
+			return
+		}
+		content.Id = 0
+		content.Status = 1
+		content.UpdatedAt = int64(helper.GetTimeStamp())
+		content.CreatedAt = content.UpdatedAt
+		id, err := this.Orm.InsertOne(&content)
+		if err != nil {
+			helper.Ajax("添加失败:getid:"+strconv.Itoa(int(id))+":"+err.Error(), 1, this.Ctx)
+			return
+		}
+		if id == 0 {
+			helper.Ajax("添加失败", 1, this.Ctx)
+			return
+		}
+		helper.Ajax("添加成功", 0, this.Ctx)
+		return
+	}
 	//根据catid读取出相应的添加模板
 	catid, _ := this.Ctx.URLParamInt64("catid")
 	if catid == 0 {

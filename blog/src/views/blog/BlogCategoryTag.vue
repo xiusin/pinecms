@@ -29,7 +29,6 @@
   import ArticleScrollPage from '@/views/common/ArticleScrollPage'
   import {getArticlesByCategory, getArticlesByTag} from '@/api/article'
   import {getTagDetail} from '@/api/tag'
-  import {getCategoryDetail} from '@/api/category'
   import defaultAvatar from '@/assets/img/logo.png'
 
   export default {
@@ -77,13 +76,13 @@
       },
       getCategoryDetail(id) {
         let that = this
-        getCategoryDetail(id).then(data => {
-          that.ct = data.data
-        }).catch(error => {
-          if (error !== 'error') {
-            that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
-          }
-        })
+        // getCategoryDetail(id).then(data => {
+        //   that.ct = data.data
+        // }).catch(error => {
+        //   if (error !== 'error') {
+        //     that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
+        //   }
+        // })
       },
       getTagDetail(id) {
         let that = this

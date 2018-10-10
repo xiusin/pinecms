@@ -11,7 +11,6 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql" // 初始化 Mysql 驱动
-	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
 	"github.com/gorilla/securecookie"
 	"github.com/kataras/iris"
@@ -52,7 +51,7 @@ func initDatabase() {
 		panic(err.Error())
 	}
 	XOrmEngine = _orm
-	XOrmEngine.Logger().SetLevel(core.LOG_ERR)
+	//XOrmEngine.Logger().SetLevel(core.Lo)
 	XOrmEngine.ShowSQL(dbconfig.Orm.ShowSql)
 	XOrmEngine.ShowExecTime(dbconfig.Orm.ShowExecTime)
 	XOrmEngine.SetMaxOpenConns(int(dbconfig.Orm.MaxOpenConns))

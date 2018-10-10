@@ -34,6 +34,10 @@ const router = new Router({
       component: Home,
       children: [
         {
+          path: '/user/center',
+          component: r => require.ensure([], () => r(require('@/views/usercenter/Index')), 'usercenter')
+        },
+        {
           path: '/',
           component: r => require.ensure([], () => r(require('@/views/Index')), 'index')
         },

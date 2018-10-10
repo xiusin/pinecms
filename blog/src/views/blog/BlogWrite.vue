@@ -67,7 +67,6 @@
   import BaseHeader from '@/views/BaseHeader'
   import MarkdownEditor from '@/components/markdown/MarkdownEditor'
   import {publishArticle, getArticleById} from '@/api/article'
-  import {getAllCategorys} from '@/api/category'
   import {getAllTags} from '@/api/tag'
 
   export default {
@@ -238,14 +237,6 @@
       },
       getCategorysAndTags() {
         let that = this
-        getAllCategorys().then(data => {
-          that.categorys = data.data
-        }).catch(error => {
-          if (error !== 'error') {
-            that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
-          }
-        })
-
         getAllTags().then(data => {
           that.tags = data.data
         }).catch(error => {

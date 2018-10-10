@@ -44,7 +44,6 @@
 
 <script>
   import defaultAvatar from '@/assets/img/logo.png'
-  import {getAllCategorysDetail} from '@/api/category'
   import {getAllTagsDetail} from '@/api/tag'
 
   export default {
@@ -84,13 +83,13 @@
       },
       getCategorys() {
         let that = this
-        getAllCategorysDetail().then(data => {
-          that.categorys = data.data
-        }).catch(error => {
-          if (error !== 'error') {
-            that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
-          }
-        })
+        // getAllCategorysDetail().then(data => {
+        //   that.categorys = data.data
+        // }).catch(error => {
+        //   if (error !== 'error') {
+        //     that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
+        //   }
+        // })
       },
       getTags() {
         let that = this

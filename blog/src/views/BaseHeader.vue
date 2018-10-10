@@ -1,6 +1,6 @@
 <template>
   <el-header class="me-area">
-    <el-row class="me-header">
+    <el-row class="me-header" :gutter="20" style="width: 980px;margin: 0 auto;">
 
       <el-col :span="2" :offset="2" class="me-header-left">
         <router-link to="/" class="me-title">
@@ -8,7 +8,7 @@
         </router-link>
       </el-col>
 
-      <el-col v-if="!simple" :span="12" :offset="0">
+      <el-col v-if="!simple" :span="14" :offset="0">
         <el-menu :router=true menu-trigger="click" active-text-color="#5FB878" :default-active="activeIndex"
                  mode="horizontal">
           <el-menu-item index="/">首页</el-menu-item>
@@ -17,10 +17,6 @@
           <el-menu-item index="/paid/video">付费视频</el-menu-item>
           <el-menu-item index="/paid/book">付费图书</el-menu-item>
 
-          <el-col :span="2" :offset="1" v-if="user.login">
-            <el-menu-item index="/write"><i class="el-icon-edit"></i>写文章</el-menu-item>
-          </el-col>
-
         </el-menu>
       </el-col>
 
@@ -28,9 +24,8 @@
         <slot></slot>
       </template>
 
-      <el-col :span="4" :offset="0">
-        <el-menu :router=true menu-trigger="click" mode="horizontal" active-text-color="#5FB878">
-
+      <el-col :span="4" :offset="1" style="float: right">
+        <el-menu :router=true menu-trigger="click" :mode="showSubMenu" active-text-color="#5FB878" style="border: none">
           <template v-if="!user.login">
             <el-menu-item index="/login">
               <el-button type="text">登录</el-button>
@@ -41,10 +36,12 @@
           </template>
 
           <template v-else>
-            <el-submenu index>
+            <el-submenu index style="float: right">
               <template slot="title">
                 <img class="me-header-picture" :src="user.avatar"/>
               </template>
+              <el-menu-item index="/write"><i class="el-icon-edit"></i>写文章</el-menu-item>
+              <el-menu-item index="/user/center"><i class="el-icon-goods"></i>个人中心</el-menu-item>
               <el-menu-item index @click="logout"><i class="el-icon-back"></i>退出</el-menu-item>
             </el-submenu>
           </template>
@@ -78,6 +75,9 @@
       }
     },
     methods: {
+      showSubMenu() {
+        return !user.login ? 'horizontal' : 'vertical'
+      },
       logout() {
         let that = this
         this.$store.dispatch('logout').then(() => {
