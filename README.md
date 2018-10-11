@@ -45,7 +45,7 @@ iriscms 一个基于`IrisGo`和`EasyUI`简单的cms框架吗,基础的后台管�
 - [ ] 开发会员模块(mongo接入.付费积分)
 - [ ] 添加bench 测试
 - [ ] 打印 pprof 结果根据svg图形优化相关的代码
-- [ ] groupcache 加入
+- [ ] redis加入
 - [ ] 图片裁切
 
 
