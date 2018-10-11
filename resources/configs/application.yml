@@ -23,3 +23,7 @@ backend_route_party: "/b/"
 upload:
   engine: "file"
   base_path: "assets"
+
+redis:
+  # 需要redis服务器
+
