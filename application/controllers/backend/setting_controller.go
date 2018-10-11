@@ -10,9 +10,10 @@ import (
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
 	"github.com/kataras/iris"
+	"sync"
 )
 
-type ConfigItem map[string]string
+type ConfigItem map[string]interface{}
 
 type ConfigStruct map[string]ConfigItem
 
@@ -22,14 +23,14 @@ type SettingController struct {
 	Session *sessions.Session
 }
 
-
+var settingWg sync.WaitGroup
 
 func (c *SettingController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("ANY","/setting/site","Site")
 	b.Handle("ANY","/setting/site-default", "SiteDefault")
 }
 
-var SiteConfig ConfigStruct = ConfigStruct{
+var SiteConfig = ConfigStruct{
 	"SITE_TITLE": {
 		"name":    "站点标题",
 		"group":   "前台设置",
@@ -54,6 +55,18 @@ var SiteConfig ConfigStruct = ConfigStruct{
 		"editor":  "text",
 		"default": "",
 	},
+	"SITE_OPEN": {
+		"name":    "站点开启",
+		"group":   "前台设置",
+		"editor":  ConfigItem{
+			"type":"checkbox",
+			"options": map[string]interface{}{
+				"on":"开启",
+				"off": "关闭",
+			},
+		},
+		"default": "开启",
+	},
 
 	"DATAGRID_PAGE_SIZE": {
 		"name":    "列表默认分页数",
@@ -61,6 +74,7 @@ var SiteConfig ConfigStruct = ConfigStruct{
 		"editor":  "numberbox",
 		"default": "25",
 	},
+
 	"EMAIL_SMTP": {
 		"name":    "SMTP",
 		"group":   "邮箱设置",
@@ -91,17 +105,80 @@ var SiteConfig ConfigStruct = ConfigStruct{
 		"editor":  "text",
 		"default": "",
 	},
+
+	"WX_APPID": {
+		"name":    "APPID",
+		"group":   "微信配置",
+		"editor":  "text",
+		"default": "",
+	},
+	"WX_APPSECRET":{
+		"name":    "APPSECTET",
+		"group":   "微信配置",
+		"editor":  "text",
+		"default": "",
+	},
+
+	"WX_TOKEN": {
+		"name":    "TOKEN",
+		"group":   "微信配置",
+		"editor":  "text",
+		"default": "",
+	},
+	"WX_AESKEY": {
+		"name":    "AESKEY",
+		"group":   "微信配置",
+		"editor":  "text",
+		"default": "",
+	},
+
+
+	"OSS_ENDPOINT": {
+		"name":    "ENDPOINT",
+		"group":   "OSS存储配置",
+		"editor":  "text",
+		"default": "",
+	},
+
+	"OSS_KEYID": {
+		"name":    "KEYID",
+		"group":   "OSS存储配置",
+		"editor":  "text",
+		"default": "",
+	},
+
+	"OSS_KEYSECRET": {
+		"name":    "SECRET",
+		"group":   "OSS存储配置",
+		"editor":  "text",
+		"default": "",
+	},
+
+	"OSS_BUCKETNAME": {
+		"name":    "BUCKETNAME",
+		"group":   "OSS存储配置",
+		"editor":  "text",
+		"default": "",
+	},
+
+	"OSS_HOST": {
+		"name":    "HOST",
+		"group":   "OSS存储配置",
+		"editor":  "text",
+		"default": "",
+	},
+
 }
 
 //系统配置 -> 站点配置
 func (this *SettingController) Site() {
 	if this.Ctx.Method() == "POST" {
-		setting := []tables.IriscmsSetting{}
+		var setting []tables.IriscmsSetting
 		act := this.Ctx.URLParam("dosubmit")
-		setval := []ConfigItem{}
+		var setval []ConfigItem
 		if act == "" {
 			this.Orm.Find(&setting)
-			var keys []string = []string{}
+			var keys []string
 			if len(setting) != 0 {
 				for _, v := range setting {
 					if _, ok := SiteConfig[v.Key]; !ok {
@@ -149,33 +226,26 @@ func (this *SettingController) Site() {
 		}
 		post := this.Ctx.FormValues()
 
-		flag := false
 		for k, v := range post {
 			if k == "dosubmit" || len(v) == 0 {
 				continue
 			}
 			//更新数据
-			setting := tables.IriscmsSetting{Key: k}
-			bol, _ := this.Orm.Get(&setting)	//逐个查找,判断添加还是修改配置
-			if bol {
-				res, _ := this.Orm.Table(new(tables.IriscmsSetting)).Where("`key`=?", k).Update(&tables.IriscmsSetting{Value: v[0]})
-				if res > 0 && flag == false {
-					flag = true
+			go func(k,v string) {
+				settingWg.Add(1)
+				setting := tables.IriscmsSetting{Key: k}
+				bol, _ := this.Orm.Get(&setting)	//逐个查找,判断添加还是修改配置
+				if bol {
+					this.Orm.Table(new(tables.IriscmsSetting)).Where("`key`=?", k).Update(&tables.IriscmsSetting{Value: v})
+				} else {
+					setting.Value = v
+					this.Orm.Insert(setting)
 				}
-			} else {
-				setting.Value = v[0]
-				res, _ := this.Orm.Insert(setting)
-				if res > 0 && flag == false {
-					flag = true
-				}
-			}
-
+				defer settingWg.Done()
+			}(k,v[0])
 		}
-		if flag {
-			helper.Ajax("更新配置信息成功", 0, this.Ctx)
-		} else {
-			helper.Ajax("没有更新任何配置", 1, this.Ctx)
-		}
+		settingWg.Wait()
+		helper.Ajax("更新配置信息成功", 0, this.Ctx)
 		return
 	}
 	menuid, err := this.Ctx.URLParamInt64("menuid")
@@ -191,6 +261,7 @@ func (this *SettingController) Site() {
 	this.Ctx.ViewData("grid",template.HTML(grid))
 	this.Ctx.View("backend/setting_site.html")
 }
+
 
 //站点配置恢复默认
 func (this *SettingController) SiteDefault() {

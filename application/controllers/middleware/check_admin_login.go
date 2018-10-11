@@ -36,6 +36,7 @@ func CheckAdminLoginAndAccess(sess *sessions.Sessions, xorm *xorm.Engine) func(t
 			if err != nil || roleId == -1 {
 				sess.Clear()
 				this.Redirect("/b/login/index", 302)
+				this.StopExecution()
 				return
 			}
 
@@ -46,6 +47,7 @@ func CheckAdminLoginAndAccess(sess *sessions.Sessions, xorm *xorm.Engine) func(t
 			} else {
 				if roleId > 1 && CheckPriv(this, sess, xorm) == false {
 					helper.Ajax("您没有操作权限", 1, this)
+					this.StopExecution()
 					return
 				}
 				go ManageLog(this, xorm)

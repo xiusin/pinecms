@@ -171,7 +171,7 @@ func BaseMvc(config *Application) func(app *mvc.Application) {
 		if err != nil {
 			panic(err)
 		}
-		iris.RegisterOnInterrupt(func() {
+		iris.RegisterOnInterrupt(func() {	//关机时候关闭数据
 			db.Close()
 		})
 		sess.UseDatabase(db)

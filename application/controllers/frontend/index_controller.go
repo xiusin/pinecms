@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
+	"iriscms/common/helper"
 )
 
 type IndexController struct {
@@ -13,14 +14,19 @@ type IndexController struct {
 	Session *sessions.Session
 }
 
-
 func (c *IndexController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("ANY", "/", "Index")
 	b.Handle("ANY", "/resume", "Resume")
 }
 
 func (c *IndexController) Index() {
-	c.Ctx.Redirect("/resume")
+	var d = map[string]interface{}{}
+	err := helper.Pay(c.Ctx, d)
+	if err != nil {
+		c.Ctx.JSON(err.Error())
+	} else {
+		c.Ctx.JSON(d)
+	}
 }
 
 func (c *IndexController) Resume() {
