@@ -362,9 +362,9 @@ func Struct2Map(obj interface{}) map[string]interface{} {
 	return data
 }
 
-func Pay(this context.Context, reData interface{}) error {
-	appId := "20146124773"
-	appSecret := "0C4F09C947B8153CEF56F068C3ACA8B7"
+func Pay(this context.Context) (*req.Resp, error) {
+	appId := "20146123713"
+	appSecret := "6D7B025B8DD098C485F0805193136FB9"
 	tradeOrderId := strconv.Itoa(GetTimeStamp())
 
 	data := map[string]interface{}{
@@ -374,7 +374,7 @@ func Pay(this context.Context, reData interface{}) error {
 		"appid":          appId,                                                      //必须的，APPID
 		"trade_order_id": tradeOrderId,                                               //必须的，网站订单ID，唯一的，匹配[a-zA-Z\d\-_]+
 		"payment":        "wechat",                                                   //必须的，支付接口标识：wechat(微信接口)|alipay(支付宝接口)
-		"total_fee":      "0.1",                                                      //人民币，单位精确到分(测试账户只支持0.1元内付款)
+		"total_fee":      "0.01",                                                      //人民币，单位精确到分(测试账户只支持0.1元内付款)
 		"title":          "耐克球鞋",                                                     //必须的，订单标题，长度32或以内
 		"time":           tradeOrderId,                                               //必须的，当前时间戳，根据此字段判断订单请求是否已超时，防止第三方攻击服务器
 		"notify_url":     "http://" + this.Request().URL.Host + "/api/v1/pay/notify", //必须的，支付成功异步回调接口
@@ -392,19 +392,16 @@ func Pay(this context.Context, reData interface{}) error {
 		filerData[k] = v.(string)
 		keys = append(keys, k)
 	}
-	var index int
-	var qty = len(filerData)
 	var arg = bytes.NewBufferString("")
 	sort.Strings(keys)
 	for _, key := range keys {
 		arg.WriteString(key)
 		arg.WriteString("=")
 		arg.WriteString(filerData[key])
-		if index < qty-1 {
-			arg.WriteString("&")
-		}
+		arg.WriteString("&")
 	}
-	data["hash"] = GetMd5(arg.String() + appSecret)
+	fmt.Println(GetMd5(strings.TrimRight(arg.String(), "&") + appSecret))
+	data["hash"] = GetMd5(strings.TrimRight(arg.String(), "&") + appSecret)
 	payUrl := "https://pay.xunhupay.com/v2/payment/do.html"
 	req.Debug = true
 	req.SetTimeout(60 * time.Second)
@@ -412,13 +409,13 @@ func Pay(this context.Context, reData interface{}) error {
 	fmt.Println(string(byt))
 	r, err := req.Post(payUrl,string(byt),req.Header{"Referer": this.Request().URL.String()})
 	if err != nil {
-		return err
+		return nil ,err
 	}
 	if r.Response().StatusCode != 200 {
-		return errors.New("invalid httpstatus:"+strconv.Itoa(r.Response().StatusCode)+",response:" + r.String())
+		return nil ,errors.New("invalid httpstatus:"+strconv.Itoa(r.Response().StatusCode)+",response:" + r.String())
 	}
-	return r.ToJSON(reData)
-}
+	return r,nil
+	}
 
 func SendEmail()  {
 	

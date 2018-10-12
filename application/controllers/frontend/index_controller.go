@@ -21,11 +21,16 @@ func (c *IndexController) BeforeActivation(b mvc.BeforeActivation) {
 
 func (c *IndexController) Index() {
 	var d = map[string]interface{}{}
-	err := helper.Pay(c.Ctx, d)
+	r, err := helper.Pay(c.Ctx)
 	if err != nil {
 		c.Ctx.JSON(err.Error())
 	} else {
-		c.Ctx.JSON(d)
+		err = r.ToJSON(&d)
+		if err != nil {
+			c.Ctx.JSON(err.Error())
+		} else {
+			c.Ctx.JSON(d)
+		}
 	}
 }
 
