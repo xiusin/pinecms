@@ -99,10 +99,10 @@ export default new Vuex.Store({
     // 注册
     register({commit}, user) {
       return new Promise((resolve, reject) => {
-        register(user.account, user.nickname, user.password).then((data) => {
-          commit('SET_TOKEN', data.data['sign_token'])
-          setToken(data.data['sign_token'])
-          resolve()
+        register(user.account, user.email, user.password,user.token).then((data) => {
+          // commit('SET_TOKEN', data.data['sign_token'])
+          // setToken(data.data['sign_token'])
+          resolve(data)
         }).catch((error) => {
           reject(error)
         })

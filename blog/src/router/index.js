@@ -29,6 +29,10 @@ const router = new Router({
       },
     },
     {
+      path: '/verify/:token',
+      component: r => require.ensure([], () => r(require('@/views/Verify')), 'verify')
+    },
+    {
       path: '',
       name: 'Home',
       component: Home,

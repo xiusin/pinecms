@@ -21,8 +21,6 @@ import (
 	"strings"
 	"time"
 
-	"reflect"
-
 	"github.com/kataras/iris/context"
 	"github.com/nfnt/resize"
 	"golang.org/x/image/draw"
@@ -351,17 +349,6 @@ func IsAjax(this context.Context) bool {
 	return this.GetHeader("X-Requested-With") == "XMLHttpRequest"
 }
 
-//Struct2Map 结构体转map
-func Struct2Map(obj interface{}) map[string]interface{} {
-	t := reflect.TypeOf(obj) //得到变量的类型
-	v := reflect.ValueOf(obj)
-
-	var data = make(map[string]interface{})
-	for i := 0; i < t.NumField(); /*取得字段长度*/ i++ {
-		data[t.Field(i).Name] = v.Field(i).Interface()
-	}
-	return data
-}
 
 func Pay(this context.Context) (*req.Resp, error) {
 	appId := "20146123713"
@@ -431,6 +418,7 @@ func SendEmail(title, url string, to []string, conf map[string]string) error {
 		Username: conf["EMAIL_USER"],
 		Password: conf["EMAIL_PWD"],
 		Port:     port,
+		FromAlias: "xiusin",
 	})
 	content := `
 <style>
@@ -444,7 +432,7 @@ func SendEmail(title, url string, to []string, conf map[string]string) error {
     .logo-right{float:right;display:inline-block;padding-right:15px;}
 </style>
 <div class="main">
-    <div class="mail-title">亲爱的用户</div>
+    <div class="mail-title"> Dear: </div>
     <div class="main-box">
         <p>` + title + `<br/>
             <a href="` + url + `" class="a-link" target="_blank">` + url + `</a>
@@ -452,7 +440,7 @@ func SendEmail(title, url string, to []string, conf map[string]string) error {
         <p class="csdn csdn-color">by XiuSin</p>
     </div>
 </div>`
-	return mailService.Send(title, content, to...)
+	return mailService.SendWithBytes(title, []byte(content), to...)
 }
 
 func SendSms() {

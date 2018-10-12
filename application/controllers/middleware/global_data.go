@@ -28,7 +28,7 @@ func SetGlobalConfigData(xorm *xorm.Engine, redisClient *redis.Pool) func(ctx co
 			var settings []tables.IriscmsSetting
 			err := xorm.Find(&settings)
 			if err != nil {
-				ctx.Application().Logger().Error("无法读取到配置内容")
+				ctx.Application().Logger().Error("无法读取到配置内容:" + err.Error())
 				ctx.StopExecution()
 				return
 			}

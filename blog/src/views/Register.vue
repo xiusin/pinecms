@@ -12,8 +12,22 @@
           <el-input placeholder="用户名" v-model="userForm.account"></el-input>
         </el-form-item>
 
-        <el-form-item prop="nickname">
-          <el-input placeholder="昵称" v-model="userForm.nickname"></el-input>
+        <el-form-item prop="email">
+          <el-input placeholder=" 邮箱" v-model="userForm.email"></el-input>
+        </el-form-item>
+
+
+        <el-form-item>
+          <div class="vaptcha-container" id="vaptcha-reg-container" data-config='{"vid": "5bbc46c6fc650e3be06e5869","type": "click"}' style="width:300px;height:36px;">
+            <div class="vaptcha-init-main">
+              <div class="vaptcha-init-loading">
+                <a href="https://vaptcha.com" target="_blank">
+                  <img src="https://cdn.vaptcha.com/vaptcha-loading.gif" />
+                </a>
+                <span class="vaptcha-text"> VAPTCHA启动中...</span>
+              </div>
+            </div>
+          </div>
         </el-form-item>
 
         <el-form-item prop="password">
@@ -44,36 +58,56 @@
     name: 'Register',
     data() {
       return {
+        captcha: null,
         userForm: {
           account: '',
-          nickname: '',
-          password: ''
+          email: '',
+          password: '',
+          token: ''
         },
         rules: {
           account: [
             {required: true, message: '请输入用户名', trigger: 'blur'},
-            {max: 10, message: '不能大于10个字符', trigger: 'blur'}
+            {max: 16, message: '不能大于16个字符', trigger: 'blur'}
           ],
-          nickname: [
-            {required: true, message: '请输入昵称', trigger: 'blur'},
-            {max: 10, message: '不能大于10个字符', trigger: 'blur'}
+          email: [
+            {required: true, message: '请输入邮箱', trigger: 'blur'},
+            {max: 20, message: '不能大于20个字符', trigger: 'blur'}
           ],
           password: [
             {required: true, message: '请输入密码', trigger: 'blur'},
-            {max: 10, message: '不能大于10个字符', trigger: 'blur'}
+            {max: 16, message: '不能大于16个字符', trigger: 'blur'}
           ]
         }
       }
     },
+    mounted:function () {
+      this.createVcaptcha()
+    },
     methods: {
+      createVcaptcha() {
+        let that = this
+        window.vaptcha({
+          //配置参数
+          vid: '5bbc46c6fc650e3be06e5869', // 验证单元id
+          type: 'click', // 展现类型 点击式
+          container: window.document.getElementById("vaptcha-reg-container") // 按钮容器，可为Element 或者 selector
+        }).then((vaptchaObj) => {
+          that.captcha = vaptchaObj
+          vaptchaObj.listen('pass', function() {
+            that.userForm.token = vaptchaObj.getToken()
+          })
+          vaptchaObj.render()// 调用验证实例 vaptchaObj 的 render 方法加载验证按钮
+        })
+      },
       register(formName) {
         let that = this
         this.$refs[formName].validate((valid) => {
           if (valid) {
-
-            that.$store.dispatch('register', that.userForm).then(() => {
-              that.$message({message: '注册成功 快写文章吧', type: 'success', showClose: true});
-              that.$router.push({path: '/'})
+            that.$store.dispatch('register', that.userForm).then((data) => {
+              that.$message({message: '注册成功,请尽快通过邮箱验证账号', type: 'success', showClose: true,onClose: function () {
+                  that.$router.push({path: '/'})
+                }});
             }).catch((error) => {
               if (error !== 'error') {
                 that.$message({message: error, type: 'error', showClose: true});

@@ -54,8 +54,8 @@ func (c *UserApiController) UserLogin() {
 
 		claims := jwt.MapClaims{ //为了匹配中间件, 在这里使用相同的配置
 			"user": user,
-			"exp":  time.Now().Add(time.Hour * time.Duration(1)).Unix(), //过期时间
-			"iat":  time.Now().Unix(),                                   // 当前时间戳
+			"exp": time.Now().Add(time.Hour * time.Duration(1)).Unix(), //过期时间
+			"iat": time.Now().Unix(),                                   // 当前时间戳
 		}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 		tokenString, err := token.SignedString([]byte("MySecret"))
@@ -85,24 +85,39 @@ func (c *UserApiController) UserLogout() {
 
 func (c *UserApiController) UserRegister() {
 	var user tables.IriscmsMember
-	account := c.Ctx.FormValue("account")
-	email := c.Ctx.FormValue("email")
-	lenth, _ := c.Orm.Where("account=? or email=?", account, email).Count()
-	if lenth > 0 {
+	dd := map[string]string{}
+	err := c.Ctx.UnmarshalBody(&dd, iris.UnmarshalerFunc(json.Unmarshal)) //todo 解析body字符串
+	if err != nil {
+		c.Ctx.JSON(ReturnApiData{false, "参数失败", nil})
+		return
+	}
+	length, _ := c.Orm.Where("account=? or email=?", dd["account"], dd["email"]).Count()
+	if length > 0 {
 		c.Ctx.JSON(ReturnApiData{false, "account or email are already exists!", nil})
 		return
 	}
-	user.Account = account
-	user.Email = email
-	user.Password = c.Ctx.FormValue("password")
+	user.Account = dd["account"]
+	user.Email = dd["email"]
+	user.Password = dd["password"]
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
 	user.Enabled = 1
 	user.VerifyToken = uuid.New().String()
-	_, err := c.Orm.InsertOne(&user)
+	_, err = c.Orm.InsertOne(&user)
 	if err != nil {
 		c.Ctx.JSON(ReturnApiData{false, "注册失败, " + err.Error() + "!", nil})
 	} else {
+		go func() {
+			err := helper.SendEmail(
+				"验证邮箱专用链接",
+				"http://"+c.Ctx.Host()+"/#/verify/"+user.VerifyToken,
+				[]string{user.Email},
+				c.Ctx.Values().Get("setting").(map[string]string),
+			)
+			if err != nil {
+				c.Ctx.Application().Logger().Error("发送邮件失败", err.Error())
+			}
+		}()
 		c.Ctx.JSON(ReturnApiData{true, "注册成功!", nil})
 	}
 }
