@@ -479,4 +479,5 @@ func VerifyVCaptcha(token string) bool {
 		//c.Ctx.JSON(ReturnApiData{false, "validate captcha failed,status: " + strconv.Itoa(int(status)) + " msg:" + vcaptchaData["msg"].(string) + "!", nil})
 		return false
 	}
+	return true
 }
