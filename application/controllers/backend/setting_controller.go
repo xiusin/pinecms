@@ -2,14 +2,14 @@ package backend
 
 import (
 	"github.com/go-xorm/xorm"
-	"iriscms/common/helper"
-	"html/template"
-	"iriscms/application/models/tables"
-	"strings"
-	"iriscms/application/models"
+	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
-	"github.com/kataras/iris"
+	"html/template"
+	"iriscms/application/models"
+	"iriscms/application/models/tables"
+	"iriscms/common/helper"
+	"strings"
 	"sync"
 )
 
@@ -18,16 +18,16 @@ type ConfigItem map[string]interface{}
 type ConfigStruct map[string]ConfigItem
 
 type SettingController struct {
-	Ctx iris.Context
-	Orm *xorm.Engine
+	Ctx     iris.Context
+	Orm     *xorm.Engine
 	Session *sessions.Session
 }
 
 var settingWg sync.WaitGroup
 
 func (c *SettingController) BeforeActivation(b mvc.BeforeActivation) {
-	b.Handle("ANY","/setting/site","Site")
-	b.Handle("ANY","/setting/site-default", "SiteDefault")
+	b.Handle("ANY", "/setting/site", "Site")
+	b.Handle("ANY", "/setting/site-default", "SiteDefault")
 }
 
 var SiteConfig = ConfigStruct{
@@ -56,12 +56,12 @@ var SiteConfig = ConfigStruct{
 		"default": "",
 	},
 	"SITE_OPEN": {
-		"name":    "站点开启",
-		"group":   "前台设置",
-		"editor":  ConfigItem{
-			"type":"checkbox",
+		"name":  "站点开启",
+		"group": "前台设置",
+		"editor": ConfigItem{
+			"type": "checkbox",
 			"options": map[string]interface{}{
-				"on":"开启",
+				"on":  "开启",
 				"off": "关闭",
 			},
 		},
@@ -112,7 +112,7 @@ var SiteConfig = ConfigStruct{
 		"editor":  "text",
 		"default": "",
 	},
-	"WX_APPSECRET":{
+	"WX_APPSECRET": {
 		"name":    "APPSECTET",
 		"group":   "微信配置",
 		"editor":  "text",
@@ -168,6 +168,19 @@ var SiteConfig = ConfigStruct{
 		"default": "",
 	},
 
+	"HPJ_APPID": {
+		"name":    "应用ID",
+		"group":   "虎皮椒支付",
+		"editor":  "text",
+		"default": "",
+	},
+
+	"HPJ_APPSECRET": {
+		"name":    "密钥",
+		"group":   "虎皮椒支付",
+		"editor":  "text",
+		"default": "",
+	},
 }
 
 //系统配置 -> 站点配置
@@ -207,6 +220,7 @@ func (this *SettingController) Site() {
 				if keysStr != "" && strings.Contains(keysStr, k) {
 					continue
 				}
+				this.Orm.Insert(&tables.IriscmsSetting{Key: k, Value: v["default"].(string)})
 				setval = append(setval, ConfigItem{
 					"key":     k,
 					"name":    v["name"],
@@ -216,7 +230,6 @@ func (this *SettingController) Site() {
 					"value":   v["default"],
 				})
 			}
-
 			result := map[string]interface{}{
 				"rows":  setval,
 				"total": len(setval),
@@ -225,16 +238,15 @@ func (this *SettingController) Site() {
 			return
 		}
 		post := this.Ctx.FormValues()
-
 		for k, v := range post {
 			if k == "dosubmit" || len(v) == 0 {
 				continue
 			}
 			//更新数据
-			go func(k,v string) {
+			go func(k, v string) {
 				settingWg.Add(1)
 				setting := tables.IriscmsSetting{Key: k}
-				bol, _ := this.Orm.Get(&setting)	//逐个查找,判断添加还是修改配置
+				bol, _ := this.Orm.Get(&setting) //逐个查找,判断添加还是修改配置
 				if bol {
 					this.Orm.Table(new(tables.IriscmsSetting)).Where("`key`=?", k).Update(&tables.IriscmsSetting{Value: v})
 				} else {
@@ -242,7 +254,7 @@ func (this *SettingController) Site() {
 					this.Orm.Insert(setting)
 				}
 				defer settingWg.Done()
-			}(k,v[0])
+			}(k, v[0])
 		}
 		settingWg.Wait()
 		helper.Ajax("更新配置信息成功", 0, this.Ctx)
@@ -258,17 +270,16 @@ func (this *SettingController) Site() {
 		"url":     "/b/setting/site?grid=propertygrid",
 		"toolbar": "setting_site_propertygrid_toolbar",
 	})
-	this.Ctx.ViewData("grid",template.HTML(grid))
+	this.Ctx.ViewData("grid", template.HTML(grid))
 	this.Ctx.View("backend/setting_site.html")
 }
 
-
 //站点配置恢复默认
 func (this *SettingController) SiteDefault() {
-	ok, _ := this.Orm.Where("1").Delete(new(tables.IriscmsSetting))
-	if ok == 0 {
-		helper.Ajax("操作失败", 1, this.Ctx)
-	} else {
-		helper.Ajax("操作成功", 0, this.Ctx)
-	}
+	//ok, _ := this.Orm.Where("1").Delete(new(tables.IriscmsSetting))
+	//if ok == 0 {
+	helper.Ajax("操作失败,禁止恢复默认设置", 1, this.Ctx)
+	//} else {
+	//	helper.Ajax("操作成功", 0, this.Ctx)
+	//}
 }

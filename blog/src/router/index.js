@@ -35,11 +35,45 @@ const router = new Router({
       children: [
         {
           path: '/user/center',
-          component: r => require.ensure([], () => r(require('@/views/usercenter/Index')), 'usercenter')
+          component: r => require.ensure([], () => r(require('@/views/usercenter/Index')), 'usercenter'),
+          meta: {
+            requireLogin: true
+          },
         },
         {
           path: '/user/modipwd',
-          component: r => require.ensure([], () => r(require('@/views/usercenter/Password')), 'usercenter')
+          component: r => require.ensure([], () => r(require('@/views/usercenter/Password')), 'usercenter'),
+          meta: {
+            requireLogin: true
+          },
+        },
+        {
+          path: '/user/money',
+          component: r => require.ensure([], () => r(require('@/views/usercenter/Money')), 'usercenter'),
+          meta: {
+            requireLogin: true
+          },
+        },
+        {
+          path: '/user/task',
+          component: r => require.ensure([], () => r(require('@/views/usercenter/Task')), 'usercenter'),
+          meta: {
+            requireLogin: true
+          },
+        },
+        {
+          path: '/user/cart',
+          component: r => require.ensure([], () => r(require('@/views/usercenter/Cart')), 'usercenter'),
+          meta: {
+            requireLogin: true
+          },
+        },
+        {
+          path: '/user/ref',
+          component: r => require.ensure([], () => r(require('@/views/usercenter/Ref')), 'usercenter'),
+          meta: {
+            requireLogin: true
+          },
         },
         {
           path: '/',
@@ -113,7 +147,10 @@ router.beforeEach((to, from, next) => {
       Message({
         type: 'warning',
         showClose: true,
-        message: '请先登录哦'
+        message: '请先登录账户哟!',
+        onClose: () => {
+          next({path: '/login'})
+        }
       })
     } else {
       next();

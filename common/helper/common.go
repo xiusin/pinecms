@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/imroc/req"
+	"github.com/kataras/go-mailer"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -33,7 +34,7 @@ func GetRootPath() string {
 	return pwd
 }
 
-var location, _ = time.LoadLocation("Local")
+var location, _ = time.LoadLocation("PRC")
 
 //Krand 随机字符串
 func Krand(size int, kind int) []byte {
@@ -373,8 +374,8 @@ func Pay(this context.Context) (*req.Resp, error) {
 		"plugins":        "xiusin",                                                   //必须的，根据自己需要自定义插件ID，唯一的，匹配[a-zA-Z\d\-_]+
 		"appid":          appId,                                                      //必须的，APPID
 		"trade_order_id": tradeOrderId,                                               //必须的，网站订单ID，唯一的，匹配[a-zA-Z\d\-_]+
-		"payment":        "wechat",                                                   //必须的，支付接口标识：wechat(微信接口)|alipay(支付宝接口)
-		"total_fee":      "0.01",                                                      //人民币，单位精确到分(测试账户只支持0.1元内付款)
+		"payment":        "alipay",                                                   //必须的，支付接口标识：wechat(微信接口)|alipay(支付宝接口)
+		"total_fee":      "0.01",                                                     //人民币，单位精确到分(测试账户只支持0.1元内付款)
 		"title":          "耐克球鞋",                                                     //必须的，订单标题，长度32或以内
 		"time":           tradeOrderId,                                               //必须的，当前时间戳，根据此字段判断订单请求是否已超时，防止第三方攻击服务器
 		"notify_url":     "http://" + this.Request().URL.Host + "/api/v1/pay/notify", //必须的，支付成功异步回调接口
@@ -407,20 +408,75 @@ func Pay(this context.Context) (*req.Resp, error) {
 	req.SetTimeout(60 * time.Second)
 	byt, _ := json.Marshal(data)
 	fmt.Println(string(byt))
-	r, err := req.Post(payUrl,string(byt),req.Header{"Referer": this.Request().URL.String()})
+	r, err := req.Post(payUrl, string(byt), req.Header{"Referer": this.Request().URL.String()})
 	if err != nil {
-		return nil ,err
+		return nil, err
 	}
 	if r.Response().StatusCode != 200 {
-		return nil ,errors.New("invalid httpstatus:"+strconv.Itoa(r.Response().StatusCode)+",response:" + r.String())
+		return nil, errors.New("invalid httpstatus:" + strconv.Itoa(r.Response().StatusCode) + ",response:" + r.String())
 	}
-	return r,nil
+	return r, nil
+}
+/**
+1. 配置多个邮箱发送
+ */
+func SendEmail(title, url string, to []string, conf map[string]string) error {
+	//todo map如何用指针传递???
+	port, err := strconv.Atoi(conf["EMAIL_PORT"])
+	if err != nil {
+		port = 25
 	}
-
-func SendEmail()  {
-	
+	mailService := mailer.New(mailer.Config{
+		Host:     conf["EMAIL_SMTP"],
+		Username: conf["EMAIL_USER"],
+		Password: conf["EMAIL_PWD"],
+		Port:     port,
+	})
+	content := `
+<style>
+    .main{width:655px;margin:0px auto;border: 2px solid #0382db;background-color:#f8fcff;}
+    .main-box{ padding:15px;}
+    .mail-title{ font-size:15px; color:#ffffff; background-color:#0382db; font-weight:bold; padding:0px 0px 0px 15px;height:80px;line-height:80px;}
+    .fontstyle{ color:#be0303; font-weight:bold;}
+    .a-link{ color:#0078ff; font-weight:bold;}
+    .csdn{ text-align:right; color:#000000; font-weight: bold;}
+    .csdn-color{ color:#000000; font-weight: bold; padding-top:20px;}
+    .logo-right{float:right;display:inline-block;padding-right:15px;}
+</style>
+<div class="main">
+    <div class="mail-title">亲爱的用户</div>
+    <div class="main-box">
+        <p>` + title + `<br/>
+            <a href="` + url + `" class="a-link" target="_blank">` + url + `</a>
+            <br/>如果链接点击无效，请将链接复制到您的浏览器中继续访问。</p>
+        <p class="csdn csdn-color">by XiuSin</p>
+    </div>
+</div>`
+	return mailService.Send(title, content, to...)
 }
 
-func SendSms()  {
-	
+func SendSms() {
+
+}
+
+func VerifyVCaptcha(token string) bool {
+	//验证vcaptchatoken是否正确
+	vcaptchaData := map[string]interface{}{}
+	res, err := req.Post("http://api.vaptcha.com/v2/validate", req.Param{
+		"id":        "5bbc46c6fc650e3be06e5869",
+		"secretkey": "1d374f7f501a4d2e9ca977dd343ffde8",
+		"token":     token,
+	})
+	if err != nil {
+		return false
+	}
+	err = res.ToJSON(&vcaptchaData)
+	if err != nil {
+		return false
+	}
+	status, _ := vcaptchaData["success"].(int64)
+	if status != 0 { //验证不通过
+		//c.Ctx.JSON(ReturnApiData{false, "validate captcha failed,status: " + strconv.Itoa(int(status)) + " msg:" + vcaptchaData["msg"].(string) + "!", nil})
+		return false
+	}
 }

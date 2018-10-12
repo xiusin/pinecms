@@ -1,10 +1,11 @@
 package config
 
 import (
+	"github.com/garyburd/redigo/redis"
+	"github.com/kataras/iris/sessions/sessiondb/redis/service"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"path/filepath"
 	"strconv"
 	"sync"
@@ -19,7 +20,7 @@ import (
 	"github.com/kataras/iris/middleware/recover"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
-	"github.com/kataras/iris/sessions/sessiondb/boltdb"
+	redisSessionDB "github.com/kataras/iris/sessions/sessiondb/redis"
 	"github.com/kataras/iris/view"
 	"gopkg.in/yaml.v2"
 )
@@ -31,6 +32,7 @@ var applicationYml = "resources/configs/application.yml"
 var sess *sessions.Sessions
 var ApplicationConfig *Application // ApplicationConfig 全局配置文件对象
 var sessionInitSync sync.Once
+var redisPool *redis.Pool
 
 func initDatabase() {
 	dbconfig := new(DatabaseConfig)
@@ -51,7 +53,7 @@ func initDatabase() {
 		panic(err.Error())
 	}
 	XOrmEngine = _orm
-	//XOrmEngine.Logger().SetLevel(core.Lo)
+	//XOrmEngine.Logger().SetLevel(core.LOG_DEBUG | core.LOG_ERR | core.LOG_WARNING)
 	XOrmEngine.ShowSQL(dbconfig.Orm.ShowSql)
 	XOrmEngine.ShowExecTime(dbconfig.Orm.ShowExecTime)
 	XOrmEngine.SetMaxOpenConns(int(dbconfig.Orm.MaxOpenConns))
@@ -59,7 +61,30 @@ func initDatabase() {
 }
 
 func initRedis() {
-
+	redisPool = &redis.Pool{
+		MaxIdle:     3,
+		MaxActive:   5,
+		IdleTimeout: 240 * time.Second, //最大的空闲连接等待时间，超过此时间后，空闲连接将被关闭
+		Dial: func() (redis.Conn, error) {
+			c, err := redis.Dial("tcp", "115.159.71.60:6379",
+				redis.DialConnectTimeout(time.Second),
+				redis.DialReadTimeout(time.Second*4),
+				redis.DialWriteTimeout(time.Second*4),
+				redis.DialDatabase(1),
+			)
+			if err != nil {
+				return nil, err
+			}
+			return c, err
+		},
+		TestOnBorrow: func(c redis.Conn, t time.Time) error {
+			if time.Since(t) < time.Minute {
+				return nil
+			}
+			_, err := c.Do("PING")
+			return err
+		},
+	}
 }
 
 func initMongodb() {
@@ -84,6 +109,7 @@ func parseConfig(path string, out interface{}) {
 func StartApplication() {
 	//初始化数据库ORM
 	initDatabase()
+	initRedis()
 	ApplicationConfig = new(Application)
 	parseConfig(applicationYml, ApplicationConfig) //解析配置
 	//实例化服务器
@@ -167,16 +193,24 @@ func BaseMvc(config *Application) func(app *mvc.Application) {
 			Decode:  secureCookie.Decode,
 			Expires: config.Session.Expires * time.Second,
 		})
-		db, err := boltdb.New("./runtime/sessions.db", os.FileMode(0750))
-		if err != nil {
-			panic(err)
-		}
-		iris.RegisterOnInterrupt(func() {	//关机时候关闭数据
+		db := redisSessionDB.New(service.Config{
+			Network:     "tcp",
+			Addr:        "115.159.71.60:6379",
+			Password:    "",
+			Database:    "",
+			MaxIdle:     0,
+			MaxActive:   0,
+			IdleTimeout: time.Duration(5) * time.Minute,
+			Prefix:      ""})
+
+		iris.RegisterOnInterrupt(func() { //关机时候关闭数据
 			db.Close()
+			redisPool.Close()
 		})
+
 		sess.UseDatabase(db)
 	})
 	return func(app *mvc.Application) {
-		app.Register(sess.Start, XOrmEngine)
+		app.Register(sess.Start, XOrmEngine, redisPool)
 	}
 }

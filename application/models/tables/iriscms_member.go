@@ -13,4 +13,7 @@ type IriscmsMember struct {
 	DrawAccount  string    `json:"draw_account"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
+	Email        string    `json:"email"`
+	Enabled 	int64	`json:"enabled"`
+	VerifyToken string
 }

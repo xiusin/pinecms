@@ -14,6 +14,8 @@ type WechatController struct {
 }
 
 func (c *WechatController) BeforeActivation(b mvc.BeforeActivation) {
-
+	b.Handle("ANY", "/wechat/verify", "Verify")
 }
 
+func (c *WechatController) Verify() {
+}

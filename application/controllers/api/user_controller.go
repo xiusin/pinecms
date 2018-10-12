@@ -1,15 +1,15 @@
 package api
 
 import (
+	"encoding/json"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-xorm/xorm"
-	"github.com/imroc/req"
+	"github.com/google/uuid"
 	jwt2 "github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"github.com/segmentio/objconv/json"
 	"iriscms/application/models/tables"
-	"strconv"
+	"iriscms/common/helper"
 	"time"
 )
 
@@ -27,6 +27,7 @@ type ReturnApiData struct {
 func (c *UserApiController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle(iris.MethodPost, "/user/login", "UserLogin")
 	b.Handle(iris.MethodGet, "/user/center", "UserCenter")
+	b.Handle(iris.MethodPost, "/user/register", "UserRegister")
 }
 
 func (c *UserApiController) UserLogin() {
@@ -37,25 +38,8 @@ func (c *UserApiController) UserLogin() {
 		c.Ctx.JSON(ReturnApiData{false, err.Error(), nil})
 		return
 	}
-	//验证vcaptchatoken是否正确
-	vcaptchaData := map[string]interface{}{}
-	res, err := req.Post("http://api.vaptcha.com/v2/validate",  req.Param{
-		"id": "5bbc46c6fc650e3be06e5869",
-		"secretkey": "1d374f7f501a4d2e9ca977dd343ffde8",
-		"token": dd["token"],
-	})
-	if err != nil {
-		c.Ctx.JSON(ReturnApiData{false, "validate captcha failed!", err.Error()})
-		return
-	}
-	err = res.ToJSON(&vcaptchaData)
-	if err != nil {
-		c.Ctx.JSON(ReturnApiData{false, "validate captcha failed!", err.Error()})
-		return
-	}
-	status, _ := vcaptchaData["success"].(int64)
-	if status == 0 { //验证不通过
-		c.Ctx.JSON(ReturnApiData{false, "validate captcha failed,status: " + strconv.Itoa(int(status)) + " msg:" + vcaptchaData["msg"].(string) + "!", nil})
+	if !helper.VerifyVCaptcha(dd["token"]) {
+		c.Ctx.JSON(ReturnApiData{false, "验证码失败", nil})
 		return
 	}
 	if dd["account"] == "" || dd["password"] == "" {
@@ -97,4 +81,28 @@ func (c *UserApiController) UserCenter() {
 
 func (c *UserApiController) UserLogout() {
 	c.Ctx.JSON(ReturnApiData{true, "", nil})
+}
+
+func (c *UserApiController) UserRegister() {
+	var user tables.IriscmsMember
+	account := c.Ctx.FormValue("account")
+	email := c.Ctx.FormValue("email")
+	lenth, _ := c.Orm.Where("account=? or email=?", account, email).Count()
+	if lenth > 0 {
+		c.Ctx.JSON(ReturnApiData{false, "account or email are already exists!", nil})
+		return
+	}
+	user.Account = account
+	user.Email = email
+	user.Password = c.Ctx.FormValue("password")
+	user.CreatedAt = time.Now()
+	user.UpdatedAt = time.Now()
+	user.Enabled = 1
+	user.VerifyToken = uuid.New().String()
+	_, err := c.Orm.InsertOne(&user)
+	if err != nil {
+		c.Ctx.JSON(ReturnApiData{false, "注册失败, " + err.Error() + "!", nil})
+	} else {
+		c.Ctx.JSON(ReturnApiData{true, "注册成功!", nil})
+	}
 }

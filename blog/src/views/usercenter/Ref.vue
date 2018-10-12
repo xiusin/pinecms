@@ -3,37 +3,26 @@
     <el-container>
       <el-aside style="width: 150px; float: left; height: 690px;">
         <el-menu :router="true" style="height: 100%;border:none;">
-
           <el-menu-item index="/user/center">
             <i class="icon iconfont icon-geren"></i>
             <span slot="title">个人信息</span>
           </el-menu-item>
-
-          <el-menu-item index="/user/task">
-            <i class="icon iconfont icon-renwu"></i>
-            <span slot="title">每日任务</span>
-          </el-menu-item>
-
           <el-menu-item index="/user/money">
             <i class="icon iconfont icon-qian"></i>
             <span slot="title">我的资产</span>
           </el-menu-item>
-
           <el-menu-item index="/user/cart">
-            <i class="icon iconfont icon-dixiaofei"></i>
+            <i class="icon iconfont icon-renwu"></i>
             <span slot="title">消费清单</span>
           </el-menu-item>
-
           <el-menu-item index="/user/recharge">
-            <i class="icon iconfont icon-lishijilu"></i>
+            <i class="icon iconfont icon-xiaofeimingxidan"></i>
             <span slot="title">充值记录</span>
           </el-menu-item>
-
           <el-menu-item index="/user/ref">
             <i class="icon iconfont icon-daochu"></i>
             <span slot="title">线上推广</span>
           </el-menu-item>
-
           <el-menu-item index="/user/outmo">
             <i class="icon iconfont icon-qian"></i>
             <span slot="title">站内提现</span>
@@ -56,52 +45,12 @@
       </el-aside>
 
       <el-main style="width: 800px; float: right;background-color: #fff; margin-left: 20px; padding: 30px;">
-        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-          <el-form-item label="登录名" prop="account" size="mini" style="width: 450px;">
-            <el-input v-model="ruleForm.name" disabled></el-input>
-          </el-form-item>
-
-          <el-form-item label="邮箱" prop="email" size="mini" style="width: 450px;">
-            <el-input v-model="ruleForm.name"></el-input>
-          </el-form-item>
-
-          <el-form-item label="手机" prop="telphone" size="mini" style="width: 450px;">
-            <el-input v-model="ruleForm.name"></el-input>
-          </el-form-item>
-
-          <el-form-item label="头像" prop="account">
-            <el-upload
-              action="https://jsonplaceholder.typicode.com/posts/"
-              list-type="picture-card"
-              :on-preview="handlePictureCardPreview"
-              :on-remove="handleRemove">
-              <i class="el-icon-plus"></i>
-            </el-upload>
-            <el-dialog :visible.sync="dialogVisible">
-              <img width="100%" :src="dialogImageUrl" alt="">
-            </el-dialog>
-          </el-form-item>
-
-          <el-form-item label="注册时间" prop="reg_time" size="mini" style="width: 450px;">
-            <el-input v-model="ruleForm.name"></el-input>
-          </el-form-item>
-
-          <el-form-item label="网址" prop="url" size="mini" style="width: 450px;">
-            <el-input v-model="ruleForm.name" placeholder="github或个人网站"></el-input>
-          </el-form-item>
-
-          <el-form-item label="QQ" prop="qq" size="mini" style="width: 450px;">
-            <el-input v-model="ruleForm.name"></el-input>
-          </el-form-item>
-
-          <el-form-item label="微信" prop="wechat" size="mini" style="width: 450px;">
-            <el-input v-model="ruleForm.name"></el-input>
-          </el-form-item>
-
-          <el-form-item>
-            <el-button type="primary" size="mini" @click="submitForm('ruleForm')">修改</el-button>
-          </el-form-item>
-        </el-form>
+        <el-alert :closable="false"
+          title="您的推广链接为: http://lazynote.cc/?u=yjdin-asdasd-f-gf-a-gas"
+          type="info"
+          description="每邀请一位新好友进入注册为会员奖励10积分,注册为会员奖励50积分, 每消费1000友币奖励100积分."
+          show-icon>
+        </el-alert>
       </el-main>
 
     </el-container>
