@@ -20,7 +20,6 @@ type LoginController struct {
 func (c *LoginController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("ANY", "/login/index", "Index")
 	b.Handle("ANY", "/login/logout", "Logout")
-	b.Handle("ANY", "/login/test", "Test")
 }
 
 func (this *LoginController) Index() {
@@ -28,7 +27,7 @@ func (this *LoginController) Index() {
 		username := this.Ctx.PostValue("username")
 		password := this.Ctx.PostValue("password")
 		code := this.Ctx.PostValue("code")
-		verify, _ := this.Session.Get("verify_code").(string)
+		verify, _ := this.Session.GetFlash("verify_code").(string)
 		if helper.IsFalse(username, password, code) {
 			helper.Ajax("参数不能为空", 1, this.Ctx)
 			return
@@ -56,9 +55,6 @@ func (this *LoginController) Index() {
 	if err := this.Ctx.View("backend/login_index.html"); err != nil {
 		this.Ctx.WriteString(err.Error())
 	}
-}
-
-func (this *LoginController) Test() {
 }
 
 //退出系统

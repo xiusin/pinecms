@@ -18,6 +18,18 @@ type Application struct {
 		Engine   string `yaml:"engine"`
 		BasePath string `yaml:"base_path"`
 	} `yaml:"upload"`
+	Redis struct {
+		Host                 string `yaml:"host"`
+		ConnectTimeOut       int    `yaml:"connect_timeout"`
+		ReadTimeOut          int    `yaml:"read_timeout"`
+		WriteTimeOut         int    `yaml:"write_timeout"`
+		CacheDatabaseIndex   int    `yaml:"cache_database_index"`
+		SessionDatabaseIndex int    `yaml:"session_database_index"`
+		Password             string `yaml:"password"`
+		MaxIdle              int    `yaml:"max_idle"`
+		MaxActive            int    `yaml:"max_active"`
+		IdleTimeout          int    `yaml:"idle_timeout"`
+	} `yaml:"redis"`
 }
 
 type Session struct {

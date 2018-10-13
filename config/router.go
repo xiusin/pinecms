@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/iris-contrib/middleware/cors"
 	jwt2 "github.com/iris-contrib/middleware/jwt"
@@ -32,14 +31,23 @@ func registerBackendRoutes() {
 		Handle(new(backend.ContentController)).
 		Handle(new(backend.SettingController)).
 		Handle(new(backend.WechatController)).
-		Handle(new(backend.SystemController))
+		Handle(new(backend.SystemController)).Handle(new(backend.MemberController))
 
-	mvc.New(app).Configure(config).Party("/public", middleware.SetGlobalConfigData(XOrmEngine,redisPool)).Handle(new(backend.PublicController))
+
+	mvc.New(app).Configure(config).Party(
+		"/public",
+		middleware.SetGlobalConfigData(XOrmEngine, redisPool),
+		InjectConfig(ApplicationConfig),
+	).Handle(new(backend.PublicController))
 }
 
 func registerFrontendRoutes() {
 	config := BaseMvc(ApplicationConfig)
-	mvc.New(app).Configure(config).Party("/", cache.Handler(10*time.Second), middleware.FrontendGlobalViewData(app)).Handle(new(frontend.IndexController))
+	mvc.New(app).Configure(config).Party(
+		"/",
+		cache.Handler(10*time.Second),
+		middleware.FrontendGlobalViewData(app),
+	).Handle(new(frontend.IndexController))
 }
 
 func registerErrorRoutes() {
@@ -49,8 +57,31 @@ func registerErrorRoutes() {
 }
 
 func registerApiRoutes() {
-	apiParty := mvc.New(app.Party("/api/v1", cors.AllowAll(), func(ctx context.Context) {
-		fmt.Println("jwt")
+	apiParty := mvc.New(app.Party(
+		"/api/v1",
+		InjectConfig(ApplicationConfig),
+		cors.AllowAll(),
+		Jwt(),
+		middleware.FrontendGlobalViewData(app),
+		middleware.SetGlobalConfigData(XOrmEngine, redisPool),
+	).AllowMethods(iris.MethodOptions))
+	apiParty.Register(XOrmEngine, redisPool)
+	apiParty.Handle(new(api.UserApiController)).Handle(new(api.WechatController)).Handle(new(api.CategoryController))
+
+}
+
+//防止相互调用先用这种不优美的方式实现
+func InjectConfig(config *Application) func(ctx context.Context) {
+	return func(ctx context.Context) {
+		ctx.Values().Set("app.config", map[string]string{
+			"uploadEngine": config.Upload.Engine,
+		})
+		ctx.Next()
+	}
+}
+
+func Jwt() func(ctx context.Context) {
+	return func(ctx context.Context) {
 		jwt2.New(jwt2.Config{
 			ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 				return []byte("MySecret"), nil
@@ -58,8 +89,5 @@ func registerApiRoutes() {
 			SigningMethod:       jwt.SigningMethodHS256,
 			CredentialsOptional: true, //如果不传递默认未登录状态即可
 		}).Serve(ctx)
-	}, middleware.FrontendGlobalViewData(app), middleware.SetGlobalConfigData(XOrmEngine,redisPool)).AllowMethods(iris.MethodOptions))
-	apiParty.Register(XOrmEngine,redisPool)
-	apiParty.Handle(new(api.UserApiController)).Handle(new(api.WechatController)).Handle(new(api.CategoryController))
-
+	}
 }

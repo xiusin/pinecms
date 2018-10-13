@@ -1,0 +1,153 @@
+{{ .dataGrid }}
+<style>
+    .dialogtable {
+        width: 100%;
+    }
+
+    .dialogtable td {
+        border-width: 0 1px 1px 0;
+        border-style: dotted;
+        border-color: #ccc;
+        padding: 5px;
+    }
+
+    .dialogtable input[type="text"] {
+        height: 25px;
+    }
+
+</style>
+<div id="system_loglist_datagrid_toolbar" style="padding:5px;height:auto">
+    <form>
+        <a href="javascript:;" onclick="systemLogDelete();" class="easyui-linkbutton" iconCls="icons-other-delete">删除一月前数据</a>
+    </form>
+</div>
+
+<!-- 查看详细信息 -->
+<div id="system_loglist_detail_dialog" class="easyui-dialog word-wrap" title="编辑用户信息"
+     data-options="modal:true,closed:true,iconCls:'icons-other-information',buttons:[
+     {
+         text:'关闭',
+         iconCls:'icons-arrow-cross',
+         handler:function(){
+            $('#system_loglist_detail_dialog').dialog('close');
+         }
+     }
+     ]"
+     style="width:700px;height:450px;padding:5px"></div>
+
+<script type="text/javascript">
+    var system_loglist_datagrid_id = 'system_loglist_datagrid';
+
+    //搜索
+    function systemLogSearch(that) {
+        var queryParams = $('#' + system_loglist_datagrid_id).datagrid('options').queryParams;
+        $.each($(that).parent('form').serializeArray(), function () {
+            queryParams[this['name']] = this['value'];
+        });
+        $('#' + system_loglist_datagrid_id).datagrid('reload');
+    }
+
+    //删除日志
+    function systemLogDelete() {
+        $.post('/b/system/log-delete', {week: 4}, function (res) {
+            if (res.errcode) {
+                $.messager.alert('提示信息', res.errmsg, 'error');
+            } else {
+                $('#' + system_loglist_datagrid_id).datagrid('reload');
+                $.messager.alert('提示信息', res.errmsg, 'info');
+            }
+        }, 'json');
+    }
+
+    //参数格式化
+    function optFormatter(val) {
+        return '<a href="javascript:;" onclick="editMemberInfo(' + val + ');">编辑信息</a>';
+    }
+
+    function enabledFormatter(val) {
+        return val == 1 ? '启用' : '关闭';
+    }
+
+    function verifyTokenFormatter(val) {
+        return val == "" ? '已验证' : '未验证'
+    }
+
+    //查看详细信息
+    function editMemberInfo(artid) {
+        var id = 'system_loglist_detail_dialog';
+        $('#' + id).dialog({
+            content: `
+        	    <form id="ff" method="post">
+	    	<table cellpadding="5" class="dialogtable">
+	    	    <input type="hidden" name="id" value="`+artid+`">
+	    		<tr>
+	    			<td style="width: 100px;" align="right">昵称:</td>
+	    			<td><input class="easyui-textbox" type="text" name="account" data-options="required:true"></input></td>
+	    		</tr>
+
+	    		<tr>
+	    			<td align="right">头像:</td>
+	    			<td><input class="easyui-textbox" type="text" name="account" data-options="required:true"></input></td>
+	    		</tr>
+
+	    		<tr>
+	    			<td align="right">邮箱:</td>
+	    			<td><input class="easyui-textbox" type="text" name="email" data-options="required:true,validType:'email'"></input></td>
+	    		</tr>
+	    		<tr>
+	    			<td align="right">密码:</td>
+	    			<td><input class="easyui-textbox" type="text" name="password"></input></td>
+	    		</tr>
+
+	    		<tr>
+	    			<td align="right">积分:</td>
+	    			<td><input class="easyui-textbox" type="text" name="integral" data-options="required:true"></input></td>
+	    		</tr>
+
+	    		<tr>
+	    			<td align="right">售卖资源积分:</td>
+	    			<td><input class="easyui-textbox" type="text" name="sale_integral" data-options="required:true"></input></td>
+	    		</tr>
+
+                <tr>
+	    			<td align="right">提款账号:</td>
+	    			<td><input class="easyui-textbox" type="text" name="draw_account" ></input></td>
+	    		</tr>
+
+	    		<tr>
+	    			<td align="right">手机:</td>
+	    			<td><input class="easyui-textbox" type="text" name="telphone" ></input></td>
+	    		</tr>
+
+                <tr>
+	    			<td align="right">QQ:</td>
+	    			<td><input class="easyui-textbox" type="text" name="qq" ></input></td>
+	    		</tr>
+
+	    		<tr>
+	    			<td align="right">简介:</td>
+	    			<td><input class="easyui-textbox" type="text" name="telphone" ></input></td>
+	    		</tr>
+
+	    		<tr>
+	    			<td align="right">注册时间:</td>
+	    			<td><input class="easyui-textbox" type="text" name="created_at" ></input></td>
+	    		</tr>
+
+	    		<tr>
+	    			<td align="right">是否启用:</td>
+	    			<td>
+	    				<select class="easyui-combobox" name="enabled">
+	    				<option value="1">启用</option><option value="0">关闭</option></select>
+	    			</td>
+	    		</tr>
+	    	</table>
+	    </form>
+	    <div style="text-align:center;padding:5px">
+	    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()">更新信息</a>
+	    </div>
+        `
+        });
+        $('#' + id).dialog('open');
+    }
+</script>

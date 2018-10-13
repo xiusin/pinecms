@@ -1,11 +1,11 @@
 {{.DataGrid}}
 
 <div id="content_newslist_datagrid_toolbar" style="padding:1px;height:auto">
-    <form style="border-bottom:1px solid #ddd;margin-bottom:1px;padding:5px;display: none">
+    <form style="border-bottom:1px solid #ddd;margin-bottom:1px;padding:5px;">
         标题:
         <input type="text" name="search[title]" style="width:100px;padding:2px"/>
-        <!--时 间: <input name="search[begin]" class="easyui-datebox" style="width:100px">-->
-        <!--至: <input name="search[end]" class="easyui-datebox" style="width:100px">-->
+        时 间: <input name="search[begin]" class="easyui-datebox" style="width:100px">
+        至: <input name="search[end]" class="easyui-datebox" style="width:100px">
 
         <a href="javascript:;" onclick="contentNewsListDatagridSearch(this)" class="easyui-linkbutton"
            iconCls="icons-map-magnifier">搜索</a>
@@ -18,7 +18,7 @@
 </div>
 
 <script type="text/javascript">
-    var content_newslist_datagrid_id = 'content_newslist_datagrid';
+    var content_newslist_datagrid_id = 'category_categorylist_datagrid';
     //排序格式化
     function contentNewsListOrderFormatter(val, arr) {
         return '<input class="content_gridlist_order_input" type="text" name="order[' + arr['id'] + ']" value="' + val + '" size="2" style="text-align:center">';
@@ -52,6 +52,7 @@
     //添加
     function contentNewsListAdd() {
         var url = "/b/content/add?catid={{.catid}}";
+        ajaxLoading()
         contentMainOpenUrl(url, true);
     }
     //编辑
@@ -62,6 +63,7 @@
         }
         var url = "/b/content/edit?catid={{.catid}}";
         url += '&id=' + id;
+        ajaxLoading()
         contentMainOpenUrl(url, true);
     }
 
@@ -80,11 +82,11 @@
         }
         $.messager.confirm('提示信息', '确定要删除吗？', function (result) {
             if (!result) return false;
-            $.post("/b/content/delete?catid={{.catid}}", {ids: ids}, function (res) {
-                if (!res.status) {
-                    $.messager.alert('提示信息', res.info, 'error');
+            $.post("/b/content/delete?catid={{.catid}}", {ids: ids.join(',')}, function (res) {
+                if (res.errcode) {
+                    $.messager.alert('提示信息', res.errmsg, 'error');
                 } else {
-                    $.messager.alert('提示信息', res.info, 'info');
+                    $.messager.alert('提示信息', res.errmsg, 'info');
                     $('#' + content_newslist_datagrid_id).datagrid('reload');
                 }
             }, 'json');
@@ -93,13 +95,22 @@
     //排序
     function contentNewsListOrder() {
         $.post("/b/content/order_news?catid={{.catid}}'", $('.content_gridlist_order_input').serialize(), function (res) {
-            if (!res.status) {
-                $.messager.alert('提示信息', res.info, 'error');
+            if (res.errcode) {
+                $.messager.alert('提示信息', res.errmsg, 'error');
             } else {
-                $.messager.alert('提示信息', res.info, 'info');
+                $.messager.alert('提示信息', res.errmsg, 'info');
                 $('#' + content_newslist_datagrid_id).datagrid('reload');
             }
         }, 'json');
+    }
+
+    function ajaxLoading(){
+        $("<div class=\"datagrid-mask\"></div>").css({display:"block",width:"100%",height:$(window).height()}).appendTo("body");
+        $("<div class=\"datagrid-mask-msg\"></div>").html("正在处理，请稍候。。。").appendTo("body").css({display:"block",left:($(document.body).outerWidth(true) - 190) / 2,top:($(window).height() - 45) / 2});
+    }
+    function ajaxLoadEnd(){
+        $(".datagrid-mask").remove();
+        $(".datagrid-mask-msg").remove();
     }
 
 </script>

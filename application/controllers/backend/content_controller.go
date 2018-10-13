@@ -10,6 +10,7 @@ import (
 	"iriscms/application/models/tables"
 	"iriscms/common/helper"
 	"strconv"
+	"strings"
 )
 
 type ContentController struct {
@@ -55,11 +56,11 @@ func (this *ContentController) NewsList() {
 	rows, _ := this.Ctx.URLParamInt64("rows")
 	if page > 0 {
 		var contents []tables.IriscmsContent
-		total, _ := this.Orm.Where("catid = ?", catid).Limit(int(rows), int((page-1)*rows)).Desc("id").FindAndCount(&contents)
+		total, _ := this.Orm.Where("catid = ? and deleted_at = 0", catid).Limit(int(rows), int((page-1)*rows)).Desc("id").FindAndCount(&contents)
 		this.Ctx.JSON(map[string]interface{}{"rows": contents, "total": total})
 		return
 	}
-	table := helper.Datagrid("category_categorylist_treegrid", "/b/content/news-list?grid=datagrid&catid="+strconv.Itoa(int(catid)), helper.EasyuiOptions{
+	table := helper.Datagrid("category_categorylist_datagrid", "/b/content/news-list?grid=datagrid&catid="+strconv.Itoa(int(catid)), helper.EasyuiOptions{
 		"toolbar":      "content_newslist_datagrid_toolbar",
 		"singleSelect": "true",
 	}, helper.EasyuiGridfields{
@@ -67,7 +68,7 @@ func (this *ContentController) NewsList() {
 		"资源标题": {"field": "title", "width": "130", "index": "1"},
 		"下载扣分": {"field": "money", "width": "30", "index": "2"},
 		"获密方式": {"field": "pwd_type", "width": "30", "formatter": "getPwdTypeFormatter", "index": "3"},
-		"管理操作": {"field": "catid", "width": "50", "formatter": "contentNewsListOperateFormatter", "index": "4"},
+		"管理操作": {"field": "id", "width": "50", "formatter": "contentNewsListOperateFormatter", "index": "4"},
 	})
 
 	this.Ctx.ViewData("DataGrid", template.HTML(table))
@@ -163,7 +164,18 @@ func (this *ContentController) EditContent() {
 
 //删除内容
 func (this *ContentController) DeleteContent() {
-
+	id := this.Ctx.FormValue("ids")
+	if id == "" {
+		helper.Ajax("参数错误", 1, this.Ctx)
+		return
+	}
+	ids := strings.Split(id,",")
+	res,_ := this.Orm.In("id", ids).Update(&tables.IriscmsContent{DeletedAt : int64(helper.GetTimeStamp())})
+	if res > 0 {
+		helper.Ajax("删除成功", 0, this.Ctx)
+	} else{
+		helper.Ajax("删除失败", 1, this.Ctx)
+	}
 }
 
 //排序内容

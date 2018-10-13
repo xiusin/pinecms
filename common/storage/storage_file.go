@@ -12,10 +12,10 @@ type FileUploader struct {
 	BaseDir string
 }
 
-func NewFileUploader() *FileUploader {
+func NewFileUploader(uploadDir string) *FileUploader {
 	return &FileUploader{
 		cutStr:  "resources/assets",
-		BaseDir: "resources/assets/upload/",
+		BaseDir: "resources/assets/" + uploadDir,
 	}
 }
 

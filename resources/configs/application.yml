@@ -10,7 +10,7 @@ view:
 session:
   name: "gosessionid"
   expires: 0
-port: 2017
+port: 2018
 pprof:
   open: false
   port: 6060
@@ -21,9 +21,17 @@ hashkey: "the-big-and-secret-fash-key-here"
 blockkey: "lot-secret-of-characters-big-too"
 backend_route_party: "/b/"
 upload:
-  engine: "file"
+  engine: "oss" #oss or file
   base_path: "assets"
 
 redis:
-  # 需要redis服务器
-
+  host: "115.159.71.60:6379"
+  connect_timeout: 2
+  read_timeout: 4
+  write_timeout: 4
+  cache_database_index: 1
+  session_database_index: 0
+  password: "lazynote2018"
+  max_idle: 3
+  max_active: 5
+  idle_timeout: 60

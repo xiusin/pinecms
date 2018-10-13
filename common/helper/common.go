@@ -21,6 +21,8 @@ import (
 	"strings"
 	"time"
 
+	"reflect"
+
 	"github.com/kataras/iris/context"
 	"github.com/nfnt/resize"
 	"golang.org/x/image/draw"
@@ -407,7 +409,7 @@ func Pay(this context.Context) (*req.Resp, error) {
 /**
 1. 配置多个邮箱发送
  */
-func SendEmail(title, url string, to []string, conf map[string]string) error {
+func SendEmail(title, urlOrStr string, to []string, conf map[string]string) error {
 	//todo map如何用指针传递???
 	port, err := strconv.Atoi(conf["EMAIL_PORT"])
 	if err != nil {
@@ -420,7 +422,20 @@ func SendEmail(title, url string, to []string, conf map[string]string) error {
 		Port:     port,
 		FromAlias: "xiusin",
 	})
+
+	str := ""
+	if strings.Contains(urlOrStr, "http") {
+		str = `<a href="` + urlOrStr + `" class="a-link" target="_blank">` + urlOrStr + `</a>
+            <br/>如果链接点击无效，请将链接复制到您的浏览器中继续访问。`
+	} else {
+		str = urlOrStr
+	}
 	content := `
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+</head>
+<body>
 <style>
     .main{width:655px;margin:0px auto;border: 2px solid #0382db;background-color:#f8fcff;}
     .main-box{ padding:15px;}
@@ -432,19 +447,17 @@ func SendEmail(title, url string, to []string, conf map[string]string) error {
     .logo-right{float:right;display:inline-block;padding-right:15px;}
 </style>
 <div class="main">
-    <div class="mail-title"> Dear: </div>
+    <div class="mail-title">`+ title +`</div>
     <div class="main-box">
         <p>` + title + `<br/>
-            <a href="` + url + `" class="a-link" target="_blank">` + url + `</a>
-            <br/>如果链接点击无效，请将链接复制到您的浏览器中继续访问。</p>
+            `+str+`</p>
         <p class="csdn csdn-color">by XiuSin</p>
     </div>
-</div>`
-	return mailService.SendWithBytes(title, []byte(content), to...)
-}
-
-func SendSms() {
-
+</div>
+</body>
+</html>
+`
+	return mailService.Send(title, content, to...)
 }
 
 func VerifyVCaptcha(token string) bool {
