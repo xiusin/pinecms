@@ -31,7 +31,8 @@ func registerBackendRoutes() {
 		Handle(new(backend.ContentController)).
 		Handle(new(backend.SettingController)).
 		Handle(new(backend.WechatController)).
-		Handle(new(backend.SystemController))
+		Handle(new(backend.SystemController)).Handle(new(backend.MemberController))
+
 
 	mvc.New(app).Configure(config).Party(
 		"/public",

@@ -15,5 +15,5 @@ type IriscmsMember struct {
 	UpdatedAt    time.Time `json:"updated_at"`
 	Email        string    `json:"email"`
 	Enabled 	int64	`json:"enabled"`
-	VerifyToken string
+	VerifyToken string `json:"verify_token"`
 }

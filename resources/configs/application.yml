@@ -10,7 +10,7 @@ view:
 session:
   name: "gosessionid"
   expires: 0
-port: 2017
+port: 2018
 pprof:
   open: false
   port: 6060
