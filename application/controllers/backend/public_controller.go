@@ -37,13 +37,23 @@ func (this *PublicController) Upload() {
 		//百度编辑器的返回内容
 		isEditor = true
 	}
-	uploader := storage.NewFileUploader()
+	uploadDir := "upload"
+	conf := this.Ctx.Values().Get("app.config").(map[string]string)
+	setting := this.Ctx.Values().Get("setting").(map[string]string)
+	engine := conf["uploadEngine"]
+	var uploader storage.Uploader
+	if engine != "oss" {
+		uploader = storage.NewFileUploader(uploadDir)
+		uploadDir = uploader.(*storage.FileUploader).BaseDir
+	} else {
+		uploader = storage.NewOssUploader(setting)
+	}
 	//生成要保存到目录和名称
-	uploadDir := uploader.BaseDir + mid
 	nowTime := helper.NowDate("Ymd")
-	uploadDir = uploadDir + "/" + nowTime
+	uploadDir = uploadDir + "/" + mid + "/" + nowTime
 	file, fs, err := this.Ctx.FormFile("filedata")
 	if err != nil {
+		this.Ctx.Application().Logger().Error("上传文件失败", err.Error())
 		uploadAjax(this.Ctx, map[string]string{
 			"errmsg":  "打开上传临时文件失败 : " + err.Error(),
 			"state":   "打开上传临时文件失败 : " + err.Error(),
@@ -105,8 +115,7 @@ func (this *PublicController) VerifyCode() {
 	// 返回验证码图像对象以及验证码字符串 后期可以对字符串进行对比 判断验证
 	this.Ctx.ContentType("img/png")
 	img, str := cpt.Create(1, captcha.ALL)
-
-	this.Session.Set("verify_code", str)
+	this.Session.SetFlash("verify_code", str)
 	png.Encode(this.Ctx.ResponseWriter(), img) //发送图片内容到浏览器
 }
 

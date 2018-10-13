@@ -31,15 +31,15 @@
     <script src="/backend/static/jquery.upload.js"></script>
 </head>
 <body>
-<form id="content_page_form" onsubmit="return contentPageFormSubmit()">
+<form id="content_page_form">
     <table width="100%" cellpadding="2" class="dialogtable">
         <tr>
             <td>视频标题：</td>
-            <td colspan="2"><input type="text" name="title" value="" style="width:100%"/></td>
+            <td colspan="2"><input type="text" name="title" value="" data-options="required:true" style="width:100%"/></td>
         </tr>
         <tr>
             <td>所属分类：</td>
-            <td colspan="2"><input type="text"  value="{{.category.Catname}}" style="width:100%" readonly/><input type="hidden"  name="catid" value="{{.category.Catid}}" style="width:100%" /></td>
+            <td colspan="2"><input type="text"  value="{{.category.Catname}}" style="width:100%" readonly/><input type="hidden"  name="catid"  data-options="required:true" value="{{.category.Catid}}" style="width:100%" /></td>
         </tr>
 
         <tr>
@@ -88,7 +88,7 @@
         </tr>
 
         <tr>
-            <td colspan="3"><a class="easyui-linkbutton" onclick="$('#content_page_form').submit()">提交</a></td>
+            <td colspan="3"><a class="easyui-linkbutton" onclick="contentPageFormSubmit()">提交</a></td>
         </tr>
     </table>
 </form>
@@ -104,17 +104,21 @@
         },
         'placeholderColor' : '#666666' //设置defaultText的颜色
     });
+
     function contentPageFormSubmit() {
-        $.post('/b/content/add?catid={{.category.Catid}}', $("#content_page_form").serialize(), function (res) {
-            if (res.errcode) {
-                parent.$.messager.alert('提示信息', res.errmsg, 'error');
-            } else {
-                parent.$.messager.alert('提示信息', res.errmsg, 'info');
-                parent.contentMainOpenUrl("/b/content/news-list?catid={{.category.Catid}}")
-            }
-        });
+        if ($("#content_page_form").form('validate')) {
+            $.post('/b/content/add?catid={{.category.Catid}}', $("#content_page_form").serialize(), function (res) {
+                if (res.errcode) {
+                    parent.$.messager.alert('提示信息', res.errmsg, 'error');
+                } else {
+                    parent.$.messager.alert('提示信息', res.errmsg, 'info');
+                    parent.contentMainOpenUrl("/b/content/news-list?catid={{.category.Catid}}")
+                }
+            });
+        }
         return false;
     }
+
     $('#content_add_news_form_thumb_input').click(function (e) {
         e.preventDefault();
         doUpload();

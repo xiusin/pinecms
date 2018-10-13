@@ -3,8 +3,8 @@ package backend
 import (
 	"fmt"
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris/sessions"
 	"github.com/kataras/iris"
+	"github.com/kataras/iris/sessions"
 )
 
 type ErrorController struct {
@@ -22,8 +22,8 @@ func (_ ErrorController) ServerError(this iris.Context) {
 	}
 }
 
-func (_ ErrorController) StatusNotFound(ctx iris.Context)  {
-	fmt.Println("StatusNotFound",ctx.Path(),"method" ,ctx.Method())
+func (_ ErrorController) StatusNotFound(ctx iris.Context) {
+	fmt.Println("StatusNotFound", ctx.Path(), "method", ctx.Method())
 	if ctx.IsAjax() {
 		ctx.JSON(map[string]interface{}{"error": 1})
 	} else {

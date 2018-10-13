@@ -29,6 +29,8 @@ func (c *WechatController) BeforeActivation(b mvc.BeforeActivation) {
 
 func (c *WechatController) EndPointGet() {
 	setting := c.Ctx.Values().Get("setting").(map[string]string)
+	conf := c.Ctx.Values().Get("app.config").(map[string]string)
+	engine := conf["uploadEngine"]
 	wcConfig := &wechat.Config{
 		AppID:          setting["WX_APPID"],
 		AppSecret:      setting["WX_APPSECRET"],
@@ -94,7 +96,11 @@ func (c *WechatController) EndPointGet() {
 		article := new(message.Article)
 		article.Title = content.Title
 		article.Description = "您好,资源下载密码为:" + content.SourcePwd
-		article.PicURL = host + content.Thumb
+		if engine == "oss" {
+			article.PicURL = content.Thumb
+		} else {
+			article.PicURL = host + content.Thumb
+		}
 		article.URL = host + "/#/article/" + strconv.Itoa(int(content.Id)) + "?=fwa" //from_wx_article
 		articles[0] = article
 		return &message.Reply{MsgType: message.MsgTypeNews, MsgData: message.NewNews(articles)}

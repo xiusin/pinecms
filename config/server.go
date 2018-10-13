@@ -1,12 +1,16 @@
 package config
 
 import (
+	"fmt"
 	"github.com/garyburd/redigo/redis"
+	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/sessions/sessiondb/redis/service"
 	"io/ioutil"
+	"iriscms/common/helper"
 	"log"
 	"net/http"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"sync"
 	"time"
@@ -17,7 +21,6 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/pprof"
-	"github.com/kataras/iris/middleware/recover"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
 	redisSessionDB "github.com/kataras/iris/sessions/sessiondb/redis"
@@ -62,15 +65,16 @@ func initDatabase() {
 
 func initRedis() {
 	redisPool = &redis.Pool{
-		MaxIdle:     3,
-		MaxActive:   5,
-		IdleTimeout: 240 * time.Second, //最大的空闲连接等待时间，超过此时间后，空闲连接将被关闭
+		MaxIdle:     ApplicationConfig.Redis.MaxIdle,
+		MaxActive:   ApplicationConfig.Redis.MaxActive,
+		IdleTimeout: time.Duration(ApplicationConfig.Redis.IdleTimeout) * time.Second, //最大的空闲连接等待时间，超过此时间后，空闲连接将被关闭
 		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", "115.159.71.60:6379",
-				redis.DialConnectTimeout(time.Second),
-				redis.DialReadTimeout(time.Second*4),
-				redis.DialWriteTimeout(time.Second*4),
-				redis.DialDatabase(1),
+			c, err := redis.Dial("tcp", ApplicationConfig.Redis.Host,
+				redis.DialConnectTimeout(time.Second*time.Duration(ApplicationConfig.Redis.ConnectTimeOut)),
+				redis.DialReadTimeout(time.Second*time.Duration(ApplicationConfig.Redis.ReadTimeOut)),
+				redis.DialWriteTimeout(time.Second*time.Duration(ApplicationConfig.Redis.WriteTimeOut)),
+				redis.DialDatabase(ApplicationConfig.Redis.CacheDatabaseIndex),
+				redis.DialPassword(ApplicationConfig.Redis.Password),
 			)
 			if err != nil {
 				return nil, err
@@ -85,10 +89,6 @@ func initRedis() {
 			return err
 		},
 	}
-}
-
-func initMongodb() {
-
 }
 
 func parseConfig(path string, out interface{}) {
@@ -109,9 +109,9 @@ func parseConfig(path string, out interface{}) {
 func StartApplication() {
 	//初始化数据库ORM
 	initDatabase()
-	initRedis()
 	ApplicationConfig = new(Application)
 	parseConfig(applicationYml, ApplicationConfig) //解析配置
+	initRedis()
 	//实例化服务器
 	app = iris.New()
 	//配置前端缓存10秒
@@ -144,8 +144,33 @@ func StartApplication() {
 	}
 	//注册静态资源路由
 	registerStatic()
-	//配置recover插件
-	app.Use(recover.New())
+	//配置异常拦截
+	app.Use(func(ctx context.Context) {
+		defer func() {
+			if err := recover(); err != nil {
+				if ctx.IsStopped() {
+					return
+				}
+				var stacktrace string
+				for i := 1; ; i++ {
+					_, f, l, got := runtime.Caller(i)
+					if !got {
+						break
+					}
+					stacktrace += fmt.Sprintf("%s:%d\n", f, l)
+				}
+				logMessage := fmt.Sprintf("Recovered from a route's Handler('%s')\n", ctx.HandlerName())
+				logMessage += fmt.Sprintf("At Request: %s\n", getRequestLogs(ctx))
+				logMessage += fmt.Sprintf("Trace: %s\n", err)
+				logMessage += fmt.Sprintf("\n%s", stacktrace)
+				ctx.Application().Logger().Warn(logMessage)
+				go helper.SendEmail("系统发生异常", logMessage, []string{"826466266@qq.com"}, ctx.Values().Get("setting").(map[string]string))
+				ctx.StatusCode(500)
+				ctx.StopExecution()
+			}
+		}()
+		ctx.Next()
+	})
 	//日志
 	app.Use(logger.New())
 	//注册错误路由
@@ -195,13 +220,13 @@ func BaseMvc(config *Application) func(app *mvc.Application) {
 		})
 		db := redisSessionDB.New(service.Config{
 			Network:     "tcp",
-			Addr:        "115.159.71.60:6379",
-			Password:    "",
-			Database:    "",
-			MaxIdle:     0,
-			MaxActive:   0,
-			IdleTimeout: time.Duration(5) * time.Minute,
-			Prefix:      ""})
+			Addr:        ApplicationConfig.Redis.Host,
+			Password:    ApplicationConfig.Redis.Password,
+			Database:    strconv.Itoa(ApplicationConfig.Redis.SessionDatabaseIndex),
+			MaxIdle:     ApplicationConfig.Redis.MaxIdle,
+			MaxActive:   ApplicationConfig.Redis.MaxActive,
+			IdleTimeout: time.Duration(ApplicationConfig.Redis.IdleTimeout) * time.Second,
+		})
 
 		iris.RegisterOnInterrupt(func() { //关机时候关闭数据
 			db.Close()
@@ -213,4 +238,14 @@ func BaseMvc(config *Application) func(app *mvc.Application) {
 	return func(app *mvc.Application) {
 		app.Register(sess.Start, XOrmEngine, redisPool)
 	}
+}
+
+func getRequestLogs(ctx context.Context) string {
+	var status, ip, method, path string
+	status = strconv.Itoa(ctx.GetStatusCode())
+	path = ctx.Path()
+	method = ctx.Method()
+	ip = ctx.RemoteAddr()
+	// the date should be logged by iris' Logger, so we skip them
+	return fmt.Sprintf("%v %s %s %s", status, path, method, ip)
 }
