@@ -20,3 +20,9 @@ func (this *MemberModel) GetList(page, limit int64) (list []tables.IriscmsMember
 	return list, total
 }
 
+func (this *MemberModel) GetInfo(id int64)  tables.IriscmsMember {
+	var member tables.IriscmsMember
+	this.Orm.Where("id = ?", id).Get(&member)
+	return member
+}
+

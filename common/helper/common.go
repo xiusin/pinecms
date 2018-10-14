@@ -21,8 +21,6 @@ import (
 	"strings"
 	"time"
 
-	"reflect"
-
 	"github.com/kataras/iris/context"
 	"github.com/nfnt/resize"
 	"golang.org/x/image/draw"

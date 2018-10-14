@@ -1,19 +1,17 @@
 <template>
-  <div v-title :data-title="title">
+  <div v-title :data-title="title" style="margin: 0px auto; width: 980px; padding-top: 80px;">
     <el-container>
       <el-aside class="me-area">
         <ul class="me-month-list">
-          <li v-for="a in archives" :key="a.year + a.month" class="me-month-item">
-            <el-badge :value="a.count">
-              <el-button @click="changeArchive(a.year, a.month)" size="small">{{a.year +'年' + a.month + '月'}}
+          <li v-for="a in archives" :key="a.Catid" class="me-month-item">
+              <el-button @click="changeArchive(a.Catid)" size="small" style="width: 160px;">{{a.Catname}}
               </el-button>
-            </el-badge>
           </li>
         </ul>
       </el-aside>
 
-      <el-main class="me-articles">
-        <div class="me-month-title">{{currentArchive}}</div>
+      <el-main class="me-articles" style="width: 720px;">
+        <div class="me-month-title">10月份</div>
         <article-scroll-page v-bind="article"></article-scroll-page>
       </el-main>
     </el-container>
@@ -22,7 +20,7 @@
 
 <script>
   import ArticleScrollPage from '@/views/common/ArticleScrollPage'
-  import {getAllFreeVideoList} from "@/api/category"
+  import {getAllFreeVideoList,getAllCategoryList} from "@/api/category"
 
   export default {
     name: "FreeCategory",
@@ -43,7 +41,8 @@
       this.listArchives()
     },
     watch: {
-      '$route'() {
+      '$route'(old, val) {
+        console.log(old,val)
         if (this.$route.params.id) {
           this.article.query.id = this.$route.params.id
         }
@@ -51,23 +50,22 @@
     },
     computed: {
       title (){
-        return this.currentArchive + ' - 文章归档 - For Fun'
+        return this.currentArchive + ' - For Fun'
       },
       currentArchive (){
-        if(this.article.query.year && this.article.query.month){
-          return `${this.article.query.year}年${this.article.query.month}月`
-        }
         return '全部'
       }
     },
     methods: {
-      changeArchive(year, month) {
-        this.$router.push({path: `/archives/${year}/${month}`})
+      changeArchive(catid) {
+        //剔除其他数据
+        let route = this.$route.path.replace('/' + this.$route.params.id , '')
+        this.$router.push({path: route + '/' + catid})
       },
       listArchives() {
         let that = this
-        getAllFreeVideoList().then((data => {
-          this.archives = data.data
+        getAllCategoryList(this.$route.path.replace('/' + this.$route.params.id , '') + '/list').then((data => {
+          that.archives = data.data
         })).catch(error => {
           that.$message({type: 'error', message: '分类加载失败!', showClose: true})
         })
@@ -78,20 +76,15 @@
 
 <style scoped>
 
-  .el-container {
-    width: 640px;
-  }
-
   .el-aside {
-    position: fixed;
-    left: 200px;
     margin-right: 50px;
-    width: 150px !important;
+    width: 200px !important;
   }
 
   .el-main {
     padding: 0px;
     line-height: 16px;
+    flex: none;
   }
 
   .me-month-list {

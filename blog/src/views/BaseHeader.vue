@@ -25,7 +25,7 @@
       </template>
 
       <el-col :span="4" :offset="1" style="float: right">
-        <el-menu :router=true menu-trigger="click" :mode="showSubMenu" active-text-color="#5FB878" style="border: none">
+        <el-menu :router=true menu-trigger="click" mode="horizontal" active-text-color="#5FB878" style="border: none">
           <template v-if="!user.login">
             <el-menu-item index="/login">
               <el-button type="text">登录</el-button>
@@ -38,7 +38,7 @@
           <template v-else>
             <el-submenu index style="float: right">
               <template slot="title">
-                <img class="me-header-picture" :src="user.avatar"/>
+                <img class="me-header-picture" :src="user.avatar" onerror="this.src='../../static/default_avatar.png'"/>
               </template>
               <el-menu-item index="/write"><i class="el-icon-edit"></i>写文章</el-menu-item>
               <el-menu-item index="/user/center"><i class="el-icon-goods"></i>个人中心</el-menu-item>
@@ -75,9 +75,6 @@
       }
     },
     methods: {
-      showSubMenu() {
-        return !user.login ? 'horizontal' : 'vertical'
-      },
       logout() {
         let that = this
         this.$store.dispatch('logout').then(() => {

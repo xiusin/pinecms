@@ -11,9 +11,12 @@ type IriscmsMember struct {
 	Integral     int64     `json:"integral"`
 	SaleIntegral int64     `json:"sale_integral"`
 	DrawAccount  string    `json:"draw_account"`
+	Telphone     string    `json:"telphone"`
+	Qq           string    `json:"qq"`
+	Description  string    `json:"description"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 	Email        string    `json:"email"`
-	Enabled 	int64	`json:"enabled"`
-	VerifyToken string `json:"verify_token"`
+	Enabled      int64     `json:"enabled"`
+	VerifyToken  string    `json:"verify_token"`
 }

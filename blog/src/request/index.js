@@ -22,8 +22,9 @@ service.interceptors.request.use(config => {
 // respone拦截器
 service.interceptors.response.use(
   response => {
+    console.log('headers',response.headers)
     //全局统一处理 Session超时
-    if (response.headers['session_time_out'] == 'timeout') {
+    if (response.headers['Session_time_out'] == 'timeout') {
       store.dispatch('fedLogOut')
     }
     const res = response.data;
@@ -40,7 +41,6 @@ service.interceptors.response.use(
     }
   },
   error => {
-    console.log(error)
     Message({
       type: 'warning',
       showClose: true,

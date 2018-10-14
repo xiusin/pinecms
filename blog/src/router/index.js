@@ -89,7 +89,19 @@ const router = new Router({
         },
         {
           path: '/free/video/:id?',
-          component: r => require.ensure([], () => r(require('@/views/blog/FreeCategory')), 'free')
+          component: r => require.ensure([], () => r(require('@/views/blog/FreeVideoCategory')), 'freeVideoCategory')
+        },
+        {
+          path: '/free/book/:id?',
+          component: r => require.ensure([], () => r(require('@/views/blog/FreeBookCategory')), 'freeBookCategory')
+        },
+        {
+          path: '/paid/video/:id?',
+          component: r => require.ensure([], () => r(require('@/views/blog/PaidVideoCategory')), 'paidVideoCategory')
+        },
+        {
+          path: '/paid/book/:id?',
+          component: r => require.ensure([], () => r(require('@/views/blog/PaidBookCategory')), 'paidBookCategory')
         },
         {
           path: '/archives/:year?/:month?',

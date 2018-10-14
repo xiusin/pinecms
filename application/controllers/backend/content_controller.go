@@ -159,7 +159,51 @@ func (this *ContentController) AddContent() {
 
 //修改内容
 func (this *ContentController) EditContent() {
+	//根据catid读取出相应的添加模板
+	catid, _ := this.Ctx.URLParamInt64("catid")
+	id,_ := this.Ctx.URLParamInt64("id")
+	if catid == 0 || id == 0{
+		helper.Ajax("参数错误", 1, this.Ctx)
+		return
+	}
+	var content = tables.IriscmsContent{Id:id}
+	ok,_ := this.Orm.Get(&content)
+	if  !ok {
+		helper.Ajax("无法获取内容", 1, this.Ctx)
+		return
+	}
+	if this.Ctx.Method() == "POST" {
+		if err := this.Ctx.ReadForm(&content); err != nil {
+			helper.Ajax("添加失败:readform:"+err.Error(), 1, this.Ctx)
+			return
+		}
+		content.UpdatedAt = int64(helper.GetTimeStamp())
+		res, err := this.Orm.Where("id=? and catid=?",id,catid).Update(&content)
+		if err != nil {
+			helper.Ajax("修改失败:"+err.Error(), 1, this.Ctx)
+			return
+		}
+		if res == 0 {
+			helper.Ajax("修改失败", 1, this.Ctx)
+			return
+		}
+		helper.Ajax("修改成功", 0, this.Ctx)
+		return
+	}
 
+	cat, err := models.NewCategoryModel(this.Orm).GetCategory(catid)
+	if err != nil {
+		helper.Ajax("读取数据错误:"+err.Error(), 1, this.Ctx)
+		return
+	}
+	if cat.Catid == 0 {
+		helper.Ajax("不存在的分类", 1, this.Ctx)
+		return
+	}
+
+	this.Ctx.ViewData("content", content)
+	this.Ctx.ViewData("category", cat)
+	this.Ctx.View("backend/" + cat.TplPrefix + "edit.html")
 }
 
 //删除内容

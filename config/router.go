@@ -13,6 +13,7 @@ import (
 	"iriscms/application/controllers/frontend"
 	"iriscms/application/controllers/middleware"
 	"time"
+	"net/http"
 )
 
 //利用中间件执行控制器前置操作
@@ -66,7 +67,7 @@ func registerApiRoutes() {
 		middleware.SetGlobalConfigData(XOrmEngine, redisPool),
 	).AllowMethods(iris.MethodOptions))
 	apiParty.Register(XOrmEngine, redisPool)
-	apiParty.Handle(new(api.UserApiController)).Handle(new(api.WechatController)).Handle(new(api.CategoryController))
+	apiParty.Handle(new(api.UserApiController)).Handle(new(api.WechatController)).Handle(new(api.CategoryController)).Handle(new(api.ContentController))
 
 }
 
@@ -88,6 +89,11 @@ func Jwt() func(ctx context.Context) {
 			},
 			SigningMethod:       jwt.SigningMethodHS256,
 			CredentialsOptional: true, //如果不传递默认未登录状态即可
+			ErrorHandler: func(i context.Context, s string) {
+				i.Header("session_time_out","timeout")
+				i.StatusCode(http.StatusOK)
+				i.JSON(iris.Map{})
+			},
 		}).Serve(ctx)
 	}
 }

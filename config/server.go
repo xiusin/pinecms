@@ -187,6 +187,7 @@ func StartApplication() {
 
 func registerStatic() {
 	app.StaticWeb("/upload", filepath.FromSlash("./resources/assets/upload"))
+	app.StaticWeb("/assets", filepath.FromSlash("./resources/assets"))
 	app.StaticWeb("/frontend", filepath.FromSlash("./resources/assets/frontend"))
 	app.StaticWeb("/backend", filepath.FromSlash("./resources/assets/backend"))
 	app.StaticWeb("/resume", filepath.FromSlash("./resources/assets/resume"))

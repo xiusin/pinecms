@@ -56,7 +56,7 @@
         innerPage: {
           pageSize: 10,
           pageNo: 1,
-          name: 'create_time',
+          name: 'id',
           sort: 'desc'
         },
         articles: []
@@ -78,8 +78,12 @@
         that.loading = true
 
         getArticles(that.query, that.innerPage).then(data => {
-
-          let newArticles = data.data
+          let newArticles = []
+          for(let i=0; i< data.data.length; i++) {
+            let item = data.data[i]
+            item.tags = item.tags.split(',')
+            newArticles.push(item)
+          }
           if (newArticles && newArticles.length > 0) {
             that.innerPage.pageNo += 1
             that.articles = that.articles.concat(newArticles)

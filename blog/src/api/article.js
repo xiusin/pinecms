@@ -1,18 +1,17 @@
 import request from '@/request'
 
 export function getArticles(query, page) {
+  console.log(query)
   return request({
-    url: '/article/list',
+    url: '/RngNb/list',
     method: 'get',
     params: {
       pageNo: page.pageNo,
       pageSize: page.pageSize,
       six: page.name,
       sort: page.sort,
-      year: query.year,
-      month: query.month,
-      tagId: query.tagId,
-      categoryId: query.categoryId
+      catid: query.id,
+      tagId: query.tagId
     }
   })
 }
