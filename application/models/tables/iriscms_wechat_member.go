@@ -8,7 +8,7 @@ type IriscmsWechatMember struct {
 	Mpid           string
 	Nickname       string
 	Sex            int
-	HeadImgUrl     string
-	SubScribeScene string
+	Headimgurl     string
+	SubScribeScene string `xorm:"subscribe_scene"`
 	Time           time.Time
 }

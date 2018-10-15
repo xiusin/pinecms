@@ -58,15 +58,18 @@ func (c *WechatController) EndPointGet() {
 				if err != nil {
 					c.Ctx.Application().Logger().Error("获取用户信息错误", err.Error())
 				}
-				c.Orm.InsertOne(&tables.IriscmsWechatMember{
+				_, err = c.Orm.InsertOne(&tables.IriscmsWechatMember{
 					Time:       time.Now(),
 					Nickname:   userInfo.Nickname,
-					HeadImgUrl: userInfo.Headimgurl,
+					Headimgurl: userInfo.Headimgurl,
 					Sex:        int(userInfo.Sex),
 					Openid:     userInfo.OpenID,
 					Mpid:       msg.ToUserName,
 					//SubScribeScene:userInfo.Subscribe,	todo 关注来源
 				})
+				if err != nil {
+					c.Ctx.Application().Logger().Error("保存用户信息失败", err.Error())
+				}
 			}()
 		}
 
