@@ -14,6 +14,7 @@ type ContentController struct {
 
 func (c *ContentController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle(iris.MethodGet, "/RngNb/list", "ContentList")
+	b.Handle(iris.MethodGet, "/content/info/:id", "ContentInfo")
 }
 
 func (c *ContentController) ContentList() {
@@ -31,5 +32,28 @@ func (c *ContentController) ContentList() {
 		q.Asc(six)
 	}
 	q.Find(&arts)
+	if len(arts) == 0 {
+		arts = []tables.IriscmsContent{}
+	}
 	c.Ctx.JSON(ReturnApiData{Status: true, Msg: "成功", Data: arts})
+}
+
+func (c *ContentController) ContentInfo() {
+	id, err := c.Ctx.Params().GetInt64("id")
+	if err != nil {
+		c.Ctx.JSON(ReturnApiData{Status: false, Msg: "资源不存在", Data: nil})
+		return
+	}
+	var content tables.IriscmsContent
+	ok, _ := c.Orm.Id(id).Get(&content)
+	if !ok {
+		c.Ctx.JSON(ReturnApiData{Status: false, Msg: "资源不存在", Data: nil})
+		return
+	}
+
+	if content.DeletedAt > 0 || content.Status != 1 {
+		c.Ctx.JSON(ReturnApiData{Status: false, Msg: "资源不存在", Data: nil})
+		return
+	}
+	c.Ctx.JSON(ReturnApiData{Status: true, Msg: "获取资源成功", Data: content})
 }

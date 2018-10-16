@@ -1,13 +1,6 @@
 <template>
   <div class="me-view-body" v-title :data-title="title">
-    <el-container class="me-view-container">
-      <!--<el-aside class="me-area">-->
-        <!--<ul class="me-operation-list">-->
-          <!--<li class="me-operation-item">-->
-            <!--<el-button type="primary" icon="el-icon-edit"></el-button>-->
-          <!--</li>-->
-        <!--</ul>-->
-      <!--</el-aside>-->
+    <el-container class="me-view-container" style="width: 980px;">
       <el-main>
         <div class="me-view-card">
           <h1 class="me-view-title">{{article.title}}</h1>
@@ -36,25 +29,34 @@
             <markdown-editor :editor=article.editor></markdown-editor>
           </div>
 
-          <div class="me-view-end">
-            <el-alert
-              title="文章End..."
-              type="success"
-              center
-              :closable="false">
-            </el-alert>
-          </div>
+          <el-card shadow="hover" style="
+    padding: 3px;
+    background-color: #ecf8ff;
+    border-radius: 4px;
+    border-left: 5px solid #50bfff;
+    font-size: 13px;
+">
+            <b style="font-size: 14px; margin-bottom: 8px;">资源地址: <a :href="this.article.source_url" target="_blank">{{this.article.source_url}}</a></b>
+            <br/>
+            <br/>
+            获取下载密码:<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[打开微信]->[扫描<span style="color: orangered;cursor: pointer" @click="dialogTableVisible=true">二维码</span>]->[关注公众号]
+            <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;输入 <i style="color: orangered">{{this.article.id}}</i> 获取分享码 如果取消关注本公众号，再次关注即可再次享受服务！
+          </el-card>
+
+          <el-dialog title="公众号" :visible.sync="dialogTableVisible" width="395px">
+              <img src="../../../static/qrcode/wechat.jpg" style="width: 350px" />
+          </el-dialog>
 
           <div class="me-view-tag">
             标签：
             <!--<el-tag v-for="t in article.tags" :key="t.id" class="me-view-tag-item" size="mini" type="success">{{t.tagname}}</el-tag>-->
-            <el-button @click="tagOrCategory('tag', t.id)" size="mini" type="primary" v-for="t in article.tags" :key="t.id" round plain>{{t.tagName}}</el-button>
+            <el-button @click="tagOrCategory('tag', t)" size="mini" type="primary" v-for="t in article.tags" :key="t" round plain>{{t}}</el-button>
           </div>
 
           <div class="me-view-tag">
             文章分类：
-            <!--<span style="font-weight: 600">{{article.category.categoryname}}</span>-->
-            <el-button @click="tagOrCategory('category', article.category.id)" size="mini" type="primary" round plain>{{article.category.categoryName}}</el-button>
+            <el-button @click="tagOrCategory('category', article.category.id)" size="mini" type="primary" round plain>我是分类标题</el-button>
           </div>
 
           <div class="me-view-comment">
@@ -120,6 +122,7 @@
     },
     data() {
       return {
+        dialogTableVisible: false,
         article: {
           id: '',
           title: '',
@@ -173,10 +176,10 @@
       getArticle() {
         let that = this
         viewArticle(that.$route.params.id).then(data => {
+          data.data.tags = data.data.tags.split(',')
           Object.assign(that.article, data.data)
           that.article.editor.value = data.data.content
-
-          that.getCommentsByArticle()
+          // that.getCommentsByArticle()
         }).catch(error => {
           if (error !== 'error') {
             that.$message({type: 'error', message: '文章加载失败', showClose: true})

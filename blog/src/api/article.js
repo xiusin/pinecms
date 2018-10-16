@@ -32,7 +32,7 @@ export function getNewArtices() {
 
 export function viewArticle(id) {
   return request({
-    url: `/article/view/${id}`,
+    url: `/content/info/${id}`,
     method: 'get'
   })
 }

@@ -11,7 +11,6 @@
       </el-aside>
 
       <el-main class="me-articles" style="width: 720px;">
-        <div class="me-month-title">10月份</div>
         <article-scroll-page v-bind="article"></article-scroll-page>
       </el-main>
     </el-container>

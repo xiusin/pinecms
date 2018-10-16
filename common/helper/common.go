@@ -480,3 +480,9 @@ func VerifyVCaptcha(token string) bool {
 	}
 	return true
 }
+
+func JsonEncode(data interface{}) string {
+	dat, err := json.Marshal(data)
+	fmt.Println(err)
+	return string(dat)
+	}

@@ -9,6 +9,8 @@ import (
 	"iriscms/application/controllers"
 	"iriscms/application/models"
 	"iriscms/application/models/tables"
+	"encoding/json"
+	"iriscms/common/helper"
 )
 
 type CategoryController struct {
@@ -38,18 +40,17 @@ func (c *CategoryController) CategoryList() {
 	}
 	path := c.Ctx.Path()
 	topCatId := categoryPathMapToId[path]
-	cache_key := fmt.Sprintf(controllers.CACHE_CATEGORY_FORMAT, topCatId)
-	datas, err := redis.String(client.Do("GET",cache_key))
+	cacheKey := fmt.Sprintf(controllers.CACHE_CATEGORY_FORMAT, topCatId)
+	datas, err := redis.String(client.Do("GET", cacheKey))
 	var cats []tables.IriscmsCategory
 	if err != nil {
 		fmt.Println("不走缓存," + err.Error())
 		cats = models.NewCategoryModel(c.Orm).GetNextCategory(topCatId)
-		client.Do("SET", cache_key, cats, "EX", controllers.CACHE_EX)
+		if len(cats) > 0 {
+			client.Do("SET", cacheKey, helper.JsonEncode(cats), "EX", controllers.CACHE_EX)
+		}
 	} else {
-
-		//for _,v := range datas {
-		//	cats = append(cats, v.(tables.IriscmsCategory))
-		//}
+		json.Unmarshal([]byte(datas), &cats)
 	}
 	c.Ctx.JSON(ReturnApiData{Data: cats, Msg: "获取列表成功",Status:true})
 }
