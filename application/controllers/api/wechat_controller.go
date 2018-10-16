@@ -98,7 +98,7 @@ func (c *WechatController) EndPointGet() {
 		articles := make([]*message.Article, 1)
 		article := new(message.Article)
 		article.Title = content.Title
-		article.Description = "您好,资源下载密码为:" + content.SourcePwd
+		article.Description = "您好,资源下载密码为:" + content.SourcePwd + ". 用心提供最有质量的书籍视频,让您学到最有价值的知识. 开通vip下载专属资源."
 		if engine == "oss" {
 			article.PicURL = content.Thumb
 		} else {

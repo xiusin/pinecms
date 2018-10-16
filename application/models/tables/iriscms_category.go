@@ -1,16 +1,16 @@
 package tables
 
 type IriscmsCategory struct {
-	Catid       int64 `xorm:"pk"`
-	Parentid    int64
-	Catname     string
-	Type        int64
-	Description string
-	Thumb       string
-	Url         string
-	Listorder   int64
-	Ismenu      int64
-	TplPrefix   string
-	HomeTpl     string
-	ContentTpl  string
+	Catid       int64 `xorm:"pk" json:"Catid"`
+	Parentid    int64 `json:"Parentid"`
+	Catname     string `json:"Catname"`
+	Type        int64 `json:"Type"`
+	Description string `json:"Description"`
+	Thumb       string `json:"Thumb"`
+	Url         string `json:"Url"`
+	Listorder   int64 `json:"Listorder"`
+	Ismenu      int64 `json:"Ismenu"`
+	TplPrefix   string `json:"TplPrefix"`
+	HomeTpl     string `json:"HomeTpl"`
+	ContentTpl  string `json:"ContentTpl"`
 }

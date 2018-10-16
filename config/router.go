@@ -5,14 +5,12 @@ import (
 	"github.com/iris-contrib/middleware/cors"
 	jwt2 "github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
-	"github.com/kataras/iris/cache"
 	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/mvc"
 	"iriscms/application/controllers/api"
 	"iriscms/application/controllers/backend"
 	"iriscms/application/controllers/frontend"
 	"iriscms/application/controllers/middleware"
-	"time"
 	"net/http"
 )
 
@@ -46,7 +44,6 @@ func registerFrontendRoutes() {
 	config := BaseMvc(ApplicationConfig)
 	mvc.New(app).Configure(config).Party(
 		"/",
-		cache.Handler(10*time.Second),
 		middleware.FrontendGlobalViewData(app),
 	).Handle(new(frontend.IndexController))
 }

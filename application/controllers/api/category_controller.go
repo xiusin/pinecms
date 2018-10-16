@@ -1,15 +1,20 @@
 package api
 
 import (
+	"fmt"
+	"github.com/garyburd/redigo/redis"
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
+	"iriscms/application/controllers"
 	"iriscms/application/models"
+	"iriscms/application/models/tables"
 )
 
 type CategoryController struct {
 	Orm *xorm.Engine
 	Ctx iris.Context
+	RedisPool *redis.Pool
 }
 
 func (c *CategoryController) BeforeActivation(b mvc.BeforeActivation) {
@@ -20,6 +25,10 @@ func (c *CategoryController) BeforeActivation(b mvc.BeforeActivation) {
 }
 
 func (c *CategoryController) CategoryList() {
+
+	client := c.RedisPool.Get()
+	defer client.Close()
+
 	//path => topCateId
 	categoryPathMapToId := map[string]int64{
 		"/api/v1/free/video/list": 32,
@@ -29,7 +38,19 @@ func (c *CategoryController) CategoryList() {
 	}
 	path := c.Ctx.Path()
 	topCatId := categoryPathMapToId[path]
-	cats := models.NewCategoryModel(c.Orm).GetNextCategory(topCatId)
+	cache_key := fmt.Sprintf(controllers.CACHE_CATEGORY_FORMAT, topCatId)
+	datas, err := redis.String(client.Do("GET",cache_key))
+	var cats []tables.IriscmsCategory
+	if err != nil {
+		fmt.Println("不走缓存," + err.Error())
+		cats = models.NewCategoryModel(c.Orm).GetNextCategory(topCatId)
+		client.Do("SET", cache_key, cats, "EX", controllers.CACHE_EX)
+	} else {
+
+		//for _,v := range datas {
+		//	cats = append(cats, v.(tables.IriscmsCategory))
+		//}
+	}
 	c.Ctx.JSON(ReturnApiData{Data: cats, Msg: "获取列表成功",Status:true})
 }
 
