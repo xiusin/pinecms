@@ -5,7 +5,6 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"iriscms/common/helper"
 )
 
 type IndexController struct {
@@ -20,18 +19,7 @@ func (c *IndexController) BeforeActivation(b mvc.BeforeActivation) {
 }
 
 func (c *IndexController) Index() {
-	var d = map[string]interface{}{}
-	r, err := helper.Pay(c.Ctx)
-	if err != nil {
-		c.Ctx.JSON(err.Error())
-	} else {
-		err = r.ToJSON(&d)
-		if err != nil {
-			c.Ctx.JSON(err.Error())
-		} else {
-			c.Ctx.JSON(d)
-		}
-	}
+
 }
 
 func (c *IndexController) Resume() {

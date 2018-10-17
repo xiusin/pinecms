@@ -23,8 +23,7 @@
               size="mini"
               type="success"
               round
-              icon="el-icon-edit">编辑
-            </el-button>
+              icon="el-icon-edit">编辑</el-button>
           </div>
           <div class="me-view-content">
             <markdown-editor :editor=article.editor></markdown-editor>
@@ -36,40 +35,28 @@
     border-radius: 4px;
     border-left: 5px solid #50bfff;
     font-size: 13px;
-" v-if="article">
-            <b style="font-size: 14px; margin-bottom: 8px;">资源地址: <a :href="article.source_url" target="_blank">{{this.article.source_url}}</a></b>
+">
+            <b style="font-size: 14px; margin-bottom: 8px;">资源地址: <a :href="this.article.source_url" target="_blank">{{this.article.source_url}}</a></b>
             <br/>
             <br/>
-            <template v-if="article.pwd_type === 2 && article.money > 0">
-              <el-button @click="getPayUrl('alipay')">支付宝去获取资源密码 (积分: {{article.money}})</el-button>
-              <el-button @click="getPayUrl('wxpay')">微信去获取资源密码 (积分: {{article.money}})</el-button>
-            </template>
-            <template v-else>
-              获取下载密码:<br/>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[打开微信]->[扫描<span style="color: orangered;cursor: pointer"
-                                                                         @click="dialogTableVisible=true">二维码</span>]->[关注公众号]
-              <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;输入 <i style="color: orangered">{{article.id}}</i> 获取分享码
-              如果取消关注本公众号，再次关注即可再次享受服务！
-            </template>
+            获取下载密码:<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[打开微信]->[扫描<span style="color: orangered;cursor: pointer" @click="dialogTableVisible=true">二维码</span>]->[关注公众号]
+            <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;输入 <i style="color: orangered">{{this.article.id}}</i> 获取分享码 如果取消关注本公众号，再次关注即可再次享受服务！
           </el-card>
 
           <el-dialog title="公众号" :visible.sync="dialogTableVisible" width="395px">
-            <img src="../../../static/qrcode/wechat.jpg" style="width: 350px"/>
+              <img src="../../../static/qrcode/wechat.jpg" style="width: 350px" />
           </el-dialog>
 
           <div class="me-view-tag">
             标签：
             <!--<el-tag v-for="t in article.tags" :key="t.id" class="me-view-tag-item" size="mini" type="success">{{t.tagname}}</el-tag>-->
-            <el-button @click="tagOrCategory('tag', t)" size="mini" type="primary" v-for="t in article.tags" :key="t"
-                       round plain>{{t}}
-            </el-button>
+            <el-button @click="tagOrCategory('tag', t)" size="mini" type="primary" v-for="t in article.tags" :key="t" round plain>{{t}}</el-button>
           </div>
 
           <div class="me-view-tag">
             文章分类：
-            <el-button @click="tagOrCategory('category', article.category.id)" size="mini" type="primary" round plain>
-              我是分类标题
-            </el-button>
+            <el-button @click="tagOrCategory('category', article.category.id)" size="mini" type="primary" round plain>我是分类标题</el-button>
           </div>
 
           <div class="me-view-comment">
@@ -94,7 +81,7 @@
 
               <el-row :gutter="20">
                 <el-col :span="3" :offset="21">
-                  <el-button type="text" @click="publishComment()" style="margin-top: 5px;">评论</el-button>
+                  <el-button type="text"  @click="publishComment()" style="margin-top: 5px;">评论</el-button>
                 </el-col>
               </el-row>
             </div>
@@ -145,7 +132,7 @@
           createTime: '',
           author: {},
           tags: [],
-          category: {},
+          category:{},
           editor: {
             value: '',
             toolbarsFlag: false,
@@ -180,9 +167,6 @@
       this.getArticle()
     },
     methods: {
-      getPayUrl(payType) {
-        this.$router.push({path: `/buy/${this.$route.params.id}/` + payType})
-      },
       tagOrCategory(type, id) {
         this.$router.push({path: `/${type}/${id}`})
       },

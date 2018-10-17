@@ -349,22 +349,22 @@ func IsAjax(this context.Context) bool {
 	return this.GetHeader("X-Requested-With") == "XMLHttpRequest"
 }
 
-
-func Pay(this context.Context) (*req.Resp, error) {
+func Pay(this context.Context, paytype, title, tradeOrderId, fee string) (*req.Resp, error) {
 	appId := "20146123713"
 	appSecret := "6D7B025B8DD098C485F0805193136FB9"
-	tradeOrderId := strconv.Itoa(GetTimeStamp())
-
+	if paytype != "wechat" {
+		paytype = "alipay"
+	}
 	data := map[string]interface{}{
 		"version":        "1.1",                                                      //固定值，api 版本，目前暂时是1.1
 		"lang":           "zh-cn",                                                    //必须的，zh-cn或en-us 或其他，根据语言显示页面
 		"plugins":        "xiusin",                                                   //必须的，根据自己需要自定义插件ID，唯一的，匹配[a-zA-Z\d\-_]+
 		"appid":          appId,                                                      //必须的，APPID
 		"trade_order_id": tradeOrderId,                                               //必须的，网站订单ID，唯一的，匹配[a-zA-Z\d\-_]+
-		"payment":        "alipay",                                                   //必须的，支付接口标识：wechat(微信接口)|alipay(支付宝接口)
-		"total_fee":      "0.01",                                                     //人民币，单位精确到分(测试账户只支持0.1元内付款)
-		"title":          "耐克球鞋",                                                     //必须的，订单标题，长度32或以内
-		"time":           tradeOrderId,                                               //必须的，当前时间戳，根据此字段判断订单请求是否已超时，防止第三方攻击服务器
+		"payment":        paytype,                                                    //必须的，支付接口标识：wechat(微信接口)|alipay(支付宝接口)
+		"total_fee":      fee,                                                        //人民币，单位精确到分(测试账户只支持0.1元内付款)
+		"title":          title,                                                      //必须的，订单标题，长度32或以内
+		"time":           strconv.Itoa(GetTimeStamp()),                        //必须的，当前时间戳，根据此字段判断订单请求是否已超时，防止第三方攻击服务器
 		"notify_url":     "http://" + this.Request().URL.Host + "/api/v1/pay/notify", //必须的，支付成功异步回调接口
 		"return_url":     "http://" + this.Request().URL.Host + "/pay/success.html'", //必须的，支付成功后的跳转地址
 		"callback_url":   "http://" + this.Request().URL.Host + "/pay/checkout.htm",  //必须的，支付发起地址（未支付或支付失败，系统会会跳到这个地址让用户修改支付信息）
@@ -392,7 +392,7 @@ func Pay(this context.Context) (*req.Resp, error) {
 	data["hash"] = GetMd5(strings.TrimRight(arg.String(), "&") + appSecret)
 	payUrl := "https://pay.xunhupay.com/v2/payment/do.html"
 	req.Debug = true
-	req.SetTimeout(60 * time.Second)
+	req.SetTimeout(5 * time.Second)
 	byt, _ := json.Marshal(data)
 	fmt.Println(string(byt))
 	r, err := req.Post(payUrl, string(byt), req.Header{"Referer": this.Request().URL.String()})
@@ -404,6 +404,7 @@ func Pay(this context.Context) (*req.Resp, error) {
 	}
 	return r, nil
 }
+
 /**
 1. 配置多个邮箱发送
  */
@@ -414,10 +415,10 @@ func SendEmail(title, urlOrStr string, to []string, conf map[string]string) erro
 		port = 25
 	}
 	mailService := mailer.New(mailer.Config{
-		Host:     conf["EMAIL_SMTP"],
-		Username: conf["EMAIL_USER"],
-		Password: conf["EMAIL_PWD"],
-		Port:     port,
+		Host:      conf["EMAIL_SMTP"],
+		Username:  conf["EMAIL_USER"],
+		Password:  conf["EMAIL_PWD"],
+		Port:      port,
 		FromAlias: "xiusin",
 	})
 
@@ -445,10 +446,10 @@ func SendEmail(title, urlOrStr string, to []string, conf map[string]string) erro
     .logo-right{float:right;display:inline-block;padding-right:15px;}
 </style>
 <div class="main">
-    <div class="mail-title">`+ title +`</div>
+    <div class="mail-title">` + title + `</div>
     <div class="main-box">
         <p>` + title + `<br/>
-            `+str+`</p>
+            ` + str + `</p>
         <p class="csdn csdn-color">by XiuSin</p>
     </div>
 </div>
@@ -485,4 +486,4 @@ func JsonEncode(data interface{}) string {
 	dat, err := json.Marshal(data)
 	fmt.Println(err)
 	return string(dat)
-	}
+}

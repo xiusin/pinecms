@@ -79,6 +79,15 @@ const router = new Router({
             requireLogin: true
           },
         },
+
+        {
+          path: '/buy/:id/:paytype',
+          component: r => require.ensure([], () => r(require('@/views/Buy')), 'buy'),
+          meta: {
+            requireLogin: true
+          },
+        },
+
         {
           path: '/',
           component: r => require.ensure([], () => r(require('@/views/Index')), 'index')

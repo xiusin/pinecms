@@ -1,7 +1,6 @@
 import request from '@/request'
 
 export function getArticles(query, page) {
-  console.log(query)
   return request({
     url: '/RngNb/list',
     method: 'get',
@@ -16,10 +15,11 @@ export function getArticles(query, page) {
   })
 }
 
-export function getHotArtices() {
+export function goPay(data) {
   return request({
-    url: '/article/hot',
-    method: 'get'
+    url: '/content/pay',
+    method: 'post',
+    data: data
   })
 }
 

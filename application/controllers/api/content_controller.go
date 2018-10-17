@@ -1,10 +1,13 @@
 package api
 
 import (
+	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"iriscms/application/models/tables"
+	"iriscms/common/helper"
+	"strconv"
 )
 
 type ContentController struct {
@@ -15,6 +18,7 @@ type ContentController struct {
 func (c *ContentController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle(iris.MethodGet, "/RngNb/list", "ContentList")
 	b.Handle(iris.MethodGet, "/content/info/:id", "ContentInfo")
+	b.Handle(iris.MethodPost, "/content/pay", "ContentPay")
 }
 
 func (c *ContentController) ContentList() {
@@ -56,4 +60,49 @@ func (c *ContentController) ContentInfo() {
 		return
 	}
 	c.Ctx.JSON(ReturnApiData{Status: true, Msg: "获取资源成功", Data: content})
+}
+
+func (c *ContentController) ContentPay() {
+	data := map[string]string{}
+	err := c.Ctx.ReadJSON(&data)
+	if err != nil {
+		c.Ctx.JSON(ReturnApiData{Status: false, Msg: "接口异常", Data: nil})
+		return
+	}
+
+	var content tables.IriscmsContent
+	ok, _ := c.Orm.Id(data["id"]).Get(&content)
+	if !ok {
+		c.Ctx.JSON(ReturnApiData{Status: false, Msg: "资源不存在", Data: nil})
+		return
+	}
+
+	if content.DeletedAt > 0 || content.Status != 1 {
+		c.Ctx.JSON(ReturnApiData{Status: false, Msg: "资源不存在", Data: nil})
+		return
+	}
+
+	if content.Money == 0 || content.PwdType == 1 {
+		c.Ctx.JSON(ReturnApiData{Status: false, Msg: "资源已免费无需支付,请使用公众号获取资源密码", Data: nil})
+		return
+	}
+
+	//todo 查询登录人是否已经购买过
+	var d = map[string]interface{}{}
+	orderId := "OTS_" + strconv.Itoa(int(content.Id)) + "_" + strconv.Itoa(helper.GetTimeStamp())
+	fee := strconv.Itoa(int(content.Money))
+	r, err := helper.Pay(c.Ctx, data["paytype"], content.Title, orderId, fee)
+	if err != nil {
+		c.Ctx.JSON(ReturnApiData{Status: false, Msg: "获取支付链接失败" + err.Error()})
+	} else {
+		err = r.ToJSON(&d)
+		fmt.Println(d)
+		if err != nil {
+			c.Ctx.JSON(ReturnApiData{Status: false, Msg: "获取支付链接失败" + err.Error()})
+		} else {
+			d["order_id"] = orderId
+			d["title"] = content.Title
+			c.Ctx.JSON(ReturnApiData{Status: true, Msg: "获取支付链接成功", Data: d})
+		}
+	}
 }
