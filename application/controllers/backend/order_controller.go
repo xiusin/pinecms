@@ -16,4 +16,3 @@ type OrderController struct {
 func (c *OrderController) BeforeActivation(b mvc.BeforeActivation) {
 
 }
-

@@ -2,9 +2,9 @@ package models
 
 import (
 	"github.com/go-xorm/xorm"
-	"strconv"
-	"log"
 	"iriscms/application/models/tables"
+	"log"
+	"strconv"
 	"strings"
 )
 
@@ -13,7 +13,7 @@ type MenuModel struct {
 }
 
 func NewMenuModel(orm *xorm.Engine) *MenuModel {
-	return &MenuModel{Orm:orm}
+	return &MenuModel{Orm: orm}
 }
 
 //根据父级ID获取菜单列表 不递归
@@ -87,12 +87,12 @@ func (this MenuModel) GetRoleTree(parentid int64, roleid int64) []map[string]int
 	if len(*menus) != 0 {
 		for _, v := range *menus {
 			menu := map[string]interface{}{
-				"id" : v.Id,
-				"text" : v.Name,
-				"attributes":map[string]interface{}{
-					"parent" : this.GetParentIds(v.Id, ""),
+				"id":   v.Id,
+				"text": v.Name,
+				"attributes": map[string]interface{}{
+					"parent": this.GetParentIds(v.Id, ""),
 				},
-				"children":this.GetRoleTree(v.Id, roleid),
+				"children": this.GetRoleTree(v.Id, roleid),
 			}
 			if len(menu["children"].([]map[string]interface{})) > 0 {
 				menu["state"] = "closed"
@@ -110,11 +110,9 @@ func (this MenuModel) GetRoleTree(parentid int64, roleid int64) []map[string]int
 	return res
 }
 
-
-
 //获取菜单父级id
 func (this MenuModel) GetParentIds(id int64, result string) string {
-	menu := tables.IriscmsMenu{Id:id}
+	menu := tables.IriscmsMenu{Id: id}
 	has, _ := this.Orm.Get(&menu)
 	var parentid int64 = 0
 	if has {
@@ -132,8 +130,6 @@ func (this MenuModel) GetParentIds(id int64, result string) string {
 	return res
 }
 
-
-
 //检查菜单名称是否存在
 func (this MenuModel) CheckName(name string) bool {
 	has, _ := this.Orm.Get(&tables.IriscmsMenu{Name: name})
@@ -148,15 +144,15 @@ func (this MenuModel) GetInfo(id int64) (*tables.IriscmsMenu, bool) {
 }
 
 //获取selectTree
-func (this MenuModel) GetSelectTree(menus []tables.IriscmsMenu,parentid int64) []map[string]interface{} {
+func (this MenuModel) GetSelectTree(menus []tables.IriscmsMenu, parentid int64) []map[string]interface{} {
 	res := []map[string]interface{}{}
 	if len(menus) != 0 {
 		for _, v := range menus {
 			if parentid == v.Parentid {
 				menu := map[string]interface{}{
-					"id":v.Id,
-					"text":v.Name,
-					"children":this.GetSelectTree(menus, v.Id),
+					"id":       v.Id,
+					"text":     v.Name,
+					"children": this.GetSelectTree(menus, v.Id),
 				}
 				res = append(res, menu)
 			}

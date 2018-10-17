@@ -87,8 +87,8 @@
                     $.messager.alert('提示信息', res.errmsg, 'error');
                 } else {
                     $.messager.alert('提示信息', res.errmsg, 'info');
-                    $('#' + content_newslist_datagrid_id).datagrid('reload');
                 }
+                $('#' + content_newslist_datagrid_id).datagrid('reload');
             }, 'json');
         });
     }

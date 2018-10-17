@@ -19,7 +19,6 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/gorilla/securecookie"
 	"github.com/kataras/iris"
-	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/pprof"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
@@ -115,7 +114,7 @@ func StartApplication() {
 	//实例化服务器
 	app = iris.New()
 	//配置前端缓存10秒
-	app.Use(iris.Cache304(10 * time.Second))
+	//app.Use(iris.Cache304(10 * time.Second))
 	//配置PPROF
 	if ApplicationConfig.Pprof.Open {
 		app.Get(ApplicationConfig.Pprof.Route, pprof.New())
@@ -172,7 +171,7 @@ func StartApplication() {
 		ctx.Next()
 	})
 	//日志
-	app.Use(logger.New())
+	//app.Use(logger.New())
 	//注册错误路由
 	registerErrorRoutes()
 	//注册后端路由

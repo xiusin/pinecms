@@ -10,8 +10,8 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
-	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/disk"
+	"github.com/shirou/gopsutil/mem"
 	"iriscms/common/helper"
 )
 
@@ -68,8 +68,8 @@ func (this *IndexController) Main() {
 
 	this.Ctx.ViewData("SiteSize", siteSize)
 	this.Ctx.ViewData("NumCPU", runtime.NumCPU())
-	this.Ctx.ViewData("GoVersion", "Version " + strings.ToUpper(runtime.Version()))
-	this.Ctx.ViewData("IrisVersion", "Version " + iris.Version)
+	this.Ctx.ViewData("GoVersion", "Version "+strings.ToUpper(runtime.Version()))
+	this.Ctx.ViewData("IrisVersion", "Version "+iris.Version)
 	this.Ctx.ViewData("Goos", strings.ToUpper(runtime.GOOS))
 	this.Ctx.ViewData("Grountues", runtime.NumGoroutine())
 	if vm != nil {

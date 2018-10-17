@@ -6,6 +6,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
+	"iriscms/application/controllers"
 	"iriscms/application/models/tables"
 )
 
@@ -22,7 +23,7 @@ func SetGlobalConfigData(xorm *xorm.Engine, redisClient *redis.Pool) func(ctx co
 		var settingData = map[string]string{}
 		client := redisClient.Get()
 		defer client.Close()
-		res, err := redis.StringMap(client.Do("GET", "setting"))
+		res, err := redis.String(client.Do("GET", controllers.CACHE_SETTING))
 		if err != nil || len(res) == 0 {
 			var settings []tables.IriscmsSetting
 			err := xorm.Find(&settings)
@@ -38,17 +39,17 @@ func SetGlobalConfigData(xorm *xorm.Engine, redisClient *redis.Pool) func(ctx co
 			}
 			setDataStr, err := json.Marshal(settingData)
 			if err == nil {
-				_, err = client.Do("SET", "setting", string(setDataStr))
+				_, err = client.Do("SET", controllers.CACHE_SETTING, string(setDataStr))
 				if err != nil {
-					ctx.Application().Logger().Error("保存配置到redis失败",err.Error())
+					ctx.Application().Logger().Error("保存配置到redis失败", err.Error())
 				}
 			} else {
-				ctx.Application().Logger().Error("保存配置到redis失败",err.Error())
+				ctx.Application().Logger().Error("保存配置到redis失败", err.Error())
 			}
 		} else {
-			res = settingData
+			json.Unmarshal([]byte(res), &settingData)
 		}
-		ctx.Values().Set("setting", settingData)
+		ctx.Values().Set(controllers.CACHE_SETTING, settingData) //todo 这里有问题吗?
 		ctx.Next()
 	}
 

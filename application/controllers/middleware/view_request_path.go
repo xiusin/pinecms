@@ -7,11 +7,13 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
 )
+
 const logPath = "runtime/logs/"
-func init()  {
+
+func init() {
 	f, err := os.Stat(logPath)
-	if (err != nil && !os.IsExist(err)) ||  f.IsDir(){
-		err := os.MkdirAll(logPath,os.ModePerm)
+	if (err != nil && !os.IsExist(err)) || f.IsDir() {
+		err := os.MkdirAll(logPath, os.ModePerm)
 		if err != nil {
 			panic(err)
 		}

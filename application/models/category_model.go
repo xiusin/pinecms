@@ -76,8 +76,8 @@ func (this CategoryModel) GetContentRightCategoryTree(categorys []tables.Iriscms
 				maps = append(maps, map[string]interface{}{
 					"id":       v.Catid,
 					"text":     v.Catname,
-					"type" :    v.Type,
-					"url" :     v.Url,
+					"type":     v.Type,
+					"url":      v.Url,
 					"children": this.GetContentRightCategoryTree(categorys, v.Catid),
 				})
 			}
@@ -119,6 +119,7 @@ func (this CategoryModel) UpdateCategory(category tables.IriscmsCategory) bool {
 	}
 	return true
 }
+
 //判断是否是子分类
 func (this CategoryModel) IsSonCategory(id, parentid int64) bool {
 	cat := []tables.IriscmsCategory{}

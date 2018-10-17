@@ -1,7 +1,7 @@
 package tables
 
 type IriscmsAdmin struct {
-	Userid        int64 `xorm:"pk"`
+	Userid        int64  `xorm:"pk"`
 	Username      string `xorm:"unique"`
 	Password      string
 	Roleid        int64

@@ -1,7 +1,7 @@
 package tables
 
 type IriscmsAdminRole struct {
-	Roleid      int64 `xorm:"pk"`
+	Roleid      int64  `xorm:"pk"`
 	Rolename    string `xorm:"unique"`
 	Description string
 	Listorder   int64

@@ -5,35 +5,33 @@ import (
 	"iriscms/common/helper"
 
 	"github.com/go-xorm/xorm"
-	"iriscms/application/models"
-	"strconv"
-	"iriscms/application/models/tables"
-	"github.com/kataras/iris/sessions"
-	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris"
+	"github.com/kataras/iris/mvc"
+	"github.com/kataras/iris/sessions"
+	"iriscms/application/models"
+	"iriscms/application/models/tables"
+	"strconv"
 )
 
 type CategoryController struct {
-	Ctx iris.Context
-	Orm *xorm.Engine
+	Ctx     iris.Context
+	Orm     *xorm.Engine
 	Session *sessions.Session
 }
 
 func (c *CategoryController) BeforeActivation(b mvc.BeforeActivation) {
 	//分类相关
-	b.Handle("ANY","/category/list", "CategoryList")
-	b.Handle("ANY","/category/category-add", "CategoryAdd")
-	b.Handle("ANY","/category/category-edit", "CategoryEdit")
-	b.Handle("ANY","/category/category-select", "CategorySelect")
-	b.Handle("ANY","/category/category-delete", "CategoryDelete")
-	b.Handle("ANY","/category/category-order", "CategoryOrder")
+	b.Handle("ANY", "/category/list", "CategoryList")
+	b.Handle("ANY", "/category/category-add", "CategoryAdd")
+	b.Handle("ANY", "/category/category-edit", "CategoryEdit")
+	b.Handle("ANY", "/category/category-select", "CategorySelect")
+	b.Handle("ANY", "/category/category-delete", "CategoryDelete")
+	b.Handle("ANY", "/category/category-order", "CategoryOrder")
 }
-
-
 
 func (this *CategoryController) CategoryList() {
 	if this.Ctx.URLParam("grid") == "treegrid" {
-		this.Ctx.JSON(models.NewCategoryModel(this.Orm).GetTree(models.NewCategoryModel(this.Orm).GetAll(),0))
+		this.Ctx.JSON(models.NewCategoryModel(this.Orm).GetTree(models.NewCategoryModel(this.Orm).GetAll(), 0))
 		return
 	}
 	menuid, _ := this.Ctx.URLParamInt64("menuid")
@@ -50,7 +48,7 @@ func (this *CategoryController) CategoryList() {
 		"状态":   {"field": "ismenu", "width": "20", "formatter": "categoryCategoryListStateFormatter", "index": "4"},
 		"管理操作": {"field": "catid", "width": "50", "sortable": "true", "align": "center", "formatter": "categoryCategoryListOperateFormatter", "index": "5"},
 	})
-	this.Ctx.ViewData("TreeGrid",template.HTML(table))
+	this.Ctx.ViewData("TreeGrid", template.HTML(table))
 	this.Ctx.View("backend/category_list.html")
 }
 
@@ -107,12 +105,12 @@ func (this *CategoryController) CategoryAdd() {
 		this.Ctx.WriteString(err.Error())
 		return
 	}
-	this.Ctx.ViewData("typelist",[]string{
+	this.Ctx.ViewData("typelist", []string{
 		0: "栏目",
 		1: "页面",
 		2: "链接",
 	})
-	this.Ctx.ViewData("parentid",parentid)
+	this.Ctx.ViewData("parentid", parentid)
 	this.Ctx.View("backend/category_add.html")
 }
 
@@ -168,8 +166,8 @@ func (this *CategoryController) CategoryEdit() {
 		return
 	}
 
-	this.Ctx.ViewData("category",category)
-	this.Ctx.ViewData("typelist",[]string{
+	this.Ctx.ViewData("category", category)
+	this.Ctx.ViewData("typelist", []string{
 		0: "栏目",
 		1: "页面",
 		2: "链接",

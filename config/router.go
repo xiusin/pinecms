@@ -29,9 +29,8 @@ func registerBackendRoutes() {
 		Handle(new(backend.CategoryController)).
 		Handle(new(backend.ContentController)).
 		Handle(new(backend.SettingController)).
-		Handle(new(backend.WechatController)).
-		Handle(new(backend.SystemController)).Handle(new(backend.MemberController))
-
+		Handle(new(backend.SystemController)).
+		Handle(new(backend.MemberController))
 
 	mvc.New(app).Configure(config).Party(
 		"/public",
@@ -87,7 +86,7 @@ func Jwt() func(ctx context.Context) {
 			SigningMethod:       jwt.SigningMethodHS256,
 			CredentialsOptional: true, //如果不传递默认未登录状态即可
 			ErrorHandler: func(i context.Context, s string) {
-				i.Header("session_time_out","timeout")
+				i.Header("Session_time_out", "timeout")
 				i.StatusCode(http.StatusOK)
 				i.JSON(iris.Map{})
 			},

@@ -1,43 +1,42 @@
 package backend
 
 import (
-	"html/template"
-	"iriscms/common/helper"
-	"iriscms/application/models"
-	"github.com/go-xorm/xorm"
-	"strconv"
-	"log"
-	"strings"
-	"iriscms/application/models/tables"
 	"fmt"
-	"github.com/kataras/iris/sessions"
-	"github.com/kataras/iris/mvc"
+	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
+	"github.com/kataras/iris/mvc"
+	"github.com/kataras/iris/sessions"
+	"html/template"
+	"iriscms/application/models"
+	"iriscms/application/models/tables"
+	"iriscms/common/helper"
+	"log"
+	"strconv"
+	"strings"
 )
 
 type AdminController struct {
-	Orm *xorm.Engine
-	Ctx iris.Context	//存在则自动绑定
+	Orm     *xorm.Engine
+	Ctx     iris.Context //存在则自动绑定
 	Session *sessions.Session
 }
 
-
 func (c *AdminController) BeforeActivation(b mvc.BeforeActivation) {
-	b.Handle("ANY","/admin/memberlist", "Memberlist")
-	b.Handle("ANY","/admin/public-editpwd", "PublicEditpwd")
-	b.Handle("ANY","/admin/public-editinfo", "PublicEditInfo")
-	b.Handle("POST","/admin/public-checkEmail", "PublicCheckEmail")
-	b.Handle("POST","/admin/public-checkName", "PubicCheckName")
-	b.Handle("POST","/admin/check-password", "PublicCheckPassword")
-	b.Handle("ANY","/admin/member-add", "MemberAdd")
-	b.Handle("ANY","/admin/member-edit", "MemberEdit")
-	b.Handle("ANY","/admin/member-delete", "MemberDelete")
-	b.Handle("ANY","/admin/rolelist", "RoleList")
-	b.Handle("ANY","/admin/role-add", "RoleAdd")
-	b.Handle("ANY","/admin/role-edit", "RoleEdit")
-	b.Handle("ANY","/admin/role-delete", "RoleDelete")
-	b.Handle("ANY","/admin/role-permission", "RolePermission")
-	b.Handle("ANY","/admin/check-rolename", "PublicCheckRoleName")
+	b.Handle("ANY", "/admin/memberlist", "Memberlist")
+	b.Handle("ANY", "/admin/public-editpwd", "PublicEditpwd")
+	b.Handle("ANY", "/admin/public-editinfo", "PublicEditInfo")
+	b.Handle("POST", "/admin/public-checkEmail", "PublicCheckEmail")
+	b.Handle("POST", "/admin/public-checkName", "PubicCheckName")
+	b.Handle("POST", "/admin/check-password", "PublicCheckPassword")
+	b.Handle("ANY", "/admin/member-add", "MemberAdd")
+	b.Handle("ANY", "/admin/member-edit", "MemberEdit")
+	b.Handle("ANY", "/admin/member-delete", "MemberDelete")
+	b.Handle("ANY", "/admin/rolelist", "RoleList")
+	b.Handle("ANY", "/admin/role-add", "RoleAdd")
+	b.Handle("ANY", "/admin/role-edit", "RoleEdit")
+	b.Handle("ANY", "/admin/role-delete", "RoleDelete")
+	b.Handle("ANY", "/admin/role-permission", "RolePermission")
+	b.Handle("ANY", "/admin/check-rolename", "PublicCheckRoleName")
 
 }
 
@@ -46,7 +45,6 @@ func (c *AdminController) AfterActivation(a mvc.AfterActivation) {
 		panic("basicController should be stateless, a request-scoped, we have a 'Session' which depends on the context.")
 	}
 }
-
 
 //用于用户列表数据格式返回
 type memberlist struct {
@@ -63,9 +61,9 @@ func (this *AdminController) PublicEditInfo() {
 	aid, _ := this.Ctx.Values().GetInt64("adminid") //检测是否设置过session
 	if this.Ctx.Method() == "POST" {
 		info := tables.IriscmsAdmin{
-			Userid:aid,
+			Userid: aid,
 		}
-		has, _ := this.Orm.Get(&info)        //读取用户资料
+		has, _ := this.Orm.Get(&info) //读取用户资料
 		if !has {
 			helper.Ajax("用户资料已经不存在", 1, this.Ctx)
 		} else {
@@ -73,12 +71,12 @@ func (this *AdminController) PublicEditInfo() {
 			info.Email = this.Ctx.PostValue("email")
 			res, err := this.Orm.Id(aid).Update(info)
 			if err != nil {
-				helper.Ajax("修改资料失败" + err.Error() , 1, this.Ctx)
+				helper.Ajax("修改资料失败"+err.Error(), 1, this.Ctx)
 			} else {
 				if res > 0 {
 					helper.Ajax("修改资料成功", 0, this.Ctx)
 				} else {
-					helper.Ajax("修改资料失败" , 1, this.Ctx)
+					helper.Ajax("修改资料失败", 1, this.Ctx)
 				}
 			}
 		}
@@ -119,13 +117,13 @@ func (this *AdminController) Memberlist() {
 		//将数据以map的方式返回吧.
 		for _, v := range data {
 			item := memberlist{
-				Email:v.Email,
-				Lastloginip : v.Lastloginip,
-				Lastlogintime : helper.FormatTime(v.Lastlogintime),
-				Realname : v.Realname,
-				Rolename : "",
-				Userid : v.Userid,
-				Username : v.Username,
+				Email:         v.Email,
+				Lastloginip:   v.Lastloginip,
+				Lastlogintime: helper.FormatTime(v.Lastlogintime),
+				Realname:      v.Realname,
+				Rolename:      "",
+				Userid:        v.Userid,
+				Username:      v.Username,
 			}
 			roleInfo, err := models.NewAdminModel(this.Orm).GetRoleById(int64(v.Roleid))
 			if err != nil {
@@ -146,13 +144,13 @@ func (this *AdminController) Memberlist() {
 		"title":   models.NewMenuModel(this.Orm).CurrentPos(menuid),
 		"toolbar": "admin_memberlist_datagrid_toolbar",
 	}, helper.EasyuiGridfields{
-		"用户名":    {"field": "Username", "width": "15", "sortable": "true", "index":"0"},
-		"所属角色":   {"field": "Rolename", "width": "15", "sortable": "true", "index":"1"},
-		"最后登录IP": {"field": "Lastloginip", "width": "15", "sortable": "true", "index":"2"},
-		"最后登录时间": {"field": "Lastlogintime", "width": "15", "sortable": "true", "formatter": "adminMemberListTimeFormatter", "index":"3"},
-		"E-mail": {"field": "Email", "width": "25", "sortable": "true", "index":"4"},
-		"真实姓名":   {"field": "Realname", "width": "15", "sortable": "true", "index":"5"},
-		"管理操作":   {"field": "Userid", "width": "15", "sortable": "true", "formatter": "adminMemberListOperateFormatter", "index":"6"},
+		"用户名":    {"field": "Username", "width": "15", "sortable": "true", "index": "0"},
+		"所属角色":   {"field": "Rolename", "width": "15", "sortable": "true", "index": "1"},
+		"最后登录IP": {"field": "Lastloginip", "width": "15", "sortable": "true", "index": "2"},
+		"最后登录时间": {"field": "Lastlogintime", "width": "15", "sortable": "true", "formatter": "adminMemberListTimeFormatter", "index": "3"},
+		"E-mail": {"field": "Email", "width": "25", "sortable": "true", "index": "4"},
+		"真实姓名":   {"field": "Realname", "width": "15", "sortable": "true", "index": "5"},
+		"管理操作":   {"field": "Userid", "width": "15", "sortable": "true", "formatter": "adminMemberListOperateFormatter", "index": "6"},
 	})
 	this.Ctx.ViewData("table", template.HTML(table))
 	this.Ctx.View("backend/admin_memberlist.html")
@@ -187,7 +185,7 @@ func (this *AdminController) PublicEditpwd() {
 }
 
 func (this *AdminController) PublicCheckEmail() {
-	info := &tables.IriscmsAdmin{Username:this.Ctx.FormValue("name")}
+	info := &tables.IriscmsAdmin{Username: this.Ctx.FormValue("name")}
 	has, _ := this.Orm.Get(info)
 	if !has {
 		helper.Ajax("没有相同的用户名", 0, this.Ctx)
@@ -210,7 +208,7 @@ func (this *AdminController) PublicCheckPassword() {
 	helper.Ajax("验证密码成功", 0, this.Ctx)
 }
 func (this *AdminController) PubicCheckName() {
-	info := &tables.IriscmsAdmin{Username:this.Ctx.FormValue("name")}
+	info := &tables.IriscmsAdmin{Username: this.Ctx.FormValue("name")}
 	uid, _ := this.Ctx.URLParamInt64("id")
 	has, _ := this.Orm.Get(info)
 	fmt.Println(uid, info.Userid)
@@ -224,7 +222,7 @@ func (this *AdminController) PubicCheckName() {
 func (this *AdminController) PublicCheckRoleName() {
 	rolename := this.Ctx.FormValue("rolename")
 	if !helper.IsAjax(this.Ctx) || rolename == "" {
-		helper.Ajax("参数错误 ," + rolename, 1, this.Ctx)
+		helper.Ajax("参数错误 ,"+rolename, 1, this.Ctx)
 		return
 	}
 	defaultName := this.Ctx.FormValue("default")
@@ -255,12 +253,12 @@ func (this *AdminController) MemberAdd() {
 		}
 		str := string(helper.Krand(6, 3))
 		newAdmin := &tables.IriscmsAdmin{
-			Username:this.Ctx.FormValue("username"),
-			Password:helper.Password(this.Ctx.FormValue("password"), str),
-			Email:this.Ctx.FormValue("email"),
-			Encrypt:str,
-			Realname:this.Ctx.FormValue("realname"),
-			Roleid:int64(roleid),
+			Username: this.Ctx.FormValue("username"),
+			Password: helper.Password(this.Ctx.FormValue("password"), str),
+			Email:    this.Ctx.FormValue("email"),
+			Encrypt:  str,
+			Realname: this.Ctx.FormValue("realname"),
+			Roleid:   int64(roleid),
 		}
 		id, err := this.Orm.Insert(newAdmin)
 		if id > 0 {
@@ -308,7 +306,7 @@ func (this *AdminController) MemberEdit() {
 		if this.Ctx.FormValue("password") != "" {
 			info.Password = helper.Password(this.Ctx.PostValue("password"), info.Encrypt)
 		}
-		res , err := this.Orm.Where("userid = ?",info.Userid).Update(info)
+		res, err := this.Orm.Where("userid = ?", info.Userid).Update(info)
 		if err != nil {
 			helper.Ajax(err.Error(), 0, this.Ctx)
 			return
@@ -332,7 +330,7 @@ func (this *AdminController) MemberDelete() {
 		helper.Ajax("参数错误", 1, this.Ctx)
 		return
 	}
-	deleteAdmin := &tables.IriscmsAdmin{Userid:int64(id)}
+	deleteAdmin := &tables.IriscmsAdmin{Userid: int64(id)}
 	res, err := this.Orm.Delete(deleteAdmin)
 	if err != nil || helper.IsFalse(res) {
 		helper.Ajax("删除失败", 1, this.Ctx)
@@ -361,18 +359,18 @@ func (this *AdminController) RoleList() {
 		data := models.NewAdminModel(this.Orm).GetRoleList("1", page, 1000)
 		this.Ctx.JSON(map[string]interface{}{
 			"total": len(data),
-			"rows": data,
+			"rows":  data,
 		})
 		return
 	}
 
 	datagrid := helper.Datagrid("admin_rolelist_list_datagrid", "/b/admin/rolelist?grid=datagrid", helper.EasyuiOptions{
-		"title":models.NewMenuModel(this.Orm).CurrentPos(menuid),
+		"title":   models.NewMenuModel(this.Orm).CurrentPos(menuid),
 		"toolbar": "admin_rolelist_datagrid_toolbar",
 	}, helper.EasyuiGridfields{
-		"角色名称": {"field": "Rolename", "width": "15", "index":"0"},
-		"角色描述": {"field": "Description", "width": "15", "index":"1"},
-		"管理操作":   {"field": "Roleid", "width": "15", "formatter": "adminRoleListOperateFormatter", "index":"2"},
+		"角色名称": {"field": "Rolename", "width": "15", "index": "0"},
+		"角色描述": {"field": "Description", "width": "15", "index": "1"},
+		"管理操作": {"field": "Roleid", "width": "15", "formatter": "adminRoleListOperateFormatter", "index": "2"},
 	})
 	this.Ctx.ViewData("datagrid", template.HTML(datagrid))
 	this.Ctx.View("backend/member_rolelist.html")
@@ -476,7 +474,7 @@ func (this *AdminController) RolePermission() {
 		if this.Ctx.URLParam("dosubmit") == "1" {
 			_, err := this.Orm.Where("roleid=?", roleid).Delete(&tables.IriscmsAdminRolePriv{})
 			if err != nil {
-				helper.Ajax("设置权限失败 " + err.Error(), 1, this.Ctx)
+				helper.Ajax("设置权限失败 "+err.Error(), 1, this.Ctx)
 				return
 			}
 			menuIds := strings.Split(this.Ctx.FormValue("menuids"), ",")
@@ -490,15 +488,15 @@ func (this *AdminController) RolePermission() {
 				if err != nil || menuid < 1 {
 					continue
 				}
-				menu := tables.IriscmsMenu{Id:int64(menuid)}
+				menu := tables.IriscmsMenu{Id: int64(menuid)}
 				has, err := this.Orm.Get(&menu)
 				if err != nil || !has {
 					continue
 				}
 				inserts = append(inserts, tables.IriscmsAdminRolePriv{
-					Roleid:roleid,
-					A:menu.A,
-					C:menu.C,
+					Roleid: roleid,
+					A:      menu.A,
+					C:      menu.C,
 				})
 			}
 			if len(inserts) == 0 {

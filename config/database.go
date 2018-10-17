@@ -10,23 +10,21 @@ type DatabaseMysql struct {
 }
 
 type DatabaseRedis struct {
-
 }
 
 type DatabaseMemcached struct {
-
 }
 
 type DatabaseConfig struct {
-	Mysql     DatabaseMysql `yaml:"mysql"`
-	Redis     DatabaseRedis `yaml:"redis"`
+	Mysql     DatabaseMysql     `yaml:"mysql"`
+	Redis     DatabaseRedis     `yaml:"redis"`
 	Memcached DatabaseMemcached `yaml:"memcached"`
-	Orm       Orm `yaml:"orm"`
+	Orm       Orm               `yaml:"orm"`
 }
 
 type Orm struct {
-	ShowSql      bool `yaml:"show_sql"`
-	ShowExecTime bool `yaml:"show_exec_time"`
+	ShowSql      bool  `yaml:"show_sql"`
+	ShowExecTime bool  `yaml:"show_exec_time"`
 	MaxOpenConns int64 `yaml:"max_open_conns"`
 	MaxIdleConns int64 `yaml:"max_idle_conns"`
 }

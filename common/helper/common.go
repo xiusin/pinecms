@@ -364,7 +364,7 @@ func Pay(this context.Context, paytype, title, tradeOrderId, fee string) (*req.R
 		"payment":        paytype,                                                    //必须的，支付接口标识：wechat(微信接口)|alipay(支付宝接口)
 		"total_fee":      fee,                                                        //人民币，单位精确到分(测试账户只支持0.1元内付款)
 		"title":          title,                                                      //必须的，订单标题，长度32或以内
-		"time":           strconv.Itoa(GetTimeStamp()),                        //必须的，当前时间戳，根据此字段判断订单请求是否已超时，防止第三方攻击服务器
+		"time":           strconv.Itoa(GetTimeStamp()),                               //必须的，当前时间戳，根据此字段判断订单请求是否已超时，防止第三方攻击服务器
 		"notify_url":     "http://" + this.Request().URL.Host + "/api/v1/pay/notify", //必须的，支付成功异步回调接口
 		"return_url":     "http://" + this.Request().URL.Host + "/pay/success.html'", //必须的，支付成功后的跳转地址
 		"callback_url":   "http://" + this.Request().URL.Host + "/pay/checkout.htm",  //必须的，支付发起地址（未支付或支付失败，系统会会跳到这个地址让用户修改支付信息）
@@ -391,7 +391,7 @@ func Pay(this context.Context, paytype, title, tradeOrderId, fee string) (*req.R
 	fmt.Println(GetMd5(strings.TrimRight(arg.String(), "&") + appSecret))
 	data["hash"] = GetMd5(strings.TrimRight(arg.String(), "&") + appSecret)
 	payUrl := "https://pay.xunhupay.com/v2/payment/do.html"
-	req.Debug = true
+	req.Debug = false
 	req.SetTimeout(5 * time.Second)
 	byt, _ := json.Marshal(data)
 	fmt.Println(string(byt))
@@ -407,7 +407,7 @@ func Pay(this context.Context, paytype, title, tradeOrderId, fee string) (*req.R
 
 /**
 1. 配置多个邮箱发送
- */
+*/
 func SendEmail(title, urlOrStr string, to []string, conf map[string]string) error {
 	//todo map如何用指针传递???
 	port, err := strconv.Atoi(conf["EMAIL_PORT"])

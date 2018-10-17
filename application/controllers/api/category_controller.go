@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"github.com/go-xorm/xorm"
@@ -9,13 +10,12 @@ import (
 	"iriscms/application/controllers"
 	"iriscms/application/models"
 	"iriscms/application/models/tables"
-	"encoding/json"
 	"iriscms/common/helper"
 )
 
 type CategoryController struct {
-	Orm *xorm.Engine
-	Ctx iris.Context
+	Orm       *xorm.Engine
+	Ctx       iris.Context
 	RedisPool *redis.Pool
 }
 
@@ -52,21 +52,21 @@ func (c *CategoryController) CategoryList() {
 	} else {
 		json.Unmarshal([]byte(datas), &cats)
 	}
-	c.Ctx.JSON(ReturnApiData{Data: cats, Msg: "获取列表成功",Status:true})
+	c.Ctx.JSON(ReturnApiData{Data: cats, Msg: "获取列表成功", Status: true})
 }
 
-func  (c *CategoryController) FreeVideoList()  {
+func (c *CategoryController) FreeVideoList() {
 	c.CategoryList()
 }
 
-func  (c *CategoryController) FreeBookList()  {
+func (c *CategoryController) FreeBookList() {
 	c.CategoryList()
 }
 
-func  (c *CategoryController) PaidVideoList()  {
+func (c *CategoryController) PaidVideoList() {
 	c.CategoryList()
 }
 
-func  (c *CategoryController) PaidBookList()  {
+func (c *CategoryController) PaidBookList() {
 	c.CategoryList()
 }

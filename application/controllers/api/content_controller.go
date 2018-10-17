@@ -87,9 +87,9 @@ func (c *ContentController) ContentPay() {
 		return
 	}
 
-	//todo 查询登录人是否已经购买过
+	//todo 检查是否存在未支付的订单
 	var d = map[string]interface{}{}
-	orderId := "OTS_" + strconv.Itoa(int(content.Id)) + "_" + strconv.Itoa(helper.GetTimeStamp())
+	orderId := "U" + "LOGINID" + "A" + strconv.Itoa(int(content.Id)) + "T" + strconv.Itoa(helper.GetTimeStamp())
 	fee := strconv.Itoa(int(content.Money))
 	r, err := helper.Pay(c.Ctx, data["paytype"], content.Title, orderId, fee)
 	if err != nil {
@@ -101,7 +101,7 @@ func (c *ContentController) ContentPay() {
 			c.Ctx.JSON(ReturnApiData{Status: false, Msg: "获取支付链接失败" + err.Error()})
 		} else {
 			d["order_id"] = orderId
-			d["title"] = content.Title
+			d["title"] = content.Title //未支付的订单直接返还给客户
 			c.Ctx.JSON(ReturnApiData{Status: true, Msg: "获取支付链接成功", Data: d})
 		}
 	}

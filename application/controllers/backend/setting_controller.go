@@ -132,7 +132,6 @@ var SiteConfig = ConfigStruct{
 		"default": "",
 	},
 
-
 	"OSS_ENDPOINT": {
 		"name":    "ENDPOINT",
 		"group":   "OSS存储配置",

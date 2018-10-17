@@ -54,8 +54,8 @@ func (c *UserApiController) UserLogin() {
 
 		claims := jwt.MapClaims{ //为了匹配中间件, 在这里使用相同的配置
 			"user": user,
-			"exp": time.Now().Add(time.Hour * time.Duration(1)).Unix(), //过期时间
-			"iat": time.Now().Unix(),                                   // 当前时间戳
+			"exp":  time.Now().Add(time.Hour * time.Duration(1)).Unix(), //过期时间
+			"iat":  time.Now().Unix(),                                   // 当前时间戳
 		}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 		tokenString, err := token.SignedString([]byte("MySecret"))

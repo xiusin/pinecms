@@ -1,6 +1,5 @@
 package tables
 
-
 type IriscmsMenu struct {
 	Id        int64 `xorm:"pk"`
 	Name      string

@@ -2,10 +2,10 @@ package models
 
 import (
 	"errors"
-	"iriscms/common/helper"
 	"github.com/go-xorm/xorm"
-	"log"
 	"iriscms/application/models/tables"
+	"iriscms/common/helper"
+	"log"
 )
 
 type AdminModel struct {
@@ -13,7 +13,7 @@ type AdminModel struct {
 }
 
 func NewAdminModel(orm *xorm.Engine) *AdminModel {
-	return &AdminModel{Orm:orm}
+	return &AdminModel{Orm: orm}
 }
 
 //登录用户
@@ -73,7 +73,7 @@ func (this AdminModel) GetList(where string, page, rows int, order string, sortT
 	return admins
 }
 
-func (this AdminModel)GetRoleList(where string, page, rows int) []tables.IriscmsAdminRole {
+func (this AdminModel) GetRoleList(where string, page, rows int) []tables.IriscmsAdminRole {
 	start := (page - 1) * rows
 	myroles := []tables.IriscmsAdminRole{}
 	err := this.Orm.Where(where).Limit(rows, start).Find(&myroles)
@@ -84,7 +84,7 @@ func (this AdminModel)GetRoleList(where string, page, rows int) []tables.Iriscms
 }
 
 func (this AdminModel) CheckRoleName(rolename string) bool {
-	role, err := this.Orm.Get(&tables.IriscmsAdminRole{Rolename:rolename})
+	role, err := this.Orm.Get(&tables.IriscmsAdminRole{Rolename: rolename})
 	if err != nil {
 		return false
 	}
@@ -93,10 +93,10 @@ func (this AdminModel) CheckRoleName(rolename string) bool {
 
 func (this AdminModel) AddRole(rolename, description string, disabled, listorder int64) bool {
 	new_role := tables.IriscmsAdminRole{
-		Rolename:rolename,
-		Description:description,
-		Disabled: disabled,
-		Listorder:listorder,
+		Rolename:    rolename,
+		Description: description,
+		Disabled:    disabled,
+		Listorder:   listorder,
 	}
 	insertId, err := this.Orm.Insert(&new_role)
 	if err != nil || insertId == 0 {
@@ -107,13 +107,13 @@ func (this AdminModel) AddRole(rolename, description string, disabled, listorder
 }
 
 func (this AdminModel) GetRoleById(id int64) (tables.IriscmsAdminRole, error) {
-	role := tables.IriscmsAdminRole{Roleid:id}
+	role := tables.IriscmsAdminRole{Roleid: id}
 	_, err := this.Orm.Get(&role)
 	return role, err
 }
 
 func (this AdminModel) UpdateRole(role tables.IriscmsAdminRole) bool {
-	res, err := this.Orm.Where("roleid=?",role.Roleid).Update(&role)
+	res, err := this.Orm.Where("roleid=?", role.Roleid).Update(&role)
 	if err != nil || res == 0 {
 		log.Println("AdminModel::UpdateRole", err, res)
 		return false
@@ -131,11 +131,10 @@ func (this AdminModel) DeleteRole(role tables.IriscmsAdminRole) bool {
 }
 
 func (this AdminModel) HasAdminByRoleId(roleid int64) bool {
-	res, err := this.Orm.Count(&tables.IriscmsAdmin{Roleid:roleid})
+	res, err := this.Orm.Count(&tables.IriscmsAdmin{Roleid: roleid})
 	if err != nil || res == 0 {
 		log.Println("AdminModel::DeleteRole", err, res)
 		return false
 	}
 	return true
 }
-

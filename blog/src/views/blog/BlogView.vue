@@ -1,6 +1,6 @@
 <template>
   <div class="me-view-body" v-title :data-title="title">
-    <el-container class="me-view-container" style="width: 980px;">
+    <el-container class="me-view-container" style="width: 980px;" v-loading="loading">
       <el-main>
         <div class="me-view-card">
           <h1 class="me-view-title">{{article.title}}</h1>
@@ -42,7 +42,7 @@
             <br/>
             <template v-if="article.pwd_type === 2 && article.money > 0">
               <el-button @click="getPayUrl('alipay')">支付宝去获取资源密码 (积分: {{article.money}})</el-button>
-              <el-button @click="getPayUrl('wxpay')">微信去获取资源密码 (积分: {{article.money}})</el-button>
+              <el-button @click="getPayUrl('wechat')">微信去获取资源密码 (积分: {{article.money}})</el-button>
             </template>
             <template v-else>
               获取下载密码:<br/>
@@ -135,6 +135,7 @@
     },
     data() {
       return {
+        loading: true,
         dialogTableVisible: false,
         article: {
           id: '',
@@ -192,6 +193,7 @@
       getArticle() {
         let that = this
         viewArticle(that.$route.params.id).then(data => {
+          that.loading = false
           data.data.tags = data.data.tags.split(',')
           Object.assign(that.article, data.data)
           that.article.editor.value = data.data.content

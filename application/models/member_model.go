@@ -16,13 +16,12 @@ func NewMemberModel(orm *xorm.Engine) *MemberModel {
 
 func (this *MemberModel) GetList(page, limit int64) (list []tables.IriscmsMember, total int64) {
 	offset := (page - 1) * limit
-	total, _ = this.Orm.Limit(int(limit),int(offset)).FindAndCount(&list)
+	total, _ = this.Orm.Limit(int(limit), int(offset)).FindAndCount(&list)
 	return list, total
 }
 
-func (this *MemberModel) GetInfo(id int64)  tables.IriscmsMember {
+func (this *MemberModel) GetInfo(id int64) tables.IriscmsMember {
 	var member tables.IriscmsMember
 	this.Orm.Where("id = ?", id).Get(&member)
 	return member
 }
-

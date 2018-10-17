@@ -1,6 +1,6 @@
 <template>
   <div v-title :data-title="title" style="margin: 0px auto; width: 980px; padding-top: 80px;">
-    <el-container>
+    <el-container v-loading="loading" style="min-height: 700px;">
       <el-aside class="me-area">
         <ul class="me-month-list">
           <li v-for="a in archives" :key="a.Catid" class="me-month-item">
@@ -28,6 +28,7 @@
     },
     data() {
       return {
+        loading: true,
         article: {
           query: {
             id: this.$route.params.id,
@@ -64,6 +65,7 @@
       listArchives() {
         let that = this
         getAllCategoryList(this.$route.path.replace('/' + this.$route.params.id , '') + '/list').then((data => {
+          this.loading = false
           that.archives = data.data
         })).catch(error => {
           that.$message({type: 'error', message: '分类加载失败!', showClose: true})

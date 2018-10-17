@@ -161,14 +161,14 @@ func (this *ContentController) AddContent() {
 func (this *ContentController) EditContent() {
 	//根据catid读取出相应的添加模板
 	catid, _ := this.Ctx.URLParamInt64("catid")
-	id,_ := this.Ctx.URLParamInt64("id")
-	if catid == 0 || id == 0{
+	id, _ := this.Ctx.URLParamInt64("id")
+	if catid == 0 || id == 0 {
 		helper.Ajax("参数错误", 1, this.Ctx)
 		return
 	}
-	var content = tables.IriscmsContent{Id:id}
-	ok,_ := this.Orm.Get(&content)
-	if  !ok {
+	var content = tables.IriscmsContent{Id: id}
+	ok, _ := this.Orm.Get(&content)
+	if !ok {
 		helper.Ajax("无法获取内容", 1, this.Ctx)
 		return
 	}
@@ -178,7 +178,7 @@ func (this *ContentController) EditContent() {
 			return
 		}
 		content.UpdatedAt = int64(helper.GetTimeStamp())
-		res, err := this.Orm.Where("id=? and catid=?",id,catid).Update(&content)
+		res, err := this.Orm.Where("id=? and catid=?", id, catid).Update(&content)
 		if err != nil {
 			helper.Ajax("修改失败:"+err.Error(), 1, this.Ctx)
 			return
@@ -213,11 +213,11 @@ func (this *ContentController) DeleteContent() {
 		helper.Ajax("参数错误", 1, this.Ctx)
 		return
 	}
-	ids := strings.Split(id,",")
-	res,_ := this.Orm.In("id", ids).Update(&tables.IriscmsContent{DeletedAt : int64(helper.GetTimeStamp())})
+	ids := strings.Split(id, ",")
+	res, _ := this.Orm.In("id", ids).Update(&tables.IriscmsContent{DeletedAt: int64(helper.GetTimeStamp())})
 	if res > 0 {
 		helper.Ajax("删除成功", 0, this.Ctx)
-	} else{
+	} else {
 		helper.Ajax("删除失败", 1, this.Ctx)
 	}
 }

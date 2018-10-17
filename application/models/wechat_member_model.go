@@ -16,13 +16,12 @@ func NewWechatMemberModel(orm *xorm.Engine) *WechatMemberModel {
 
 func (this *WechatMemberModel) GetList(page, limit int64) (list []tables.IriscmsWechatMember, total int64) {
 	offset := (page - 1) * limit
-	total, _ = this.Orm.Limit(int(limit),int(offset)).FindAndCount(&list)
+	total, _ = this.Orm.Limit(int(limit), int(offset)).FindAndCount(&list)
 	return list, total
 }
 
-func (this *WechatMemberModel) GetInfo(id int64)  tables.IriscmsWechatMember {
+func (this *WechatMemberModel) GetInfo(id int64) tables.IriscmsWechatMember {
 	var member tables.IriscmsWechatMember
 	this.Orm.Where("id = ?", id).Get(&member)
 	return member
 }
-

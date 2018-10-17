@@ -1,8 +1,8 @@
 package backend
 
 import (
-	"iriscms/common/helper"
 	"iriscms/application/models"
+	"iriscms/common/helper"
 	"strings"
 
 	"github.com/go-xorm/xorm"
@@ -12,9 +12,9 @@ import (
 )
 
 type LoginController struct {
-	Orm         *xorm.Engine
-	Ctx         iris.Context
-	Session     *sessions.Session
+	Orm     *xorm.Engine
+	Ctx     iris.Context
+	Session *sessions.Session
 }
 
 func (c *LoginController) BeforeActivation(b mvc.BeforeActivation) {
