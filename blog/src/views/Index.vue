@@ -1,5 +1,5 @@
 <template>
-  <div v-title data-title="ForFun Find Yourself">
+  <div v-title :data-title="getTitle()">
     <el-container>
 
       <el-main class="me-articles">
@@ -47,6 +47,9 @@
       CardArchive
     },
     methods: {
+      getTitle(){
+        return '首页 - ' + window.title + ' - ' + window.keywords + ' - ' + window.description
+      },
       getHotArtices() {
         // let that = this
         // getHotArtices().then(data => {

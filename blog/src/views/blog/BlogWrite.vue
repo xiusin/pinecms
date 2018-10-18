@@ -132,7 +132,7 @@
     },
     computed: {
       title (){
-        return '写文章 - For Fun'
+        return '写文章 - ' + + window.title + ' - ' + window.keywords + ' - ' + window.description
       }
     },
     mounted() {

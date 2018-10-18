@@ -3,7 +3,7 @@
     <div class="me-footer">
       <p>Designed by
         <strong>
-          <router-link to="/" class="me-login-design-color">ForFun</router-link>
+          <router-link to="/" class="me-login-design-color">{{title}}</router-link>
         </strong>
       </p>
     </div>
@@ -14,10 +14,17 @@
   export default {
     name: 'BaseFooter',
     data() {
-      return {}
+      return {
+        title: ''
+      }
     },
-    methods: {},
+    methods: {
+      getTitle(){
+        this.title = window.title
+      }
+    },
     mounted() {
+      getTitle()
     }
   }
 </script>

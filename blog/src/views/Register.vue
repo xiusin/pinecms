@@ -1,11 +1,11 @@
 <template>
-  <div id="register" v-title data-title="注册 - For Fun">
+  <div id="register" v-title :data-title="getTitle()">
     <!--<video preload="auto" class="me-video-player" autoplay="autoplay" loop="loop">
           <source src="../../static/vedio/sea.mp4" type="video/mp4">
       </video>-->
 
     <div class="me-login-box me-login-box-radius">
-      <h1>ForFun 注册</h1>
+      <h1>{{title}} 注册</h1>
 
       <el-form ref="userForm" :model="userForm" :rules="rules">
         <el-form-item prop="account">
@@ -38,15 +38,6 @@
           <el-button type="primary" @click.native.prevent="register('userForm')">注册</el-button>
         </el-form-item>
       </el-form>
-
-      <div class="me-login-design">
-        <p>Designed by
-          <strong>
-            <router-link to="/" class="me-login-design-color">ForFun</router-link>
-          </strong>
-        </p>
-      </div>
-
     </div>
   </div>
 </template>
@@ -58,6 +49,7 @@
     name: 'Register',
     data() {
       return {
+        title: '',
         captcha: null,
         userForm: {
           account: '',
@@ -85,6 +77,10 @@
       this.createVcaptcha()
     },
     methods: {
+      getTitle(){
+        this.title = window.title
+          return '注册账户 ' + window.title + ' - ' + window.keywords + ' - ' + window.description
+      },
       createVcaptcha() {
         let that = this
         window.vaptcha({
@@ -155,7 +151,6 @@
   }
 
   .me-login-box-radius {
-    border-radius: 10px;
     box-shadow: 0px 0px 1px 1px rgba(161, 159, 159, 0.1);
   }
 

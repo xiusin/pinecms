@@ -67,10 +67,9 @@
       },
       categoryTagTitle (){
         if(this.currentActiveName == 'category'){
-          return '文章分类 - For Fun'
+          return '文章分类 - ' + window.title + ' - ' + window.keywords + ' - ' + window.description
         }
-        console.info('dddd---test')
-        return '标签 - For Fun'
+        return '标签 - ' + window.title + ' - ' + window.keywords + ' - ' + window.description
       }
     },
     created() {

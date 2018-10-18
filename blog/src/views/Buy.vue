@@ -1,5 +1,5 @@
 <template>
-  <div id="pay" v-title data-title="验证邮箱 - For Fun">
+  <div id="pay" v-title :data-title="getTitle()">
 
     <div class="me-login-box me-login-box-radius">
       <h1>{{data.title}} : 订单号{{data.order_id}}</h1>
@@ -26,6 +26,9 @@
       this.gopay()
     },
     methods: {
+      getTitle() {
+        return '验证邮箱 - ' + window.title + ' - ' + window.keywords + ' - ' + window.description
+      },
       gopay() {
         goPay({
           "id": this.$route.params.id,

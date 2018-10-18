@@ -43,7 +43,7 @@ func registerFrontendRoutes() {
 	config := BaseMvc(ApplicationConfig)
 	mvc.New(app).Configure(config).Party(
 		"/",
-		middleware.FrontendGlobalViewData(app),
+		middleware.FrontendGlobalViewData(app,XOrmEngine,redisPool),
 	).Handle(new(frontend.IndexController))
 }
 
@@ -59,7 +59,6 @@ func registerApiRoutes() {
 		InjectConfig(ApplicationConfig),
 		cors.AllowAll(),
 		Jwt(),
-		middleware.FrontendGlobalViewData(app),
 		middleware.SetGlobalConfigData(XOrmEngine, redisPool),
 	).AllowMethods(iris.MethodOptions))
 	apiParty.Register(XOrmEngine, redisPool)

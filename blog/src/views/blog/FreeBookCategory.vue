@@ -4,7 +4,7 @@
       <el-aside class="me-area">
         <ul class="me-month-list">
           <li v-for="a in archives" :key="a.Catid" class="me-month-item">
-              <el-button @click="changeArchive(a.Catid)" size="small" style="width: 160px;">{{a.Catname}}
+              <el-button @click="changeArchive(a.Catid,a.Catname)" size="small" style="width: 160px;">{{a.Catname}}
               </el-button>
           </li>
         </ul>
@@ -28,6 +28,7 @@
     },
     data() {
       return {
+        currentArchive: '全部免费书籍',
         loading: true,
         article: {
           query: {
@@ -50,17 +51,15 @@
     },
     computed: {
       title (){
-        return this.currentArchive + ' - For Fun'
-      },
-      currentArchive (){
-        return '全部'
+        return this.currentArchive + ' - ' + window.title + ' - ' + window.keywords + ' - ' + window.description
       }
     },
     methods: {
-      changeArchive(catid) {
+      changeArchive(catid,catName) {
         //剔除其他数据
         let route = this.$route.path.replace('/' + this.$route.params.id , '')
         this.$router.push({path: route + '/' + catid})
+        this.currentArchive = catName + ' - 免费书籍'
       },
       listArchives() {
         let that = this

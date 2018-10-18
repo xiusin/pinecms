@@ -15,12 +15,19 @@ type IndexController struct {
 
 func (c *IndexController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("ANY", "/", "Index")
+	b.Handle("ANY", "/site/close", "Close")
 	b.Handle("ANY", "/resume", "Resume")
 }
 
 func (c *IndexController) Index() {
-
+	c.Ctx.View("frontend/index.html")
 }
+
+
+func (c *IndexController) Close() {
+	c.Ctx.HTML("站点关闭,敬请谅解")
+}
+
 
 func (c *IndexController) Resume() {
 	c.Ctx.ViewData("site", map[string]interface{}{

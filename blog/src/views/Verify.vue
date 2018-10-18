@@ -1,15 +1,12 @@
 <template>
-  <div id="verifyUser" v-title data-title="验证邮箱 - For Fun">
+  <div id="verifyUser" v-title :data-title="getTitle()">
 
     <div class="me-login-box me-login-box-radius">
-      <h1>ForFun 验证邮箱</h1>
+      <h1>{{title}} 验证邮箱</h1>
 
-      <div class="me-login-design">
-        <p>Designed by
-          <strong>
-            <router-link to="/" class="me-login-design-color">ForFun</router-link>
-          </strong>
-        </p>
+      <div style="text-align: center">
+        <i class="icon iconfont icon-duihao" style="font-size: 220px; color: #0e931c" v-if="verify_result"></i>
+        <i class="icon iconfont icon-cuohao" style="font-size: 220px; color: #ff0000" v-else></i>
       </div>
 
     </div>
@@ -21,11 +18,17 @@
     name: 'VerifyUser',
     data() {
       return {
+        verify_result: false,
+        title: '',
       }
     },
     mounted:function () {
     },
     methods: {
+      getTitle(){
+        this.title = window.title
+        return '验证邮箱 - ' + window.title + ' - ' + window.keywords + ' - ' + window.description
+      }
     }
   }
 </script>

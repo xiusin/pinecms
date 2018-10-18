@@ -22,7 +22,7 @@
     },
     computed: {
       title (){
-        return '留言板 - For Fun'
+        return '留言板 - ' + window.title + ' - ' + window.keywords + ' - ' + window.description
       }
     }
   }

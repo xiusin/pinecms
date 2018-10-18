@@ -1,11 +1,11 @@
 <template>
-  <div id="login" v-title data-title="登录 - For Fun">
+  <div id="login" v-title :data-title="getTitle()">
     <!--<video preload="auto" class="me-video-player" autoplay="autoplay" loop="loop">-->
           <!--<source src="../../static/vedio/sea.mp4" type="video/mp4">-->
     <!--</video>-->
 
     <div class="me-login-box me-login-box-radius">
-      <h1>ForFun 登录</h1>
+      <h1>{{title}} 登录</h1>
 
       <el-form ref="userForm" :model="userForm" :rules="rules">
         <el-form-item prop="account">
@@ -52,6 +52,7 @@
     data() {
       return {
         captcha: null,
+        title: '',
         userForm: {
           account: 'xiusin',
           password: '159781',
@@ -77,6 +78,10 @@
       this.createVcaptcha()
     },
     methods: {
+      getTitle(){
+        this.title = window.title
+        return '登录 - ' + window.title + ' - ' + window.keywords + ' - ' + window.description
+      },
       createVcaptcha() {
         let that = this
         window.vaptcha({

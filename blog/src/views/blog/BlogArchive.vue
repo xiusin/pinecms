@@ -53,7 +53,7 @@
     },
     computed: {
       title (){
-        return this.currentArchive + ' - 文章归档 - For Fun'
+        return this.currentArchive + ' - 文章归档 - ' + window.title + ' - ' + window.keywords + ' - ' + window.description
       },
       currentArchive (){
         if(this.article.query.year && this.article.query.month){
