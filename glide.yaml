@@ -1,37 +1,63 @@
 package: iriscms
-homepage: https://github.com/lazy007
-license: MIT
-owners:
-- name: SiuSin
-  email: chenchengbin92@gmail.com
-  homepage: https://github.com/lazy007
-ignore:
-- google.golang.org/appengine/cloudsql
 import:
 - package: github.com/afocus/captcha
+- package: github.com/aliyun/aliyun-oss-go-sdk
+  version: ~1.9.3
+  subpackages:
+  - oss
+- package: github.com/dgrijalva/jwt-go
+  version: ~3.2.0
+- package: github.com/garyburd/redigo
+  version: ~1.6.0
+  subpackages:
+  - redis
+- package: github.com/go-ffmt/ffmt
+  version: ~1.5.1
 - package: github.com/go-sql-driver/mysql
-  version: ~1.4.0
-- package: github.com/go-xorm/core
-  version: ~0.6.0
+  version: ~1.4.1
 - package: github.com/go-xorm/xorm
-  version: ~0.7.0
+  version: ~0.7.1
+- package: github.com/google/uuid
+  version: ~1.1.0
 - package: github.com/gorilla/securecookie
   version: ~1.1.1
+- package: github.com/gorilla/sessions
+  version: ~1.1.3
+- package: github.com/imroc/req
+  version: ~0.2.3
+- package: github.com/iris-contrib/middleware
+  version: ~10.0.0
+  subpackages:
+  - cors
+  - jwt
+- package: github.com/kataras/go-mailer
+  version: ~0.0.2
 - package: github.com/kataras/iris
-  version: ~10.6.6
+  version: ~11.1.1
   subpackages:
   - context
   - middleware/pprof
-  - middleware/recover
   - mvc
   - sessions
-  - sessions/sessiondb/badger
+  - sessions/sessiondb/redis
+  - sessions/sessiondb/redis/service
   - view
+- package: github.com/kataras/tablewriter
+- package: github.com/landoop/tableprinter
+  version: ~0.0.3
 - package: github.com/nfnt/resize
-- package: golang.org/x/image/draw
-- package: gopkg.in/yaml.v2
-  version: ~2.2.1
-- package: github.com/golang/groupcache
-- package: github.com/go-ffmt/ffmt
 - package: github.com/shirou/gopsutil
-  version: ^2.18.6
+  version: ~2.18.12
+  subpackages:
+  - disk
+  - mem
+- package: github.com/silenceper/wechat
+  version: ~1.0.0
+  subpackages:
+  - message
+  - user
+- package: golang.org/x/image
+  subpackages:
+  - draw
+- package: gopkg.in/yaml.v2
+  version: ~2.2.2

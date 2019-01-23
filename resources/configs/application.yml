@@ -31,7 +31,7 @@ redis:
   write_timeout: 4
   cache_database_index: 1
   session_database_index: 0
-  password: "lazynote2018"
+  password: "asd159"
   max_idle: 3
   max_active: 5
   idle_timeout: 60
