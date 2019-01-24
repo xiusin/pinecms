@@ -11,6 +11,8 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const env = require('../config/prod.env')
+const PrerenderSPAPlugin = require('prerender-spa-plugin')
+const Renderer = PrerenderSPAPlugin.PuppeteerRenderer
 
 const webpackConfig = merge(baseWebpackConfig, {
   module: {
@@ -70,6 +72,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         // more options:
         // https://github.com/kangax/html-minifier#options-quick-reference
       },
+      chunks: ['manifest', 'vendor', 'app'],
       // necessary to consistently work with multiple chunks via CommonsChunkPlugin
       chunksSortMode: 'dependency'
     }),
@@ -114,7 +117,35 @@ const webpackConfig = merge(baseWebpackConfig, {
         to: config.build.assetsSubDirectory,
         ignore: ['.*']
       }
-    ])
+    ]),
+
+    new PrerenderSPAPlugin({
+      // Required - The path to the webpack-outputted app to prerender.
+      staticDir: path.join(__dirname, '../dist'),
+      // Required - Routes to render.
+      routes: [ 
+        '/', 
+        '/login',
+        '/free/video',
+        '/free/book',
+        '/paid/video',
+        '/paid/book', 
+        '/register',
+        '/tag/all',
+        '/soft'
+      ],
+
+        // 这个很重要，如果没有配置这段，也不会进行预编译
+      renderer: new Renderer({
+        inject: {
+          foo: 'bar'
+        },
+        headless: false,
+        // 在 main.js 中 document.dispatchEvent(new Event('render-event'))，两者的事件名称要对应上。
+        renderAfterDocumentEvent: 'render-event'
+      })
+    })
+
   ]
 })
 

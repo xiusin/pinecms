@@ -34,6 +34,7 @@
 
   .el-container {
     width: 700px;
+    display: block;
   }
 
   .me-main {

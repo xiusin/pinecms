@@ -31,5 +31,9 @@ new Vue({
   router,
   store,
   template: '<App/>',
-  components: {App}
+  components: {App},
+  // 添加mounted，不然不会执行预编译
+  mounted () {
+    document.dispatchEvent(new Event('render-event'))
+  }
 })

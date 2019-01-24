@@ -51,8 +51,4 @@ iriscms 一个基于`IrisGo`和`EasyUI`简单的cms框架吗,基础的后台管�
 1. 开发成一个IT资源下载站. 
 2. 简单点, 早期不收费, 需要关注公众号. 
 3. vue使用预渲染来生成多页面. 
-具体: 
-	1. 安装依赖 `prerender-spa-plugin`
-	2. 配置dev.config.js 按照基本使用方式
-	3. 打包构建单页面程序
-	4. 执行dev使用依赖基于已生成的单页面来渲染多页面
+具体: `https://www.cnblogs.com/kdcg/p/9606302.html`

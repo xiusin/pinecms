@@ -1,6 +1,6 @@
 <template>
   <div id="home">
-    <el-container>
+    <el-container direction="vertical">
 
       <base-header :activeIndex="activeIndex"></base-header>
 
@@ -36,11 +36,7 @@
       })
     },
     beforeRouteUpdate(to, from, next) {
-      if (to.path == '/') {
-        this.footerShow = true
-      } else {
-        this.footerShow = false
-      }
+      this.footerShow = true
       this.activeIndex = to.path
       next()
     }
@@ -48,8 +44,8 @@
 </script>
 
 <style>
-
   .me-container {
-    margin: 100px auto 140px;
+    margin: 90px auto 25px;
+    width: 1160px;
   }
 </style>

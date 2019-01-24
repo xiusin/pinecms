@@ -1,5 +1,5 @@
 <template>
-  <div v-title :data-title="title" style="margin: 0px auto; width: 980px; padding-top: 80px;">
+  <div v-title :data-title="title" style="width: 1160px;">
     <el-container v-loading="loading" style="min-height: 700px;">
       <el-aside class="me-area">
         <ul class="me-month-list">

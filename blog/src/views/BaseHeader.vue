@@ -2,7 +2,7 @@
   <el-header class="me-area">
     <el-row class="me-header" :gutter="20" style="width: 1160px;margin: 0 auto;">
 
-      <el-col :span="2" :offset="2" class="me-header-left">
+      <el-col :span="2" class="me-header-left">
         <router-link to="/" class="me-title">
           <img src="../assets/img/logo.png"/>
         </router-link>
@@ -16,6 +16,8 @@
           <el-menu-item index="/free/book">免费图书</el-menu-item>
           <el-menu-item index="/paid/video">付费视频</el-menu-item>
           <el-menu-item index="/paid/book">付费图书</el-menu-item>
+          <el-menu-item index="/soft">软件下载</el-menu-item>
+          <el-menu-item index="/about">重要说明</el-menu-item>
 
         </el-menu>
       </el-col>
@@ -37,12 +39,10 @@
           </template>
 
           <template v-else>
-            <el-submenu index style="float: right">
+            <el-submenu index>
               <template slot="title">
-                <img class="me-header-picture" :src="user.avatar" onerror="this.src='../../static/default_avatar.png'"/>
+                <img class="me-header-picture" @click="goto('/user/center')" :src="user.avatar" onerror="this.src='../../static/default_avatar.png'"/>
               </template>
-              <el-menu-item index="/write"><i class="el-icon-edit"></i>写文章</el-menu-item>
-              <el-menu-item index="/user/center"><i class="el-icon-goods"></i>个人中心</el-menu-item>
               <el-menu-item index @click="logout"><i class="el-icon-back"></i>退出</el-menu-item>
             </el-submenu>
           </template>
@@ -85,6 +85,9 @@
             that.$message({message: error, type: 'error', showClose: true});
           }
         })
+      },
+      goto(str) {
+        this.$router.push({path: str})
       }
     }
   }

@@ -38,6 +38,10 @@ const router = new Router({
       component: Home,
       children: [
         {
+          path: '/about',
+          component: r => require.ensure([], () => r(require('@/views/About')), 'about')
+        },
+        {
           path: '/user/center',
           component: r => require.ensure([], () => r(require('@/views/usercenter/Index')), 'usercenter'),
           meta: {
@@ -111,6 +115,10 @@ const router = new Router({
         {
           path: '/paid/book/:id?',
           component: r => require.ensure([], () => r(require('@/views/blog/PaidBookCategory')), 'paidBookCategory')
+        },
+        {
+          path: '/soft/:id?',
+          component: r => require.ensure([], () => r(require('@/views/blog/SoftCategory')), 'softCategory')
         },
         {
           path: '/archives/:year?/:month?',

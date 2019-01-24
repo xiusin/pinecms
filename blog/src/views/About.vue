@@ -1,6 +1,6 @@
 <template>
   <div v-title :data-title="title">
-    <el-container class="me-area">
+    <el-container class="me-area" >
       <el-main class="me-main">
         <!--<el-steps class="me-log-box" :space="100"  direction="vertical">
                  <el-step title="步骤 1" status="process"  icon="el-icon-time" description="步骤 1步骤 1步骤 1步骤 1步骤 1"></el-step>
@@ -245,8 +245,7 @@
 
 <style scoped>
   .el-container {
-    width: 700px;
-    display: block;
+    width: 1160px;
   }
 
   .me-main {
