@@ -53,7 +53,7 @@
     display: inline-block;
     padding: 4px;
     font-size: 14px;
-    color: #5FB878;
+    color: #010101;
   }
 
   .me-tag-item a:hover {

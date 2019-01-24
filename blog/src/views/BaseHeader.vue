@@ -1,6 +1,6 @@
 <template>
   <el-header class="me-area">
-    <el-row class="me-header" :gutter="20" style="width: 980px;margin: 0 auto;">
+    <el-row class="me-header" :gutter="20" style="width: 1160px;margin: 0 auto;">
 
       <el-col :span="2" :offset="2" class="me-header-left">
         <router-link to="/" class="me-title">
@@ -9,7 +9,7 @@
       </el-col>
 
       <el-col v-if="!simple" :span="14" :offset="0">
-        <el-menu :router=true menu-trigger="click" active-text-color="#5FB878" :default-active="activeIndex"
+        <el-menu :router=true menu-trigger="click" active-text-color="#010101" :default-active="activeIndex"
                  mode="horizontal">
           <el-menu-item index="/">首页</el-menu-item>
           <el-menu-item index="/free/video">免费视频</el-menu-item>
@@ -25,12 +25,13 @@
       </template>
 
       <el-col :span="4" :offset="1" style="float: right">
-        <el-menu :router=true menu-trigger="click" mode="horizontal" active-text-color="#5FB878" style="border: none">
+        <el-menu :router=true menu-trigger="click" mode="horizontal" active-text-color="#010101" style="border: none">
           <template v-if="!user.login">
-            <el-menu-item index="/login">
+             <el-menu-item index="/login" style="float:right;">
               <el-button type="text">登录</el-button>
             </el-menu-item>
-            <el-menu-item index="/register">
+
+            <el-menu-item index="/register" style="float:right;">
               <el-button type="text">注册</el-button>
             </el-menu-item>
           </template>
@@ -118,6 +119,6 @@
     border: 1px solid #ddd;
     border-radius: 50%;
     vertical-align: middle;
-    background-color: #5fb878;
+    background-color: #010101;
   }
 </style>

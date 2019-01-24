@@ -78,7 +78,7 @@ func NowDate(str string) string {
 	str = strings.Replace(str, "Y", "2006", 1)
 	str = strings.Replace(str, "m", "01", 1)
 	str = strings.Replace(str, "d", "02", 1)
-	str = strings.Replace(str, "H", "13", 1)
+	str = strings.Replace(str, "H", "15", 1)
 	str = strings.Replace(str, "i", "04", 1)
 	str = strings.Replace(str, "s", "05", 1)
 	return t.Format(str)

@@ -102,7 +102,7 @@
 <style scoped>
 
   .el-container {
-    width: 960px;
+    width: 1160px;
   }
 
   .el-aside {

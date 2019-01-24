@@ -3,14 +3,15 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/garyburd/redigo/redis"
-	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/mvc"
 	"iriscms/application/controllers"
 	"iriscms/application/models"
 	"iriscms/application/models/tables"
 	"iriscms/common/helper"
+
+	"github.com/garyburd/redigo/redis"
+	"github.com/go-xorm/xorm"
+	"github.com/kataras/iris"
+	"github.com/kataras/iris/mvc"
 )
 
 type CategoryController struct {
@@ -33,10 +34,10 @@ func (c *CategoryController) CategoryList() {
 
 	//path => topCateId
 	categoryPathMapToId := map[string]int64{
-		"/api/v1/free/video/list": 32,
-		"/api/v1/free/book/list":  31,
-		"/api/v1/paid/video/list": 30,
-		"/api/v1/paid/book/list":  29,
+		"/api/v1/free/video/list": 27,
+		"/api/v1/free/book/list":  28,
+		"/api/v1/paid/video/list": 29,
+		"/api/v1/paid/book/list":  30,
 	}
 	path := c.Ctx.Path()
 	topCatId := categoryPathMapToId[path]

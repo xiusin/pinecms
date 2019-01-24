@@ -36,7 +36,7 @@
   .me-category-item {
     padding: 4px;
     font-size: 14px;
-    color: #5FB878;
+    color: #010101;
   }
 
   .me-category-item a:hover {

@@ -82,7 +82,7 @@
               <el-form :model="payPointForm" ref="payPointForm" label-width="100px">
                 <el-form-item label="充值友币" prop="money" >
                   <el-input readonly="readonly" value="一年内免费下载任意资源" disabled="disabled">
-                    <template slot="prepend"><i class="icon iconfont icon-zuanshi" style="color: #5FB878;"></i></template>
+                    <template slot="prepend"><i class="icon iconfont icon-zuanshi" style="color: #010101;"></i></template>
                   </el-input>
                 </el-form-item>
 

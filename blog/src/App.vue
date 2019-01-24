@@ -34,7 +34,7 @@
   }
 
   a:hover {
-    color: #5FB878;
+    color: #010101;
   }
 
   .me-area {

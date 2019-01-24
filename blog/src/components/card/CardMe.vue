@@ -49,7 +49,7 @@
   .me-author-name {
     text-align: center;
     font-size: 30px;
-    border-bottom: 1px solid #5FB878;
+    border-bottom: 1px solid #010101;
   }
 
   .me-author-description {
