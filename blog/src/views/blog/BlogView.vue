@@ -6,7 +6,7 @@
           <h1 class="me-view-title">{{article.title}}</h1>
           <div class="me-view-author">
             <a class="">
-              <img class="me-view-picture" :src="article.author.avatar"></img>
+              <img class="me-view-picture" :src="article.author.avatar" />
             </a>
             <div class="me-view-info">
               <span>{{article.author.nickname}}</span>
@@ -77,7 +77,7 @@
               <el-row :gutter="20">
                 <el-col :span="2">
                   <a class="">
-                    <img class="me-view-picture" :src="avatar"></img>
+                    <img class="me-view-picture" :src="avatar" />
                   </a>
                 </el-col>
                 <el-col :span="21">

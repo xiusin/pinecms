@@ -29,8 +29,6 @@
 </script>
 
 <style scoped>
-  .me-message {
-  }
 
   .el-container {
     width: 700px;
