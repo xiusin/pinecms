@@ -147,6 +147,7 @@ const router = new Router({
       component: r => require.ensure([], () => r(require('@/views/Register')), 'register')
     }
   ],
+  mode: 'history',
   scrollBehavior(to, from, savedPosition) {
     return {x: 0, y: 0}
   }

@@ -11,7 +11,6 @@ iriscms 一个基于`IrisGo`和`EasyUI`简单的cms框架吗,基础的后台管�
 
 2. 数据库配置
     > 导入数据库结构`resources/iriscms.sql`
-
     > 修改`resources/configs/database.yml.dist`为`resources/configs/database.yml`
 
 4. 安装依赖
@@ -22,12 +21,10 @@ iriscms 一个基于`IrisGo`和`EasyUI`简单的cms框架吗,基础的后台管�
 
 6. 开发期间热部署
     > `go get -u -v github.com/pilu/fresh`
-
     > `fresh`
 
 7. 访问后端登陆页面
-    > 访问 `http://localhost:2017/b/login/index`
-    
+    > 访问 `http://localhost:2018/b/login/index`
     > 默认账号密码 `用户名: admin 密码: admin888`
 
 8. 使用 `Nginx` 或者 `Caddy` 反向代理到 `:2017` 或者自定义 端口即可
@@ -36,7 +33,6 @@ iriscms 一个基于`IrisGo`和`EasyUI`简单的cms框架吗,基础的后台管�
 在`config/router.go`中按照已有配置实现相关的前后端路由, 在控制器文件内务必实现`func (*XXController) BeforeActivation(b mvc.BeforeActivation)`进行路由注册, 然后实现各个方法的功能与需求.
 
 > 目前功能比较简单, 对付简单的企业站应该是没问题. 其他的酌情自行开发 ^_^
-
 
 # TODO #
 - [x] error的错误日志
@@ -51,19 +47,12 @@ iriscms 一个基于`IrisGo`和`EasyUI`简单的cms框架吗,基础的后台管�
 - [ ] redis加入
 - [ ] 图片裁切
 
-
-# 后端页面预览 #
-![登录界面](snapshot/01.png)
-![首页](snapshot/02.png)
-![修改个人信息](snapshot/03.png)
-![修改密码](snapshot/04.png)
-![栏目列表_添加栏目](snapshot/05.png)
-![菜单管理](snapshot/06.png)
-![日志管理](snapshot/07.png)
-![站点属性设置](snapshot/08.png)
-![管理员设置](snapshot/09.png)
-![角色设置](snapshot/10.png)
-
-
-
-
+# 基于最新版本 #
+1. 开发成一个IT资源下载站. 
+2. 简单点, 早期不收费, 需要关注公众号. 
+3. vue使用预渲染来生成多页面. 
+具体: 
+	1. 安装依赖 `prerender-spa-plugin`
+	2. 配置dev.config.js 按照基本使用方式
+	3. 打包构建单页面程序
+	4. 执行dev使用依赖基于已生成的单页面来渲染多页面
