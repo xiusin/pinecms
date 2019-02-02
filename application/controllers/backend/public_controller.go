@@ -1,13 +1,11 @@
 package backend
 
 import (
-	"image/png"
 	"strconv"
 	"strings"
 
 	"iriscms/common/helper"
 
-	"github.com/afocus/captcha"
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
@@ -23,7 +21,7 @@ type PublicController struct {
 
 func (c *PublicController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("ANY", "/upload", "Upload")
-	b.Handle("ANY", "/verify-code", "VerifyCode")
+	//b.Handle("ANY", "/verify-code", "VerifyCode")
 }
 
 //上传图片
@@ -106,18 +104,18 @@ func (this *PublicController) Upload() {
 	return
 }
 
-//生成验证码
-func (this *PublicController) VerifyCode() {
-	cpt := captcha.New()
-	fontPath := helper.GetRootPath() + "/resources/fonts/comic.ttf"
-	// 设置字体
-	cpt.SetFont(fontPath)
-	// 返回验证码图像对象以及验证码字符串 后期可以对字符串进行对比 判断验证
-	this.Ctx.ContentType("img/png")
-	img, str := cpt.Create(1, captcha.ALL)
-	this.Session.SetFlash("verify_code", str)
-	png.Encode(this.Ctx.ResponseWriter(), img) //发送图片内容到浏览器
-}
+////生成验证码
+//func (this *PublicController) VerifyCode() {
+//	cpt := captcha.New()
+//	fontPath := helper.GetRootPath() + "/resources/fonts/comic.ttf"
+//	// 设置字体
+//	cpt.SetFont(fontPath)
+//	// 返回验证码图像对象以及验证码字符串 后期可以对字符串进行对比 判断验证
+//	this.Ctx.ContentType("img/png")
+//	img, str := cpt.Create(1, captcha.ALL)
+//	this.Session.SetFlash("verify_code", str)
+//	png.Encode(this.Ctx.ResponseWriter(), img) //发送图片内容到浏览器
+//}
 
 func uploadAjax(ctx iris.Context, uploadData map[string]string, isEditor bool) {
 	if !isEditor {

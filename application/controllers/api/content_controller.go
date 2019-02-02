@@ -5,6 +5,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
+	"iriscms/application/models"
 	"iriscms/application/models/tables"
 	"iriscms/common/helper"
 	"strconv"
@@ -29,7 +30,14 @@ func (c *ContentController) ContentList() {
 	sort := c.Ctx.URLParam("sort")
 	var arts []tables.IriscmsContent
 	var offset = (pageNo - 1) * pageSize
-	q := c.Orm.Where("catid = ? and deleted_at = 0 and status = 1", catid).Limit(pageSize, offset)
+
+	cats := models.NewCategoryModel(c.Orm).GetNextCategory(int64(catid))
+	var catID []interface{}
+	catID = append(catID, int64(catid))
+	for _, v := range cats {
+		catID = append(catID, v.Catid)
+	}
+	q := c.Orm.Where("deleted_at = 0 and status = 1").In("catid", catID...).Limit(pageSize, offset)
 	if sort == "desc" {
 		q.Desc(six)
 	} else {

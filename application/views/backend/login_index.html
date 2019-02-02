@@ -29,12 +29,12 @@
                     <span></span>
                     <input type="password" class="pwd" name="password"  placeholder="请输入密码" id="password" />
                 </li>
-                <li class="number">
-                    <input type="text"  placeholder="请输入验证码" class="number"  name="code" id="code" size="4"/>
-                    <img src="/public/verify-code"
-                         id="code_img" class="img" onclick="changeCode()"/>
-                    <a href="javascript:;" onclick="changeCode()" class="click">换一换</a>
-                </li>
+{{/*                <li class="number">*/}}
+{{/*                    <input type="text"  placeholder="请输入验证码" class="number"  name="code" id="code" size="4"/>*/}}
+{{/*                    <img src="/public/verify-code"*/}}
+{{/*                         id="code_img" class="img" onclick="changeCode()"/>*/}}
+{{/*                    <a href="javascript:;" onclick="changeCode()" class="click">换一换</a>*/}}
+{{/*                </li>*/}}
                 <li class="btn">
                     <input type="button" value="登 录" id="submit" class="btn" style="background: rgb(73,137,205);"/>
                 </li>
@@ -57,10 +57,10 @@
                 $.messager.alert('提示信息', '请填写密码', 'error');
                 return false;
             }
-            if(!$('#code').val()){
-                $.messager.alert('提示信息', '请填写验证码', 'error');
-                return false;
-            }
+            // if(!$('#code').val()){
+            //     $.messager.alert('提示信息', '请填写验证码', 'error');
+            //     return false;
+            // }
 
             $.post('/b/login/index', $("#form").serialize(), function(data){
                 if(data.errcode){

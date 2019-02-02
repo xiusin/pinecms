@@ -49,10 +49,7 @@
 
   export default {
     head: {
-	    title: "会员登录",
-	    script: [
-	      { src: 'https://cdn.vaptcha.com/v2.js' }
-	    ]
+	    title: "会员登录"
 	  },
     name: 'Login',
     data() {
@@ -90,6 +87,7 @@
       createVcaptcha() {
         let that = this
         if (process.client) {
+          console.log(window.vaptcha)
            window.vaptcha({
             //配置参数
             vid: '5bbc46c6fc650e3be06e5869', // 验证单元id

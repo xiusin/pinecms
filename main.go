@@ -21,9 +21,9 @@ func main() {
 	p.CenterSeparator, p.ColumnSeparator, p.RowSeparator = "│", "│", "─"
 	p.HeaderBgColor, p.HeaderFgColor = tablewriter.BgBlackColor, tablewriter.FgGreenColor
 	p.Print([]author{
-		{Name: "Name", Value: "Xiusin"},
+		{Name: "Name", Value: "XiuSin"},
 		{Name: "Version", Value: "Development"},
-		{Name: "Author", Value: "Xiusin"},
+		{Name: "Author", Value: "XiuSin"},
 		{Name: "WebSite", Value: "http://www.xiusin.com/"},
 		{Name: "IrisVersion", Value: iris.Version},
 	})

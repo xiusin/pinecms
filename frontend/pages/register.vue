@@ -49,10 +49,7 @@
  
   export default {
     head: {
-      title: "注册会员",
-	    script: [
-	      { src: 'https://cdn.vaptcha.com/v2.js' }
-	    ]
+      title: "注册会员"
 	  },
     name: 'Register',
     data() {

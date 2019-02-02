@@ -59,7 +59,7 @@
         loading: true,
         article: {
           query: {
-            id: this.$route.params.id,
+            id: this.$route.params.id || 28,
           }
         },
         archives: []

@@ -1,14 +1,12 @@
 package backend
 
 import (
-	"iriscms/application/models"
-	"iriscms/common/helper"
-	"strings"
-
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
+	"iriscms/application/models"
+	"iriscms/common/helper"
 )
 
 type LoginController struct {
@@ -27,19 +25,19 @@ func (this *LoginController) Index() {
 		username := this.Ctx.PostValue("username")
 		password := this.Ctx.PostValue("password")
 		code := this.Ctx.PostValue("code")
-		verify, _ := this.Session.GetFlash("verify_code").(string)
+		//verify, _ := this.Session.GetFlash("verify_code").(string)
 		if helper.IsFalse(username, password, code) {
 			helper.Ajax("参数不能为空", 1, this.Ctx)
 			return
 		}
-		if verify == "" {
-			helper.Ajax("验证码过期,无法验证", 1, this.Ctx)
-			return
-		}
-		if strings.ToLower(code) != strings.ToLower(verify) {
-			helper.Ajax("验证码错误", 1, this.Ctx)
-			return
-		}
+		//if verify == "" {
+		//	helper.Ajax("验证码过期,无法验证", 1, this.Ctx)
+		//	return
+		//}
+		//if strings.ToLower(code) != strings.ToLower(verify) {
+		//	helper.Ajax("验证码错误", 1, this.Ctx)
+		//	return
+		//}
 		admin, err := models.NewAdminModel(this.Orm).Login(username, password, this.Ctx.RemoteAddr())
 		if err != nil {
 			helper.Ajax(err.Error(), 1, this.Ctx)

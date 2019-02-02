@@ -9,6 +9,9 @@ module.exports = {
         name: 'description',
         content: 'Native-like Page Transitions with Vue and Nuxt, A Travel App'
       }
+    ],
+    script: [
+      { src: 'https://cdn.vaptcha.com/v2.js' }  // 不知道怎么自定义到页面加载
     ]
   },
   router: {
@@ -23,6 +26,13 @@ module.exports = {
   */
   build: {
     vendor: ['external_library','element-ui']
+  },
+  render: {
+    bundleRenderer: {
+      shouldPreload: (file, type) => {
+        return ['script', 'style', 'font'].includes(type)
+      }
+    }
   },
   plugins: [
     { // 引入elementUI插件
