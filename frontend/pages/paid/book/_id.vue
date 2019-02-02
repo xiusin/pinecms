@@ -1,5 +1,5 @@
 <template>
-  <div v-title :data-title="title" style="width: 1160px;">
+  <div style="width: 1160px; ">
     <el-container v-loading="loading" style="min-height: 700px;">
       <el-aside class="me-area">
         <ul class="me-month-list">
@@ -19,16 +19,43 @@
 
 <script>
   import ArticleScrollPage from '~/pages/common/ArticleScrollPage'
-  import {getAllFreeVideoList,getAllCategoryList} from "@/api/category"
+  import {getAllCategoryList} from "~/api/category"
 
   export default {
     name: "FreeCategory",
     components: {
       ArticleScrollPage
     },
+     head () {
+      return {
+        title: this.title
+      }
+    },
+    asyncData (context) {
+      let params = context.route.params
+      return getAllCategoryList(context.route.path.replace( params.id ? '/' + params.id : '' , '') + '/list').then((data => {
+          const archives = data.data.data
+          let catName = ''
+          for(let i = 0; i < archives.length; i++) {
+            if (archives[i].Catid == params.id) {
+              catName = archives[i].Catname
+            }
+          }
+          return {
+            loading: false,
+            archives: archives,
+            title: params.id ? catName + ' - 付费书籍' : '全部付费书籍'
+          }
+        })).catch(error => {
+          return {
+            loading: false,
+            archives: [],
+            title: '全部付费书籍'
+          }
+        })
+    },
     data() {
       return {
-        currentArchive: '全部付费视频',
         loading: true,
         article: {
           query: {
@@ -39,7 +66,6 @@
       }
     },
     created() {
-      this.listArchives()
     },
     watch: {
       '$route'(old, val) {
@@ -49,26 +75,11 @@
         }
       }
     },
-    computed: {
-      title (){
-        return this.currentArchive + ' - ' 
-      }
-    },
     methods: {
       changeArchive(catid,catname) {
-        //剔除其他数据
         let route = this.$route.path.replace('/' + this.$route.params.id , '')
         this.$router.push({path: route + '/' + catid})
-        this.currentArchive = catname + ' - 付费视频'
-      },
-      listArchives() {
-        let that = this
-        getAllCategoryList(this.$route.path.replace('/' + this.$route.params.id , '') + '/list').then((data => {
-          this.loading = false
-          that.archives = data.data.data
-        })).catch(error => {
-          that.$message({type: 'error', message: '分类加载失败!', showClose: true})
-        })
+        this.$setSeo(catname + ' - 付费书籍')
       }
     }
   }

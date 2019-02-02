@@ -11,7 +11,7 @@
             <div class="me-view-info">
               <span>{{article.author.nickname}}</span>
               <div class="me-view-meta">
-                <span>{{article.createTime | format}}</span>
+                <span>{{article.createTime}}</span>
                 <span>阅读   {{article.viewNum}}</span>
                 <span>评论   {{article.commentNum}}</span>
               </div>
@@ -27,7 +27,7 @@
             </el-button>
           </div>
           <div class="me-view-content">
-            <markdown-editor :editor=article.editor></markdown-editor>
+            <!-- <markdown-editor :editor=article.editor></markdown-editor> -->
           </div>
 
           <el-card shadow="hover" style="
@@ -103,7 +103,7 @@
               <span>{{article.commentNum}} 条评论</span>
             </div>
 
-            <commment-item
+            <!-- <commment-item
               v-for="(c,index) in comments"
               :comment="c"
               :articleId="article.id"
@@ -111,7 +111,7 @@
               :rootCommentCounts="comments.length"
               @commentCountsIncrement="commentCountsIncrement"
               :key="c.id">
-            </commment-item>
+            </commment-item> -->
           </div>
         </div>
       </el-main>
@@ -121,8 +121,8 @@
 </template>
 
 <script>
-  import MarkdownEditor from '~/components/markdown/MarkdownEditor'
-  import CommmentItem from '~/components/comment/CommentItem'
+  // import MarkdownEditor from '~/components/markdown/MarkdownEditor'
+  // import CommmentItem from '~/components/comment/CommentItem'
   import {viewArticle} from '@/api/article'
   import {getCommentsByArticle, publishComment} from '@/api/comment'
 
@@ -162,8 +162,8 @@
       }
     },
     components: {
-      'markdown-editor': MarkdownEditor,
-      CommmentItem
+      // 'markdown-editor': MarkdownEditor,
+      // CommmentItem
     },
     computed: {
       avatar() {
@@ -193,10 +193,11 @@
       getArticle() {
         let that = this
         viewArticle(that.$route.params.id).then(data => {
+          console.log("asdasd",data)
           that.loading = false
-          data.data.tags = data.data.tags.split(',')
-          Object.assign(that.article, data.data)
-          that.article.editor.value = data.data.content
+          data.data.data.tags = data.data.data.tags.split(',')
+          Object.assign(that.article, data.data.data)
+          that.article.editor.value = data.data.data.content
           // that.getCommentsByArticle()
         }).catch(error => {
           if (error !== 'error') {
@@ -236,15 +237,19 @@
         this.article.commentCounts += 1
       }
     },
-    //组件内的守卫 调整body的背景色
-    beforeRouteEnter(to, from, next) {
-      window.document.body.style.backgroundColor = '#fff';
-      next();
-    },
-    beforeRouteLeave(to, from, next) {
-      window.document.body.style.backgroundColor = '#f5f5f5';
-      next();
-    }
+    // //组件内的守卫 调整body的背景色
+    // beforeRouteEnter(to, from, next) {
+    //   if (process.client) {
+    //     // window.document.body.style.backgroundColor = '#fff';
+    //   }
+    //   next();
+    // },
+    // beforeRouteLeave(to, from, next) {
+    //   if (process.client) {
+    //     // window.document.body.style.backgroundColor = '#f5f5f5';
+    //   }
+    //   next();
+    // }
   }
 </script>
 

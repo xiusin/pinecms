@@ -5,7 +5,7 @@
     <!--</video>-->
 
     <div class="me-login-box me-login-box-radius">
-      <h1>{{title}} 登录</h1>
+      <h1>会员登录</h1>
 
       <el-form ref="userForm" :model="userForm" :rules="rules">
         <el-form-item prop="account">
@@ -49,6 +49,7 @@
 
   export default {
     head: {
+	    title: "会员登录",
 	    script: [
 	      { src: 'https://cdn.vaptcha.com/v2.js' }
 	    ]

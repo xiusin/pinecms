@@ -1,11 +1,11 @@
 <template>
-  <div id="register" v-title :data-title="getTitle()">
+  <div id="register">
     <!--<video preload="auto" class="me-video-player" autoplay="autoplay" loop="loop">
           <source src="../../static/vedio/sea.mp4" type="video/mp4">
       </video>-->
 
     <div class="me-login-box me-login-box-radius">
-      <h1>{{title}} 注册</h1>
+      <h1>注册会员</h1>
 
       <el-form ref="userForm" :model="userForm" :rules="rules">
         <el-form-item prop="account">
@@ -49,6 +49,7 @@
  
   export default {
     head: {
+      title: "注册会员",
 	    script: [
 	      { src: 'https://cdn.vaptcha.com/v2.js' }
 	    ]
@@ -56,7 +57,6 @@
     name: 'Register',
     data() {
       return {
-        title: '',
         captcha: null,
         userForm: {
           account: '',
@@ -160,7 +160,7 @@
   .me-login-box {
     position: absolute;
     width: 300px;
-    height: 300px;
+    height: 320px;
     background-color: white;
     margin-top: 150px;
     margin-left: -180px;

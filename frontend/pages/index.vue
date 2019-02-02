@@ -1,5 +1,5 @@
 <template>
-  <div v-title :data-title="getTitle()">
+  <div>
     <el-container>
 
       <el-main class="me-articles">
@@ -31,6 +31,9 @@
 
   export default {
     name: 'Index',
+    head: {
+      title: "首页"
+    },
     data() {
       return {
         hotTags: [],
@@ -47,9 +50,6 @@
       CardArchive
     },
     methods: {
-      getTitle(){
-        return '首页 - ' 
-      },
       getHotArtices() {
         // let that = this
         // getHotArtices().then(data => {

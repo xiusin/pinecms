@@ -64,7 +64,7 @@
     },
     components: {
       'article-item': ArticleItem,
-        'scroll-page': ScrollPage
+      'scroll-page': ScrollPage
     },
     methods: {
       load() {
@@ -76,7 +76,6 @@
       getArticles() {
         let that = this
         that.loading = true
-
         getArticles(that.query, that.innerPage).then(data => {
           let newArticles = []
           for(let i=0; i< data.data.length; i++) {
@@ -102,7 +101,7 @@
       }
     },
     created() {
-      // this.getArticles()
+      this.getArticles()
     }
   }
 </script>

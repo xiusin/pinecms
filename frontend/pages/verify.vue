@@ -1,8 +1,8 @@
 <template>
-  <div id="verifyUser" v-title :data-title="getTitle()">
+  <div id="verifyUser">
 
     <div class="me-login-box me-login-box-radius">
-      <h1>{{title}} 验证邮箱</h1>
+      <h1>验证邮箱</h1>
 
       <div style="text-align: center">
         <i class="icon iconfont icon-duihao" style="font-size: 220px; color: #0e931c" v-if="verify_result"></i>
@@ -16,18 +16,12 @@
 <script>
   export default {
     name: 'VerifyUser',
+    head: {
+      title: "验证邮箱",
+    },
     data() {
       return {
         verify_result: false,
-        title: '',
-      }
-    },
-    mounted:function () {
-    },
-    methods: {
-      getTitle(){
-        this.title = window.title
-        return '验证邮箱 ' 
       }
     }
   }
