@@ -4,8 +4,9 @@
       <el-aside class="me-area">
         <ul class="me-month-list">
           <li v-for="category in categories" :key="category.Catid" class="me-month-item">
-              <el-button @click="changeArchive(category.Catid,category.Catname)" size="small" style="width: 160px;">{{category.Catname}}
-              </el-button>
+            <el-button @click="changeArchive(category.Catid,category.Catname)" size="small" style="width: 160px;">
+              {{category.Catname}}
+            </el-button>
           </li>
         </ul>
       </el-aside>
@@ -18,20 +19,20 @@
             <span class="me-pull-right me-article-count">
               <i class="me-icon-comment"></i>&nbsp;{{article.commentNum}}
             </span>
-                  <span class="me-pull-right me-article-count">
+            <span class="me-pull-right me-article-count">
               <i class="el-icon-view"></i>&nbsp;{{article.viewNum}}
             </span>
-                </div>
-                <div class="me-artile-description">
-                  {{article.summary}}
-                </div>
+          </div>
+          <div class="me-artile-description">
+            {{article.summary}}
+          </div>
 
-                <div class="me-article-footer">
-                  <span class="me-article-author">
-                    <i class="me-icon-author"></i>&nbsp;{{article.nickname}}
-                  </span>
-                  <el-tag  v-for="tag in article.tags" :key="t" size="mini" type="success">{{tag}}</el-tag>
-                  <span class="me-pull-right me-article-count">
+          <div class="me-article-footer">
+            <span class="me-article-author">
+              <i class="me-icon-author"></i>&nbsp;{{article.nickname}}
+            </span>
+            <el-tag v-for="tag in article.tags" :key="tag" size="mini" type="success">{{tag}}</el-tag>
+            <span class="me-pull-right me-article-count">
               <i class="el-icon-time"></i>&nbsp;{{article.createTime}}
             </span>
           </div>
@@ -44,80 +45,76 @@
 <script>
   import {getAllCategoryList} from "~/api/category"
   import {getArticles} from "~/api/article"
+
   export default {
     name: "FreeCategory",
-     head () {
+    head() {
       return {
         title: this.title
       }
     },
-    asyncData (context) {
+    asyncData(context) {
       let params = context.route.params
-      return getAllCategoryList(context.route.path.replace( params.id ? '/' + params.id : '' , '') + '/list').then((data => {
-          const categories = data.data.data
-          let catName = ''
-          let curID = params.id || 27
-          let innerPage = {
-              pageSize: 10,
-              pageNo: 1,
-              name: 'id',
-              sort: 'desc'
+      return getAllCategoryList(context.route.path.replace(params.id ? '/' + params.id : '', '') + '/list').then((data => {
+        const categories = data.data.data
+        let catName = ''
+        let curID = params.id || 27
+        let innerPage = {
+          pageSize: 10,
+          pageNo: 1,
+          name: 'id',
+          sort: 'desc'
+        }
+        let query = {
+          id: curID
+        }
+        for (let i = 0; i < categories.length; i++) {
+          if (categories[i].Catid == params.id) {
+            catName = categories[i].Catname
           }
-          let query = {
-            id: curID
+        }
+        return getArticles(query, innerPage).then(data => {
+          data = data.data.data
+          for (let i = 0; i < data.length; i++) {
+            data[i].tags = data[i].tags.split(',')
           }
-          for(let i = 0; i < categories.length; i++) {
-            if (categories[i].Catid == params.id) {
-              catName = categories[i].Catname
-            }
-          }
-          let c = getArticles(query, innerPage).then(data => {
-            return data.data.data
-          }).catch(error => {
-            return []
-          })
-
-          console.log(JSON.stringify(c)) //todo 如何直接拿到结果呢
-
           return {
             loading: false,
             categories: categories,
             title: params.id ? catName + ' - 免费视频' : '全部免费视频',
             innerPage: innerPage,
-            query: query
+            query: query,
+            articles: data
           }
-        })).catch(error => {
-          console.log(error)
-          return {
-            loading: false,
-            categories: [],
-            title: '全部免费视频'
-          }
+        }).catch(error => {
+          error({statusCode: 404, message: 'Post not found'})
         })
+
+      })).catch(error => {
+        error({statusCode: 404, message: 'Post not found'})
+      })
     },
     data() {
       return {
         loading: true,
         categories: [],
-        articles: [],
-
+        articles: []
       }
     },
     created() {
     },
     watch: {
       '$route'(old, val) {
-        console.log(old,val)
+        console.log(old, val)
         if (this.$route.params.id) {
           this.article.query.id = this.$route.params.id
         }
       }
     },
     methods: {
-      changeArchive(catid,catname) {
-        let route = this.$route.path.replace('/' + this.$route.params.id , '')
+      changeArchive(catid, catname) {
+        let route = this.$route.path.replace('/' + this.$route.params.id, '')
         this.$router.push({path: route + '/' + catid})
-        this.$setSeo(catname + ' - 免费视频')
       }
     }
   }
@@ -157,5 +154,44 @@
   .me-month-title {
     margin-left: 4px;
     margin-bottom: 12px;
+  }
+
+  .me-article-header {
+    /*padding: 10px 18px;*/
+    padding-bottom: 10px;
+  }
+
+  .me-article-title {
+    font-weight: 600;
+  }
+
+  .me-article-icon {
+    padding: 3px 6px;
+  }
+
+  .me-article-count {
+    color: #a6a6a6;
+    padding-left: 8px;
+    font-size: 13px;
+  }
+
+  .me-pull-right {
+    float: right;
+  }
+
+  .me-artile-description {
+    font-size: 13px;
+    line-height: 24px;
+    margin-bottom: 10px;
+  }
+
+  .me-article-author {
+    color: #a6a6a6;
+    padding-right: 18px;
+    font-size: 13px;
+  }
+
+  .el-tag {
+    margin-left: 6px;
   }
 </style>
