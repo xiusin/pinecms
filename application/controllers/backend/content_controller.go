@@ -154,7 +154,7 @@ func (this *ContentController) AddContent() {
 		return
 	}
 	this.Ctx.ViewData("category", cat)
-	this.Ctx.View("backend/" + cat.TplPrefix + "add.html")
+	this.Ctx.View("backend/" + models.NewCategoryModel(this.Orm).GetCategoryTplPrefix(cat.Parentid, cat.TplPrefix) + "add.html")
 }
 
 //修改内容

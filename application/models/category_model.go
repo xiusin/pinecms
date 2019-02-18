@@ -1,9 +1,10 @@
 package models
 
 import (
-	"github.com/go-xorm/xorm"
 	"iriscms/application/models/tables"
 	"log"
+
+	"github.com/go-xorm/xorm"
 )
 
 type CategoryModel struct {
@@ -101,6 +102,19 @@ func (this CategoryModel) GetCategory(id int64) (tables.IriscmsCategory, error) 
 		return category, err
 	}
 	return category, nil
+}
+
+func (this CategoryModel) GetCategoryTplPrefix(cid int64, prefix string) string {
+	if prefix == "" {
+		category := tables.IriscmsCategory{Catid: cid}
+		this.orm.Get(&category)
+		if category.TplPrefix == "" && category.Parentid != 0 {
+			prefix = this.GetCategoryTplPrefix(category.Parentid, prefix)
+		} else {
+			prefix = category.TplPrefix
+		}
+	}
+	return prefix
 }
 
 func (this CategoryModel) AddCategory(category tables.IriscmsCategory) bool {

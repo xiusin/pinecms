@@ -1,34 +1,10 @@
 <template>
-  <div class="me-view-body" v-title :data-title="title">
-    <el-container class="me-view-container" style="width: 980px;" v-loading="loading">
+  <div class="me-view-body">
+    <el-container class="me-view-container" style="width: 1160px;">
       <el-main>
         <div class="me-view-card">
           <h1 class="me-view-title">{{article.title}}</h1>
-          <div class="me-view-author">
-            <a class="">
-              <img class="me-view-picture" :src="article.author.avatar" />
-            </a>
-            <div class="me-view-info">
-              <span>{{article.author.nickname}}</span>
-              <div class="me-view-meta">
-                <span>{{article.createTime}}</span>
-                <span>阅读   {{article.viewNum}}</span>
-                <span>评论   {{article.commentNum}}</span>
-              </div>
-            </div>
-            <el-button
-              v-if="this.article.author.id == this.$store.state.id"
-              @click="editArticle()"
-              style="position: absolute;left: 60%;"
-              size="mini"
-              type="success"
-              round
-              icon="el-icon-edit">编辑
-            </el-button>
-          </div>
-          <div class="me-view-content">
-            <!-- <markdown-editor :editor=article.editor></markdown-editor> -->
-          </div>
+          <div class="me-view-content" v-html="article.content"></div>
 
           <el-card shadow="hover" style="
     padding: 3px;
@@ -59,59 +35,16 @@
 
           <div class="me-view-tag">
             标签：
-            <!--<el-tag v-for="t in article.tags" :key="t.id" class="me-view-tag-item" size="mini" type="success">{{t.tagname}}</el-tag>-->
-            <el-button @click="tagOrCategory('tag', t)" size="mini" type="primary" v-for="t in article.tags" :key="t"
-                       round plain>{{t}}
+            <el-button @click="tagOrCategory('tag', t)" size="mini" type="primary" v-for="t in article.tags" :key="t">
+              {{t}}
             </el-button>
           </div>
 
           <div class="me-view-tag">
             文章分类：
-            <el-button @click="tagOrCategory('category', article.category.id)" size="mini" type="primary" round plain>
+            <el-button @click="tagOrCategory('category', article.category.id)" size="mini" type="primary">
               我是分类标题
             </el-button>
-          </div>
-
-          <div class="me-view-comment">
-            <div class="me-view-comment-write">
-              <el-row :gutter="20">
-                <el-col :span="2">
-                  <a class="">
-                    <img class="me-view-picture" :src="avatar" />
-                  </a>
-                </el-col>
-                <el-col :span="21">
-                  <el-input
-                    type="textarea"
-                    :autosize="{ minRows: 2}"
-                    placeholder="你的评论..."
-                    class="me-view-comment-text"
-                    v-model="comment.content"
-                    resize="none">
-                  </el-input>
-                </el-col>
-              </el-row>
-
-              <el-row :gutter="20">
-                <el-col :span="3" :offset="21">
-                  <el-button type="text" @click="publishComment()" style="margin-top: 5px;">评论</el-button>
-                </el-col>
-              </el-row>
-            </div>
-
-            <div class="me-view-comment-title">
-              <span>{{article.commentNum}} 条评论</span>
-            </div>
-
-            <!-- <commment-item
-              v-for="(c,index) in comments"
-              :comment="c"
-              :articleId="article.id"
-              :index="index"
-              :rootCommentCounts="comments.length"
-              @commentCountsIncrement="commentCountsIncrement"
-              :key="c.id">
-            </commment-item> -->
           </div>
         </div>
       </el-main>
@@ -121,21 +54,20 @@
 </template>
 
 <script>
-  // import MarkdownEditor from '~/components/markdown/MarkdownEditor'
-  // import CommmentItem from '~/components/comment/CommentItem'
   import {viewArticle} from '@/api/article'
-  import {getCommentsByArticle, publishComment} from '@/api/comment'
-
-  import default_avatar from '@/assets/img/default_avatar.png'
 
   export default {
     name: 'BlogView',
     watch: {
       '$route': 'getArticle'
     },
+    head() {
+      return {
+        title: this.article.title
+      }
+    },
     data() {
       return {
-        loading: true,
         dialogTableVisible: false,
         article: {
           id: '',
@@ -147,38 +79,18 @@
           author: {},
           tags: [],
           category: {},
-          editor: {
-            value: '',
-            toolbarsFlag: false,
-            subfield: false,
-            defaultOpen: 'preview'
-          }
-        },
-        comments: [],
-        comment: {
-          article: {},
-          content: ''
         }
       }
     },
-    components: {
-      // 'markdown-editor': MarkdownEditor,
-      // CommmentItem
-    },
-    computed: {
-      avatar() {
-        let avatar = this.$store.state.avatar
-        if (avatar.length > 0) {
-          return avatar
+    asyncData({ params, error }) {
+      return viewArticle(params.id).then(data => {
+        data.data.data.tags = data.data.data.tags.split(',')
+        return {
+          article: data.data.data
         }
-        return default_avatar
-      },
-      title() {
-        return `${this.article.title} - 文章 - ` 
-      }
-    },
-    created() {
-      this.getArticle()
+      }).catch(e => {
+        error({statusCode: 404, message: '文章加载失败'})
+      })
     },
     methods: {
       getPayUrl(payType) {
@@ -186,55 +98,6 @@
       },
       tagOrCategory(type, id) {
         this.$router.push({path: `/${type}/${id}`})
-      },
-      editArticle() {
-        this.$router.push({path: `/write/${this.article.id}`})
-      },
-      getArticle() {
-        let that = this
-        viewArticle(that.$route.params.id).then(data => {
-          console.log("asdasd",data)
-          that.loading = false
-          data.data.data.tags = data.data.data.tags.split(',')
-          Object.assign(that.article, data.data.data)
-          that.article.editor.value = data.data.data.content
-          // that.getCommentsByArticle()
-        }).catch(error => {
-          if (error !== 'error') {
-            that.$message({type: 'error', message: '文章加载失败', showClose: true})
-          }
-        })
-      },
-      publishComment() {
-        let that = this
-        if (!that.comment.content) {
-          return;
-        }
-        that.comment.article.id = that.article.id
-
-        publishComment(that.comment).then(data => {
-          that.$message({type: 'success', message: '评论成功', showClose: true})
-          that.comments.unshift(data.data)
-          that.commentCountsIncrement()
-          that.comment.content = ''
-        }).catch(error => {
-          if (error !== 'error') {
-            that.$message({type: 'error', message: '评论失败', showClose: true})
-          }
-        })
-      },
-      getCommentsByArticle() {
-        let that = this
-        getCommentsByArticle(that.article.id).then(data => {
-          that.comments = data.data
-        }).catch(error => {
-          if (error !== 'error') {
-            that.$message({type: 'error', message: '评论加载失败', showClose: true})
-          }
-        })
-      },
-      commentCountsIncrement() {
-        this.article.commentCounts += 1
       }
     },
     // //组件内的守卫 调整body的背景色
@@ -255,7 +118,8 @@
 
 <style>
   .me-view-body {
-    margin: 100px auto 140px;
+    margin: 100px auto 70px;
+    background-color: #fff;
   }
 
   .me-view-container {

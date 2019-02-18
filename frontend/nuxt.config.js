@@ -15,7 +15,7 @@ module.exports = {
     ]
   },
   router: {
-    middleware: 'test'
+    middleware: 'auth'
   },
   /*
   ** Customize the progress bar color
@@ -25,7 +25,8 @@ module.exports = {
   ** Build configuration
   */
   build: {
-    vendor: ['external_library','element-ui']
+    vendor: ['external_library','element-ui'],
+    extractCSS: { allChunks: true }
   },
   render: {
     bundleRenderer: {
@@ -40,7 +41,7 @@ module.exports = {
       ssr: true,
     },
     { // globle
-      src: '~/plugins/globle',
+      src: '~/plugins/global',
       ssr: true,
     }
   ],

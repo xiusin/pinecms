@@ -2,6 +2,7 @@ import Vuex from 'vuex'
 import Vue from 'vue'
 // import {getToken, setToken, removeToken} from '@/request/token'
 import {login, getUserInfo, logout, register} from '@/api/login'
+import Cookie from 'js-cookie'
 
 Vue.use(Vuex);
 
@@ -17,6 +18,11 @@ const createStore = () => {
     mutations: {
       SET_TOKEN: (state, token) => {
         state.token = token;
+        if (token) {
+          Cookie.set('token', token);
+        } else {
+          Cookie.remove('token');
+        }
       },
       SET_ACCOUNT: (state, account) => {
         state.account = account
@@ -32,12 +38,13 @@ const createStore = () => {
       }
     },
     actions: {
+      nuxtServerInit ({ commit }, { req }) {
+      },
       // 登录
       login({commit}, user) {
         return new Promise((resolve, reject) => {
           login(user.account, user.password, user.token).then(data => {
-            commit('SET_TOKEN', data.data['sign_token'])
-            // setToken(data.data['sign_token'])
+            commit('SET_TOKEN', data.data.data['sign_token'])
             resolve()
           }).catch(error => {
             reject(error)
@@ -76,6 +83,7 @@ const createStore = () => {
             commit('SET_NAME', '')
             commit('SET_AVATAR', '')
             commit('SET_ID', '')
+
             // removeToken()
             resolve()
           // }).catch(error => {
@@ -101,7 +109,7 @@ const createStore = () => {
       register({commit}, user) {
         return new Promise((resolve, reject) => {
           register(user.account, user.email, user.password,user.token).then((data) => {
-            commit('SET_TOKEN', data.data['sign_token'])
+            commit('SET_TOKEN', data.data.data['sign_token'])
             // setToken(data.data['sign_token'])
             resolve(data)
           }).catch((error) => {

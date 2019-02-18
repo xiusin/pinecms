@@ -1,7 +1,10 @@
 package backend
 
 import (
+	"fmt"
+	"github.com/garyburd/redigo/redis"
 	"html/template"
+	"iriscms/application/controllers"
 	"iriscms/common/helper"
 
 	"github.com/go-xorm/xorm"
@@ -14,8 +17,10 @@ import (
 )
 
 type CategoryController struct {
-	Ctx     iris.Context
-	Orm     *xorm.Engine
+	Ctx       iris.Context
+	Orm       *xorm.Engine
+	RedisPool *redis.Pool
+
 	Session *sessions.Session
 }
 
@@ -96,6 +101,10 @@ func (this *CategoryController) CategoryAdd() {
 		if !models.NewCategoryModel(this.Orm).AddCategory(category) {
 			helper.Ajax("添加分类失败", 1, this.Ctx)
 		} else {
+			client := this.RedisPool.Get()
+			defer client.Close()
+			cacheKey := fmt.Sprintf(controllers.CACHE_CATEGORY_FORMAT, parentid)
+			client.Do("DEL", cacheKey)
 			helper.Ajax("添加分类成功", 0, this.Ctx)
 		}
 		return

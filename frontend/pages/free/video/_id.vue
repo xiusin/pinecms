@@ -2,6 +2,7 @@
   <div style="width: 1160px; ">
     <el-container v-loading="loading" style="min-height: 700px;">
       <el-aside class="me-area">
+        <div class="me-category-title">资源分类</div>
         <ul class="me-month-list">
           <li v-for="category in categories" :key="category.Catid" class="me-month-item">
             <el-button @click="changeArchive(category.Catid,category.Catname)" size="small" style="width: 160px;">
@@ -11,16 +12,13 @@
         </ul>
       </el-aside>
 
-      <el-main class="me-articles" style="width: 720px;">
-        <el-card v-for="article in articles" :key="article.id" class="me-area" :body-style="{ padding: '16px' }">
+      <el-main class="me-articles" style="width: 885px;">
+        <el-card v-if="articles.length" v-for="article in articles" :key="article.id" class="me-area" :body-style="{ padding: '16px' }">
           <div class="me-article-header">
-            <a @click="view(article.id)" class="me-article-title">{{article.title}}</a>
+            <nuxt-link :to="view(article.id)" class="me-article-title">{{article.title}}</nuxt-link>
             <el-button v-if="article.weight > 0" class="me-article-icon" type="text">置顶</el-button>
             <span class="me-pull-right me-article-count">
-              <i class="me-icon-comment"></i>&nbsp;{{article.commentNum}}
-            </span>
-            <span class="me-pull-right me-article-count">
-              <i class="el-icon-view"></i>&nbsp;{{article.viewNum}}
+              <i class="el-icon-view"></i>&nbsp;150
             </span>
           </div>
           <div class="me-artile-description">
@@ -28,14 +26,14 @@
           </div>
 
           <div class="me-article-footer">
-            <span class="me-article-author">
-              <i class="me-icon-author"></i>&nbsp;{{article.nickname}}
-            </span>
             <el-tag v-for="tag in article.tags" :key="tag" size="mini" type="success">{{tag}}</el-tag>
             <span class="me-pull-right me-article-count">
-              <i class="el-icon-time"></i>&nbsp;{{article.createTime}}
+              <i class="el-icon-time"></i>&nbsp;2018-12-12 12:12:12
             </span>
           </div>
+        </el-card>
+        <el-card class="me-area" :body-style="{padding: '16px'}" v-else>
+          没有任何内容
         </el-card>
       </el-main>
     </el-container>
@@ -69,7 +67,7 @@
           id: curID
         }
         for (let i = 0; i < categories.length; i++) {
-          if (categories[i].Catid == params.id) {
+          if (categories[i].Catid === Number(params.id)) {
             catName = categories[i].Catname
           }
         }
@@ -115,6 +113,9 @@
       changeArchive(catid, catname) {
         let route = this.$route.path.replace('/' + this.$route.params.id, '')
         this.$router.push({path: route + '/' + catid})
+      },
+      view(artid) {
+        return '/view/' + artid
       }
     }
   }
@@ -179,19 +180,36 @@
     float: right;
   }
 
-  .me-artile-description {
+  .me-article-description {
     font-size: 13px;
     line-height: 24px;
     margin-bottom: 10px;
   }
-
+  a:visited {
+    color: #303133;
+  }
   .me-article-author {
     color: #a6a6a6;
     padding-right: 18px;
     font-size: 13px;
   }
-
+  .me-category-title {
+    width: 100%;
+    font-size: 14px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-bottom: 1px solid #cccccc;
+  }
   .el-tag {
-    margin-left: 6px;
+    margin-right: 6px;
+    color: #010101;
+    border-radius: 0;
+    background-color: rgba(235,235,235, .12);
+    border-color: rgba(150,150,150,1);
+  }
+  .el-card {
+    margin-bottom: 10px;
+    box-shadow: none;
   }
 </style>

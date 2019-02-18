@@ -28,7 +28,6 @@ func (c *CategoryController) BeforeActivation(b mvc.BeforeActivation) {
 }
 
 func (c *CategoryController) CategoryList() {
-
 	client := c.RedisPool.Get()
 	defer client.Close()
 
@@ -47,11 +46,12 @@ func (c *CategoryController) CategoryList() {
 	if err != nil {
 		fmt.Println("不走缓存," + err.Error())
 		cats = models.NewCategoryModel(c.Orm).GetNextCategory(topCatId)
+		fmt.Println(cats)
 		if len(cats) > 0 {
 			client.Do("SET", cacheKey, helper.JsonEncode(cats), "EX", controllers.CACHE_EX)
 		}
 	} else {
-		json.Unmarshal([]byte(datas), &cats)
+		_ = json.Unmarshal([]byte(datas), &cats)
 	}
 	c.Ctx.JSON(ReturnApiData{Data: cats, Msg: "获取列表成功", Status: true})
 }

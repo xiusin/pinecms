@@ -110,6 +110,9 @@
 
 <script>
   export default {
+    ayncData () {
+
+    },
     data() {
       return {
         dialogImageUrl: '',
@@ -165,7 +168,6 @@
         this.$refs[formName].resetFields();
       },
       handleRemove(file, fileList) {
-        console.log(file, fileList);
       },
       handlePictureCardPreview(file) {
         this.dialogImageUrl = file.url;

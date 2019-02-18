@@ -14,9 +14,6 @@
 </template>
 
 <script>
-  // if ( process.browser) {
-  //   require('external_library')
-  // }
   import BaseFooter from '~/components/BaseFooter'
   import BaseHeader from '~/components/BaseHeader'
   import GoTop from '~/components/gotop/GoTop'
