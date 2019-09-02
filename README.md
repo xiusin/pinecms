@@ -49,5 +49,5 @@ iriscms 一个基于`IrisGo`和`EasyUI`简单的cms框架吗,基础的后台管�
 
 # 基于最新版本 #
 1. 开发成一个IT资源下载站. 
-2. 简单点, 早期不收费, 需要关注公众号. 
+2. 简单点, 早期不收费, 需要关注公众号.  (https://www.510ka.com/)
 https://blog.xiaoxinfq.com/#/
