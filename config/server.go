@@ -2,11 +2,7 @@ package config
 
 import (
 	"fmt"
-	"github.com/garyburd/redigo/redis"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/sessions/sessiondb/redis/service"
 	"io/ioutil"
-	"iriscms/common/helper"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -14,6 +10,11 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/garyburd/redigo/redis"
+	"github.com/kataras/iris/context"
+	"github.com/kataras/iris/sessions/sessiondb/redis/service"
+	"github.com/xiusin/iriscms/common/helper"
 
 	_ "github.com/go-sql-driver/mysql" // 初始化 Mysql 驱动
 	"github.com/go-xorm/xorm"

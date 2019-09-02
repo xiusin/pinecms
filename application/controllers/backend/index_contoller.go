@@ -1,7 +1,7 @@
 package backend
 
 import (
-	"iriscms/application/models"
+	"github.com/xiusin/iriscms/application/models"
 	"runtime"
 	"strconv"
 	"strings"
@@ -12,7 +12,7 @@ import (
 	"github.com/kataras/iris/sessions"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
-	"iriscms/common/helper"
+	"github.com/xiusin/iriscms/common/helper"
 )
 
 type IndexController struct {

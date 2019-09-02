@@ -2,7 +2,7 @@ package models
 
 import (
 	"fmt"
-	"iriscms/application/models/tables"
+	"github.com/xiusin/iriscms/application/models/tables"
 
 	"github.com/go-ffmt/ffmt"
 	"github.com/go-xorm/xorm"

@@ -2,7 +2,7 @@ package models
 
 import (
 	"github.com/go-xorm/xorm"
-	"iriscms/application/models/tables"
+	"github.com/xiusin/iriscms/application/models/tables"
 )
 
 type PageModel struct {

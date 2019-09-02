@@ -8,8 +8,8 @@ import (
 	jwt2 "github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"iriscms/application/models/tables"
-	"iriscms/common/helper"
+	"github.com/xiusin/iriscms/application/models/tables"
+	"github.com/xiusin/iriscms/common/helper"
 	"time"
 )
 

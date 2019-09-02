@@ -1,7 +1,7 @@
 package main //github.com/xiusin/iriscms
 
 import (
-	. "iriscms/config"
+	. "github.com/xiusin/iriscms/config"
 	"os"
 	"runtime"
 

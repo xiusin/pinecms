@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"html/template"
-	"iriscms/application/controllers"
-	"iriscms/common/helper"
+	"github.com/xiusin/iriscms/application/controllers"
+	"github.com/xiusin/iriscms/common/helper"
 
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
-	"iriscms/application/models"
-	"iriscms/application/models/tables"
+	"github.com/xiusin/iriscms/application/models"
+	"github.com/xiusin/iriscms/application/models/tables"
 	"strconv"
 )
 
@@ -103,7 +103,7 @@ func (this *CategoryController) CategoryAdd() {
 		} else {
 			client := this.RedisPool.Get()
 			defer client.Close()
-			cacheKey := fmt.Sprintf(controllers.CACHE_CATEGORY_FORMAT, parentid)
+			cacheKey := fmt.Sprintf(controllers.CacheCategoryFormat, parentid)
 			client.Do("DEL", cacheKey)
 			helper.Ajax("添加分类成功", 0, this.Ctx)
 		}

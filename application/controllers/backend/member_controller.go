@@ -6,8 +6,8 @@ import (
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
 	"html/template"
-	"iriscms/application/models"
-	"iriscms/common/helper"
+	"github.com/xiusin/iriscms/application/models"
+	"github.com/xiusin/iriscms/common/helper"
 )
 
 type MemberController struct {

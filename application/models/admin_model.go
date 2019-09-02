@@ -3,8 +3,8 @@ package models
 import (
 	"errors"
 	"github.com/go-xorm/xorm"
-	"iriscms/application/models/tables"
-	"iriscms/common/helper"
+	"github.com/xiusin/iriscms/application/models/tables"
+	"github.com/xiusin/iriscms/common/helper"
 	"log"
 )
 

@@ -7,10 +7,10 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/mvc"
-	"iriscms/application/controllers/api"
-	"iriscms/application/controllers/backend"
-	"iriscms/application/controllers/frontend"
-	"iriscms/application/controllers/middleware"
+	"github.com/xiusin/iriscms/application/controllers/api"
+	"github.com/xiusin/iriscms/application/controllers/backend"
+	"github.com/xiusin/iriscms/application/controllers/frontend"
+	"github.com/xiusin/iriscms/application/controllers/middleware"
 	"net/http"
 )
 

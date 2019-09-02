@@ -3,10 +3,10 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"iriscms/application/controllers"
-	"iriscms/application/models"
-	"iriscms/application/models/tables"
-	"iriscms/common/helper"
+	"github.com/xiusin/iriscms/application/controllers"
+	"github.com/xiusin/iriscms/application/models"
+	"github.com/xiusin/iriscms/application/models/tables"
+	"github.com/xiusin/iriscms/common/helper"
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/go-xorm/xorm"
@@ -40,7 +40,7 @@ func (c *CategoryController) CategoryList() {
 	}
 	path := c.Ctx.Path()
 	topCatId := categoryPathMapToId[path]
-	cacheKey := fmt.Sprintf(controllers.CACHE_CATEGORY_FORMAT, topCatId)
+	cacheKey := fmt.Sprintf(controllers.CacheCategoryFormat, topCatId)
 	datas, err := redis.String(client.Do("GET", cacheKey))
 	var cats []tables.IriscmsCategory
 	if err != nil {
@@ -48,7 +48,7 @@ func (c *CategoryController) CategoryList() {
 		cats = models.NewCategoryModel(c.Orm).GetNextCategory(topCatId)
 		fmt.Println(cats)
 		if len(cats) > 0 {
-			client.Do("SET", cacheKey, helper.JsonEncode(cats), "EX", controllers.CACHE_EX)
+			client.Do("SET", cacheKey, helper.JsonEncode(cats), "EX", controllers.CacheEx)
 		}
 	} else {
 		_ = json.Unmarshal([]byte(datas), &cats)

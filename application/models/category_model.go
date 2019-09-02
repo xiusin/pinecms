@@ -1,7 +1,7 @@
 package models
 
 import (
-	"iriscms/application/models/tables"
+	"github.com/xiusin/iriscms/application/models/tables"
 	"log"
 
 	"github.com/go-xorm/xorm"

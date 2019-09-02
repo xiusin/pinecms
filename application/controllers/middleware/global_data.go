@@ -6,8 +6,8 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
-	"iriscms/application/controllers"
-	"iriscms/application/models/tables"
+	"github.com/xiusin/iriscms/application/controllers"
+	"github.com/xiusin/iriscms/application/models/tables"
 )
 
 func FrontendGlobalViewData(app *iris.Application,xorm *xorm.Engine,redisClient *redis.Pool) func(ctx context.Context) {
@@ -39,7 +39,7 @@ func SetGlobalConfigData(xorm *xorm.Engine, redisClient *redis.Pool) func(ctx co
 			ctx.StopExecution()
 			return
 		}
-		ctx.Values().Set(controllers.CACHE_SETTING, settingData) //todo 这里有问题吗?
+		ctx.Values().Set(controllers.CacheSetting, settingData) //todo 这里有问题吗?
 		ctx.Next()
 	}
 
@@ -49,7 +49,7 @@ func getSetting(xorm *xorm.Engine, redisClient *redis.Pool) (map[string]string, 
 	var settingData = map[string]string{}
 	client := redisClient.Get()
 	defer client.Close()
-	res, err := redis.String(client.Do("GET", controllers.CACHE_SETTING))
+	res, err := redis.String(client.Do("GET", controllers.CacheSetting))
 	if err != nil || len(res) == 0 {
 		var settings []tables.IriscmsSetting
 		err := xorm.Find(&settings)
@@ -63,7 +63,7 @@ func getSetting(xorm *xorm.Engine, redisClient *redis.Pool) (map[string]string, 
 		}
 		setDataStr, err := json.Marshal(settingData)
 		if err == nil {
-			_, err = client.Do("SET", controllers.CACHE_SETTING, string(setDataStr))
+			_, err = client.Do("SET", controllers.CacheSetting, string(setDataStr))
 			if err != nil {
 				return nil, err
 			}

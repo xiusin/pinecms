@@ -9,9 +9,9 @@ import (
 	"github.com/silenceper/wechat"
 	"github.com/silenceper/wechat/message"
 	"github.com/silenceper/wechat/user"
-	"iriscms/application/models/tables"
-	"iriscms/common/helper"
-	"iriscms/common/storage"
+	"github.com/xiusin/iriscms/application/models/tables"
+	"github.com/xiusin/iriscms/common/helper"
+	"github.com/xiusin/iriscms/common/storage"
 	"strconv"
 	"time"
 )

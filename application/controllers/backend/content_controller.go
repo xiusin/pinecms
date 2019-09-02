@@ -6,9 +6,9 @@ import (
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
 	"html/template"
-	"iriscms/application/models"
-	"iriscms/application/models/tables"
-	"iriscms/common/helper"
+	"github.com/xiusin/iriscms/application/models"
+	"github.com/xiusin/iriscms/application/models/tables"
+	"github.com/xiusin/iriscms/common/helper"
 	"strconv"
 	"strings"
 )

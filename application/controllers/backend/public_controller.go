@@ -4,13 +4,13 @@ import (
 	"strconv"
 	"strings"
 
-	"iriscms/common/helper"
+	"github.com/xiusin/iriscms/common/helper"
 
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
-	"iriscms/common/storage"
+	"github.com/xiusin/iriscms/common/storage"
 )
 
 type PublicController struct {

@@ -8,8 +8,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/imroc/req"
-	"github.com/kataras/go-mailer"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -20,6 +18,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/imroc/req"
+	"github.com/kataras/go-mailer"
 
 	"github.com/kataras/iris/context"
 	"github.com/nfnt/resize"
