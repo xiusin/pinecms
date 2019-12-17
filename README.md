@@ -1,9 +1,3 @@
-# 介绍 #
-
-
-https://shuge.org/ebook/jack-wilkes-photographs-of-china/ 前端是否可以做成这样
-iriscms 一个基于`IrisGo`和`EasyUI`简单的cms框架吗,基础的后台管理功能,目前没有前台展示功能的实现.
-
 # 下载部署 #
 
 1. 下载源码
@@ -29,8 +23,8 @@ iriscms 一个基于`IrisGo`和`EasyUI`简单的cms框架吗,基础的后台管�
 
 8. 使用 `Nginx` 或者 `Caddy` 反向代理到 `:2017` 或者自定义 端口即可
 
-# 路由配置与实现 #
-在`config/router.go`中按照已有配置实现相关的前后端路由, 在控制器文件内务必实现`func (*XXController) BeforeActivation(b mvc.BeforeActivation)`进行路由注册, 然后实现各个方法的功能与需求.
+# 路由配置与实现 #
+在`config/router.go`中按照已有配置实现相关的前后端路由,在控制器文件内务必实现`func (*XXController) BeforeActivation(b mvc.BeforeActivation)`进行路由注册, 然后实现各个方法的功能与需求.
 
 > 目前功能比较简单, 对付简单的企业站应该是没问题. 其他的酌情自行开发 ^_^
 
