@@ -22,7 +22,7 @@ import (
 	"github.com/imroc/req"
 	"github.com/kataras/go-mailer"
 
-	"github.com/kataras/iris/context"
+	"github.com/kataras/iris/v12/context"
 	"github.com/nfnt/resize"
 	"golang.org/x/image/draw"
 )

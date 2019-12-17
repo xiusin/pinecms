@@ -5,11 +5,11 @@ import (
 	"strings"
 
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris/sessions"
+	"github.com/kataras/iris/v12/sessions"
 	tables "github.com/xiusin/iriscms/src/application/models/tables"
 	"github.com/xiusin/iriscms/src/common/helper"
 
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 )
 
 func CheckAdminLoginAndAccess(sess *sessions.Sessions, xorm *xorm.Engine) func(this iris.Context) {

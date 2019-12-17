@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/context"
 	"github.com/xiusin/iriscms/src/application/controllers"
 	"github.com/xiusin/iriscms/src/application/models/tables"
 	"github.com/xiusin/iriscms/src/common/cache"

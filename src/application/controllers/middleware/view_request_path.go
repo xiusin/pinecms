@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/context"
 	"github.com/xiusin/iriscms/src/common/helper"
 )
 

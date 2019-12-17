@@ -2,12 +2,9 @@ package config
 
 import (
 	"time"
-
-	"github.com/kataras/iris"
 )
 
 type Config struct {
-	DirOption  iris.DirOptions
 	SendMail   bool    `yaml:"sendMail"`
 	Port       int64   `yaml:"port"`
 	Pprof      Pprof   `yaml:"pprof"`

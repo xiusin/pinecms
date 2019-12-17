@@ -2,8 +2,8 @@ package api
 
 import (
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/sessions/sessiondb/boltdb"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/sessions/sessiondb/boltdb"
 )
 
 type CategoryController struct {

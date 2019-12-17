@@ -3,8 +3,8 @@ package frontend
 import (
 	"github.com/go-xorm/xorm"
 	"github.com/gorilla/sessions"
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/mvc"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/mvc"
 )
 
 type IndexController struct {

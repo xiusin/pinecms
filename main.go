@@ -7,7 +7,6 @@ import (
 	"github.com/xiusin/iriscms/src/config"
 
 	"github.com/kataras/iris"
-	"github.com/kataras/tablewriter"
 	"github.com/landoop/tableprinter"
 )
 
@@ -20,7 +19,7 @@ func main() {
 	p := tableprinter.New(os.Stdout)
 	p.BorderTop, p.BorderBottom, p.BorderLeft, p.BorderRight = true, true, true, true
 	p.CenterSeparator, p.ColumnSeparator, p.RowSeparator = "│", "│", "─"
-	p.HeaderBgColor, p.HeaderFgColor = tablewriter.BgBlackColor, tablewriter.FgGreenColor
+	p.HeaderBgColor, p.HeaderFgColor = 40, 32
 	p.Print([]row{
 		{"Name", "xiusin"},
 		{"Version", "Development"},

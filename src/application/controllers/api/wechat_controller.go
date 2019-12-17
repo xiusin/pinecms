@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/mvc"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/mvc"
 	"github.com/silenceper/wechat"
 	"github.com/silenceper/wechat/message"
 	"github.com/silenceper/wechat/user"
