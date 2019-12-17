@@ -21,7 +21,7 @@ func registerBackendRoutes() {
 		config.BackendRouteParty,
 		middleware.ViewRequestPath(app, config.LogPath),
 		middleware.CheckAdminLoginAndAccess(sess, XOrmEngine),
-		middleware.SetGlobalConfigData(XOrmEngine),
+		middleware.SetGlobalConfigData(XOrmEngine, cache),
 		iris.Gzip,
 	).Handle(new(backend.AdminController)).
 		Handle(new(backend.LoginController)).
@@ -34,7 +34,7 @@ func registerBackendRoutes() {
 
 	mvcApp.Party(
 		"/public",
-		middleware.SetGlobalConfigData(XOrmEngine),
+		middleware.SetGlobalConfigData(XOrmEngine, cache),
 		InjectConfig(),
 	).Handle(new(backend.PublicController))
 }
@@ -53,7 +53,7 @@ func registerErrorRoutes() {
 }
 
 func registerApiRoutes() {
-	apiParty := mvc.New(app.Party("/api/v1", InjectConfig(), cors.AllowAll(), Jwt(), middleware.SetGlobalConfigData(XOrmEngine)).AllowMethods(iris.MethodOptions))
+	apiParty := mvc.New(app.Party("/api/v1", InjectConfig(), cors.AllowAll(), Jwt(), middleware.SetGlobalConfigData(XOrmEngine, cache)).AllowMethods(iris.MethodOptions))
 	apiParty.Register(XOrmEngine)
 	apiParty.Handle(new(api.UserApiController)).Handle(new(api.WechatController)).Handle(new(api.CategoryController)).Handle(new(api.ContentController))
 

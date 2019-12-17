@@ -4,6 +4,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
+	"github.com/kataras/iris/sessions/sessiondb/boltdb"
 	controllers "github.com/xiusin/iriscms/src/application/controllers"
 	tables "github.com/xiusin/iriscms/src/application/models/tables"
 )
@@ -27,7 +28,7 @@ func FrontendGlobalViewData(xorm *xorm.Engine) func(ctx context.Context) {
 	}
 }
 
-func SetGlobalConfigData(xorm *xorm.Engine) func(ctx context.Context) {
+func SetGlobalConfigData(xorm *xorm.Engine, cache *boltdb.Database) func(ctx context.Context) {
 	//读取配置项
 	return func(ctx context.Context) {
 		var settingData = map[string]string{}

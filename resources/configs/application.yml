@@ -13,7 +13,7 @@ session:
   path: "./runtime/sessions/store.db"
 port: 2019
 pprof:
-  open: false
+  open: true
   port: 6060
   route: "/debug/pprof/*action"
 log_path: "./runtime/logs/"

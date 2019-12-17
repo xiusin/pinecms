@@ -36,6 +36,7 @@ var (
 	sess            *sessions.Sessions
 	config          *Config // config 全局配置文件对象
 	sessionInitSync sync.Once
+	cache           *boltdb.Database
 )
 
 func initDatabase() {
@@ -162,11 +163,12 @@ func GetMvcConfig() func(app *mvc.Application) {
 		hashKey, blockKey := []byte(config.HashKey), []byte(config.BlockKey)
 		sec, ssc := securecookie.New(hashKey, blockKey), config.Session
 		sess = sessions.New(sessions.Config{Cookie: ssc.Name, Encode: sec.Encode, Decode: sec.Decode, Expires: ssc.Expires * time.Second,})
-		db, err := boltdb.New(ssc.Path, os.FileMode(0750))
+		var err error
+		cache, err = boltdb.New(ssc.Path, os.FileMode(0750))
 		if err != nil {
 			panic(err)
 		}
-		sess.UseDatabase(db)
+		sess.UseDatabase(cache)
 	})
 	return func(app *mvc.Application) {
 		app.Register(sess.Start, XOrmEngine)
