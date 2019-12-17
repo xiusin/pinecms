@@ -1,21 +1,22 @@
 view:
   reload: true
   engine:
-    "django" :
-      path: "./application/views/"
-      suffix: ".tpl"
-    "html" :
-      path: "./application/views/"
+#    django :
+#      path: "./resources/views/"
+#      suffix: ".tpl"
+    html :
+      path: "./resources/views/"
       suffix: ".html"
 session:
   name: "gosessionid"
   expires: 0
-port: 2018
+  path: "./runtime/sessions/store.db"
+port: 2019
 pprof:
   open: false
   port: 6060
   route: "/debug/pprof/*action"
-log_path: "logs"
+log_path: "./runtime/logs/"
 charset: "UTF-8"
 hashkey: "the-big-and-secret-fash-key-here"
 blockkey: "lot-secret-of-characters-big-too"
@@ -23,6 +24,11 @@ backend_route_party: "/b/"
 upload:
   engine: "oss" #oss or file
   base_path: "assets"
+
+statics:
+  - {route: "/assets", path: "./resources/assets"}
+
+sendMail: false
 
 redis:
   host: "115.159.71.60:6379"

@@ -1,0 +1,61 @@
+<link rel="stylesheet" type="text/css" href="/assets/backend/mdou/css/style.css" />
+<div class="content">
+    <div class="top_bg"></div>
+    <div class="content_home">
+        <div class="home_title">系统信息</div>
+        <table width="100%" class="home_table">
+            <tr>
+                <td class="name" width="20%">操作系统：</td>
+                <td>{{ .Goos }}</td>
+            </tr>
+            <tr>
+                <td class="name" width="20%">当前线程数：</td>
+                <td>{{ .Grountues }}个</td>
+            </tr>
+            <tr>
+                <td class="name" width="20%">GO VERSION：</td>
+                <td>{{ .GoVersion }}</td>
+            </tr>
+            <tr>
+                <td class="name" width="20%">IRIS-GO VERSION：</td>
+                <td>{{ .IrisVersion }}</td>
+            </tr>
+            <tr>
+                <td class="name" width="20%">数据库类型及版本：</td>
+                <td>MySql</td>
+            </tr>
+            <tr>
+                <td class="name" width="20%">当前网站尺寸：</td>
+                <td>{{.SiteSize}}</td>
+            </tr>
+            <tr>
+                <td class="name" width="20%">处理器数量：</td>
+                <td>{{ .NumCPU }}个</td>
+            </tr>
+            <tr>
+                <td class="name" width="20%">内存使用：</td>
+                <td>{{ .Mem }}</td>
+            </tr>
+        </table>
+        <div class="home_title">技术支持</div>
+        <table width="100%" class="home_table">
+            <tr>
+                <td class="name" width="20%">技术支持：</td>
+                <td>开源有限公司</td>
+            </tr>
+            <tr>
+                <td class="name" width="20%">IRIS框架网站：</td>
+                <td><a target="_blank" href="http://www.iris-go.com/">www.iris-go.com</a></td>
+            </tr>
+            <tr>
+                <td class="name" width="20%">开发者网站：</td>
+                <td><a href="https://www.mirchen.com/" target="_blank">www.mirchen.com</a></td>
+            </tr>
+            <tr>
+                <td class="name" width="20%">CMS网站：</td>
+                <td><a href="https://iriscms.mirchen.com/" target="_blank">iriscms.mirchen.com</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+

@@ -1,18 +1,19 @@
-package main //github.com/xiusin/iriscms
+package main
 
 import (
-	. "github.com/xiusin/iriscms/config"
 	"os"
 	"runtime"
+
+	"github.com/xiusin/iriscms/src/config"
 
 	"github.com/kataras/iris"
 	"github.com/kataras/tablewriter"
 	"github.com/landoop/tableprinter"
 )
 
-type author struct {
-	Name  string `header:"Name"`
-	Value string `header:"Value"`
+type row struct {
+	name  string `header:"Name"`
+	value string `header:"Value"`
 }
 
 func main() {
@@ -20,13 +21,13 @@ func main() {
 	p.BorderTop, p.BorderBottom, p.BorderLeft, p.BorderRight = true, true, true, true
 	p.CenterSeparator, p.ColumnSeparator, p.RowSeparator = "│", "│", "─"
 	p.HeaderBgColor, p.HeaderFgColor = tablewriter.BgBlackColor, tablewriter.FgGreenColor
-	p.Print([]author{
-		{Name: "Name", Value: "XiuSin"},
-		{Name: "Version", Value: "Development"},
-		{Name: "Author", Value: "XiuSin"},
-		{Name: "WebSite", Value: "http://www.xiusin.com/"},
-		{Name: "IrisVersion", Value: iris.Version},
+	p.Print([]row{
+		{"Name", "XiuSin"},
+		{"Version", "Development"},
+		{"Author", "XiuSin"},
+		{"WebSite", "http://www.xiusin.com/"},
+		{"IrisVersion", iris.Version},
 	})
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	StartApplication()
+	config.Server()
 }

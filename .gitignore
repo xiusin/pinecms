@@ -2,6 +2,7 @@
 iriscms
 iriscms.exe
 iriscms.exe~
+main
 *.log
 runtime
 resources/configs/database.yml
