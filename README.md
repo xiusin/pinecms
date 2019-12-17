@@ -21,7 +21,7 @@
     > 访问 `http://localhost:2018/b/login/index`
     > 默认账号密码 `用户名: admin 密码: admin888`
 
-8. 使用 `Nginx` 或者 `Caddy` 反向代理到 `:2017` 或者自定义 端口即可
+8. 使用 `Nginx` 或者 `Caddy` 反向代理到 `:2017` 或者自定义 端口即可
 
 # 路由配置与实现 #
 在`config/router.go`中按照已有配置实现相关的前后端路由,在控制器文件内务必实现`func (*XXController) BeforeActivation(b mvc.BeforeActivation)`进行路由注册, 然后实现各个方法的功能与需求.
