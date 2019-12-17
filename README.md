@@ -8,7 +8,7 @@
     > 修改`resources/configs/database.yml.dist`为`resources/configs/database.yml`
 
 4. 安装依赖
-    > `glide i`
+    > `go get -v`
 
 5. 运行项目
     > `./main.exe` or `./main`
@@ -18,10 +18,10 @@
     > `fresh`
 
 7. 访问后端登陆页面
-    > 访问 `http://localhost:2018/b/login/index`
+    > 访问 `http://localhost:2019/b/login/index`
     > 默认账号密码 `用户名: admin 密码: admin888`
 
-8. 使用 `Nginx` 或者 `Caddy` 反向代理到 `:2017` 或者自定义 端口即可
+8. 使用 `Nginx` 或者 `Caddy` 反向代理到 `:2019` 或者自定义 端口即可
 
 # 路由配置与实现 #
 在`config/router.go`中按照已有配置实现相关的前后端路由,在控制器文件内务必实现`func (*XXController) BeforeActivation(b mvc.BeforeActivation)`进行路由注册, 然后实现各个方法的功能与需求.
@@ -29,18 +29,15 @@
 > 目前功能比较简单, 对付简单的企业站应该是没问题. 其他的酌情自行开发 ^_^
 
 # TODO #
-- [x] error的错误日志
+- [ ] 错误日志统一日志组件记录，不使用fmt. (实现日志ILogger)
 - [x] 网页缓存
-- [x] OSS存储驱动
-- [x] 基本框架
-- [x] 需要开放的公共权限设置(public-,check-)
-- [ ] 开发文档模型 (付费,下载,附表,主表)
-- [ ] 开发会员模块(mongo接入.付费积分)
-- [ ] 添加bench 测试
-- [x] 打印 pprof 结果根据svg图形优化相关的代码  `go tool pprof -http=0.0.0.0:1234 profile`
+- [x] OSS存储驱动 (IStorage)
+- [x] 打印 pprof 结果根据svg图形优化相关的代码 
 - [ ] 图片裁切
+- [ ] 精简代码以及后端模块， 删除自用表. 
+- [ ] 迁移数据模块
+- [ ] 二进制资源
 
-# 基于最新版本 #
-1. 开发成一个IT资源下载站. 
-2. 简单点, 早期不收费, 需要关注公众号.  (https://www.510ka.com/)
-https://blog.xiaoxinfq.com/#/
+
+# 打印性能 #
+ `go tool pprof -http=0.0.0.0:1234 profile`
