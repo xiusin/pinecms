@@ -86,6 +86,7 @@ func initApp() {
 	app.Use(iris.Cache304(10 * time.Second))
 	//配置PPROF
 	if config.Pprof.Open {
+		app.Logger().Info("pprof enabled")
 		app.Get(config.Pprof.Route, pprof.New())
 	}
 	var viewEngine = 0
@@ -102,8 +103,6 @@ func initApp() {
 	if viewEngine == 0 {
 		panic("请至少配置一个模板引擎")
 	}
-	//日志
-	//app.Use(logger.New())
 }
 
 func GetConfig() *Config {
@@ -178,8 +177,9 @@ func GetMvcConfig() func(app *mvc.Application) {
 			}
 		})
 	})
-	return func(app *mvc.Application) {
-		app.Register(sess.Start, XOrmEngine, boltCache)
+	return func(m *mvc.Application) {
+		// 注册依赖服务, 内部可以用反射类型方式获取
+		m.Register(sess.Start, XOrmEngine, boltCache, app.Logger())
 	}
 }
 
