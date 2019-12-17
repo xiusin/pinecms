@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/garyburd/redigo/redis"
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
@@ -13,14 +12,14 @@ import (
 	"github.com/silenceper/wechat/message"
 	"github.com/silenceper/wechat/user"
 	tables "github.com/xiusin/iriscms/src/application/models/tables"
+	"github.com/xiusin/iriscms/src/common/cache"
 	"github.com/xiusin/iriscms/src/common/helper"
-	"github.com/xiusin/iriscms/src/common/storage"
 )
 
 type WechatController struct {
-	Orm       *xorm.Engine
-	Ctx       iris.Context
-	RedisPool *redis.Pool
+	Orm   *xorm.Engine
+	Ctx   iris.Context
+	cache *cache.Cache
 }
 
 func (c *WechatController) BeforeActivation(b mvc.BeforeActivation) {
@@ -37,7 +36,6 @@ func (c *WechatController) EndPointGet() {
 		AppSecret:      setting["WX_APPSECRET"],
 		Token:          setting["WX_TOKEN"],
 		EncodingAESKey: setting["WX_AESKEY"],
-		Cache:          &storage.Cache{RedisPool: c.RedisPool},
 	}
 	wc := wechat.NewWechat(wcConfig)
 	server := wc.GetServer(c.Ctx.Request(), c.Ctx.ResponseWriter())

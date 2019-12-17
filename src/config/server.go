@@ -22,6 +22,8 @@ import (
 	"github.com/kataras/iris/sessions"
 	"github.com/kataras/iris/sessions/sessiondb/boltdb"
 	"github.com/kataras/iris/view"
+	"github.com/xiusin/iriscms/src/application/controllers"
+	"github.com/xiusin/iriscms/src/common/cache"
 	"github.com/xiusin/iriscms/src/common/helper"
 	"github.com/xiusin/iriscms/src/common/logger"
 	"gopkg.in/yaml.v2"
@@ -36,7 +38,8 @@ var (
 	sess            *sessions.Sessions
 	config          *Config // config 全局配置文件对象
 	sessionInitSync sync.Once
-	cache           *boltdb.Database
+	sessCache       *boltdb.Database
+	boltCache       *cache.Cache
 )
 
 func initDatabase() {
@@ -44,16 +47,15 @@ func initDatabase() {
 	parseConfig(dbYml, &dc)
 	m, o := dc.Mysql, dc.Orm
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s", m.DbUser, m.DbPassword, m.DbServer, m.DbPort, m.DbName, m.DbChatSet)
-	fmt.Println(dsn)
 	_orm, err := xorm.NewEngine("mysql", dsn)
 	if err != nil {
 		panic(err.Error())
 	}
+	_orm.SetLogger(logger.NewIrisCmsXormLogger(helper.NewOrmLogFile(config.LogPath)))
 	err = _orm.Ping() //检测是否联通数据库
 	if err != nil {
 		panic(err.Error())
 	}
-	_orm.SetLogger(logger.NewIrisCmsXormLogger(helper.NewOrmLogFile(config.LogPath)))
 	_orm.ShowSQL(o.ShowSql)
 	_orm.ShowExecTime(o.ShowExecTime)
 	_orm.SetMaxOpenConns(int(o.MaxOpenConns))
@@ -164,14 +166,20 @@ func GetMvcConfig() func(app *mvc.Application) {
 		sec, ssc := securecookie.New(hashKey, blockKey), config.Session
 		sess = sessions.New(sessions.Config{Cookie: ssc.Name, Encode: sec.Encode, Decode: sec.Decode, Expires: ssc.Expires * time.Second,})
 		var err error
-		cache, err = boltdb.New(ssc.Path, os.FileMode(0750))
+		sessCache, err = boltdb.New(ssc.Path, os.FileMode(0666))
 		if err != nil {
 			panic(err)
 		}
-		sess.UseDatabase(cache)
+		boltCache = cache.New(sessCache.Service, string(controllers.WebSiteCacheBucket))
+		sess.UseDatabase(sessCache)
+		iris.RegisterOnInterrupt(func() {
+			if err := sessCache.Close(); err != nil {
+				app.Logger().Error("关闭cache失败", err)
+			}
+		})
 	})
 	return func(app *mvc.Application) {
-		app.Register(sess.Start, XOrmEngine)
+		app.Register(sess.Start, XOrmEngine, boltCache)
 	}
 }
 
@@ -203,7 +211,7 @@ func CatchError() {
 				logMessage += fmt.Sprintf("At Request: %s\n", getRequestLogs(ctx))
 				logMessage += fmt.Sprintf("Trace: %s\n", err)
 				logMessage += fmt.Sprintf("\n%s", stacktrace)
-				ctx.Application().Logger().Error(logMessage)
+				app.Logger().Error(logMessage)
 				if config.SendMail {
 					go helper.SendEmail("系统发生异常", logMessage, []string{"chenchengbin92@gmail.com"}, ctx.Values().Get("setting").(map[string]string))
 				}

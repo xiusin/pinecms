@@ -12,8 +12,8 @@ import (
 )
 
 type row struct {
-	name  string `header:"Name"`
-	value string `header:"Value"`
+	Name  string `header:"Key"`
+	Value string `header:"Val"`
 }
 
 func main() {
@@ -22,9 +22,9 @@ func main() {
 	p.CenterSeparator, p.ColumnSeparator, p.RowSeparator = "│", "│", "─"
 	p.HeaderBgColor, p.HeaderFgColor = tablewriter.BgBlackColor, tablewriter.FgGreenColor
 	p.Print([]row{
-		{"Name", "XiuSin"},
+		{"Name", "xiusin"},
 		{"Version", "Development"},
-		{"Author", "XiuSin"},
+		{"Author", "xiusin"},
 		{"WebSite", "http://www.xiusin.com/"},
 		{"IrisVersion", iris.Version},
 	})

@@ -21,7 +21,7 @@ func registerBackendRoutes() {
 		config.BackendRouteParty,
 		middleware.ViewRequestPath(app, config.LogPath),
 		middleware.CheckAdminLoginAndAccess(sess, XOrmEngine),
-		middleware.SetGlobalConfigData(XOrmEngine, cache),
+		middleware.SetGlobalConfigData(XOrmEngine, boltCache),
 		iris.Gzip,
 	).Handle(new(backend.AdminController)).
 		Handle(new(backend.LoginController)).
@@ -34,7 +34,7 @@ func registerBackendRoutes() {
 
 	mvcApp.Party(
 		"/public",
-		middleware.SetGlobalConfigData(XOrmEngine, cache),
+		middleware.SetGlobalConfigData(XOrmEngine, boltCache),
 		InjectConfig(),
 	).Handle(new(backend.PublicController))
 }
@@ -42,7 +42,7 @@ func registerBackendRoutes() {
 func registerFrontendRoutes() {
 	mvcApp.Party(
 		"/",
-		middleware.FrontendGlobalViewData(XOrmEngine),
+		middleware.FrontendGlobalViewData(XOrmEngine, boltCache),
 	).Handle(new(frontend.IndexController))
 }
 
@@ -53,8 +53,8 @@ func registerErrorRoutes() {
 }
 
 func registerApiRoutes() {
-	apiParty := mvc.New(app.Party("/api/v1", InjectConfig(), cors.AllowAll(), Jwt(), middleware.SetGlobalConfigData(XOrmEngine, cache)).AllowMethods(iris.MethodOptions))
-	apiParty.Register(XOrmEngine)
+	apiParty := mvc.New(app.Party("/api/v1", InjectConfig(), cors.AllowAll(), Jwt(), middleware.SetGlobalConfigData(XOrmEngine, boltCache)).AllowMethods(iris.MethodOptions))
+	apiParty.Register(XOrmEngine) // 注册服务, 可以直接在controller中获取
 	apiParty.Handle(new(api.UserApiController)).Handle(new(api.WechatController)).Handle(new(api.CategoryController)).Handle(new(api.ContentController))
 
 }
@@ -79,8 +79,8 @@ func Jwt() func(ctx context.Context) {
 			CredentialsOptional: true, //如果不传递默认未登录状态即可
 			ErrorHandler: func(c context.Context, err error) {
 				c.Header("session_time_out", "timeout")
-				c.StatusCode(http.StatusOK)
-				_, _ = c.JSON(iris.Map{"Msg": err.Error()})
+				c.StatusCode(http.StatusInternalServerError)
+				_, _ = c.JSON(iris.Map{"Code": http.StatusInternalServerError, "Msg": err.Error()})
 			},
 		}).Serve(ctx)
 	}

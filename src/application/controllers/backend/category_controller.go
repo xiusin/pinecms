@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"strconv"
 
-	"github.com/garyburd/redigo/redis"
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
@@ -13,13 +12,14 @@ import (
 	"github.com/xiusin/iriscms/src/application/controllers"
 	"github.com/xiusin/iriscms/src/application/models"
 	"github.com/xiusin/iriscms/src/application/models/tables"
+	"github.com/xiusin/iriscms/src/common/cache"
 	"github.com/xiusin/iriscms/src/common/helper"
 )
 
 type CategoryController struct {
-	Ctx       iris.Context
-	Orm       *xorm.Engine
-	RedisPool *redis.Pool
+	Ctx   iris.Context
+	Orm   *xorm.Engine
+	cache *cache.Cache
 
 	Session *sessions.Session
 }
@@ -101,10 +101,13 @@ func (this *CategoryController) CategoryAdd() {
 		if !models.NewCategoryModel(this.Orm).AddCategory(category) {
 			helper.Ajax("添加分类失败", 1, this.Ctx)
 		} else {
-			client := this.RedisPool.Get()
-			defer client.Close()
 			cacheKey := fmt.Sprintf(controllers.CacheCategoryFormat, parentid)
-			client.Do("DEL", cacheKey)
+			if this.cache.IsExist(cacheKey) {
+				if this.cache.Delete(cacheKey) != nil {
+					fmt.Println("刷新列表缓存失败")
+				}
+			}
+
 			helper.Ajax("添加分类成功", 0, this.Ctx)
 		}
 		return
