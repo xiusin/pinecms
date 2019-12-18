@@ -155,6 +155,7 @@ func Server() {
 }
 
 func registerStatic() {
+	app.Favicon(config.Favicon, "favicon.ico")
 	for _, static := range config.Statics {
 		app.HandleDir(static.Route, filepath.FromSlash(static.Path))
 		app.Logger().Info("注册静态资源: ", static.Route, "  -->  ", static.Path)
@@ -187,6 +188,7 @@ func GetMvcConfig() func(app *mvc.Application) {
 		hashKey, blockKey := []byte(config.HashKey), []byte(config.BlockKey)
 		sec, ssc := securecookie.New(hashKey, blockKey), config.Session
 		sess = sessions.New(sessions.Config{Cookie: ssc.Name, Encode: sec.Encode, Decode: sec.Decode, Expires: ssc.Expires * time.Second,})
+		os.MkdirAll(filepath.Base(ssc.Path), os.FileMode(0777))
 		db, err := bbolt.Open(ssc.Path, os.FileMode(0750), &bbolt.Options{Timeout: 20 * time.Second})
 		if err != nil {
 			app.Logger().Error("打开缓存文件失败", err)

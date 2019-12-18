@@ -5,12 +5,13 @@ import (
 )
 
 type Config struct {
-	Port       int64   `yaml:"port"`
-	Pprof      Pprof   `yaml:"pprof"`
-	View       View    `yaml:"view"`
-	Session    Session `yaml:"session"`
-	LogPath    string  `yaml:"log_path"`
-	Statics    []struct { // 注册静态路由
+	Favicon string  `yaml:"favicon"`
+	Port    int64   `yaml:"port"`
+	Pprof   Pprof   `yaml:"pprof"`
+	View    View    `yaml:"view"`
+	Session Session `yaml:"session"`
+	LogPath string  `yaml:"log_path"`
+	Statics []struct { // 注册静态路由
 		Route string `yaml:"route"`
 		Path  string `yaml:"path"`
 	} `yaml:"statics"`
@@ -19,9 +20,9 @@ type Config struct {
 	BlockKey          string `yaml:"blockkey"`
 	BackendRouteParty string `yaml:"backend_route_party"`
 	Upload            struct {
-		MaxBodySize int64 `yaml:"max_bodysize"`
-		Engine   string `yaml:"engine"`
-		BasePath string `yaml:"base_path"`
+		MaxBodySize int64  `yaml:"max_bodysize"`
+		Engine      string `yaml:"engine"`
+		BasePath    string `yaml:"base_path"`
 	} `yaml:"upload"`
 	Redis struct {
 		Host                 string `yaml:"host"`

@@ -503,12 +503,14 @@ func JsonEncode(data interface{}) string {
 }
 
 func todayFilename(path string) string {
+	os.MkdirAll(path, os.FileMode(0755))
 	today := time.Now().Format("2006-01-02")
 	return path + "/" + today + ".log"
 }
 
 func NewOrmLogFile(path string) *os.File {
-	f, err := os.OpenFile(path+"/orm.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	os.MkdirAll(path, os.FileMode(0755))
+	f, err := os.OpenFile(path+"orm.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
 	}
