@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -12,9 +11,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/etcd-io/bbolt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 	"github.com/gorilla/securecookie"
+	"github.com/kataras/golog"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/middleware/pprof"
@@ -23,6 +24,7 @@ import (
 	"github.com/kataras/iris/v12/sessions/sessiondb/boltdb"
 	"github.com/kataras/iris/v12/view"
 	"github.com/xiusin/iriscms/src/application/controllers"
+	"github.com/xiusin/iriscms/src/application/models/tables"
 	"github.com/xiusin/iriscms/src/common/cache"
 	"github.com/xiusin/iriscms/src/common/helper"
 	"github.com/xiusin/iriscms/src/common/logger"
@@ -39,8 +41,20 @@ var (
 	config          *Config // config 全局配置文件对象
 	sessionInitSync sync.Once
 	sessCache       *boltdb.Database
-	boltCache       *cache.Cache
+	iCache          cache.ICache
 )
+
+func syncTable() {
+	if err := XOrmEngine.Sync( // 同步表结构
+		new(tables.IriscmsAdmin), new(tables.IriscmsAdminRole), new(tables.IriscmsAdminRolePriv),
+		new(tables.IriscmsCategory), new(tables.IriscmsCategoryPriv), new(tables.IriscmsContent),
+		new(tables.IriscmsLog), new(tables.IriscmsMember), new(tables.IriscmsPage),
+		new(tables.IriscmsMenu), new(tables.IriscmsSetting), new(tables.IriscmsWechatMember),
+		new(tables.IriscmsWechatMessageLog),
+	); err != nil {
+		golog.Error("同步表结构失败", err)
+	}
+}
 
 func initDatabase() {
 	var dc DbConfig
@@ -61,6 +75,7 @@ func initDatabase() {
 	_orm.SetMaxOpenConns(int(o.MaxOpenConns))
 	_orm.SetMaxIdleConns(int(o.MaxIdleConns))
 	XOrmEngine = _orm
+	syncTable()
 }
 
 func parseConfig(path string, out interface{}) {
@@ -86,7 +101,7 @@ func initApp() {
 	app.Use(iris.Cache304(10 * time.Second))
 	//配置PPROF
 	if config.Pprof.Open {
-		app.Logger().Info("pprof enabled")
+		app.Logger().Debug("pprof enabled")
 		app.Get(config.Pprof.Route, pprof.New())
 	}
 	var viewEngine = 0
@@ -94,13 +109,16 @@ func initApp() {
 	//附加视图
 	if engines.Django.Path != "" && engines.Django.Suffix != "" {
 		viewEngine++
+		app.Logger().Debug("注册模板引擎Django")
 		app.RegisterView(view.Django(engines.Django.Path, engines.Django.Suffix).Reload(config.View.Reload)) //不缓存模板
 	}
 	if engines.Html.Path != "" && engines.Html.Suffix != "" {
+		app.Logger().Debug("注册模板引擎Html")
 		viewEngine++
 		app.RegisterView(view.HTML(engines.Html.Path, engines.Html.Suffix, ).Reload(config.View.Reload))
 	}
 	if viewEngine == 0 {
+		app.Logger().Error("请至少配置一个模板引擎")
 		panic("请至少配置一个模板引擎")
 	}
 }
@@ -150,12 +168,17 @@ func runServe() {
 			pport := strconv.Itoa(int(config.Pprof.Port))
 			err := http.ListenAndServe(":"+pport, nil)
 			if err != nil {
-				log.Println(err.Error())
+				app.Logger().Error("启动pprof失败", err)
 			}
 		}()
 	}
 	port := strconv.Itoa(int(config.Port))
-	_ = app.Run(iris.Addr(":"+port), iris.WithCharset(config.Charset))
+	_ = app.Run(iris.Addr(":"+port),
+		iris.WithCharset(config.Charset),
+		iris.WithoutBanner,
+		iris.WithOptimizations,
+		iris.WithPostMaxMemory(config.Upload.MaxBodySize<<20),
+	)
 }
 
 // 获取mvc配置, 分离相关session
@@ -164,12 +187,17 @@ func GetMvcConfig() func(app *mvc.Application) {
 		hashKey, blockKey := []byte(config.HashKey), []byte(config.BlockKey)
 		sec, ssc := securecookie.New(hashKey, blockKey), config.Session
 		sess = sessions.New(sessions.Config{Cookie: ssc.Name, Encode: sec.Encode, Decode: sec.Decode, Expires: ssc.Expires * time.Second,})
-		var err error
-		sessCache, err = boltdb.New(ssc.Path, os.FileMode(0666))
+		db, err := bbolt.Open(ssc.Path, os.FileMode(0750), &bbolt.Options{Timeout: 20 * time.Second})
 		if err != nil {
+			app.Logger().Error("打开缓存文件失败", err)
 			panic(err)
 		}
-		boltCache = cache.New(sessCache.Service, string(controllers.WebSiteCacheBucket))
+		sessCache, err = boltdb.NewFromDB(db, "sessions")
+		if err != nil {
+			app.Logger().Error("创建session缓存失败", err)
+			panic(err)
+		}
+		iCache = cache.New(db, string(controllers.WebSiteCacheBucket))
 		sess.UseDatabase(sessCache)
 		iris.RegisterOnInterrupt(func() {
 			if err := sessCache.Close(); err != nil {
@@ -179,7 +207,7 @@ func GetMvcConfig() func(app *mvc.Application) {
 	})
 	return func(m *mvc.Application) {
 		// 注册依赖服务, 内部可以用反射类型方式获取
-		m.Register(sess.Start, XOrmEngine, boltCache, app.Logger())
+		m.Register(sess.Start, XOrmEngine, iCache)
 	}
 }
 
@@ -212,9 +240,6 @@ func CatchError() {
 				logMessage += fmt.Sprintf("Trace: %s\n", err)
 				logMessage += fmt.Sprintf("\n%s", stacktrace)
 				app.Logger().Error(logMessage)
-				if config.SendMail {
-					go helper.SendEmail("系统发生异常", logMessage, []string{"chenchengbin92@gmail.com"}, ctx.Values().Get("setting").(map[string]string))
-				}
 				ctx.StatusCode(500)
 				ctx.StopExecution()
 			}

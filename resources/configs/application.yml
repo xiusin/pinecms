@@ -1,10 +1,10 @@
 view:
   reload: true
   engine:
-#    django :
-#      path: "./resources/views/"
-#      suffix: ".tpl"
-    html :
+    #    django :
+    #      path: "./resources/views/"
+    #      suffix: ".tpl"
+    html:
       path: "./resources/views/"
       suffix: ".html"
 session:
@@ -18,17 +18,16 @@ pprof:
   route: "/debug/pprof/*action"
 log_path: "./runtime/logs/"
 charset: "UTF-8"
-hashkey: "the-big-and-secret-fash-key-here"
+hashkey: "the-big-and-secret-fash-key-here"  # 只支持固定大小到字节, 妈的, 因为这个浪费了4个小时到时间找bug AES only supports key sizes of 16, 24 or 32 bytes.
 blockkey: "lot-secret-of-characters-big-too"
 backend_route_party: "/b/"
+max_bodysize: 32 # MB
 upload:
   engine: "oss" #oss or file
-  base_path: "assets"
+  base_path: "assets" # 基本路径
 
 statics:
   - {route: "/assets", path: "./resources/assets"}
-
-sendMail: false
 
 redis:
   host: "115.159.71.60:6379"

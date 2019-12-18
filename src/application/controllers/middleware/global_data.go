@@ -11,7 +11,7 @@ import (
 	"github.com/xiusin/iriscms/src/common/cache"
 )
 
-func FrontendGlobalViewData(xorm *xorm.Engine, cache *cache.Cache) func(ctx context.Context) {
+func FrontendGlobalViewData(xorm *xorm.Engine, cache cache.ICache) func(ctx context.Context) {
 	return func(ctx context.Context) {
 		if ctx.Path() == "/" {
 			settingData, err := getSetting(xorm, cache)
@@ -30,7 +30,7 @@ func FrontendGlobalViewData(xorm *xorm.Engine, cache *cache.Cache) func(ctx cont
 	}
 }
 
-func SetGlobalConfigData(xorm *xorm.Engine, cache *cache.Cache) func(ctx context.Context) {
+func SetGlobalConfigData(xorm *xorm.Engine, cache cache.ICache) func(ctx context.Context) {
 	//读取配置项
 	return func(ctx context.Context) {
 		settingData, err := getSetting(xorm, cache)
@@ -45,7 +45,7 @@ func SetGlobalConfigData(xorm *xorm.Engine, cache *cache.Cache) func(ctx context
 
 }
 
-func getSetting(xorm *xorm.Engine, cache *cache.Cache) (map[string]string, error) {
+func getSetting(xorm *xorm.Engine, cache cache.ICache) (map[string]string, error) {
 	var settingData = map[string]string{}
 	res := cache.Get(controllers.CacheSetting)
 	if len(res) == 0 {

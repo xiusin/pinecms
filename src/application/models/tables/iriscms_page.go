@@ -1,7 +1,7 @@
 package tables
 
 type IriscmsPage struct {
-	Catid      int64
+	Catid      int64 `xorm:"pk"`
 	Title      string
 	Keywords   string
 	Content    string

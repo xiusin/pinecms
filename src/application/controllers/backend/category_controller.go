@@ -19,7 +19,7 @@ import (
 type CategoryController struct {
 	Ctx   iris.Context
 	Orm   *xorm.Engine
-	cache *cache.Cache
+	cache cache.ICache
 
 	Session *sessions.Session
 }

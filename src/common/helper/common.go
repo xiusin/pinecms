@@ -14,6 +14,7 @@ import (
 	"image/png"
 	"math/rand"
 	"os"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -38,6 +39,15 @@ var location, _ = time.LoadLocation("PRC")
 func GetLocation() *time.Location {
 	return location
 }
+
+// 获取当前执行函数名 只用于日志记录
+func GetCallerFuncName() string {
+	pc := make([]uintptr,1)
+	runtime.Callers(2,pc)
+	f := runtime.FuncForPC(pc[0])
+	return f.Name() + ":"
+}
+
 
 //Krand 随机字符串
 func Krand(size int, kind int) []byte {

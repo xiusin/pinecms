@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/go-xorm/xorm"
+	"github.com/kataras/golog"
 	"github.com/kataras/iris/v12/sessions"
 	tables "github.com/xiusin/iriscms/src/application/models/tables"
 	"github.com/xiusin/iriscms/src/common/helper"
@@ -20,6 +21,9 @@ func CheckAdminLoginAndAccess(sess *sessions.Sessions, xorm *xorm.Engine) func(t
 			return
 		}
 		aid, err := sess.GetInt64("adminid") //检测是否设置过session
+		if err != nil {
+			golog.Debug("check login failed", err)
+		}
 		if err != nil || aid == -1 {
 			sess.Clear()
 			this.Redirect("/b/login/index", 302)

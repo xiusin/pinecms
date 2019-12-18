@@ -21,7 +21,7 @@ func registerBackendRoutes() {
 		config.BackendRouteParty,
 		middleware.ViewRequestPath(app, config.LogPath),
 		middleware.CheckAdminLoginAndAccess(sess, XOrmEngine),
-		middleware.SetGlobalConfigData(XOrmEngine, boltCache),
+		middleware.SetGlobalConfigData(XOrmEngine, iCache),
 		iris.Gzip,
 	).Handle(new(backend.AdminController)).
 		Handle(new(backend.LoginController)).
@@ -34,7 +34,7 @@ func registerBackendRoutes() {
 
 	mvcApp.Party(
 		"/public",
-		middleware.SetGlobalConfigData(XOrmEngine, boltCache),
+		middleware.SetGlobalConfigData(XOrmEngine, iCache),
 		InjectConfig(),
 	).Handle(new(backend.PublicController))
 }
@@ -42,7 +42,7 @@ func registerBackendRoutes() {
 func registerFrontendRoutes() {
 	mvcApp.Party(
 		"/",
-		middleware.FrontendGlobalViewData(XOrmEngine, boltCache),
+		middleware.FrontendGlobalViewData(XOrmEngine, iCache),
 	).Handle(new(frontend.IndexController))
 }
 
@@ -53,7 +53,7 @@ func registerErrorRoutes() {
 }
 
 func registerApiRoutes() {
-	apiParty := mvc.New(app.Party("/api/v1", InjectConfig(), cors.AllowAll(), Jwt(), middleware.SetGlobalConfigData(XOrmEngine, boltCache)).AllowMethods(iris.MethodOptions))
+	apiParty := mvc.New(app.Party("/api/v1", InjectConfig(), cors.AllowAll(), Jwt(), middleware.SetGlobalConfigData(XOrmEngine, iCache)).AllowMethods(iris.MethodOptions))
 	apiParty.Register(XOrmEngine) // 注册服务, 可以直接在controller中获取
 	apiParty.Handle(new(api.UserApiController)).Handle(new(api.WechatController)).Handle(new(api.CategoryController)).Handle(new(api.ContentController))
 

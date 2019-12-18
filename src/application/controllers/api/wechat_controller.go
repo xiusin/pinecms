@@ -19,7 +19,7 @@ import (
 type WechatController struct {
 	Orm   *xorm.Engine
 	Ctx   iris.Context
-	cache *cache.Cache
+	cache cache.ICache
 }
 
 func (c *WechatController) BeforeActivation(b mvc.BeforeActivation) {

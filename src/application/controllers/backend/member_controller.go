@@ -8,6 +8,7 @@ import (
 	"github.com/kataras/iris/v12/mvc"
 	"github.com/kataras/iris/v12/sessions"
 	"github.com/xiusin/iriscms/src/application/models"
+	"github.com/xiusin/iriscms/src/application/models/tables"
 	"github.com/xiusin/iriscms/src/common/helper"
 )
 
@@ -20,6 +21,7 @@ type MemberController struct {
 func (c *MemberController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("ANY", "/user/list", "List")
 	b.Handle("ANY", "/user/info", "Info")
+	b.Handle("POST", "/user/edit", "Edit")
 	b.Handle("ANY", "/wechat/userlist", "WechatMemberList")
 	b.Handle("ANY", "/wechat/userinfo", "WechatMemberInfo")
 }
@@ -65,6 +67,20 @@ func (c *MemberController) Info() {
 	}
 	helper.Ajax(member, 0, c.Ctx)
 	return
+}
+
+func (c *MemberController) Edit() {
+	var d tables.IriscmsMember
+	if err := c.Ctx.ReadForm(&d); err != nil || d.Id <= 0 {
+		helper.Ajax("参数错误", 1, c.Ctx)
+		return
+	}
+	m := models.NewMemberModel(c.Orm)
+	if m.Edit(d.Id, &d) {
+		helper.Ajax("更新用户信息成功", 0, c.Ctx)
+	} else {
+		helper.Ajax("更新用户信息失败", 1, c.Ctx)
+	}
 }
 
 //微信用户列表(通过关注公众号获取密码的用户)

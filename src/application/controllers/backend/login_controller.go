@@ -50,9 +50,7 @@ func (this *LoginController) Index() {
 		return
 	}
 
-	if err := this.Ctx.View("backend/login_index.html"); err != nil {
-		this.Ctx.WriteString(err.Error())
-	}
+	this.Ctx.View("backend/login_index.html")
 }
 
 //退出系统

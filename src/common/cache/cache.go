@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/etcd-io/bbolt"
-	"github.com/kataras/golog"
 )
 
 type Cache struct {
@@ -13,19 +12,20 @@ type Cache struct {
 }
 
 func New(db *bbolt.DB, table string) *Cache { return &Cache{db: db, table: []byte(table)} }
-func (c *Cache) SetTable(table string) { c.table = []byte(table) }
-func (c *Cache) SetBucket(table string) { c.SetTable(table) }
-func (c *Cache) GetTable() string { return string(c.table) }
+func (c *Cache) SetTable(table string)      { c.table = []byte(table) }
+func (c *Cache) SetBucket(table string)     { c.SetTable(table) }
+func (c *Cache) GetTable() string           { return string(c.table) }
 
 func (c *Cache) Get(key string) string {
 	var res []byte
 	c.db.View(func(tx *bbolt.Tx) error {
-		bu, err := tx.CreateBucketIfNotExists(c.table)
-		if err != nil {
-			golog.Default.Error(err)
-			return err
+		bu := tx.Bucket(c.table)
+		// 桶不存在
+		if bu == nil {
+			return nil
 		}
 		r := bu.Get([]byte(key))
+		// key不存在
 		if r != nil {
 			res = r
 		}

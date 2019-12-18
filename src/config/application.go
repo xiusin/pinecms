@@ -5,7 +5,6 @@ import (
 )
 
 type Config struct {
-	SendMail   bool    `yaml:"sendMail"`
 	Port       int64   `yaml:"port"`
 	Pprof      Pprof   `yaml:"pprof"`
 	View       View    `yaml:"view"`
@@ -20,6 +19,7 @@ type Config struct {
 	BlockKey          string `yaml:"blockkey"`
 	BackendRouteParty string `yaml:"backend_route_party"`
 	Upload            struct {
+		MaxBodySize int64 `yaml:"max_bodysize"`
 		Engine   string `yaml:"engine"`
 		BasePath string `yaml:"base_path"`
 	} `yaml:"upload"`
