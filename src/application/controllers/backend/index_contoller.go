@@ -1,11 +1,15 @@
 package backend
 
 import (
+	"encoding/json"
+	"fmt"
 	"runtime"
 	"strconv"
 	"strings"
 
+	"github.com/xiusin/iriscms/src/application/controllers"
 	"github.com/xiusin/iriscms/src/application/models"
+	"github.com/xiusin/iriscms/src/common/cache"
 
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris/v12"
@@ -19,6 +23,7 @@ import (
 type IndexController struct {
 	Ctx     iris.Context
 	Orm     *xorm.Engine
+	Cache   cache.ICache
 	Session *sessions.Session
 }
 
@@ -65,7 +70,7 @@ func (this *IndexController) Main() {
 	}
 
 	//要转换的值，fmt方式，切割长度如果为-1则显示最大长度，64是float64
-	siteSize := formatMem(uint64(us.Total))
+	siteSize := formatMem(us.Total)
 
 	this.Ctx.ViewData("SiteSize", siteSize)
 	this.Ctx.ViewData("NumCPU", runtime.NumCPU())
@@ -82,30 +87,41 @@ func (this *IndexController) Main() {
 }
 
 func (this *IndexController) Menu() {
-	meid, err := strconv.Atoi(this.Ctx.PostValue("menuid"))
-	if err != nil {
-		meid = 0
-	}
-	roleid := this.Ctx.Values().Get("roleid").(int64)
+	meid, _ := strconv.Atoi(this.Ctx.PostValue("menuid"))
+	roleid, _ := this.Ctx.Values().GetInt64("roleid")
 	menus := models.NewMenuModel(this.Orm).GetMenu(int64(meid), roleid) //获取menuid内容
-	menujs := []map[string]interface{}{}                                //要返回json的对象
-	for _, v := range menus {
-		menu := models.NewMenuModel(this.Orm).GetMenu(v.Id, roleid)
-		if len(menu) == 0 {
-			continue
-		}
-		sonmenu := []map[string]interface{}{}
-		for _, son := range menu {
-			sonmenu = append(sonmenu, map[string]interface{}{
-				"text": son.Name,
-				"id":   son.Id,
-				"url":  "/b/" + son.C + "/" + son.A + "?menuid=" + strconv.Itoa(int(son.Id)) + "&" + son.Data,
+	cacheKey := fmt.Sprintf(controllers.CacheAdminMenuByRoleIdAndMenuId, roleid, meid)
+	var menujs []map[string]interface{} //要返回json的对象
+	var data string
+	if meid > 0 {
+		data = this.Cache.Get(cacheKey)
+	} else {
+		data = ""
+	}
+	if data == "" || json.Unmarshal([]byte(data), &menujs) != nil {
+		for _, v := range menus {
+			menu := models.NewMenuModel(this.Orm).GetMenu(v.Id, roleid)
+			if len(menu) == 0 {
+				continue
+			}
+			var sonmenu []map[string]interface{}
+			for _, son := range menu {
+				sonmenu = append(sonmenu, map[string]interface{}{
+					"text": son.Name,
+					"id":   son.Id,
+					"url":  "/b/" + son.C + "/" + son.A + "?menuid=" + strconv.Itoa(int(son.Id)) + "&" + son.Data,
+				})
+			}
+			menujs = append(menujs, map[string]interface{}{
+				"name": v.Name,
+				"son":  sonmenu,
 			})
+
 		}
-		menujs = append(menujs, map[string]interface{}{
-			"name": v.Name,
-			"son":  sonmenu,
-		})
+		strs, err := json.Marshal(&menujs)
+		if err == nil {
+			this.Cache.Set(cacheKey, strs)
+		}
 	}
 	this.Ctx.JSON(menujs)
 }

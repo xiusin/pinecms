@@ -160,7 +160,7 @@ func registerBackendRoutes() {
 	mvcApp.Party(
 		config.BackendRouteParty,
 		middleware.ViewRequestPath(app, config.LogPath),
-		middleware.CheckAdminLoginAndAccess(sess, XOrmEngine),
+		middleware.CheckAdminLoginAndAccess(sess, iCache, XOrmEngine),
 		middleware.SetGlobalConfigData(XOrmEngine, iCache),
 		iris.Gzip,
 	).Handle(new(backend.AdminController)).

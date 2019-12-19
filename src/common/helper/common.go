@@ -4,7 +4,6 @@ package helper
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"image"
 	"image/gif"
@@ -501,10 +500,6 @@ func VerifyVCaptcha(token string) bool {
 	return true
 }
 
-func JsonEncode(data interface{}) string {
-	dat, _ := json.Marshal(data)
-	return string(dat)
-}
 
 func todayFilename(path string) string {
 	today := time.Now().Format("2006-01-02")

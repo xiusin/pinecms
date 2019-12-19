@@ -2,7 +2,6 @@ package backend
 
 import (
 	"html/template"
-	"log"
 	"strconv"
 	"strings"
 
@@ -12,12 +11,14 @@ import (
 	"github.com/kataras/iris/v12/sessions"
 	"github.com/xiusin/iriscms/src/application/models"
 	"github.com/xiusin/iriscms/src/application/models/tables"
+	"github.com/xiusin/iriscms/src/common/cache"
 	"github.com/xiusin/iriscms/src/common/helper"
 )
 
 type AdminController struct {
 	Orm     *xorm.Engine
 	Ctx     iris.Context //存在则自动绑定
+	Cache   cache.ICache
 	Session *sessions.Session
 }
 
@@ -419,10 +420,10 @@ func (this *AdminController) RoleEdit() {
 			role.Description = description
 			role.Disabled = int64(disabled)
 			role.Listorder = int64(listorder)
-			log.Println(role)
 			if !models.NewAdminModel(this.Orm).UpdateRole(role) {
 				helper.Ajax("修改角色失败", 1, this.Ctx)
 			} else {
+				clearMenuCache(this.Cache, this.Orm)
 				helper.Ajax("修改角色成功", 0, this.Ctx)
 			}
 		}
@@ -456,6 +457,7 @@ func (this *AdminController) RoleDelete() {
 		return
 	}
 	if models.NewAdminModel(this.Orm).DeleteRole(role) {
+		clearMenuCache(this.Cache, this.Orm)
 		helper.Ajax("删除角色成功", 0, this.Ctx)
 	} else {
 		helper.Ajax("删除角色失败", 1, this.Ctx)
@@ -507,6 +509,7 @@ func (this *AdminController) RolePermission() {
 				helper.Ajax("更新权限失败", 1, this.Ctx)
 				return
 			}
+			clearMenuCache(this.Cache, this.Orm)
 			helper.Ajax("更新权限成功", 0, this.Ctx)
 			return
 		}

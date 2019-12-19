@@ -8,6 +8,7 @@ import (
 
 	"github.com/xiusin/iriscms/src/application/models"
 	"github.com/xiusin/iriscms/src/application/models/tables"
+	"github.com/xiusin/iriscms/src/common/cache"
 	"github.com/xiusin/iriscms/src/common/helper"
 
 	"github.com/go-xorm/xorm"
@@ -19,6 +20,7 @@ import (
 type SystemController struct {
 	Ctx     iris.Context
 	Orm     *xorm.Engine
+	Cache   cache.ICache
 	Session *sessions.Session
 }
 
@@ -73,6 +75,7 @@ func (this *SystemController) MenuAdd() {
 		}
 		newid, _ := this.Orm.InsertOne(menu)
 		if newid > 0 {
+			clearMenuCache(this.Cache, this.Orm)
 			helper.Ajax("新增菜单成功", 0, this.Ctx)
 		} else {
 			helper.Ajax("新增菜单失败", 1, this.Ctx)
@@ -100,6 +103,7 @@ func (this *SystemController) MenuDelete() {
 	}
 	aff, _ := this.Orm.Id(id).Delete(&tables.IriscmsMenu{})
 	if aff > 0 {
+		clearMenuCache(this.Cache, this.Orm)
 		helper.Ajax("删除菜单成功", 0, this.Ctx)
 	} else {
 		helper.Ajax("删除菜单失败", 1, this.Ctx)
@@ -132,6 +136,7 @@ func (this *SystemController) MenuOrder() {
 		}
 	}
 	if flag > 0 {
+		clearMenuCache(this.Cache, this.Orm)
 		helper.Ajax("排序更新成功", 0, this.Ctx)
 	} else {
 		helper.Ajax("排序规则没有发生任何改变", 1, this.Ctx)
@@ -167,6 +172,7 @@ func (this *SystemController) MenuEdit() {
 		}
 		newid, _ := this.Orm.Id(id).Update(menu)
 		if newid > 0 {
+			clearMenuCache(this.Cache, this.Orm)
 			helper.Ajax("修改菜单成功", 0, this.Ctx)
 		} else {
 			helper.Ajax("修改菜单失败", 1, this.Ctx)
@@ -179,7 +185,7 @@ func (this *SystemController) MenuEdit() {
 }
 
 func (this *SystemController) MenuSelectTree() {
-	tree := []map[string]interface{}{}
+	var tree []map[string]interface{}
 	tree = append(tree, map[string]interface{}{
 		"id":       0,
 		"text":     "作为一级菜单",

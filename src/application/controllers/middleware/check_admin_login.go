@@ -1,18 +1,22 @@
 package middleware
 
 import (
+	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/golog"
 	"github.com/kataras/iris/v12/sessions"
+	"github.com/xiusin/iriscms/src/application/controllers"
 	tables "github.com/xiusin/iriscms/src/application/models/tables"
+	"github.com/xiusin/iriscms/src/common/cache"
 	"github.com/xiusin/iriscms/src/common/helper"
 
 	"github.com/kataras/iris/v12"
 )
 
-func CheckAdminLoginAndAccess(sess *sessions.Sessions, xorm *xorm.Engine) func(this iris.Context) {
+func CheckAdminLoginAndAccess(sess *sessions.Sessions, cache cache.ICache, xorm *xorm.Engine) func(this iris.Context) {
 	return func(this iris.Context) {
 		sess := sess.Start(this)
 		if strings.Contains(this.Path(), "login") {
@@ -23,18 +27,17 @@ func CheckAdminLoginAndAccess(sess *sessions.Sessions, xorm *xorm.Engine) func(t
 		if err != nil {
 			golog.Debug("check login failed", err)
 		}
-		if err != nil || aid == -1 {
+		if aid == -1 {
 			sess.Clear()
 			this.Redirect("/b/login/index", 302)
-			return
 		} else {
 			//检查权限
-			roleId, err := sess.GetInt64("roleid")
+			roleId, _ := sess.GetInt64("roleid")
 			//放置一些数据到全局可取
 			this.Values().Set("adminid", aid)
 			this.Values().Set("roleid", roleId)
 			this.Values().Set("username", sess.Get("username"))
-			if err != nil || roleId == -1 {
+			if roleId == -1 {
 				sess.Clear()
 				this.Redirect("/b/login/index", 302)
 				this.StopExecution()
@@ -45,33 +48,53 @@ func CheckAdminLoginAndAccess(sess *sessions.Sessions, xorm *xorm.Engine) func(t
 			if len(pathString) == 3 && (strings.Contains(pathString[2], "public-") || strings.Contains(pathString[2], "check-") || pathString[1] == "index") {
 				this.Next()
 			} else {
-				if roleId > 1 && CheckPriv(this, sess, xorm) == false {
+				if roleId > 1 && CheckPriv(this, sess, cache, xorm) == false {
 					helper.Ajax("您没有操作权限", 1, this)
 					this.StopExecution()
 					return
 				}
 				go ManageLog(this, xorm)
 			}
+			this.Next()
 		}
-		this.Next()
 	}
 }
 
 //检查权限
-func CheckPriv(this iris.Context, sess *sessions.Session, xorm *xorm.Engine) bool {
+func CheckPriv(this iris.Context, sess *sessions.Session, cache cache.ICache, xorm *xorm.Engine) bool {
 	pathinfo := strings.Split(strings.Trim(this.Path(), "/"), "/")
 	roleId, err := sess.GetInt64("roleid")
 	if err != nil || len(pathinfo) < 3 {
-		return true
-	}
-	has, err := xorm.Get(&tables.IriscmsAdminRolePriv{C: pathinfo[1], A: pathinfo[2], Roleid: int64(roleId)})
-	if err != nil {
-		xorm.Logger().Error("无法查询到数据", err.Error())
-	}
-	if !has {
 		return false
 	}
-	return true
+	// 用户权限放到缓存内
+	key := fmt.Sprintf(controllers.CacheAdminPriv, roleId)
+	data := cache.Get(key)
+	ha := map[string]struct{}{}
+	if data == "" || json.Unmarshal([]byte(data), &ha) != nil {
+		var privs []*tables.IriscmsAdminRolePriv
+		// 读取所有用户权限
+		err := xorm.Where("roleid = ?", roleId).Find(&privs)
+		if err != nil {
+			golog.Error(helper.GetCallerFuncName(), err)
+		}
+		for _, priv := range privs {
+			ha[strings.ToLower(priv.C+"-"+priv.A)] = struct{}{}
+		}
+		strs, err := json.Marshal(&ha)
+		if err != nil {
+			golog.Error(helper.GetCallerFuncName(), "编码json失败", err)
+		}
+		data = string(strs)
+		if cache.Set(key, strs) != nil {
+			golog.Error("保存权限缓存失败")
+		}
+	}
+
+	if _, ok := ha[strings.ToLower(pathinfo[1]+"-"+pathinfo[2])]; ok {
+		return true
+	}
+	return false
 }
 
 func ManageLog(this iris.Context, xorm *xorm.Engine) {

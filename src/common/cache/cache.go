@@ -8,13 +8,11 @@ import (
 
 type Cache struct {
 	db    *bbolt.DB
+
 	table []byte
 }
 
 func New(db *bbolt.DB, table string) *Cache { return &Cache{db: db, table: []byte(table)} }
-func (c *Cache) SetTable(table string)      { c.table = []byte(table) }
-func (c *Cache) SetBucket(table string)     { c.SetTable(table) }
-func (c *Cache) GetTable() string           { return string(c.table) }
 
 func (c *Cache) Get(key string) string {
 	var res []byte
