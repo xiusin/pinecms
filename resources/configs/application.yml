@@ -10,7 +10,7 @@ view:
 session:
   name: "gosessionid"
   expires: 0
-  path: "./runtime/sessions/store.db"
+cache_db: "./runtime/cache/store.db"  # 包括session
 port: 2019
 pprof:
   open: true

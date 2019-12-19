@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/go-xorm/xorm"
+	"github.com/kataras/golog"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 	"github.com/kataras/iris/v12/sessions"
@@ -104,7 +105,7 @@ func (this *CategoryController) CategoryAdd() {
 			cacheKey := fmt.Sprintf(controllers.CacheCategoryFormat, parentid)
 			if this.cache.IsExist(cacheKey) {
 				if this.cache.Delete(cacheKey) != nil {
-					fmt.Println("刷新列表缓存失败")
+					golog.Error("刷新列表缓存失败")
 				}
 			}
 

@@ -1,10 +1,10 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/go-xorm/xorm"
-	tables "github.com/xiusin/iriscms/src/application/models/tables"
+	"github.com/kataras/golog"
+	"github.com/xiusin/iriscms/src/application/models/tables"
+	"github.com/xiusin/iriscms/src/common/helper"
 )
 
 type LogModel struct {
@@ -21,7 +21,7 @@ func (this *LogModel) GetList(page, limit int64) ([]tables.IriscmsLog, int64) {
 	var total int64
 	total, _ = this.Orm.Count(&tables.IriscmsLog{})
 	if err := this.Orm.Desc("logid").Limit(int(limit), int(offset)).Find(&list); err != nil {
-		fmt.Println(err.Error())
+		golog.Error(helper.GetCallerFuncName(), err)
 	}
 	return list, total
 }
@@ -29,7 +29,7 @@ func (this *LogModel) GetList(page, limit int64) ([]tables.IriscmsLog, int64) {
 func (this *LogModel) DeleteBeforeByDate(date string) bool {
 	res, err := this.Orm.Where("`time` <= ? ", date).Delete(&tables.IriscmsLog{})
 	if err != nil {
-		fmt.Println(err.Error())
+		golog.Error(helper.GetCallerFuncName(), err)
 		return false
 	}
 	if res > 0 {

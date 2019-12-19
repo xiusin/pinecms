@@ -11,6 +11,7 @@ type Config struct {
 	View    View    `yaml:"view"`
 	Session Session `yaml:"session"`
 	LogPath string  `yaml:"log_path"`
+	CacheDb string  `yaml:"cache_db"`
 	Statics []struct { // 注册静态路由
 		Route string `yaml:"route"`
 		Path  string `yaml:"path"`
@@ -40,7 +41,6 @@ type Config struct {
 
 type Session struct {
 	Name    string        `yaml:"name"`
-	Path    string        `yaml:"path"`
 	Expires time.Duration `yaml:"expires"`
 }
 type Engine struct {

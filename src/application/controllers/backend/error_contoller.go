@@ -1,7 +1,7 @@
 package backend
 
 import (
-	"fmt"
+	"net/http"
 
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris/v12"
@@ -14,9 +14,8 @@ type ErrorController struct {
 }
 
 func (_ ErrorController) ServerError(this iris.Context) {
-	fmt.Println("ServerError")
 	if this.IsAjax() {
-		this.JSON(map[string]interface{}{"error": 1})
+		this.JSON(iris.Map{"errcode": 500, "errmsg": "系统发生错误: " + this.Path()})
 	} else {
 		this.ViewData("message", "系统发生错误 : "+this.Path())
 		this.View("error.html")
@@ -24,9 +23,10 @@ func (_ ErrorController) ServerError(this iris.Context) {
 }
 
 func (_ ErrorController) StatusNotFound(ctx iris.Context) {
-	fmt.Println("StatusNotFound", ctx.Path(), "method", ctx.Method())
 	if ctx.IsAjax() {
-		ctx.JSON(map[string]interface{}{"error": 1})
+		ctx.JSON(iris.Map{
+			"errocde": http.StatusNotFound,
+			"errmsg": "地址不存在: " + ctx.Path()})
 	} else {
 		ctx.ViewData("message", "无法找到路由 : "+ctx.Path()+"\r\n")
 		ctx.View("error.html")

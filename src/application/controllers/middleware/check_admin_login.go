@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/go-xorm/xorm"
@@ -94,7 +93,7 @@ func ManageLog(this iris.Context, xorm *xorm.Engine) {
 		}
 		_, err := xorm.Insert(log)
 		if err != nil {
-			fmt.Println(err.Error())
+			golog.Error(helper.GetCallerFuncName(), err)
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package backend
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"strconv"
@@ -212,7 +211,6 @@ func (this *AdminController) PubicCheckName() {
 	info := &tables.IriscmsAdmin{Username: this.Ctx.FormValue("name")}
 	uid, _ := this.Ctx.URLParamInt64("id")
 	has, _ := this.Orm.Get(info)
-	fmt.Println(uid, info.Userid)
 	if !has || info.Userid == uid {
 		helper.Ajax("没有相同的用户名", 0, this.Ctx)
 	} else {

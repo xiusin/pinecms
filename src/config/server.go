@@ -11,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/etcd-io/bbolt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 	"github.com/gorilla/securecookie"
@@ -24,6 +23,8 @@ import (
 	"github.com/kataras/iris/v12/sessions/sessiondb/boltdb"
 	"github.com/kataras/iris/v12/view"
 	"github.com/xiusin/iriscms/src/application/controllers"
+	"github.com/xiusin/iriscms/src/application/controllers/backend"
+	"github.com/xiusin/iriscms/src/application/controllers/middleware"
 	"github.com/xiusin/iriscms/src/application/models/tables"
 	"github.com/xiusin/iriscms/src/common/cache"
 	"github.com/xiusin/iriscms/src/common/helper"
@@ -96,7 +97,7 @@ func parseConfig(path string, out interface{}) {
 func initApp() {
 	//实例化服务器
 	app = iris.New()
-	mvcApp = mvc.New(app).Configure(GetMvcConfig())
+	mvcApp = mvc.New(app).Configure(getMvcConfig())
 	//配置前端缓存10秒
 	app.Use(iris.Cache304(10 * time.Second))
 	//配置PPROF
@@ -123,34 +124,25 @@ func initApp() {
 	}
 }
 
-func GetConfig() *Config {
+func getConfig() *Config {
 	//解析配置
 	if config == nil {
 		config = &Config{}
 		parseConfig(appYml, config)
 	}
+	os.MkdirAll(config.LogPath, 0777)
 	return config
 }
 
 func Server() {
-	GetConfig()
-	//初始化数据库ORM
+	getConfig()
 	initDatabase()
-	// 初始化APP
 	initApp()
-	//注册静态资源路由
 	registerStatic()
-	//配置异常拦截
-	CatchError()
-	//注册错误路由
+	catchError()
 	registerErrorRoutes()
-	//注册后端路由
 	registerBackendRoutes()
-	////注册前端路由
-	registerFrontendRoutes()
-	//注册API路由
-	registerApiRoutes()
-	//构建并且运行应用
+	initRouter()
 	runServe()
 }
 
@@ -161,6 +153,39 @@ func registerStatic() {
 		app.Logger().Info("注册静态资源: ", static.Route, "  -->  ", static.Path)
 	}
 
+}
+
+//利用中间件执行控制器前置操作
+func registerBackendRoutes() {
+	mvcApp.Party(
+		config.BackendRouteParty,
+		middleware.ViewRequestPath(app, config.LogPath),
+		middleware.CheckAdminLoginAndAccess(sess, XOrmEngine),
+		middleware.SetGlobalConfigData(XOrmEngine, iCache),
+		iris.Gzip,
+	).Handle(new(backend.AdminController)).
+		Handle(new(backend.LoginController)).
+		Handle(new(backend.IndexController)).
+		Handle(new(backend.CategoryController)).
+		Handle(new(backend.ContentController)).
+		Handle(new(backend.SettingController)).
+		Handle(new(backend.SystemController)).
+		Handle(new(backend.MemberController))
+	mvcApp.Party("/public", middleware.SetGlobalConfigData(XOrmEngine, iCache), injectConfig()).Handle(new(backend.PublicController))
+}
+
+//防止相互调用先用这种不优美的方式实现
+func injectConfig() func(ctx context.Context) {
+	return func(ctx context.Context) {
+		ctx.Values().Set("app.config", iris.Map{"uploadEngine": config.Upload.Engine})
+		ctx.Next()
+	}
+}
+
+func registerErrorRoutes() {
+	err := new(backend.ErrorController)
+	app.OnErrorCode(iris.StatusInternalServerError, err.ServerError)
+	app.OnErrorCode(iris.StatusNotFound, err.StatusNotFound)
 }
 
 func runServe() {
@@ -183,23 +208,18 @@ func runServe() {
 }
 
 // 获取mvc配置, 分离相关session
-func GetMvcConfig() func(app *mvc.Application) {
+func getMvcConfig() func(app *mvc.Application) {
 	sessionInitSync.Do(func() {
+		var err error
 		hashKey, blockKey := []byte(config.HashKey), []byte(config.BlockKey)
 		sec, ssc := securecookie.New(hashKey, blockKey), config.Session
 		sess = sessions.New(sessions.Config{Cookie: ssc.Name, Encode: sec.Encode, Decode: sec.Decode, Expires: ssc.Expires * time.Second,})
-		os.MkdirAll(filepath.Base(ssc.Path), os.FileMode(0777))
-		db, err := bbolt.Open(ssc.Path, os.FileMode(0750), &bbolt.Options{Timeout: 20 * time.Second})
-		if err != nil {
-			app.Logger().Error("打开缓存文件失败", err)
-			panic(err)
-		}
-		sessCache, err = boltdb.NewFromDB(db, "sessions")
+		sessCache, err = boltdb.New(config.CacheDb, os.FileMode(0750))
 		if err != nil {
 			app.Logger().Error("创建session缓存失败", err)
 			panic(err)
 		}
-		iCache = cache.New(db, string(controllers.WebSiteCacheBucket))
+		iCache = cache.New(sessCache.Service, string(controllers.WebSiteCacheBucket))
 		sess.UseDatabase(sessCache)
 		iris.RegisterOnInterrupt(func() {
 			if err := sessCache.Close(); err != nil {
@@ -222,7 +242,7 @@ func getRequestLogs(ctx context.Context) string {
 	return fmt.Sprintf("%v %s %s %s", status, path, method, ip)
 }
 
-func CatchError() {
+func catchError() {
 	app.Use(func(ctx context.Context) {
 		defer func() {
 			if err := recover(); err != nil {
