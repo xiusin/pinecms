@@ -5,4 +5,5 @@ type IriscmsDocumentModelField struct {
 	Name string
 	Type string
 	Desc string
+	Html string
 }

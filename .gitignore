@@ -2,7 +2,7 @@
 iriscms
 iriscms.exe
 iriscms.exe~
-iriscms-dev-build
+iriscms-*
 main
 *.log
 runtime

@@ -17,150 +17,29 @@
     }
 
 </style>
-<div id="member_list_datagrid_toolbar" style="padding:5px;height:auto">
-
+<div id="model_list_datagrid_toolbar" style="padding:5px;height:auto">
+    <a href="javascript:;" onclick="addModel();" class="easyui-linkbutton" iconCls="icons-arrow-add">添加模型</a>
 </div>
 
 <!-- 查看详细信息 -->
-<div id="member_list_detail_dialog" class="easyui-dialog word-wrap" title="编辑用户信息"
-     data-options="modal:true,closed:true,iconCls:'icons-other-information',buttons:[
-     {
-         text:'关闭',
-         iconCls:'icons-arrow-cross',
-         handler:function(){
-            $('#member_list_detail_dialog').dialog('close');
-         }
-     }
-     ]"
-     style="width:700px;height:450px;padding:5px"></div>
 
 <script type="text/javascript">
-    const member_list =  $('#member_list_datagrid');
+    const member_list =  $('#model_list_datagrid');
 
-    //搜索
-    function systemLogSearch(that) {
-        let queryParams = datagrid('options').queryParams;
-        $.each($(that).parent('form').serializeArray(), function () {
-            queryParams[this['name']] = this['value'];
-        });
-        member_list.datagrid('reload');
-    }
-
-
-    function submitForm(id) {
-        $.post('/b/user/edit?id=' + id, $("#ff").serialize(), function (res) {
-            if (res.errcode) {
-                $.messager.alert('提示信息', res.errmsg, 'error');
-            } else {
-                $.messager.alert('提示信息', res.errmsg, 'info');
-                member_list.datagrid('reload');
-            }
-        });
-        return false
+    //添加模型
+    function addModel() {
+        var url = "/b/model/add";
+        openUrl(url, "添加模型");
     }
 
 
     //参数格式化
     function optFormatter(val) {
-        return '<a href="javascript:;" onclick="editMemberInfo(' + val + ');">编辑信息</a>';
+        return '<a href="javascript:;" onclick="editMemberInfo(' + val + ');">编辑</a>';
     }
 
     function enabledFormatter(val) {
         return val == 1 ? '启用' : '关闭';
     }
 
-    function verifyTokenFormatter(val) {
-        return val == "" ? '已验证' : '未验证'
-    }
-
-    //查看详细信息
-    function editMemberInfo(artid) {
-        ajaxLoading()
-        $.get("/b/user/info", {id: artid}, function (data) {
-            ajaxLoadEnd()
-            if (data.errcode) {
-                $.messager.error(data.errmsg)
-                return
-            }
-            var data = data.errmsg
-            var id = 'member_list_detail_dialog';
-            $('#' + id).dialog({
-                content: `
-        	    <form id="ff" method="post">
-	    	<table cellpadding="5" class="dialogtable">
-	    	    <input type="hidden" name="id" value="` + artid + `">
-
-	    	    <tr>
-	    			<td style="width: 100px;" align="right">账号:</td>
-	    			<td><input class="easyui-textbox" type="text" name="account" value="${data.account}"></input></td>
-	    		</tr>
-
-	    		<tr>
-	    			<td style="width: 100px;" align="right">昵称:</td>
-	    			<td><input class="easyui-textbox" type="text" name="nickname" value="${data.nickname}"></input></td>
-	    		</tr>
-
-	    		<tr>
-	    			<td align="right">头像:</td>
-	    			<td><img src="${data.avatar}" onerror="this.src='/assets/default_man.png'" width="120px" height="120px"/> </td>
-	    		</tr>
-
-	    		<tr>
-	    			<td align="right">邮箱:</td>
-	    			<td><input class="easyui-textbox" type="text" name="email" value="${data.email}"  data-options="required:true,validType:'email'"></input></td>
-	    		</tr>
-	    		<tr>
-	    			<td align="right">密码:</td>
-	    			<td><input class="easyui-textbox" placeholder="不填则不修改" type="text" name="password"></input></td>
-	    		</tr>
-
-	    		<tr>
-	    			<td align="right">积分:</td>
-	    			<td><input class="easyui-textbox" type="text" name="integral" value="${data.integral}"  data-options="required:true"></input></td>
-	    		</tr>
-
-	    		<tr>
-	    			<td align="right">售卖资源积分:</td>
-	    			<td><input class="easyui-textbox" type="text"  readonly value="${data.sale_integral}"></input></td>
-	    		</tr>
-
-                <tr>
-	    			<td align="right">提款账号:</td>
-	    			<td><input class="easyui-textbox" type="text" readonly value="${data.draw_account}"></input></td>
-	    		</tr>
-
-	    		<tr>
-	    			<td align="right">手机:</td>
-	    			<td><input class="easyui-textbox" type="text" name="telphone" value="${data.telphone}"></input></td>
-	    		</tr>
-
-                <tr>
-	    			<td align="right">QQ:</td>
-	    			<td><input class="easyui-textbox" type="text" name="qq" value="${data.qq}"></input></td>
-	    		</tr>
-
-	    		<tr>
-	    			<td align="right">注册时间:</td>
-	    			<td><input class="easyui-textbox" type="text" value="${data.created_at}" readonly></input></td>
-	    		</tr>
-
-	    		<tr>
-	    			<td align="right">是否启用:</td>
-	    			<td>
-	    				<select class="easyui-combobox" name="enabled">
-	    				<option value="1" ` + (data.enabled == 1 ? 'selected' : '') + `>启用</option>
-	    				<option value="0" ` + (data.enabled == 0 ? 'selected' : '') + `>关闭</option>
-	    				</select>
-	    			</td>
-	    		</tr>
-	    	</table>
-	    </form>
-	    <div style="text-align:center;padding:5px">
-	    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm(` + artid + `)">更新信息</a>
-	    </div>
-        `
-            });
-            $('#' + id).dialog('open');
-        })
-    }
 </script>

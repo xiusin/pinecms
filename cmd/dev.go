@@ -7,6 +7,8 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -46,6 +48,9 @@ func init() {
 }
 
 func devCommand(cmd *cobra.Command, args []string) error {
+	if runtime.GOOS == "windows" {
+		buildName += ".exe"
+	}
 	_ = os.Remove(buildName)
 	defer func() { _ = watcher.Close() }()
 	if err := getCommandFlags(cmd); err != nil {
@@ -120,8 +125,8 @@ func registerFileToWatcher() error {
 		} else {
 			if !file.IsDir {
 				atomic.AddInt32(&counter, 1)
+				log.Println(fmt.Sprintf("%s %s", color.YellowString("[WATC]"), strings.Replace(file.Path, util.AppPath(), "", 1)))
 			}
-			log.Println(fmt.Sprintf("%s %s", color.YellowString("[WATC]"), strings.Replace(file.Path, util.AppPath(), "", 1)))
 		}
 	}
 	return nil
@@ -129,7 +134,7 @@ func registerFileToWatcher() error {
 
 func isIgnoreAction(event *fsnotify.Event) bool {
 	// 忽略jb的临时文件, 以及修改文件权限的动作
-	return strings.HasSuffix(event.Name, "__") || event.Op.String() == "CHMOD"
+	return !util.InSlice(strings.ToLower("." + filepath.Ext(event.Name)), types) || strings.HasSuffix(event.Name, "__") || event.Op.String() == "CHMOD"
 }
 
 func eventNotify() {
@@ -138,9 +143,6 @@ func eventNotify() {
 	for {
 		select {
 		case event, _ := <-watcher.Events:
-			if event.String() == "CHMOD" {
-				continue
-			}
 			if time.Now().Unix()-lockerTimestamp > int64(delay) && !building {
 				if isIgnoreAction(&event) {
 					continue

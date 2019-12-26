@@ -150,7 +150,6 @@ func registerStatic() {
 	app.Favicon(config.Favicon, "favicon.ico")
 	for _, static := range config.Statics {
 		app.HandleDir(static.Route, filepath.FromSlash(static.Path))
-		app.Logger().Info("注册静态资源: ", static.Route, "  -->  ", static.Path)
 	}
 
 }
@@ -190,6 +189,7 @@ func registerErrorRoutes() {
 }
 
 func runServe() {
+	golog.AddOutput(os.Stdout)
 	if config.Pprof.Open {
 		go func() {
 			pport := strconv.Itoa(int(config.Pprof.Port))

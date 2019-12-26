@@ -5,7 +5,6 @@ type IriscmsDocumentModel struct {
 	Name        int64
 	Enabled     int
 	IsSystem    int
-	Required    int
 	ModelType   int
 	FeTplIndex  string
 	FeTplList   string
