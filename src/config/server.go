@@ -116,7 +116,7 @@ func initApp() {
 	if engines.Html.Path != "" && engines.Html.Suffix != "" {
 		app.Logger().Debug("注册模板引擎Html")
 		viewEngine++
-		app.RegisterView(view.HTML(engines.Html.Path, engines.Html.Suffix, ).Reload(config.View.Reload))
+		app.RegisterView(view.HTML(engines.Html.Path, engines.Html.Suffix).Reload(config.View.Reload))
 	}
 	if viewEngine == 0 {
 		app.Logger().Error("请至少配置一个模板引擎")
@@ -170,7 +170,8 @@ func registerBackendRoutes() {
 		Handle(new(backend.ContentController)).
 		Handle(new(backend.SettingController)).
 		Handle(new(backend.SystemController)).
-		Handle(new(backend.MemberController))
+		Handle(new(backend.MemberController)).
+		Handle(new(backend.DocumentController))
 	mvcApp.Party("/public", middleware.SetGlobalConfigData(XOrmEngine, iCache), injectConfig()).Handle(new(backend.PublicController))
 }
 
@@ -213,7 +214,7 @@ func getMvcConfig() func(app *mvc.Application) {
 		var err error
 		hashKey, blockKey := []byte(config.HashKey), []byte(config.BlockKey)
 		sec, ssc := securecookie.New(hashKey, blockKey), config.Session
-		sess = sessions.New(sessions.Config{Cookie: ssc.Name, Encode: sec.Encode, Decode: sec.Decode, Expires: ssc.Expires * time.Second,})
+		sess = sessions.New(sessions.Config{Cookie: ssc.Name, Encode: sec.Encode, Decode: sec.Decode, Expires: ssc.Expires * time.Second})
 		sessCache, err = boltdb.New(config.CacheDb, os.FileMode(0750))
 		if err != nil {
 			app.Logger().Error("创建session缓存失败", err)

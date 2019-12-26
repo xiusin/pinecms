@@ -1,7 +1,7 @@
 #
 # SQL Export
-# Created by Querious (201054)
-# Created: December 26, 2019 at 4:44:15 PM GMT+8
+# Created by Querious (201067)
+# Created: December 26, 2019 at 6:23:42 PM GMT+8
 # Encoding: Unicode (UTF-8)
 #
 
@@ -14,6 +14,27 @@ USE `iriscms`;
 
 SET @PREVIOUS_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
 SET FOREIGN_KEY_CHECKS = 0;
+
+
+DROP TABLE IF EXISTS `iriscms_wechat_message_log`;
+DROP TABLE IF EXISTS `iriscms_wechat_member`;
+DROP TABLE IF EXISTS `iriscms_slide`;
+DROP TABLE IF EXISTS `iriscms_setting`;
+DROP TABLE IF EXISTS `iriscms_page`;
+DROP TABLE IF EXISTS `iriscms_news`;
+DROP TABLE IF EXISTS `iriscms_menu`;
+DROP TABLE IF EXISTS `iriscms_member`;
+DROP TABLE IF EXISTS `iriscms_log`;
+DROP TABLE IF EXISTS `iriscms_link`;
+DROP TABLE IF EXISTS `iriscms_document_model_field`;
+DROP TABLE IF EXISTS `iriscms_document_model_dsl`;
+DROP TABLE IF EXISTS `iriscms_document_model`;
+DROP TABLE IF EXISTS `iriscms_content`;
+DROP TABLE IF EXISTS `iriscms_category_priv`;
+DROP TABLE IF EXISTS `iriscms_category`;
+DROP TABLE IF EXISTS `iriscms_admin_role_priv`;
+DROP TABLE IF EXISTS `iriscms_admin_role`;
+DROP TABLE IF EXISTS `iriscms_admin`;
 
 
 CREATE TABLE `iriscms_admin` (
@@ -108,6 +129,42 @@ CREATE TABLE `iriscms_content` (
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='新闻表后期根据模型扩展';
 
 
+CREATE TABLE `iriscms_document_model` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '文档名称',
+  `table` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '对应的表名',
+  `enabled` tinyint(4) DEFAULT '0' COMMENT '是否启用',
+  `is_system` tinyint(4) DEFAULT '0' COMMENT '是否为系统模型 无法删除',
+  `model_type` tinyint(4) DEFAULT '0' COMMENT '模型类型: 扩展模型 和 独立模型',
+  `fe_tpl_index` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '模型前端主页模板地址',
+  `fe_tpl_list` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '模型前端列表模板地址',
+  `fe_tpl_detail` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '模型前端详情模板地址',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文档模型用于存储自定义类型的文档内容';
+
+
+CREATE TABLE `iriscms_document_model_dsl` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `mid` int(11) NOT NULL DEFAULT '0' COMMENT '模型id',
+  `form_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '字段在表单内的名称',
+  `html` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '字段html',
+  `required` tinyint(4) DEFAULT '0' COMMENT '是否必填',
+  `datasource` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '数据源, 可以让下拉选项等高级功能有数据读取的源头,具体设计可以是提供列表函数类的',
+  `required_tips` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '必填(选)提醒',
+  `validator` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '验证器名称或内容',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE `iriscms_document_model_field` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '字段名称',
+  `type` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '字段对应的数据类型',
+  `desc` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '字段描述',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
 CREATE TABLE `iriscms_link` (
   `linkid` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `linktype` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -134,7 +191,7 @@ CREATE TABLE `iriscms_log` (
   PRIMARY KEY (`logid`) USING BTREE,
   KEY `module` (`controller`,`action`) USING BTREE,
   KEY `username` (`username`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=599 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='操作日志表';
+) ENGINE=MyISAM AUTO_INCREMENT=690 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='操作日志表';
 
 
 CREATE TABLE `iriscms_member` (
@@ -172,7 +229,7 @@ CREATE TABLE `iriscms_menu` (
   KEY `listorder` (`listorder`) USING BTREE,
   KEY `parentid` (`parentid`) USING BTREE,
   KEY `module` (`c`,`a`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=61 DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='权限表';
+) ENGINE=MyISAM AUTO_INCREMENT=64 DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='权限表';
 
 
 CREATE TABLE `iriscms_news` (
@@ -327,6 +384,37 @@ ALTER TABLE `iriscms_content` DISABLE KEYS;
 INSERT INTO `iriscms_content` (`id`, `catid`, `title`, `thumb`, `keywords`, `description`, `content`, `listorder`, `status`, `recommend`, `pwd_type`, `money`, `created_at`, `updated_at`, `deleted_at`, `source_url`, `source_pwd`, `catids`, `tags`, `userid`) VALUES 
 	(1,30,'项目列表页：导出复制的作品，一直exporting中；','','','','<p><span style="white-space: normal;">12312312312312312312312</span><span style="white-space: normal;">12312312312312312312312</span><span style="white-space: normal;">12312312312312312312312</span><span style="white-space: normal;">12312312312312312312312</span><span style="white-space: normal;">12312312312312312312312</span><span style="white-space: normal;">12312312312312312312312</span><span style="white-space: normal;">12312312312312312312312</span><span style="white-space: normal;">12312312312312312312312</span><span style="white-space: normal;">12312312312312312312312</span><span style="white-space: normal;">12312312312312312312312</span><span style="white-space: normal;">12312312312312312312312</span><span style="white-space: normal;">12312312312312312312312</span><span style="white-space: normal;">12312312312312312312312</span></p>',0,1,0,1,50,1548300082,1548300082,0,'','123123','','sss,ss',0);
 ALTER TABLE `iriscms_content` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `iriscms_document_model` WRITE;
+ALTER TABLE `iriscms_document_model` DISABLE KEYS;
+ALTER TABLE `iriscms_document_model` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `iriscms_document_model_dsl` WRITE;
+ALTER TABLE `iriscms_document_model_dsl` DISABLE KEYS;
+ALTER TABLE `iriscms_document_model_dsl` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `iriscms_document_model_field` WRITE;
+ALTER TABLE `iriscms_document_model_field` DISABLE KEYS;
+INSERT INTO `iriscms_document_model_field` (`id`, `name`, `type`, `desc`) VALUES 
+	(1,'单行文本','varchar','常用字段，如文章标题、作者等都属于直接输入少量内容的文本，设置这个文本之后需要指定文本长度，默认为250，如果大于255则为text类型'),
+	(2,'多行文本','text','也是较为常用的字段类型，如个人简介、产品描述都可以使用多行文本进行存储'),
+	(3,'HTML文本','text','编辑器编辑产生的html内容，用于比较复杂的内容形式, 可以认为是附带编辑器的多行文本'),
+	(4,'附件','varshar','前端表现为input[file]类型,可以上传并且返回一个相对地址'),
+	(5,'下拉框','varchar','下拉选择，一般用于如软件类型、语言类型等字段'),
+	(6,'联动类型','varchar','一种数组形式的数据类型，可以在系统后台联动类型管理中进行设置'),
+	(7,'单选框','varchar','平铺显示, 可以认为是下拉框的展开'),
+	(8,'多选框','varchar','多选框, 平铺显示为多个选项'),
+	(9,'整数类型','int','常用字段, 仅能输入数字'),
+	(10,'浮点类型','float','常用字段, 仅能输入浮点数(小数)'),
+	(11,'单图上传','varchar','常用字段, 会生成一个单图上传框'),
+	(12,'多图上传','varchar','生成一个多图上传的组件');
+ALTER TABLE `iriscms_document_model_field` ENABLE KEYS;
 UNLOCK TABLES;
 
 
@@ -802,7 +890,98 @@ INSERT INTO `iriscms_log` (`logid`, `controller`, `action`, `querystring`, `user
 	(595,'admin','rolelist','/b/admin/rolelist?menuid=13&&_=1576727662884',1,'admin','::1','2019-12-19 11:54:22'),
 	(596,'admin','rolelist','/b/admin/rolelist?grid=datagrid&page=1&rows=10',1,'admin','::1','2019-12-19 11:54:23'),
 	(597,'category','list','/b/category/list?menuid=36&&_=1576729574844',1,'admin','::1','2019-12-19 12:26:14'),
-	(598,'category','list','/b/category/list?grid=treegrid',1,'admin','::1','2019-12-19 12:26:15');
+	(598,'category','list','/b/category/list?grid=treegrid',1,'admin','::1','2019-12-19 12:26:15'),
+	(599,'user','list','/b/user/list?menuid=56&&_=1577354021893',1,'admin','::1','2019-12-26 17:53:41'),
+	(600,'user','list','/b/user/list?page=1&rows=10',1,'admin','::1','2019-12-26 17:53:41'),
+	(601,'admin','rolelist','/b/admin/rolelist?menuid=13&&_=1577354023829',1,'admin','::1','2019-12-26 17:53:43'),
+	(602,'admin','rolelist','/b/admin/rolelist?grid=datagrid&page=1&rows=10',1,'admin','::1','2019-12-26 17:53:43'),
+	(603,'admin','memberlist','/b/admin/memberlist?menuid=12&&_=1577354024548',1,'admin','::1','2019-12-26 17:53:44'),
+	(604,'admin','memberlist','/b/admin/memberlist?grid=datagrid&page=1&rows=10',1,'admin','::1','2019-12-26 17:53:44'),
+	(605,'setting','site','/b/setting/site?menuid=10&&_=1577354027099',1,'admin','::1','2019-12-26 17:53:47'),
+	(606,'setting','site','/b/setting/site?grid=propertygrid',1,'admin','::1','2019-12-26 17:53:47'),
+	(607,'wechat','userinfo','/b/wechat/userinfo?menuid=59&&_=1577354029336',1,'admin','::1','2019-12-26 17:53:49'),
+	(608,'category','list','/b/category/list?menuid=36&&_=1577354036573',1,'admin','::1','2019-12-26 17:53:56'),
+	(609,'category','list','/b/category/list?grid=treegrid',1,'admin','::1','2019-12-26 17:53:56'),
+	(610,'content','index','/b/content/index?menuid=35&&_=1577354037417',1,'admin','::1','2019-12-26 17:53:57'),
+	(611,'content','right','/b/content/right?_=1577354037436',1,'admin','::1','2019-12-26 17:53:57'),
+	(612,'content','right','/b/content/right',1,'admin','::1','2019-12-26 17:53:57'),
+	(613,'content','right','/b/content/right',1,'admin','::1','2019-12-26 17:53:57'),
+	(614,'content','news-list','/b/content/news-list?catid=38&_=1577354041055',1,'admin','::1','2019-12-26 17:54:01'),
+	(615,'content','news-list','/b/content/news-list?grid=datagrid&catid=38&page=1&rows=10',1,'admin','::1','2019-12-26 17:54:01'),
+	(616,'content','news-list','/b/content/news-list?catid=37&_=1577354042129',1,'admin','::1','2019-12-26 17:54:02'),
+	(617,'content','news-list','/b/content/news-list?grid=datagrid&catid=37&page=1&rows=10',1,'admin','::1','2019-12-26 17:54:02'),
+	(618,'content','news-list','/b/content/news-list?catid=36&_=1577354043071',1,'admin','::1','2019-12-26 17:54:03'),
+	(619,'content','news-list','/b/content/news-list?grid=datagrid&catid=36&page=1&rows=10',1,'admin','::1','2019-12-26 17:54:03'),
+	(620,'content','news-list','/b/content/news-list?catid=35&_=1577354043887',1,'admin','::1','2019-12-26 17:54:03'),
+	(621,'content','news-list','/b/content/news-list?grid=datagrid&catid=35&page=1&rows=10',1,'admin','::1','2019-12-26 17:54:03'),
+	(622,'content','news-list','/b/content/news-list?catid=34&_=1577354044630',1,'admin','::1','2019-12-26 17:54:04'),
+	(623,'content','news-list','/b/content/news-list?grid=datagrid&catid=34&page=1&rows=10',1,'admin','::1','2019-12-26 17:54:04'),
+	(624,'content','news-list','/b/content/news-list?catid=32&_=1577354045476',1,'admin','::1','2019-12-26 17:54:05'),
+	(625,'content','news-list','/b/content/news-list?grid=datagrid&catid=32&page=1&rows=10',1,'admin','::1','2019-12-26 17:54:05'),
+	(626,'content','news-list','/b/content/news-list?catid=31&_=1577354046172',1,'admin','::1','2019-12-26 17:54:06'),
+	(627,'content','news-list','/b/content/news-list?grid=datagrid&catid=31&page=1&rows=10',1,'admin','::1','2019-12-26 17:54:06'),
+	(628,'content','news-list','/b/content/news-list?catid=33&_=1577354046802',1,'admin','::1','2019-12-26 17:54:06'),
+	(629,'content','news-list','/b/content/news-list?grid=datagrid&catid=33&page=1&rows=10',1,'admin','::1','2019-12-26 17:54:06'),
+	(630,'content','news-list','/b/content/news-list?catid=32&_=1577354047623',1,'admin','::1','2019-12-26 17:54:07'),
+	(631,'content','news-list','/b/content/news-list?catid=34&_=1577354048471',1,'admin','::1','2019-12-26 17:54:08'),
+	(632,'content','news-list','/b/content/news-list?catid=35&_=1577354049143',1,'admin','::1','2019-12-26 17:54:09'),
+	(633,'content','news-list','/b/content/news-list?catid=36&_=1577354050686',1,'admin','::1','2019-12-26 17:54:10'),
+	(634,'category','list','/b/category/list?menuid=36&&_=1577354085363',1,'admin','::1','2019-12-26 17:54:45'),
+	(635,'category','list','/b/category/list?grid=treegrid',1,'admin','::1','2019-12-26 17:54:45'),
+	(636,'content','index','/b/content/index?menuid=35&&_=1577354086340',1,'admin','::1','2019-12-26 17:54:46'),
+	(637,'content','right','/b/content/right?_=1577354086360',1,'admin','::1','2019-12-26 17:54:46'),
+	(638,'content','right','/b/content/right',1,'admin','::1','2019-12-26 17:54:46'),
+	(639,'content','right','/b/content/right',1,'admin','::1','2019-12-26 17:54:46'),
+	(640,'category','list','/b/category/list?menuid=36&&_=1577354087243',1,'admin','::1','2019-12-26 17:54:47'),
+	(641,'content','index','/b/content/index?menuid=35&&_=1577354087971',1,'admin','::1','2019-12-26 17:54:47'),
+	(642,'content','right','/b/content/right?_=1577354087991',1,'admin','::1','2019-12-26 17:54:48'),
+	(643,'content','right','/b/content/right',1,'admin','::1','2019-12-26 17:54:48'),
+	(644,'content','right','/b/content/right',1,'admin','::1','2019-12-26 17:54:48'),
+	(645,'category','list','/b/category/list?menuid=36&&_=1577354089027',1,'admin','::1','2019-12-26 17:54:49'),
+	(646,'content','index','/b/content/index?menuid=35&&_=1577354091931',1,'admin','::1','2019-12-26 17:54:51'),
+	(647,'content','right','/b/content/right?_=1577354091951',1,'admin','::1','2019-12-26 17:54:51'),
+	(648,'content','right','/b/content/right',1,'admin','::1','2019-12-26 17:54:51'),
+	(649,'content','right','/b/content/right',1,'admin','::1','2019-12-26 17:54:51'),
+	(650,'content','news-list','/b/content/news-list?catid=38&_=1577354093372',1,'admin','::1','2019-12-26 17:54:53'),
+	(651,'content','news-list','/b/content/news-list?grid=datagrid&catid=38&page=1&rows=10',1,'admin','::1','2019-12-26 17:54:53'),
+	(652,'content','news-list','/b/content/news-list?catid=35&_=1577354094757',1,'admin','::1','2019-12-26 17:54:54'),
+	(653,'content','news-list','/b/content/news-list?grid=datagrid&catid=35&page=1&rows=10',1,'admin','::1','2019-12-26 17:54:54'),
+	(654,'content','news-list','/b/content/news-list?catid=34&_=1577354095635',1,'admin','::1','2019-12-26 17:54:55'),
+	(655,'content','news-list','/b/content/news-list?grid=datagrid&catid=34&page=1&rows=10',1,'admin','::1','2019-12-26 17:54:55'),
+	(656,'setting','site','/b/setting/site?menuid=10&&_=1577354328045',1,'admin','::1','2019-12-26 17:58:48'),
+	(657,'setting','site','/b/setting/site?grid=propertygrid',1,'admin','::1','2019-12-26 17:58:48'),
+	(658,'user','list','/b/user/list?menuid=56&&_=1577354339897',1,'admin','::1','2019-12-26 17:58:59'),
+	(659,'user','list','/b/user/list?page=1&rows=10',1,'admin','::1','2019-12-26 17:58:59'),
+	(660,'setting','site','/b/setting/site?menuid=10&&_=1577354371390',1,'admin','::1','2019-12-26 17:59:31'),
+	(661,'setting','site','/b/setting/site?grid=propertygrid',1,'admin','::1','2019-12-26 17:59:31'),
+	(662,'wechat','userinfo','/b/wechat/userinfo?menuid=59&&_=1577354374126',1,'admin','::1','2019-12-26 17:59:34'),
+	(663,'user','list','/b/user/list?menuid=56&&_=1577354376217',1,'admin','::1','2019-12-26 17:59:36'),
+	(664,'user','list','/b/user/list?page=1&rows=10',1,'admin','::1','2019-12-26 17:59:36'),
+	(665,'admin','rolelist','/b/admin/rolelist?menuid=13&&_=1577354377375',1,'admin','::1','2019-12-26 17:59:37'),
+	(666,'admin','rolelist','/b/admin/rolelist?grid=datagrid&page=1&rows=10',1,'admin','::1','2019-12-26 17:59:37'),
+	(667,'admin','memberlist','/b/admin/memberlist?menuid=12&&_=1577354377967',1,'admin','::1','2019-12-26 17:59:37'),
+	(668,'admin','memberlist','/b/admin/memberlist?grid=datagrid&page=1&rows=10',1,'admin','::1','2019-12-26 17:59:38'),
+	(669,'admin','rolelist','/b/admin/rolelist?menuid=13&&_=1577354378377',1,'admin','::1','2019-12-26 17:59:38'),
+	(670,'admin','memberlist','/b/admin/memberlist?menuid=12&&_=1577354378849',1,'admin','::1','2019-12-26 17:59:38'),
+	(671,'admin','rolelist','/b/admin/rolelist?menuid=13&&_=1577354379232',1,'admin','::1','2019-12-26 17:59:39'),
+	(672,'admin','memberlist','/b/admin/memberlist?menuid=12&&_=1577354379560',1,'admin','::1','2019-12-26 17:59:39'),
+	(673,'user','list','/b/user/list?menuid=56&&_=1577354427719',1,'admin','::1','2019-12-26 18:00:27'),
+	(674,'user','list','/b/user/list?page=1&rows=10',1,'admin','::1','2019-12-26 18:00:27'),
+	(675,'setting','site','/b/setting/site?menuid=10&&_=1577354428595',1,'admin','::1','2019-12-26 18:00:28'),
+	(676,'setting','site','/b/setting/site?grid=propertygrid',1,'admin','::1','2019-12-26 18:00:28'),
+	(677,'wechat','userinfo','/b/wechat/userinfo?menuid=59&&_=1577354429872',1,'admin','::1','2019-12-26 18:00:29'),
+	(678,'system','menulist','/b/system/menulist?menuid=16&&_=1577354794313',1,'admin','::1','2019-12-26 18:06:34'),
+	(679,'system','menulist','/b/system/menulist?grid=treegrid',1,'admin','::1','2019-12-26 18:06:34'),
+	(680,'system','loglist','/b/system/loglist?menuid=15&&_=1577354795494',1,'admin','::1','2019-12-26 18:06:35'),
+	(681,'system','loglist','/b/system/loglist?page=1&rows=10',1,'admin','::1','2019-12-26 18:06:35'),
+	(682,'system','menulist','/b/system/menulist?menuid=16&&_=1577354796655',1,'admin','::1','2019-12-26 18:06:36'),
+	(683,'wechat','userinfo','/b/wechat/userinfo?menuid=59&&_=1577354821681',1,'admin','::1','2019-12-26 18:07:01'),
+	(684,'model','list','/b/model/list?menuid=62&&_=1577355016724',1,'admin','::1','2019-12-26 18:10:16'),
+	(685,'model','list','/b/model/list?menuid=62&&_=1577355016724',1,'admin','::1','2019-12-26 18:11:11'),
+	(686,'model','list','/b/model/list?menuid=62&&_=1577355546995',1,'admin','::1','2019-12-26 18:19:07'),
+	(687,'model','list','/b/model/list?menuid=62&&_=1577355625299',1,'admin','::1','2019-12-26 18:20:25'),
+	(688,'model','list','/b/model/list?menuid=62&&_=1577355670360',1,'admin','::1','2019-12-26 18:21:10'),
+	(689,'model','list','/b/model/list?menuid=62&&_=1577355670360',1,'admin','::1','2019-12-26 18:22:20');
 ALTER TABLE `iriscms_log` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -864,7 +1043,9 @@ INSERT INTO `iriscms_menu` (`id`, `name`, `parentid`, `c`, `a`, `data`, `is_syst
 	(57,'会员信息',56,'user','info','',0,0,'1'),
 	(58,'微信管理',2,'wechat','userlist','',0,0,'1'),
 	(59,'微信会员信息',58,'wechat','userinfo','',0,0,'1'),
-	(60,'编辑会员',55,'user','edit','',0,0,'1');
+	(60,'编辑会员',55,'user','edit','',0,0,'1'),
+	(61,'模型管理',2,'model','index','',0,0,'1'),
+	(62,'模型列表',61,'model','list','',0,1,'1');
 ALTER TABLE `iriscms_menu` ENABLE KEYS;
 UNLOCK TABLES;
 

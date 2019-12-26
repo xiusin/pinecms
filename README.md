@@ -11,11 +11,10 @@
     > `go get -v`
 
 5. 运行项目
-    > `./main.exe` or `./main`
+    > `./iris serve start` 
 
-6. 开发期间热部署
-    > `go get -u -v github.com/pilu/fresh`
-    > `fresh`
+6. 开发期间自动构建
+    > `./iris serve dev`
 
 7. 访问后端登陆页面
     > 访问 `http://localhost:2019/b/login/index`
@@ -29,13 +28,13 @@
 > 目前功能比较简单, 对付简单的企业站应该是没问题. 其他的酌情自行开发 ^_^
 
 # TODO #
-- [ ] 网页缓存
-- [x] OSS存储驱动 (IStorage)
-- [ ] 图片裁切
+- [ ] 模板静态化 
+- [ ] 图片裁切,实现上传以后传入x1,x2,y1,y2
 - [ ] 精简代码以及后端模块， 删除自用表. 
 - [ ] 迁移数据模块
-- [ ] 文档模型(存储库结构,字段描述, 数据页面根据文档模型动态展示内容)
+- [ ] 文档模型(存储库结构,字段描述, 数据页面根据文档模型动态展示内容) doing
 
 
-# 打印性能 #
- `go tool pprof -http=0.0.0.0:1234 profile`
+# 查看性能 #
+1. 访问pprof页面 
+2. 使用tool命令打印图形 如: `go tool pprof -http=0.0.0.0:1234 profile`

@@ -8,7 +8,6 @@ import (
 	"xorm.io/core"
 )
 
-// SimpleLogger is the default implment of core.ILogger
 type IrisCmsXormLogger struct {
 	DEBUG   *log.Logger
 	ERR     *log.Logger

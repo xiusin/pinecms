@@ -4,11 +4,14 @@ package helper
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"errors"
 	"fmt"
+	"golang.org/x/image/bmp"
 	"image"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"io"
 	"math/rand"
 	"os"
 	"runtime"
@@ -359,71 +362,6 @@ func IsAjax(this context.Context) bool {
 	return this.GetHeader("X-Requested-With") == "XMLHttpRequest"
 }
 
-func Pay(paytype, title, tradeOrderId, fee string, urls struct {
-	NotifyUrl   string // 通知地址
-	ReturnUrl   string // 返回地址
-	CallbackUrl string // 回调地址
-}) (*req.Resp, error) {
-	//appId := "201461237xxx13"
-	//appSecret := "6D7B025B8DD098C485F080519313xxx6FB9"
-	//if paytype != "wechat" {
-	//	paytype = "alipay"
-	//}
-	//
-	//data := map[string]interface{}{
-	//	"version":        "1.1",                        //固定值，api 版本，目前暂时是1.1
-	//	"lang":           "zh-cn",                      //必须的，zh-cn或en-us 或其他，根据语言显示页面
-	//	"plugins":        "xiusin",                     //必须的，根据自己需要自定义插件ID，唯一的，匹配[a-zA-Z\d\-_]+
-	//	"appid":          appId,                        //必须的，APPID
-	//	"trade_order_id": tradeOrderId,                 //必须的，网站订单ID，唯一的，匹配[a-zA-Z\d\-_]+
-	//	"payment":        paytype,                      //必须的，支付接口标识：wechat(微信接口)|alipay(支付宝接口)
-	//	"total_fee":      fee,                          //人民币，单位精确到分(测试账户只支持0.1元内付款)
-	//	"title":          title,                        //必须的，订单标题，长度32或以内
-	//	"time":           strconv.Itoa(GetTimeStamp()), //必须的，当前时间戳，根据此字段判断订单请求是否已超时，防止第三方攻击服务器
-	//	//"notify_url":     "http://" + this.Request().URL.Host + "/api/v1/pay/notify", //必须的，支付成功异步回调接口
-	//	//"return_url":     "http://" + this.Request().URL.Host + "/pay/success.html'", //必须的，支付成功后的跳转地址
-	//	//"callback_url":   "http://" + this.Request().URL.Host + "/pay/checkout.htm",  //必须的，支付发起地址（未支付或支付失败，系统会会跳到这个地址让用户修改支付信息）
-	//	"notify_url":   urls.NotifyUrl,
-	//	"return_url":   urls.ReturnUrl,
-	//	"callback_url": urls.CallbackUrl,
-	//	"nonce_str":    string(Krand(20, 3)), //必须的，随机字符串，作用：1.避免服务器缓存，2.防止安全密钥被猜测出来
-	//}
-	//var keys []string
-	//var filerData = map[string]string{}
-	////提取目前的key
-	//for k, v := range data {
-	//	if k == "hash" || v.(string) == "" {
-	//		continue
-	//	}
-	//	filerData[k] = v.(string)
-	//	keys = append(keys, k)
-	//}
-	//var arg = bytes.NewBufferString("")
-	//sort.Strings(keys)
-	//for _, key := range keys {
-	//	arg.WriteString(key)
-	//	arg.WriteString("=")
-	//	arg.WriteString(filerData[key])
-	//	arg.WriteString("&")
-	//}
-	//fmt.Println(GetMd5(strings.TrimRight(arg.String(), "&") + appSecret))
-	//data["hash"] = GetMd5(strings.TrimRight(arg.String(), "&") + appSecret)
-	//payUrl := "https://pay.xunhupay.com/v2/payment/do.html"
-	//req.Debug = false
-	//req.SetTimeout(5 * time.Second)
-	//byt, _ := json.Marshal(data)
-	//fmt.Println(string(byt))
-	//r, err := req.Post(payUrl, string(byt), req.Header{"Referer": this.Request().URL.String()})
-	//if err != nil {
-	//	return nil, err
-	//}
-	//if r.Response().StatusCode != 200 {
-	//	return nil, errors.New("invalid httpstatus:" + strconv.Itoa(r.Response().StatusCode) + ",response:" + r.String())
-	//}
-	//return r, nil
-	return &req.Resp{}, nil
-}
-
 /**
 1. 配置多个邮箱发送
 */
@@ -500,7 +438,6 @@ func VerifyVCaptcha(token string) bool {
 	return true
 }
 
-
 func todayFilename(path string) string {
 	today := time.Now().Format("2006-01-02")
 	return path + "/" + today + ".log"
@@ -521,4 +458,47 @@ func NewLogFile(path string) *os.File {
 		panic(err)
 	}
 	return f
+}
+
+/*
+* 图片裁剪
+* 入参:
+* 规则:如果精度为0则精度保持不变
+*https://www.cnblogs.com/cqvoip/p/8078882.html
+* 返回:error
+ */
+func clip(in io.Reader, out io.Writer, x0, y0, x1, y1, quality int) error {
+	origin, fm, err := image.Decode(in)
+	if err != nil {
+		return err
+	}
+
+	switch fm {
+	case "jpeg":
+		img := origin.(*image.YCbCr)
+		subImg := img.SubImage(image.Rect(x0, y0, x1, y1)).(*image.YCbCr)
+		return jpeg.Encode(out, subImg, &jpeg.Options{quality})
+	case "png":
+		switch origin.(type) {
+		case *image.NRGBA:
+			img := origin.(*image.NRGBA)
+			subImg := img.SubImage(image.Rect(x0, y0, x1, y1)).(*image.NRGBA)
+			return png.Encode(out, subImg)
+		case *image.RGBA:
+			img := origin.(*image.RGBA)
+			subImg := img.SubImage(image.Rect(x0, y0, x1, y1)).(*image.RGBA)
+			return png.Encode(out, subImg)
+		}
+	case "gif":
+		img := origin.(*image.Paletted)
+		subImg := img.SubImage(image.Rect(x0, y0, x1, y1)).(*image.Paletted)
+		return gif.Encode(out, subImg, &gif.Options{})
+	case "bmp":
+		img := origin.(*image.RGBA)
+		subImg := img.SubImage(image.Rect(x0, y0, x1, y1)).(*image.RGBA)
+		return bmp.Encode(out, subImg)
+	default:
+		return errors.New("ERROR FORMAT")
+	}
+	return nil
 }
