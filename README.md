@@ -14,7 +14,7 @@
     > `./iris serve start` 
 
 6. 开发期间自动构建
-    > `./iris serve dev`
+    > `go run main.go serve dev`
 
 7. 访问后端登陆页面
     > 访问 `http://localhost:2019/b/login/index`
