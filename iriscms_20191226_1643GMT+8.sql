@@ -1,7 +1,7 @@
 #
 # SQL Export
 # Created by Querious (201054)
-# Created: December 26, 2019 at 2:45:03 PM GMT+8
+# Created: December 26, 2019 at 4:44:15 PM GMT+8
 # Encoding: Unicode (UTF-8)
 #
 
@@ -14,6 +14,243 @@ USE `iriscms`;
 
 SET @PREVIOUS_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
 SET FOREIGN_KEY_CHECKS = 0;
+
+
+CREATE TABLE `iriscms_admin` (
+  `userid` mediumint(6) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(20) DEFAULT NULL,
+  `password` varchar(32) DEFAULT NULL,
+  `roleid` smallint(5) DEFAULT '0',
+  `encrypt` varchar(6) DEFAULT NULL,
+  `lastloginip` varchar(15) DEFAULT NULL,
+  `lastlogintime` int(10) unsigned DEFAULT '0',
+  `email` varchar(40) DEFAULT NULL,
+  `realname` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`userid`) USING BTREE,
+  UNIQUE KEY `UQE_iriscms_admin_username` (`username`),
+  KEY `username` (`username`) USING BTREE
+) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='管理员表';
+
+
+CREATE TABLE `iriscms_admin_role` (
+  `roleid` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `rolename` varchar(50) NOT NULL,
+  `description` text NOT NULL,
+  `listorder` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `disabled` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`roleid`) USING BTREE,
+  UNIQUE KEY `UQE_iriscms_admin_role_rolename` (`rolename`),
+  KEY `listorder` (`listorder`) USING BTREE,
+  KEY `disabled` (`disabled`) USING BTREE
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='角色表';
+
+
+CREATE TABLE `iriscms_admin_role_priv` (
+  `roleid` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `c` char(20) NOT NULL,
+  `a` char(20) NOT NULL,
+  KEY `roleid` (`roleid`,`c`,`a`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='角色操作权限配置表';
+
+
+CREATE TABLE `iriscms_category` (
+  `catid` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `type` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `parentid` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `catname` varchar(30) NOT NULL,
+  `description` mediumtext NOT NULL,
+  `url` varchar(100) NOT NULL,
+  `listorder` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `ismenu` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `tpl` varchar(255) NOT NULL DEFAULT '' COMMENT '后台列表',
+  `home_tpl` varchar(255) NOT NULL COMMENT '前台列表模板',
+  `content_tpl` varchar(255) NOT NULL COMMENT '前台内容页模板',
+  `thumb` varchar(50) NOT NULL,
+  `tpl_prefix` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`catid`) USING BTREE
+) ENGINE=MyISAM AUTO_INCREMENT=40 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='内容分类表';
+
+
+CREATE TABLE `iriscms_category_priv` (
+  `catid` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `roleid` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `is_admin` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `action` char(30) NOT NULL,
+  KEY `catid` (`catid`,`roleid`,`is_admin`,`action`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
+
+
+CREATE TABLE `iriscms_content` (
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+  `catid` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `title` varchar(80) NOT NULL DEFAULT '',
+  `thumb` varchar(100) NOT NULL DEFAULT '',
+  `keywords` char(40) NOT NULL DEFAULT '',
+  `description` mediumtext NOT NULL,
+  `content` mediumtext NOT NULL,
+  `listorder` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
+  `recommend` tinyint(2) DEFAULT NULL,
+  `pwd_type` tinyint(2) DEFAULT NULL,
+  `money` tinyint(5) DEFAULT NULL,
+  `created_at` int(11) DEFAULT NULL,
+  `updated_at` int(11) DEFAULT NULL,
+  `deleted_at` int(11) DEFAULT NULL,
+  `source_url` varchar(255) DEFAULT NULL,
+  `source_pwd` varchar(255) DEFAULT NULL,
+  `catids` varchar(255) DEFAULT NULL,
+  `tags` varchar(255) DEFAULT NULL,
+  `userid` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `status` (`status`,`listorder`,`id`) USING BTREE,
+  KEY `listorder` (`catid`,`status`,`listorder`,`id`) USING BTREE,
+  KEY `catid` (`catid`,`status`,`id`) USING BTREE
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='新闻表后期根据模型扩展';
+
+
+CREATE TABLE `iriscms_link` (
+  `linkid` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `linktype` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `name` varchar(50) NOT NULL DEFAULT '',
+  `url` varchar(255) NOT NULL DEFAULT '',
+  `logo` varchar(255) NOT NULL DEFAULT '',
+  `introduce` text NOT NULL,
+  `listorder` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `passed` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `addtime` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`linkid`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='友情链接表';
+
+
+CREATE TABLE `iriscms_log` (
+  `logid` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `controller` varchar(15) NOT NULL,
+  `action` varchar(20) NOT NULL,
+  `querystring` mediumtext NOT NULL,
+  `userid` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `username` varchar(20) NOT NULL,
+  `ip` varchar(15) NOT NULL,
+  `time` datetime NOT NULL,
+  PRIMARY KEY (`logid`) USING BTREE,
+  KEY `module` (`controller`,`action`) USING BTREE,
+  KEY `username` (`username`) USING BTREE
+) ENGINE=MyISAM AUTO_INCREMENT=599 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='操作日志表';
+
+
+CREATE TABLE `iriscms_member` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `account` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `avatar` varchar(255) DEFAULT NULL,
+  `nickname` varchar(255) DEFAULT NULL,
+  `integral` int(255) DEFAULT NULL,
+  `sale_integral` int(255) DEFAULT NULL,
+  `draw_account` varchar(0) DEFAULT NULL,
+  `telphone` varchar(255) DEFAULT NULL,
+  `qq` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `enabled` tinyint(2) NOT NULL DEFAULT '0',
+  `verify_token` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='系统配置表';
+
+
+CREATE TABLE `iriscms_menu` (
+  `id` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
+  `name` char(40) NOT NULL DEFAULT '',
+  `parentid` smallint(6) NOT NULL DEFAULT '0',
+  `c` char(20) NOT NULL DEFAULT '',
+  `a` char(20) NOT NULL DEFAULT '',
+  `data` char(255) NOT NULL DEFAULT '',
+  `is_system` tinyint(1) NOT NULL DEFAULT '0',
+  `listorder` smallint(6) unsigned NOT NULL DEFAULT '0',
+  `display` enum('1','0') NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `listorder` (`listorder`) USING BTREE,
+  KEY `parentid` (`parentid`) USING BTREE,
+  KEY `module` (`c`,`a`) USING BTREE
+) ENGINE=MyISAM AUTO_INCREMENT=61 DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='权限表';
+
+
+CREATE TABLE `iriscms_news` (
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+  `catid` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `title` varchar(80) NOT NULL DEFAULT '',
+  `thumb` varchar(100) NOT NULL DEFAULT '',
+  `keywords` char(40) NOT NULL DEFAULT '',
+  `description` mediumtext NOT NULL,
+  `content` mediumtext NOT NULL,
+  `listorder` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
+  `username` char(20) NOT NULL,
+  `inputtime` int(10) unsigned NOT NULL DEFAULT '0',
+  `updatetime` int(10) unsigned NOT NULL DEFAULT '0',
+  `tpl` varchar(255) NOT NULL COMMENT '//模板名称',
+  `recommend` tinyint(1) NOT NULL DEFAULT '0' COMMENT '推荐',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `status` (`status`,`listorder`,`id`) USING BTREE,
+  KEY `listorder` (`catid`,`status`,`listorder`,`id`) USING BTREE,
+  KEY `catid` (`catid`,`status`,`id`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='新闻表后期根据模型扩展';
+
+
+CREATE TABLE `iriscms_page` (
+  `catid` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `title` varchar(160) NOT NULL,
+  `keywords` varchar(40) NOT NULL,
+  `content` text NOT NULL,
+  `updatetime` int(10) unsigned NOT NULL DEFAULT '0',
+  KEY `catid` (`catid`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='单页内容表';
+
+
+CREATE TABLE `iriscms_setting` (
+  `key` varchar(50) NOT NULL,
+  `value` text,
+  PRIMARY KEY (`key`) USING BTREE,
+  UNIQUE KEY `UQE_iriscms_setting_key` (`key`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='系统配置表';
+
+
+CREATE TABLE `iriscms_slide` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(255) NOT NULL DEFAULT '' COMMENT '名称',
+  `name1` varchar(255) NOT NULL DEFAULT '',
+  `desc` varchar(255) NOT NULL DEFAULT '',
+  `url` varchar(255) NOT NULL COMMENT '地址',
+  `imgurl` varchar(255) NOT NULL COMMENT '图片地址',
+  `wapimgurl` varchar(255) DEFAULT NULL,
+  `sigin` varchar(255) NOT NULL COMMENT '图片标识',
+  `sort` int(5) NOT NULL DEFAULT '1' COMMENT '排序',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='幻灯片';
+
+
+CREATE TABLE `iriscms_wechat_member` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `openid` varchar(255) DEFAULT NULL,
+  `mpid` varchar(255) DEFAULT NULL,
+  `nickname` varchar(255) DEFAULT NULL,
+  `sex` tinyint(2) DEFAULT NULL,
+  `headimgurl` varchar(255) DEFAULT NULL,
+  `subscribe_scene` varchar(255) DEFAULT NULL,
+  `time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='系统配置表';
+
+
+CREATE TABLE `iriscms_wechat_message_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `content` text,
+  `time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='系统配置表';
+
+
 
 
 SET FOREIGN_KEY_CHECKS = @PREVIOUS_FOREIGN_KEY_CHECKS;
