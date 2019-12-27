@@ -1,59 +1,105 @@
 /**
- * linkbutton - jQuery EasyUI
+ * EasyUI for jQuery 1.7.0
  * 
- * Copyright (c) 2009-2013 www.jeasyui.com. All rights reserved.
+ * Copyright (c) 2009-2018 www.jeasyui.com. All rights reserved.
  *
- * Licensed under the GPL or commercial licenses
+ * Licensed under the freeware license: http://www.jeasyui.com/license_freeware.php
  * To use it on other terms please contact us: info@jeasyui.com
- * http://www.gnu.org/licenses/gpl.txt
- * http://www.jeasyui.com/license_commercial.php
+ *
+ */
+/**
+ * linkbutton - EasyUI for jQuery
+ * 
  */
 (function($){
+	function setSize(target, param){
+		var opts = $.data(target, 'linkbutton').options;
+		if (param){
+			$.extend(opts, param);
+		}
+		if (opts.width || opts.height || opts.fit){
+			var btn = $(target);
+			var parent = btn.parent();
+			var isVisible = btn.is(':visible');
+			if (!isVisible){
+				var spacer = $('<div style="display:none"></div>').insertBefore(target);
+				var style = {
+					position: btn.css('position'),
+					display: btn.css('display'),
+					left: btn.css('left')
+				};
+				btn.appendTo('body');
+				btn.css({
+					position: 'absolute',
+					display: 'inline-block',
+					left: -20000
+				});
+			}
+			btn._size(opts, parent);
+			var left = btn.find('.l-btn-left');
+			left.css('margin-top', 0);
+			left.css('margin-top', parseInt((btn.height()-left.height())/2)+'px');
+			if (!isVisible){
+				btn.insertAfter(spacer);
+				btn.css(style);
+				spacer.remove();
+			}
+		}
+	}
 	
 	function createButton(target) {
 		var opts = $.data(target, 'linkbutton').options;
-		var t = $(target);
+		var t = $(target).empty();
 		
-		t.addClass('l-btn').removeClass('l-btn-plain l-btn-selected l-btn-plain-selected');
+		t.addClass('l-btn').removeClass('l-btn-plain l-btn-selected l-btn-plain-selected l-btn-outline');
+		t.removeClass('l-btn-small l-btn-medium l-btn-large').addClass('l-btn-'+opts.size);
 		if (opts.plain){t.addClass('l-btn-plain')}
+		if (opts.outline){t.addClass('l-btn-outline')}
 		if (opts.selected){
 			t.addClass(opts.plain ? 'l-btn-selected l-btn-plain-selected' : 'l-btn-selected');
 		}
 		t.attr('group', opts.group || '');
 		t.attr('id', opts.id || '');
-		t.html(
-			'<span class="l-btn-left">' +
-				'<span class="l-btn-text"></span>' +
-			'</span>'
-		);
+		
+		var inner = $('<span class="l-btn-left"></span>').appendTo(t);
 		if (opts.text){
-			t.find('.l-btn-text').html(opts.text);
-			if (opts.iconCls){
-				t.find('.l-btn-text').addClass(opts.iconCls).addClass(opts.iconAlign=='left' ? 'l-btn-icon-left' : 'l-btn-icon-right');
-			}
+			$('<span class="l-btn-text"></span>').html(opts.text).appendTo(inner);
 		} else {
-			t.find('.l-btn-text').html('<span class="l-btn-empty">&nbsp;</span>');
-			if (opts.iconCls){
-				t.find('.l-btn-empty').addClass(opts.iconCls);
-			}
+			$('<span class="l-btn-text l-btn-empty">&nbsp;</span>').appendTo(inner);
+		}
+		if (opts.iconCls){
+			$('<span class="l-btn-icon">&nbsp;</span>').addClass(opts.iconCls).appendTo(inner);
+			inner.addClass('l-btn-icon-'+opts.iconAlign);
 		}
 		
 		t.unbind('.linkbutton').bind('focus.linkbutton',function(){
 			if (!opts.disabled){
-				$(this).find('.l-btn-text').addClass('l-btn-focus');
+				$(this).addClass('l-btn-focus');
 			}
 		}).bind('blur.linkbutton',function(){
-			$(this).find('.l-btn-text').removeClass('l-btn-focus');
-		});
-		if (opts.toggle && !opts.disabled){
-			t.bind('click.linkbutton', function(){
-				if (opts.selected){
-					$(this).linkbutton('unselect');
-				} else {
-					$(this).linkbutton('select');
+			$(this).removeClass('l-btn-focus');
+		}).bind('click.linkbutton',function(){
+			if (!opts.disabled){
+				if (opts.toggle){
+					if (opts.selected){
+						$(this).linkbutton('unselect');
+					} else {
+						$(this).linkbutton('select');
+					}
 				}
-			});
-		}
+				opts.onClick.call(this);
+			}
+//			return false;
+		});
+//		if (opts.toggle && !opts.disabled){
+//			t.bind('click.linkbutton', function(){
+//				if (opts.selected){
+//					$(this).linkbutton('unselect');
+//				} else {
+//					$(this).linkbutton('select');
+//				}
+//			});
+//		}
 		
 		setSelected(target, opts.selected)
 		setDisabled(target, opts.disabled);
@@ -90,7 +136,7 @@
 			var href = $(target).attr('href');
 			if (href){
 				state.href = href;
-				$(target).attr('href', 'javascript:void(0)');
+				$(target).attr('href', 'javascript:;');
 			}
 			if (target.onclick){
 				state.onclick = target.onclick;
@@ -122,16 +168,29 @@
 				$.data(this, 'linkbutton', {
 					options: $.extend({}, $.fn.linkbutton.defaults, $.fn.linkbutton.parseOptions(this), options)
 				});
-				$(this).removeAttr('disabled');
+				// $(this).removeAttr('disabled');
+				$(this)._propAttr('disabled', false);
+				$(this).bind('_resize', function(e, force){
+					if ($(this).hasClass('easyui-fluid') || force){
+						setSize(this);
+					}
+					return false;
+				});
 			}
 			
 			createButton(this);
+			setSize(this);
 		});
 	};
 	
 	$.fn.linkbutton.methods = {
 		options: function(jq){
 			return $.data(jq[0], 'linkbutton').options;
+		},
+		resize: function(jq, param){
+			return jq.each(function(){
+				setSize(this, param);
+			});
 		},
 		enable: function(jq){
 			return jq.each(function(){
@@ -158,10 +217,10 @@
 	$.fn.linkbutton.parseOptions = function(target){
 		var t = $(target);
 		return $.extend({}, $.parser.parseOptions(target, 
-			['id','iconCls','iconAlign','group',{plain:'boolean',toggle:'boolean',selected:'boolean'}]
+			['id','iconCls','iconAlign','group','size','text',{plain:'boolean',toggle:'boolean',selected:'boolean',outline:'boolean'}]
 		), {
 			disabled: (t.attr('disabled') ? true : undefined),
-			text: $.trim(t.html()),
+			text: ($.trim(t.html()) || undefined),
 			iconCls: (t.attr('icon') || t.attr('iconCls'))
 		});
 	};
@@ -171,11 +230,14 @@
 		disabled: false,
 		toggle: false,
 		selected: false,
+		outline: false,
 		group: null,
 		plain: false,
 		text: '',
 		iconCls: null,
-		iconAlign: 'left'
+		iconAlign: 'left',
+		size: 'small',	// small,large
+		onClick: function(){}
 	};
 	
 })(jQuery);

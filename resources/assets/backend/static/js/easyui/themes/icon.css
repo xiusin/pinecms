@@ -7,6 +7,9 @@
 .icon-edit{
 	background:url('icons/pencil.png') no-repeat center center;
 }
+.icon-clear{
+	background:url('icons/clear.png') no-repeat center center;
+}
 .icon-remove{
 	background:url('icons/edit_remove.png') no-repeat center center;
 }
@@ -55,6 +58,15 @@
 .icon-filter{
 	background:url('icons/filter.png') no-repeat center center;
 }
+.icon-man{
+	background:url('icons/man.png') no-repeat center center;
+}
+.icon-lock{
+	background:url('icons/lock.png') no-repeat center center;
+}
+.icon-more{
+	background:url('icons/more.png') no-repeat center center;
+}
 
 
 .icon-mini-add{
@@ -65,4 +77,20 @@
 }
 .icon-mini-refresh{
 	background:url('icons/mini_refresh.png') no-repeat center center;
+}
+
+.icon-large-picture{
+	background:url('icons/large_picture.png') no-repeat center center;
+}
+.icon-large-clipart{
+	background:url('icons/large_clipart.png') no-repeat center center;
+}
+.icon-large-shapes{
+	background:url('icons/large_shapes.png') no-repeat center center;
+}
+.icon-large-smartart{
+	background:url('icons/large_smartart.png') no-repeat center center;
+}
+.icon-large-chart{
+	background:url('icons/large_chart.png') no-repeat center center;
 }

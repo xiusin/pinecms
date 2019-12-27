@@ -99,7 +99,7 @@ func initApp() {
 	app = iris.New()
 	mvcApp = mvc.New(app).Configure(getMvcConfig())
 	//配置前端缓存10秒
-	app.Use(iris.Cache304(10 * time.Second))
+	//app.Use(iris.Cache304(10 * time.Second))
 	//配置PPROF
 	if config.Pprof.Open {
 		app.Logger().Debug("pprof enabled")

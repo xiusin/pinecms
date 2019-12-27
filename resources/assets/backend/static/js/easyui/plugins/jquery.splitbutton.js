@@ -1,18 +1,17 @@
-﻿/**
- * jQuery EasyUI 1.3.5
+/**
+ * EasyUI for jQuery 1.7.0
  * 
- * Copyright (c) 2009-2013 www.jeasyui.com. All rights reserved.
+ * Copyright (c) 2009-2018 www.jeasyui.com. All rights reserved.
  *
- * Licensed under the GPL or commercial licenses
+ * Licensed under the freeware license: http://www.jeasyui.com/license_freeware.php
  * To use it on other terms please contact us: info@jeasyui.com
- * http://www.gnu.org/licenses/gpl.txt
- * http://www.jeasyui.com/license_commercial.php
  *
  */
 (function($){
 function _1(_2){
 var _3=$.data(_2,"splitbutton").options;
 $(_2).menubutton(_3);
+$(_2).addClass("s-btn");
 };
 $.fn.splitbutton=function(_4,_5){
 if(typeof _4=="string"){
@@ -30,7 +29,7 @@ if(_7){
 $.extend(_7.options,_4);
 }else{
 $.data(this,"splitbutton",{options:$.extend({},$.fn.splitbutton.defaults,$.fn.splitbutton.parseOptions(this),_4)});
-$(this).removeAttr("disabled");
+$(this)._propAttr("disabled",false);
 }
 _1(this);
 });
@@ -45,6 +44,6 @@ $.fn.splitbutton.parseOptions=function(_a){
 var t=$(_a);
 return $.extend({},$.fn.linkbutton.parseOptions(_a),$.parser.parseOptions(_a,["menu",{plain:"boolean",duration:"number"}]));
 };
-$.fn.splitbutton.defaults=$.extend({},$.fn.linkbutton.defaults,{plain:true,menu:null,duration:100,cls:{btn1:"s-btn-active",btn2:"s-btn-plain-active",arrow:"s-btn-downarrow",trigger:"s-btn-downarrow"}});
+$.fn.splitbutton.defaults=$.extend({},$.fn.linkbutton.defaults,{plain:true,menu:null,duration:100,cls:{btn1:"m-btn-active s-btn-active",btn2:"m-btn-plain-active s-btn-plain-active",arrow:"m-btn-downarrow",trigger:"m-btn-line"}});
 })(jQuery);
 

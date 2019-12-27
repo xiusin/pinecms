@@ -22,14 +22,15 @@
   outline: none;
   width: 20px;
   height: 20px;
-  top: -7px;
+  top: 50%;
+  margin-top: -10px;
   margin-left: -10px;
 }
 .slider-tip {
   position: absolute;
   display: inline-block;
   line-height: 12px;
-  font-size: 12px;
+  font-size: 14px;
   white-space: nowrap;
   top: -22px;
 }
@@ -52,7 +53,7 @@
 .slider-rulelabel span {
   position: absolute;
   display: inline-block;
-  font-size: 12px;
+  font-size: 14px;
 }
 .slider-v .slider-inner {
   width: 6px;
@@ -61,7 +62,7 @@
   float: left;
 }
 .slider-v .slider-handle {
-  left: 3px;
+  left: 50%;
   margin-top: -10px;
 }
 .slider-v .slider-tip {

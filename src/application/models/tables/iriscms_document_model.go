@@ -2,7 +2,7 @@ package tables
 
 type IriscmsDocumentModel struct {
 	Id          int64 `xorm:"pk"`
-	Name        int64
+	Name        string
 	Enabled     int
 	IsSystem    int
 	ModelType   int

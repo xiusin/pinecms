@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"runtime"
 	"strings"
 	"sync/atomic"
@@ -134,7 +133,7 @@ func registerFileToWatcher() error {
 
 func isIgnoreAction(event *fsnotify.Event) bool {
 	// 忽略jb的临时文件, 以及修改文件权限的动作
-	return !util.InSlice(strings.ToLower("." + filepath.Ext(event.Name)), types) || strings.HasSuffix(event.Name, "__") || event.Op.String() == "CHMOD"
+	return strings.HasSuffix(event.Name, "__") || event.Op.String() == "CHMOD"
 }
 
 func eventNotify() {

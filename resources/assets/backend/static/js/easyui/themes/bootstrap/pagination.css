@@ -1,5 +1,6 @@
 .pagination {
   zoom: 1;
+  padding: 2px;
 }
 .pagination table {
   float: left;
@@ -20,8 +21,10 @@
   border-style: solid;
   margin: 0 2px;
   padding: 2px;
-  width: 2em;
+  width: 3em;
   height: auto;
+  text-align: center;
+  font-size: 12px;
 }
 .pagination-page-list {
   margin: 0px 6px;
@@ -33,7 +36,7 @@
 }
 .pagination-info {
   float: right;
-  margin: 0 6px 0 0;
+  margin: 0 6px;
   padding: 0;
   height: 30px;
   line-height: 30px;
@@ -42,18 +45,13 @@
 .pagination span {
   font-size: 12px;
 }
-a.pagination-link {
-  padding: 1px;
-}
-a.pagination-link span.l-btn-left {
-  padding-left: 0;
-}
-a.pagination-link span span.l-btn-text {
-  width: 24px;
+.pagination-link .l-btn-text {
+  box-sizing: border-box;
   text-align: center;
-}
-a:hover.pagination-link {
-  padding: 0;
+  margin: 0;
+  padding: 0 .5em;
+  width: auto;
+  min-width: 28px;
 }
 .pagination-first {
   background: url('images/pagination_icons.png') no-repeat 0 center;

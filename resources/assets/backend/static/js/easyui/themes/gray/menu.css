@@ -6,6 +6,9 @@
   border-style: solid;
   overflow: hidden;
 }
+.menu-inline {
+  position: relative;
+}
 .menu-item {
   position: relative;
   margin: 0;
@@ -49,6 +52,13 @@
   margin: 3px 0px 3px 25px;
   font-size: 1px;
 }
+.menu-noline .menu-line {
+  display: none;
+}
+.menu-noline .menu-sep {
+  margin-left: 0;
+  margin-right: 0;
+}
 .menu-active {
   -moz-border-radius: 5px 5px 5px 5px;
   -webkit-border-radius: 5px 5px 5px 5px;
@@ -61,7 +71,7 @@
 }
 .menu-text,
 .menu-text span {
-  font-size: 12px;
+  font-size: 14px;
 }
 .menu-shadow {
   position: absolute;

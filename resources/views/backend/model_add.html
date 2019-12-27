@@ -1,146 +1,191 @@
 <div class="easyui-panel" data-options="fit:true,title:'{{.title}}',border:false">
-    <form id="admin_public_editpwd_form">
-        <table cellspacing="10" class="mdoutable">
+    <table cellspacing="10" class="mdoutable">
+        <tr>
+            <td width="90">模型名称：</td>
+            <td colspan="2"><input class="easyui-textbox" type="text" name="name" style="width: 300px" data-options="required:true"/></td>
+        </tr>
+
+        <tr>
+            <td>模型Table：</td>
+            <td colspan="2"><input class="easyui-textbox" type="text" name="name" style="width: 300px" data-options="required:true"/></td>
+        </tr>
+
+        <tr>
+            <td>是否启用：</td>
+            <td colspan="2">
+                <div style="margin-bottom:20px">
+                    <input class="easyui-switchbutton" checked label="Receive mail:" labelWidth="120" tabindex="1">
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>模型定义：</td>
+            <td colspan="2" id="mode-definition">
+                <div id="tab-tools">
+                    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add'" onclick="addPanel()"></a>
+                </div>
+                <div id="tt" class="easyui-tabs" style="width:750px;height:750px;">
+                    <div title="标题" style="padding:20px;">
+                        <form id="ff" method="post">
+                            <table cellpadding="5" style="width: 100%;">
+                                <tr>
+                                    <td style="width: 150px;">字段名称:</td>
+                                    <td ><input class="easyui-textbox" type="text" name="name" style="width: 300px" data-options="required:true"></input></td>
+                                </tr>
+                                <tr>
+                                    <td>是否必填:</td>
+                                    <td>
+                                        <input class="easyui-switchbutton" checked tabindex="1">
+                                    </td>
+                                </tr>
+
+                                <tr style="blocdisplay: k">
+                                    <td>必填提醒内容:</td>
+                                    <td>
+                                        <input class="easyui-textbox" type="text" name="name" style="width: 300px;"></input>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>字段类型:</td>
+                                    <td>
+                                        <select class="easyui-combobox" name="language" style="width: 300px;">
+                                            {{range $index,$ele := .list}}
+                                                <option value="">{{$ele.Name}}</option>
+                                            {{end}}
+                                        </select>
+                                    </td>
+                                </tr>
+
+                                <tr >
+                                    <td>数据源:</td>
+                                    <td><input class="easyui-textbox" name="message" placeholder="组件数据源, 写入Json或者接口地址" data-options="multiline:true" style="height:80px; width: 300px;" /></td>
+                                </tr>
+
+                                <tr>
+                                    <td>类型描述:</td>
+                                    <td>
+                                        常用字段，如文章标题、作者等都属于直接输入少量内容的文本，设置这个文本之后需要指定文本长度，默认为250，如果大于255则为text类型
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>字段验证器:</td>
+                                    <td>
+                                        <select class="easyui-combobox" name="language" style="width: 300px;">
+                                            <option value="ar">自定规则</option>
+                                        </select>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>控件html:</td>
+                                    <td><input class="easyui-textbox" name="message" data-options="multiline:true" style="height:80px; width: 300px;"></input></td>
+                                </tr>
+
+                            </table>
+                        </form>
+                    </div>
+                    <div title="描述" data-options="closable:true" style="overflow:auto;padding:20px;">
+                        tab2
+                    </div>
+                    <div title="内容" data-options="closable:true" style="padding:20px;">
+                        tab3
+                    </div>
+
+                    <div title="是否可用" data-options="closable:true" style="padding:20px;">
+                        tab3
+                    </div>
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="3"><a id="admin_public_editpwd_form_submit" class="easyui-linkbutton">提交</a></td>
+        </tr>
+    </table>
+</div>
+
+<script style="display: none" id="tpl" type="text/template">
+    <form id="ff" method="post">
+        <table cellpadding="5" style="width: 100%;">
             <tr>
-                <td width="90">模型名称：</td>
-                <td colspan="2"><input type="text" style="width:180px;height:22px" name="name" /> </td>
+                <td style="width: 150px;">字段名称:</td>
+                <td ><input class="easyui-textbox" type="text" name="name" style="width: 300px" data-options="required:true"></input></td>
             </tr>
-
             <tr>
-                <td>模型Table：</td>
-                <td colspan="2"> <input type="text" style="width:180px;height:22px" name="table" /> </td>
-            </tr>
-
-            <tr>
-                <td>是否启用：</td>
-                <td colspan="2"> <input type="radio" value="1" name="enabled"/>是&nbsp;&nbsp;&nbsp;<input type="radio" value="0" name="enabled" />否 </td>
-            </tr>
-
-            <tr>
-                <td>模型定义：</td>
-                <td colspan="2">
-
-                    <table cellspacing="10" class="mdoutable">
-                        <tr>
-                            <td colspan="2"><input type="text" placeholder="字段名称" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2">
-                                <select name="" id="" style="width:180px;height:22px;border: 1px solid #dddddd;">
-                                    {{range $index,$ele := .list}}
-                                        <option value="">{{ $ele.Name }}</option>
-                                    {{ end }}
-                                </select>
-                            </td>
-                            <td colspan="2"><input type="text" placeholder="是否必填" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="自定义html" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="数据源，自定义或填写数据地址" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="验证器" style="width:180px;height:22px" name="name" /> </td>
-                        </tr>
-
-
-
-
-                        <tr>
-                            <td colspan="2"><input type="text" placeholder="字段名称" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2">
-                                <select name="" id="" style="width:180px;height:22px;border: 1px solid #dddddd;">
-                                    {{range $index,$ele := .list}}
-                                        <option value="">{{ $ele.Name }}</option>
-                                    {{ end }}
-                                </select>
-                            </td>
-                            <td colspan="2"><input type="text" placeholder="是否必填" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="自定义html" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="数据源" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="验证器" style="width:180px;height:22px" name="name" /> </td>
-                        </tr>
-
-                        <tr>
-                            <td colspan="2"><input type="text" placeholder="字段名称" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2">
-                                <select name="" id="" style="width:180px;height:22px;border: 1px solid #dddddd;">
-                                    {{range $index,$ele := .list}}
-                                        <option value="">{{ $ele.Name }}</option>
-                                    {{ end }}
-                                </select>
-                            </td>
-                            <td colspan="2"><input type="text" placeholder="是否必填" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="自定义html" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="数据源" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="验证器" style="width:180px;height:22px" name="name" /> </td>
-                        </tr>
-
-                        <tr>
-                            <td colspan="2"><input type="text" placeholder="字段名称" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2">
-                                <select name="" id="" style="width:180px;height:22px;border: 1px solid #dddddd;">
-                                    {{range $index,$ele := .list}}
-                                        <option value="">{{ $ele.Name }}</option>
-                                    {{ end }}
-                                </select>
-                            </td>
-                            <td colspan="2"><input type="text" placeholder="是否必填" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="自定义html" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="数据源" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="验证器" style="width:180px;height:22px" name="name" /> </td>
-                        </tr>
-
-                        <tr>
-                            <td colspan="2"><input type="text" placeholder="字段名称" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2">
-                                <select name="" id="" style="width:180px;height:22px;border: 1px solid #dddddd;">
-                                    {{range $index,$ele := .list}}
-                                        <option value="">{{ $ele.Name }}</option>
-                                    {{ end }}
-                                </select>
-                            </td>
-                            <td colspan="2"><input type="text" placeholder="是否必填" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="自定义html" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="数据源" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="验证器" style="width:180px;height:22px" name="name" /> </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2"><input type="text" placeholder="字段名称" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2">
-                                <select name="" id="" style="width:180px;height:22px;border: 1px solid #dddddd;">
-                                    {{range $index,$ele := .list}}
-                                        <option value="">{{ $ele.Name }}</option>
-                                    {{ end }}
-                                </select>
-                            </td>
-                            <td colspan="2"><input type="text" placeholder="是否必填" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="自定义html" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="数据源" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="验证器" style="width:180px;height:22px" name="name" /> </td>
-                        </tr>
-
-                        <tr>
-                            <td colspan="2"><input type="text" placeholder="字段名称" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2">
-                                <select name="" id="" style="width:180px;height:22px;border: 1px solid #dddddd;">
-                                    {{range $index,$ele := .list}}
-                                        <option value="">{{ $ele.Name }}</option>
-                                    {{ end }}
-                                </select>
-                            </td>
-                            <td colspan="2"><input type="text" placeholder="是否必填" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="自定义html" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="数据源,自定义或填写数据地址" style="width:180px;height:22px" name="name" /> </td>
-                            <td colspan="2"><input type="text" placeholder="验证器" style="width:180px;height:22px" name="name" /> </td>
-                        </tr>
-
-
-
-                    </table>
-
-
-
-
-
+                <td>是否必填:</td>
+                <td>
+                    <input class="easyui-switchbutton" checked tabindex="1">
                 </td>
             </tr>
+
+            <tr style="blocdisplay: k">
+                <td>必填提醒内容:</td>
+                <td>
+                    <input class="easyui-textbox" type="text" name="name" style="width: 300px;"></input>
+                </td>
+            </tr>
+
             <tr>
-                <td colspan="3"><a id="admin_public_editpwd_form_submit" class="easyui-linkbutton">提交</a></td>
+                <td>字段类型:</td>
+                <td>
+                </td>
+            </tr>
+
+            <tr >
+                <td>数据源:</td>
+                <td><input class="easyui-textbox" name="message" placeholder="组件数据源, 写入Json或者接口地址" data-options="multiline:true" style="height:80px; width: 300px;" /></td>
+            </tr>
+
+            <tr>
+                <td>类型描述:</td>
+                <td>
+                    常用字段，如文章标题、作者等都属于直接输入少量内容的文本，设置这个文本之后需要指定文本长度，默认为250，如果大于255则为text类型
+                </td>
+            </tr>
+
+            <tr>
+                <td>字段验证器:</td>
+                <td>
+                    <select class="easyui-combobox" name="language" style="width: 300px;">
+                        <option value="ar">自定规则</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td>控件html:</td>
+                <td><input class="easyui-textbox" name="message" data-options="multiline:true" style="height:80px; width: 300px;"></input></td>
             </tr>
         </table>
     </form>
-</div>
+</script>
+
+<script>
+    $("#tt").width($("#mode-definition").width()).tabs({
+        tools:'#tab-tools',
+        onBeforeClose: function(title,index){
+            $.messager.confirm('删除字段','确定要删除: "'+title + '" 吗, 如果字段已经存在表字段内,将不会删除表字段?',function(r){
+                if (r){
+                    var opts = $(target).tabs('options');
+                    var bc = opts.onBeforeClose;
+                    opts.onBeforeClose = function(){};  // allowed to close now
+                    $(target).tabs('close',index);
+                    opts.onBeforeClose = bc;  // restore the event function
+                }
+            });
+            return false;	// prevent from closing
+        }
+    }).tabs({tabPosition:"left"})
+    var index = 0;
+    function addPanel(){
+        index++;
+        $('#tt').tabs('add',{title: '字段'+index, content: $("#tpl").html(), closable: true});
+    }
+
+
+
+
+</script>
