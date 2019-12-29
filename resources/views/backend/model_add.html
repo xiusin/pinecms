@@ -26,33 +26,32 @@
                     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add'" onclick="addPanel()"></a>
                 </div>
                 <div id="tt" class="easyui-tabs" style="width:750px;height:750px;">
-                    <div title="标题" style="padding:20px;">
-                        <form id="ff" method="post">
+                    <div title="标题">
                             <table cellpadding="5" style="width: 100%;">
                                 <tr>
                                     <td style="width: 150px;">字段名称:</td>
-                                    <td ><input class="easyui-textbox" type="text" name="name" style="width: 300px" data-options="required:true"></input></td>
+                                    <td ><input class="easyui-textbox" type="text" name="name[]" style="width: 300px" data-options="required:true"></input></td>
                                 </tr>
                                 <tr>
                                     <td>是否必填:</td>
                                     <td>
-                                        <input class="easyui-switchbutton" checked tabindex="1">
+                                        <input class="easyui-switchbutton"  name="required[]" checked tabindex="1">
                                     </td>
                                 </tr>
 
                                 <tr style="blocdisplay: k">
                                     <td>必填提醒内容:</td>
                                     <td>
-                                        <input class="easyui-textbox" type="text" name="name" style="width: 300px;"></input>
+                                        <input class="easyui-textbox" type="text" name="required_tips[]" style="width: 300px;"></input>
                                     </td>
                                 </tr>
 
                                 <tr>
                                     <td>字段类型:</td>
                                     <td>
-                                        <select class="easyui-combobox" name="language" style="width: 300px;">
+                                        <select class="easyui-combobox" name="type[]" style="width: 300px;" data-options="onSelect: onSelectChange">
                                             {{range $index,$ele := .list}}
-                                                <option value="">{{$ele.Name}}</option>
+                                                <option value="{{$ele.Id}}">{{$ele.Name}}</option>
                                             {{end}}
                                         </select>
                                     </td>
@@ -60,7 +59,7 @@
 
                                 <tr >
                                     <td>数据源:</td>
-                                    <td><input class="easyui-textbox" name="message" placeholder="组件数据源, 写入Json或者接口地址" data-options="multiline:true" style="height:80px; width: 300px;" /></td>
+                                    <td><input class="easyui-textbox" name="datasource[]" placeholder="组件数据源, 写入Json或者接口地址" data-options="multiline:true" style="height:80px; width: 300px;" /></td>
                                 </tr>
 
                                 <tr>
@@ -73,7 +72,7 @@
                                 <tr>
                                     <td>字段验证器:</td>
                                     <td>
-                                        <select class="easyui-combobox" name="language" style="width: 300px;">
+                                        <select class="easyui-combobox" name="validator[]" style="width: 300px;">
                                             <option value="ar">自定规则</option>
                                         </select>
                                     </td>
@@ -81,21 +80,11 @@
 
                                 <tr>
                                     <td>控件html:</td>
-                                    <td><input class="easyui-textbox" name="message" data-options="multiline:true" style="height:80px; width: 300px;"></input></td>
+                                    <td><input class="easyui-textbox html" name="html[]" data-options="multiline:true" style="height:150px; width: 500px;"></input></td>
                                 </tr>
 
                             </table>
                         </form>
-                    </div>
-                    <div title="描述" data-options="closable:true" style="overflow:auto;padding:20px;">
-                        tab2
-                    </div>
-                    <div title="内容" data-options="closable:true" style="padding:20px;">
-                        tab3
-                    </div>
-
-                    <div title="是否可用" data-options="closable:true" style="padding:20px;">
-                        tab3
                     </div>
                 </div>
             </td>
@@ -108,59 +97,63 @@
 </div>
 
 <script style="display: none" id="tpl" type="text/template">
-    <form id="ff" method="post">
-        <table cellpadding="5" style="width: 100%;">
-            <tr>
-                <td style="width: 150px;">字段名称:</td>
-                <td ><input class="easyui-textbox" type="text" name="name" style="width: 300px" data-options="required:true"></input></td>
-            </tr>
-            <tr>
-                <td>是否必填:</td>
-                <td>
-                    <input class="easyui-switchbutton" checked tabindex="1">
-                </td>
-            </tr>
+    <table cellpadding="5" style="width: 100%;">
+        <tr>
+            <td style="width: 150px;">字段名称:</td>
+            <td ><input class="easyui-textbox" type="text" name="name[]" style="width: 300px" data-options="required:true"></input></td>
+        </tr>
+        <tr>
+            <td>是否必填:</td>
+            <td>
+                <input class="easyui-switchbutton"  name="required[]" checked tabindex="1">
+            </td>
+        </tr>
 
-            <tr style="blocdisplay: k">
-                <td>必填提醒内容:</td>
-                <td>
-                    <input class="easyui-textbox" type="text" name="name" style="width: 300px;"></input>
-                </td>
-            </tr>
+        <tr style="blocdisplay: k">
+            <td>必填提醒内容:</td>
+            <td>
+                <input class="easyui-textbox" type="text" name="required_tips[]" style="width: 300px;"></input>
+            </td>
+        </tr>
 
-            <tr>
-                <td>字段类型:</td>
-                <td>
-                </td>
-            </tr>
+        <tr>
+            <td>字段类型:</td>
+            <td>
+                <select class="easyui-combobox" name="type[]" style="width: 300px;" data-options="onSelect: onSelectChange">
+                    {{range $index,$ele := .list}}
+                        <option value="{{$ele.Id}}">{{$ele.Name}}</option>
+                    {{end}}
+                </select>
+            </td>
+        </tr>
 
-            <tr >
-                <td>数据源:</td>
-                <td><input class="easyui-textbox" name="message" placeholder="组件数据源, 写入Json或者接口地址" data-options="multiline:true" style="height:80px; width: 300px;" /></td>
-            </tr>
+        <tr >
+            <td>数据源:</td>
+            <td><input class="easyui-textbox" name="datasource[]" placeholder="组件数据源, 写入Json或者接口地址" data-options="multiline:true" style="height:80px; width: 300px;" /></td>
+        </tr>
 
-            <tr>
-                <td>类型描述:</td>
-                <td>
-                    常用字段，如文章标题、作者等都属于直接输入少量内容的文本，设置这个文本之后需要指定文本长度，默认为250，如果大于255则为text类型
-                </td>
-            </tr>
+        <tr>
+            <td>类型描述:</td>
+            <td>
+                常用字段，如文章标题、作者等都属于直接输入少量内容的文本，设置这个文本之后需要指定文本长度，默认为250，如果大于255则为text类型
+            </td>
+        </tr>
 
-            <tr>
-                <td>字段验证器:</td>
-                <td>
-                    <select class="easyui-combobox" name="language" style="width: 300px;">
-                        <option value="ar">自定规则</option>
-                    </select>
-                </td>
-            </tr>
+        <tr>
+            <td>字段验证器:</td>
+            <td>
+                <select class="easyui-combobox" name="validator[]" style="width: 300px;">
+                    <option value="ar">自定规则</option>
+                </select>
+            </td>
+        </tr>
 
-            <tr>
-                <td>控件html:</td>
-                <td><input class="easyui-textbox" name="message" data-options="multiline:true" style="height:80px; width: 300px;"></input></td>
-            </tr>
-        </table>
-    </form>
+        <tr>
+            <td>控件html:</td>
+            <td><input class="easyui-textbox html" name="html[]"  data-options="multiline:true" style="height:150px; width: 500px;"></input></td>
+        </tr>
+
+    </table>
 </script>
 
 <script>
@@ -178,14 +171,27 @@
             });
             return false;	// prevent from closing
         }
-    }).tabs({tabPosition:"left"})
-    var index = 0;
+    }).tabs({tabPosition:"left"});
+    let index = 0;
     function addPanel(){
         index++;
         $('#tt').tabs('add',{title: '字段'+index, content: $("#tpl").html(), closable: true});
     }
 
-
-
-
+    let fields = JSON.parse({{.listJson}});
+    let hash = new Map();
+    fields.forEach(function (v, i) {
+        hash.set(Number(v.Id),v);
+    });
+    function onSelectChange(rc) {
+        if (rc === undefined || !hash.has(Number(rc.value))) {
+            return
+        }
+        const field = hash.get(Number(rc.value))
+        // 填充当前tab里的内容
+        const that  = $(this);
+        const desc = that.parents("tr").next().next();
+        desc.find("td").eq(1).html(field.Desc);
+        desc.next().next().find(".html").textbox('setValue', field.Html);
+    }
 </script>

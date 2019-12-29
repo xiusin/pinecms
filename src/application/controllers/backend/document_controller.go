@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"encoding/json"
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
@@ -56,6 +57,8 @@ func (c *DocumentController) ModelAdd() {
 	list, _ := models.NewDocumentModelFieldModel(c.Orm).GetList(1, 1000)
 	c.Ctx.ViewData("list", list)
 	c.Ctx.ViewData("title", currentPos)
+	b, _ := json.Marshal(list)
+	c.Ctx.ViewData("listJson", string(b))
 	c.Ctx.View("backend/model_add.html")
 }
 
