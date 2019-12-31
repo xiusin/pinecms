@@ -81,7 +81,7 @@ func serve() {
 		if err := cmd.Start(); err != nil {
 			log.Println(fmt.Sprintf("%s %s", color.RedString("[ERRO]"), err.Error()))
 		}
-		log.Println(fmt.Sprintf("%s %s", color.YellowString("[ACTI]"), "重新启动服务成功"))
+		log.Println(fmt.Sprintf("%s %s", color.YellowString("[INFO]"), "构建执行文件, 并且启动服务成功"))
 		if err := cmd.Wait(); err != nil && err.Error() != "signal: killed" {
 			log.Println(fmt.Sprintf("%s %s", color.RedString("[ERRO]"), err.Error()))
 		}
@@ -153,13 +153,11 @@ func eventNotify() {
 				} else if event.Op&fsnotify.Remove == fsnotify.Remove {
 					_ = watcher.Remove(event.Name)
 				}
-				log.Println(fmt.Sprintf("%s %s has %s", color.YellowString("[EVEN]"), name, strings.ToLower(event.Op.String())))
+				log.Println(fmt.Sprintf("%s %s event %s", color.YellowString("[EVEN]"), name, strings.ToLower(event.Op.String())))
 				if err := build(); err != nil {
-					log.Println(fmt.Sprintf("%s build err: %s", color.RedString("[ERRO]"), err.Error()))
+					log.Println(fmt.Sprintf("\n%s build err", color.RedString("[ERRO]")))
 					building = false
 					continue
-				} else {
-					log.Println(fmt.Sprintf("%s 构建执行文件成功", color.GreenString("[INFO]")))
 				}
 				rebuildNotifier <- struct{}{}
 				building = false

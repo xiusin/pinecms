@@ -4,7 +4,7 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/landoop/tableprinter"
 	"github.com/spf13/cobra"
-	"github.com/xiusin/iriscms/src/config"
+	"github.com/xiusin/iriscms/src/server"
 	"os"
 	"runtime"
 )

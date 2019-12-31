@@ -1,5 +1,6 @@
 view:
   reload: true
+  fedirname: "frontend"
   engine:
     #    django :
     #      path: "./resources/views/"
@@ -7,21 +8,27 @@ view:
     html:
       path: "./resources/views/"
       suffix: ".html"
+
+
 session:
   name: "gosessionid"
   expires: 0
 cache_db: "./runtime/cache/store.db"  # 包括session
+
 port: 2019
 pprof:
   open: true
   port: 6060
   route: "/debug/pprof/*action"
+
 log_path: "./runtime/logs/"
 favicon: "./resources/assets/favicon.ico"
 charset: "UTF-8"
 hashkey: "the-big-and-secret-fash-key-here"  # 只支持固定大小到字节, 妈的, 因为这个浪费了4个小时到时间找bug AES only supports key sizes of 16, 24 or 32 bytes.
 blockkey: "lot-secret-of-characters-big-too"
 backend_route_party: "/b/"
+
+
 max_bodysize: 32 # MB
 upload:
   engine: "oss" #oss or file

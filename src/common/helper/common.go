@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	config2 "github.com/xiusin/iriscms/src/config"
 	"golang.org/x/image/bmp"
 	"image"
 	"image/gif"
@@ -345,6 +346,10 @@ func IsFalse(args ...interface{}) bool {
 		}
 	}
 	return true
+}
+
+func GetConfig() *config2.Config {
+	return &config2.Config{}
 }
 
 //IsError 检测是否有Error

@@ -190,7 +190,7 @@ body.login {
 }
 
 .login_main_section {
-    width: 280px;
+    /*width: 280px;*/
     height: 255px;
     background: url(../images/logoin_main_section_bg.jpg) no-repeat 0 0;
     margin: 0 auto;

@@ -20,3 +20,16 @@ type Orm struct {
 	MaxOpenConns int64 `yaml:"max_open_conns"`
 	MaxIdleConns int64 `yaml:"max_idle_conns"`
 }
+
+
+var dbConfig 		*DbConfig
+
+
+func init()  {
+	dbConfig = &DbConfig{}
+	parseConfig(dbYml, dbConfig)
+}
+
+func DBConfig() *DbConfig {
+	return dbConfig
+}

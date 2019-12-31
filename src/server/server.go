@@ -2,7 +2,8 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
+	"github.com/xiusin/iriscms/src/config"
+	"github.com/xiusin/iriscms/src/router"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -29,20 +30,17 @@ import (
 	"github.com/xiusin/iriscms/src/common/cache"
 	"github.com/xiusin/iriscms/src/common/helper"
 	"github.com/xiusin/iriscms/src/common/logger"
-	"gopkg.in/yaml.v2"
 )
 
 var (
-	dbYml           = "resources/configs/database.yml"
-	appYml          = "resources/configs/application.yml"
 	app             *iris.Application
 	mvcApp          *mvc.Application
 	XOrmEngine      *xorm.Engine
 	sess            *sessions.Sessions
-	config          *Config // config 全局配置文件对象
 	sessionInitSync sync.Once
 	sessCache       *boltdb.Database
 	iCache          cache.ICache
+	conf            = config.AppConfig()
 )
 
 func syncTable() {
@@ -58,15 +56,14 @@ func syncTable() {
 }
 
 func initDatabase() {
-	var dc DbConfig
-	parseConfig(dbYml, &dc)
+	dc := config.DBConfig()
 	m, o := dc.Mysql, dc.Orm
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s", m.DbUser, m.DbPassword, m.DbServer, m.DbPort, m.DbName, m.DbChatSet)
 	_orm, err := xorm.NewEngine("mysql", dsn)
 	if err != nil {
 		panic(err.Error())
 	}
-	_orm.SetLogger(logger.NewIrisCmsXormLogger(helper.NewOrmLogFile(config.LogPath)))
+	_orm.SetLogger(logger.NewIrisCmsXormLogger(helper.NewOrmLogFile(conf.LogPath)))
 	err = _orm.Ping() //检测是否联通数据库
 	if err != nil {
 		panic(err.Error())
@@ -79,21 +76,6 @@ func initDatabase() {
 	syncTable()
 }
 
-func parseConfig(path string, out interface{}) {
-	absPath, err := filepath.Abs(path)
-	if err != nil {
-		panic(err.Error())
-	}
-	fileContent, err := ioutil.ReadFile(absPath)
-	if err != nil {
-		panic(err.Error())
-	}
-	err = yaml.Unmarshal(fileContent, out)
-	if err != nil {
-		panic(err.Error())
-	}
-}
-
 func initApp() {
 	//实例化服务器
 	app = iris.New()
@@ -101,22 +83,22 @@ func initApp() {
 	//配置前端缓存10秒
 	//app.Use(iris.Cache304(10 * time.Second))
 	//配置PPROF
-	if config.Pprof.Open {
+	if conf.Pprof.Open {
 		app.Logger().Debug("pprof enabled")
-		app.Get(config.Pprof.Route, pprof.New())
+		app.Get(conf.Pprof.Route, pprof.New())
 	}
 	var viewEngine = 0
-	engines := config.View.Engine
+	engines := conf.View.Engine
 	//附加视图
 	if engines.Django.Path != "" && engines.Django.Suffix != "" {
 		viewEngine++
 		app.Logger().Debug("注册模板引擎Django")
-		app.RegisterView(view.Django(engines.Django.Path, engines.Django.Suffix).Reload(config.View.Reload)) //不缓存模板
+		app.RegisterView(view.Django(engines.Django.Path, engines.Django.Suffix).Reload(conf.View.Reload)) //不缓存模板
 	}
 	if engines.Html.Path != "" && engines.Html.Suffix != "" {
 		app.Logger().Debug("注册模板引擎Html")
 		viewEngine++
-		app.RegisterView(view.HTML(engines.Html.Path, engines.Html.Suffix).Reload(config.View.Reload))
+		app.RegisterView(view.HTML(engines.Html.Path, engines.Html.Suffix).Reload(conf.View.Reload))
 	}
 	if viewEngine == 0 {
 		app.Logger().Error("请至少配置一个模板引擎")
@@ -124,31 +106,20 @@ func initApp() {
 	}
 }
 
-func getConfig() *Config {
-	//解析配置
-	if config == nil {
-		config = &Config{}
-		parseConfig(appYml, config)
-	}
-	os.MkdirAll(config.LogPath, 0777)
-	return config
-}
-
 func Server() {
-	getConfig()
 	initDatabase()
 	initApp()
 	registerStatic()
 	catchError()
 	registerErrorRoutes()
 	registerBackendRoutes()
-	initRouter()
+	router.InitRouter(mvcApp)
 	runServe()
 }
 
 func registerStatic() {
-	app.Favicon(config.Favicon, "favicon.ico")
-	for _, static := range config.Statics {
+	app.Favicon(conf.Favicon, "favicon.ico")
+	for _, static := range conf.Statics {
 		app.HandleDir(static.Route, filepath.FromSlash(static.Path))
 	}
 
@@ -157,8 +128,8 @@ func registerStatic() {
 //利用中间件执行控制器前置操作
 func registerBackendRoutes() {
 	mvcApp.Party(
-		config.BackendRouteParty,
-		middleware.ViewRequestPath(app, config.LogPath),
+		conf.BackendRouteParty,
+		middleware.ViewRequestPath(app, conf.LogPath),
 		middleware.CheckAdminLoginAndAccess(sess, iCache, XOrmEngine),
 		middleware.SetGlobalConfigData(XOrmEngine, iCache),
 		iris.Gzip,
@@ -177,7 +148,7 @@ func registerBackendRoutes() {
 //防止相互调用先用这种不优美的方式实现
 func injectConfig() func(ctx context.Context) {
 	return func(ctx context.Context) {
-		ctx.Values().Set("app.config", iris.Map{"uploadEngine": config.Upload.Engine})
+		ctx.Values().Set("app.config", iris.Map{"uploadEngine": conf.Upload.Engine})
 		ctx.Next()
 	}
 }
@@ -190,21 +161,21 @@ func registerErrorRoutes() {
 
 func runServe() {
 	golog.AddOutput(os.Stdout)
-	if config.Pprof.Open {
+	if conf.Pprof.Open {
 		go func() {
-			pport := strconv.Itoa(int(config.Pprof.Port))
+			pport := strconv.Itoa(int(conf.Pprof.Port))
 			err := http.ListenAndServe(":"+pport, nil)
 			if err != nil {
 				app.Logger().Error("启动pprof失败", err)
 			}
 		}()
 	}
-	port := strconv.Itoa(int(config.Port))
+	port := strconv.Itoa(int(conf.Port))
 	_ = app.Run(iris.Addr(":"+port),
-		iris.WithCharset(config.Charset),
+		iris.WithCharset(conf.Charset),
 		iris.WithoutBanner,
 		iris.WithOptimizations,
-		iris.WithPostMaxMemory(config.Upload.MaxBodySize<<20),
+		iris.WithPostMaxMemory(conf.Upload.MaxBodySize<<20),
 	)
 }
 
@@ -212,10 +183,10 @@ func runServe() {
 func getMvcConfig() func(app *mvc.Application) {
 	sessionInitSync.Do(func() {
 		var err error
-		hashKey, blockKey := []byte(config.HashKey), []byte(config.BlockKey)
-		sec, ssc := securecookie.New(hashKey, blockKey), config.Session
+		hashKey, blockKey := []byte(conf.HashKey), []byte(conf.BlockKey)
+		sec, ssc := securecookie.New(hashKey, blockKey), conf.Session
 		sess = sessions.New(sessions.Config{Cookie: ssc.Name, Encode: sec.Encode, Decode: sec.Decode, Expires: ssc.Expires * time.Second})
-		sessCache, err = boltdb.New(config.CacheDb, os.FileMode(0750))
+		sessCache, err = boltdb.New(conf.CacheDb, os.FileMode(0750))
 		if err != nil {
 			app.Logger().Error("创建session缓存失败", err)
 			panic(err)

@@ -1,6 +1,8 @@
 package backend
 
 import (
+	"github.com/xiusin/iriscms/src/config"
+	"io/ioutil"
 	"strconv"
 	"strings"
 
@@ -21,23 +23,31 @@ type PublicController struct {
 
 func (c *PublicController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("ANY", "/upload", "Upload")
+	b.Handle("ANY", "/fedir-scan", "FeDirScan")
 	//b.Handle("ANY", "/verify-code", "VerifyCode")
 }
 
+func (c *PublicController) FeDirScan() {
+	_ , err := ioutil.ReadDir(config.AppConfig().FeDirname)
+	if err != nil {
+
+	}
+}
+
 //上传图片
-func (this *PublicController) Upload() {
-	mid := this.Session.GetString("mid")
+func (c *PublicController) Upload() {
+	mid := c.Session.GetString("mid")
 	if mid == "" {
 		mid = "public"
 	}
 	var isEditor = false
-	if this.Ctx.URLParam("editorid") != "" {
+	if c.Ctx.URLParam("editorid") != "" {
 		//百度编辑器的返回内容
 		isEditor = true
 	}
 	uploadDir := "upload"
-	conf := this.Ctx.Values().Get("app.config").(map[string]string)
-	setting := this.Ctx.Values().Get("setting").(map[string]string)
+	conf := c.Ctx.Values().Get("app.config").(map[string]string)
+	setting := c.Ctx.Values().Get("setting").(map[string]string)
 	engine := conf["uploadEngine"]
 	var uploader storage.Uploader
 	if engine != "oss" {
@@ -49,10 +59,10 @@ func (this *PublicController) Upload() {
 	//生成要保存到目录和名称
 	nowTime := helper.NowDate("Ymd")
 	uploadDir = uploadDir + "/" + mid + "/" + nowTime
-	file, fs, err := this.Ctx.FormFile("filedata")
+	file, fs, err := c.Ctx.FormFile("filedata")
 	if err != nil {
-		this.Ctx.Application().Logger().Error("上传文件失败", err.Error())
-		uploadAjax(this.Ctx, map[string]string{
+		c.Ctx.Application().Logger().Error("上传文件失败", err.Error())
+		uploadAjax(c.Ctx, map[string]string{
 			"errmsg":  "打开上传临时文件失败 : " + err.Error(),
 			"state":   "打开上传临时文件失败 : " + err.Error(),
 			"errcode": "1",
@@ -71,7 +81,7 @@ func (this *PublicController) Upload() {
 		}
 	}
 	if !flag {
-		uploadAjax(this.Ctx, map[string]string{
+		uploadAjax(c.Ctx, map[string]string{
 			"errmsg":  "不支持的文件类型",
 			"state":   "不支持的文件类型",
 			"errcode": "1",
@@ -82,7 +92,7 @@ func (this *PublicController) Upload() {
 	storageName := uploadDir + "/" + filename
 	path, err := uploader.Upload(storageName, file)
 	if err != nil {
-		uploadAjax(this.Ctx, map[string]string{
+		uploadAjax(c.Ctx, map[string]string{
 			"errmsg":  "上传失败:" + err.Error(),
 			"state":   "上传失败:" + err.Error(),
 			"errcode": "1",
@@ -100,7 +110,7 @@ func (this *PublicController) Upload() {
 		"errmsg":       path,
 		"errcode":      "0",
 	}
-	uploadAjax(this.Ctx, resJson, isEditor)
+	uploadAjax(c.Ctx, resJson, isEditor)
 	return
 }
 
