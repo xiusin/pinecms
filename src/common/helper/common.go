@@ -6,19 +6,21 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	config2 "github.com/xiusin/iriscms/src/config"
-	"golang.org/x/image/bmp"
 	"image"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"io"
+	"io/ioutil"
 	"math/rand"
 	"os"
+	"path"
 	"runtime"
 	"strconv"
 	"strings"
 	"time"
+
+	"golang.org/x/image/bmp"
 
 	"github.com/imroc/req"
 	"github.com/kataras/go-mailer"
@@ -27,6 +29,11 @@ import (
 	"github.com/nfnt/resize"
 	"golang.org/x/image/draw"
 )
+
+type node struct {
+	Name     string
+	Children []node
+}
 
 //GetRootPath 获取IRIS项目根目录 (即 main.go的所在位置)
 func GetRootPath() string {
@@ -38,6 +45,25 @@ var location, _ = time.LoadLocation("PRC")
 
 func GetLocation() *time.Location {
 	return location
+}
+
+func ScanDir(dir string) []node {
+	var nodes []node
+	fs, err := ioutil.ReadDir(dir)
+	if err != nil {
+		panic(err)
+	}
+	for _, f := range fs {
+		if f.IsDir() {
+			nodes = append(nodes, ScanDir(path.Join(dir, f.Name()))...)
+		} else {
+			nodes = append(nodes, node{
+				Name:     path.Join(dir, f.Name()),
+				Children: nil,
+			})
+		}
+	}
+	return nodes
 }
 
 // 获取当前执行函数名 只用于日志记录
@@ -346,10 +372,6 @@ func IsFalse(args ...interface{}) bool {
 		}
 	}
 	return true
-}
-
-func GetConfig() *config2.Config {
-	return &config2.Config{}
 }
 
 //IsError 检测是否有Error

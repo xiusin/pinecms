@@ -2,14 +2,14 @@ package backend
 
 import (
 	"github.com/xiusin/iriscms/src/config"
-	"io/ioutil"
+	"github.com/xiusin/practice/source_read/iris"
+
 	"strconv"
 	"strings"
 
 	"github.com/xiusin/iriscms/src/common/helper"
 
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 	"github.com/kataras/iris/v12/sessions"
 	"github.com/xiusin/iriscms/src/common/storage"
@@ -28,10 +28,8 @@ func (c *PublicController) BeforeActivation(b mvc.BeforeActivation) {
 }
 
 func (c *PublicController) FeDirScan() {
-	_ , err := ioutil.ReadDir(config.AppConfig().FeDirname)
-	if err != nil {
+	helper.Ajax(helper.ScanDir(config.AppConfig().FeDirname), 0, c.Ctx)
 
-	}
 }
 
 //上传图片
