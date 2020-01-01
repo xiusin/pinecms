@@ -35,7 +35,7 @@ var (
 func init() {
 	serveCmd.AddCommand(devCmd)
 	devCmd.Flags().StringSlice("ignoreDirs", []string{"vendor", ".git", ".idea", "node_modules"}, "忽略变动监听的目录")
-	devCmd.Flags().StringSlice("types", []string{".go"}, "需要监听的文件类型, .*为监听任意文件")
+	devCmd.Flags().StringSlice("types", []string{".go", ".yml"}, "需要监听的文件类型, .*为监听任意文件")
 	devCmd.Flags().String("root", util.AppPath()+"/src", "监听的根目录")
 	devCmd.Flags().Int32("delay", 2, "每次构建进程的延迟时间单位：秒")
 	devCmd.Flags().Int32("limit", 500, "监听文件的最大数量")

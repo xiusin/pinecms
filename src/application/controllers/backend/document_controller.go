@@ -28,6 +28,9 @@ type ModelForm struct {
 	Enabled           string   `form:"enabled"`
 	Name              string   `form:"name"`
 	Table             string   `form:"table"`
+	FeTplIndex        string   `form:"tpl_index"`
+	FeTplList         string   `form:"tpl_list"`
+	FeTplDetail       string   `form:"tpl_detail"`
 	FieldID           []uint   `form:"field_id"`
 	FieldDataSource   []string `form:"field_datasource"`
 	FieldField        []string `form:"field_field"`
@@ -88,11 +91,10 @@ func (c *DocumentController) ModelAdd() {
 				Enabled:     enabled,
 				IsSystem:    0,
 				ModelType:   0,
-				FeTplIndex:  "",
-				FeTplList:   "",
-				FeTplDetail: "",
+				FeTplIndex:  data.FeTplIndex,
+				FeTplList:   data.FeTplList,
+				FeTplDetail: data.FeTplDetail,
 			}
-
 			id, err := session.InsertOne(documentModel)
 			if id < 1 {
 				if err == nil {
@@ -105,15 +107,22 @@ func (c *DocumentController) ModelAdd() {
 
 			for k, name := range data.FieldName {
 				f := tables.IriscmsDocumentModelDsl{
-					Mid:          id,
-					FormName:     name,
-					Html:         data.FieldHtml[k],
-					Datasource:   data.FieldDataSource[k],
-					RequiredTips: data.FieldRequiredTips[k],
-					Validator:    data.FieldValidator[k],
+					Mid:      id,
+					FormName: name,
 				}
-				f.Required = 0
-				if data.FieldRequired[k] == "on" {
+				if len(data.FieldHtml) >= k + 1 {
+					f.Html = data.FieldHtml[k]
+				}
+				if len(data.FieldDataSource) >= k + 1 {
+					f.Html = data.FieldDataSource[k]
+				}
+				if len(data.FieldRequiredTips) >= k + 1 {
+					f.Html = data.FieldRequiredTips[k]
+				}
+				if len(data.FieldValidator) >= k + 1 {
+					f.Html = data.FieldValidator[k]
+				}
+				if len(data.FieldRequired) >= k + 1 && data.FieldRequired[k] == "on" {
 					f.Required = 1
 				}
 				fields = append(fields, f)
