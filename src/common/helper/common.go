@@ -56,7 +56,7 @@ func ScanDir(dir string) []node {
 	}
 	for _, f := range fs {
 		name := path.Join(dir, f.Name())
-		id := strings.Replace(strings.Replace(name, "/", "", -1), ".html", "", 1)
+		id := FilePathToEasyUiID(name)
 		node := node{
 			Id:       id,
 			Name:     name,
@@ -68,6 +68,14 @@ func ScanDir(dir string) []node {
 		nodes = append(nodes, node)
 	}
 	return nodes
+}
+
+func FilePathToEasyUiID(path string) string {
+	return strings.Replace(strings.Replace(path, "/", "d__ds__fd", -1), ".", "f_dot_e", 1)
+}
+
+func EasyUiIDToFilePath(id string) string {
+	return strings.Replace(strings.Replace(id, "d__ds__fd", "/", -1), "f_dot_e", ".", 1)
 }
 
 // 获取当前执行函数名 只用于日志记录

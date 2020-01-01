@@ -173,7 +173,6 @@ func runServe() {
 	port := strconv.Itoa(int(conf.Port))
 	_ = app.Run(iris.Addr(":"+port),
 		iris.WithCharset(conf.Charset),
-		iris.WithoutBanner,
 		iris.WithOptimizations,
 		iris.WithPostMaxMemory(conf.Upload.MaxBodySize<<20),
 	)

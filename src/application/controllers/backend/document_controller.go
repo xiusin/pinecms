@@ -3,6 +3,8 @@ package backend
 import (
 	"encoding/json"
 	"errors"
+	"html/template"
+
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/golog"
 	"github.com/kataras/iris/v12"
@@ -11,7 +13,6 @@ import (
 	"github.com/xiusin/iriscms/src/application/models"
 	"github.com/xiusin/iriscms/src/application/models/tables"
 	"github.com/xiusin/iriscms/src/common/helper"
-	"html/template"
 )
 
 /**
@@ -88,12 +89,13 @@ func (c *DocumentController) ModelAdd() {
 			// 组建数据
 			documentModel := &tables.IriscmsDocumentModel{
 				Name:        data.Name,
+				Table:       data.Table,
 				Enabled:     enabled,
 				IsSystem:    0,
 				ModelType:   0,
-				FeTplIndex:  data.FeTplIndex,
-				FeTplList:   data.FeTplList,
-				FeTplDetail: data.FeTplDetail,
+				FeTplIndex:  helper.EasyUiIDToFilePath(data.FeTplIndex),
+				FeTplList:   helper.EasyUiIDToFilePath(data.FeTplList),
+				FeTplDetail: helper.EasyUiIDToFilePath(data.FeTplDetail),
 			}
 			id, err := session.InsertOne(documentModel)
 			if id < 1 {
@@ -110,19 +112,19 @@ func (c *DocumentController) ModelAdd() {
 					Mid:      id,
 					FormName: name,
 				}
-				if len(data.FieldHtml) >= k + 1 {
+				if len(data.FieldHtml) >= k+1 {
 					f.Html = data.FieldHtml[k]
 				}
-				if len(data.FieldDataSource) >= k + 1 {
+				if len(data.FieldDataSource) >= k+1 {
 					f.Html = data.FieldDataSource[k]
 				}
-				if len(data.FieldRequiredTips) >= k + 1 {
+				if len(data.FieldRequiredTips) >= k+1 {
 					f.Html = data.FieldRequiredTips[k]
 				}
-				if len(data.FieldValidator) >= k + 1 {
+				if len(data.FieldValidator) >= k+1 {
 					f.Html = data.FieldValidator[k]
 				}
-				if len(data.FieldRequired) >= k + 1 && data.FieldRequired[k] == "on" {
+				if len(data.FieldRequired) >= k+1 && data.FieldRequired[k] == "on" {
 					f.Required = 1
 				}
 				fields = append(fields, f)
