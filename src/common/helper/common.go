@@ -31,8 +31,9 @@ import (
 )
 
 type node struct {
-	Name     string
-	Children []node
+	Id       string `json:"id"`
+	Name     string `json:"name"`
+	Children []node `json:"children"`
 }
 
 //GetRootPath 获取IRIS项目根目录 (即 main.go的所在位置)
@@ -51,17 +52,20 @@ func ScanDir(dir string) []node {
 	var nodes []node
 	fs, err := ioutil.ReadDir(dir)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("打开%s:%s", dir, err.Error()))
 	}
 	for _, f := range fs {
-		if f.IsDir() {
-			nodes = append(nodes, ScanDir(path.Join(dir, f.Name()))...)
-		} else {
-			nodes = append(nodes, node{
-				Name:     path.Join(dir, f.Name()),
-				Children: nil,
-			})
+		name := path.Join(dir, f.Name())
+		id := strings.Replace(strings.Replace(name, "/", "", -1), ".html", "", 1)
+		node := node{
+			Id:       id,
+			Name:     name,
+			Children: nil,
 		}
+		if f.IsDir() {
+			node.Children = ScanDir(name)
+		}
+		nodes = append(nodes, node)
 	}
 	return nodes
 }

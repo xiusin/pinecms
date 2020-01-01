@@ -1,8 +1,8 @@
 package backend
 
 import (
+	"github.com/kataras/iris/v12"
 	"github.com/xiusin/iriscms/src/config"
-	"github.com/xiusin/practice/source_read/iris"
 
 	"strconv"
 	"strings"
@@ -24,12 +24,10 @@ type PublicController struct {
 func (c *PublicController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("ANY", "/upload", "Upload")
 	b.Handle("ANY", "/fedir-scan", "FeDirScan")
-	//b.Handle("ANY", "/verify-code", "VerifyCode")
 }
 
 func (c *PublicController) FeDirScan() {
-	helper.Ajax(helper.ScanDir(config.AppConfig().FeDirname), 0, c.Ctx)
-
+	c.Ctx.JSON(helper.ScanDir(config.AppConfig().View.FeDirname))
 }
 
 //上传图片
