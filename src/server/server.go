@@ -160,7 +160,7 @@ func registerErrorRoutes() {
 }
 
 func runServe() {
-	golog.AddOutput(os.Stdout)
+	//golog.AddOutput(os.Stdout)
 	if conf.Pprof.Open {
 		go func() {
 			pport := strconv.Itoa(int(conf.Pprof.Port))

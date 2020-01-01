@@ -86,7 +86,6 @@ func (c *DocumentController) ModelAdd() {
 			enabled = 1
 		}
 		_, err := c.Orm.Transaction(func(session *xorm.Session) (i interface{}, err error) {
-			// 组建数据
 			documentModel := &tables.IriscmsDocumentModel{
 				Name:        data.Name,
 				Table:       data.Table,
@@ -148,12 +147,11 @@ func (c *DocumentController) ModelAdd() {
 	}
 
 	currentPos := models.NewMenuModel(c.Orm).CurrentPos(64)
-	// 查找数据库模型字段
 	list, _ := models.NewDocumentModelFieldModel(c.Orm).GetList(1, 1000)
 	c.Ctx.ViewData("list", list)
 	c.Ctx.ViewData("title", currentPos)
-	b, _ := json.Marshal(list)
-	c.Ctx.ViewData("listJson", string(b))
+	listJson, _ := json.Marshal(list)
+	c.Ctx.ViewData("listJson", string(listJson))
 	c.Ctx.View("backend/model_add.html")
 }
 

@@ -137,16 +137,16 @@ func isIgnoreAction(event *fsnotify.Event) bool {
 }
 
 func eventNotify() {
-	var lockerTimestamp int64
+	var lockerTimestamp time.Time
 	var building = false
 	for {
 		select {
 		case event, _ := <-watcher.Events:
-			if time.Now().Unix()-lockerTimestamp > int64(delay) && !building {
+			if time.Now().Sub(lockerTimestamp) > time.Second * time.Duration(delay) && !building {
 				if isIgnoreAction(&event) {
 					continue
 				}
-				lockerTimestamp, building = time.Now().Unix(), true
+				lockerTimestamp, building = time.Now(), true
 				name := util.Replace(event.Name, util.AppPath(), "")
 				if event.Op&fsnotify.Create == fsnotify.Create {
 					_ = watcher.Add(event.Name)
@@ -154,13 +154,14 @@ func eventNotify() {
 					_ = watcher.Remove(event.Name)
 				}
 				log.Println(fmt.Sprintf("%s %s event %s", color.YellowString("[EVEN]"), name, strings.ToLower(event.Op.String())))
-				if err := build(); err != nil {
-					log.Println(fmt.Sprintf("\n%s build err", color.RedString("[ERRO]")))
+				go func() {
+					if err := build(); err != nil {
+						log.Println(fmt.Sprintf("\n%s build err", color.RedString("[ERRO]")))
+						building = false
+					}
+					rebuildNotifier <- struct{}{}
 					building = false
-					continue
-				}
-				rebuildNotifier <- struct{}{}
-				building = false
+				}()
 			}
 		case err, ok := <-watcher.Errors:
 			if !ok {
