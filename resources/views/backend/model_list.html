@@ -24,7 +24,7 @@
 <!-- 查看详细信息 -->
 
 <script type="text/javascript">
-    const member_list =  $('#model_list_datagrid');
+    const member_list = $('#model_list_datagrid');
 
     //添加模型
     function addModel() {
@@ -32,14 +32,43 @@
         openUrl(url, "添加模型");
     }
 
+    var curIsSystemModel = false
+
+    function systemFormatter(isSystem) {
+        curIsSystemModel = isSystem == 1
+        return curIsSystemModel ? '是' : '否';
+    }
 
     //参数格式化
     function optFormatter(val) {
-        return '<a href="javascript:;" onclick="editMemberInfo(' + val + ');">编辑</a>';
+        if (curIsSystemModel) {
+            var link = '<a href="javascript:;" title="系统模型不可删除不可修改">查看</a> | <a href="javascript:;" disabled="disabled" style="color: #ccc;">删除</a>';
+        } else {
+            var link = '<a href="javascript:;" onclick="editModel(' + val + ');">编辑</a> | <a href="javascript:;" onclick="delModel(' + val + ');">删除</a>';
+        }
+        return link + ' ';
     }
 
     function enabledFormatter(val) {
         return val == 1 ? '启用' : '关闭';
     }
 
+    function editModel(id) {
+
+    }
+
+    function delModel(id) {
+        $.messager.confirm("Confirm", "确定要删除模型吗, 删除以后数据表不会被删除,只是一种隐藏状态.", function (r) {
+            if (r) {
+                $.get('/b/model/delete', {id: id}, function (res) {
+                    if (res.errcode) {
+                        $.messager.alert('提示信息', res.errmsg, 'error');
+                    } else {
+                        $('#model_list_datagrid').datagrid('reload');
+                        $.messager.alert('提示信息', res.errmsg, 'info');
+                    }
+                }, 'json');
+            }
+        })
+    }
 </script>

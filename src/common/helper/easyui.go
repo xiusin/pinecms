@@ -32,8 +32,8 @@ func Datagrid(id, url string, tableoptions EasyuiOptions, field EasyuiGridfields
 		"rownumbers":   "true",
 		"singleSelect": "true",
 		"pagination":   "true",
-		"pageList":     [5]int{20, 30, 50, 80, 100},
-		"pageSize":     "25",
+		"pageList":     [6]int{10, 20, 30, 50, 80, 100},
+		"pageSize":     "20",
 	}
 	style := "width:100%;height:100%;"
 	tabopt := []string{}

@@ -155,7 +155,10 @@ func (this *ContentController) AddContent() {
 		return
 	}
 	this.Ctx.ViewData("category", cat)
-	this.Ctx.View("backend/" + models.NewCategoryModel(this.Orm).GetCategoryTplPrefix(cat.Parentid, cat.TplPrefix) + "add.html")
+	if cat.Type == 0 {
+		this.Ctx.ViewData("form", template.HTML(buildModelForm(this.Orm, cat.ModelId)))
+	}
+	this.Ctx.View("backend/model_publish_add.html")
 }
 
 //修改内容
@@ -204,7 +207,6 @@ func (this *ContentController) EditContent() {
 
 	this.Ctx.ViewData("content", content)
 	this.Ctx.ViewData("category", cat)
-	this.Ctx.View("backend/" + cat.TplPrefix + "edit.html")
 }
 
 //删除内容

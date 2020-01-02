@@ -52,22 +52,22 @@ $.formValidator =
 			error :function(){alert('当前皮肤加载出错，请确认皮肤【'+settings.theme+'】是否存在')}
 		}); 
 		//读取主题对应的样式
-		if($.browser.msie)
-		{
-			var css=document.createElement("link");
-			css.rel="stylesheet";
-			css.type="text/css";
-			css.href=themedir+"themes/"+settings.theme+"/style/style.css";
-			document.getElementsByTagName("head")[0].appendChild(css);
-		}
-		else
-		{
+		// if(typeof $.browser.msie !== "undefined")
+		// {
+		// 	var css=document.createElement("link");
+		// 	css.rel="stylesheet";
+		// 	css.type="text/css";
+		// 	css.href=themedir+"themes/"+settings.theme+"/style/style.css";
+		// 	document.getElementsByTagName("head")[0].appendChild(css);
+		// }
+		// else
+		// {
 			var style=document.createElement('style'); 
 			style.setAttribute("type", "text/css"); 
 			var styCss = "@import url('"+themedir+"themes/"+settings.theme+"/style/style.css');";
 			if (style.styleSheet) {style.styleSheet.cssText=styCss} else {style.appendChild(document.createTextNode(styCss))} 
 			document.getElementsByTagName("head")[0].appendChild(style); 
-		}
+		// }
 	},
 	
 	//各种校验方式支持的控件类型

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="author" content="wangdong">
-    <title>视频资源发布</title>
+    <title>书籍资源发布</title>
     <style>
         .dialogtable {
             width: 100%;
@@ -38,70 +38,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/localization/messages_zh.js"></script>
 </head>
 <body>
-<form id="content_page_form" onsubmit="return false">
-    <table width="100%" cellpadding="2" class="dialogtable">
-        <tr>
-            <td align="right"><span style="color: red">* </span>视频标题：</td>
-            <td colspan="2"><input type="text" name="title" value="" style="width:100%" minlength="6" required/></td>
-        </tr>
-        <tr>
-            <td align="right">所属分类：</td>
-            <td colspan="2"><input type="text" value="{{.category.Catname}}" style="width:100%" readonly/><input
-                    type="hidden" name="catid" value="{{.category.Catid}}" required style="width:100%"/></td>
-        </tr>
-
-        <tr>
-            <td align="right"><span style="color: red">* </span>缩略图：</td>
-            <td colspan="2">
-                <input id="content_add_news_form_thumb_input" type="image" src="/assets/backend/static/nopic.jpg"
-                       alt="点击上传缩略图"
-                       style="width:200px;height:250px;display:block;border:1px solid #ddd;padding:2px;background: url(/assets/backend/static/nopic.jpg); background-size: 100% 100%;"/>
-                <input type="hidden" name="thumb" required/>
-            </td>
-        </tr>
-
-        <tr>
-            <td align="right">视频标签：</td>
-            <td colspan="2"><input type="text" id="tags" name="tags" value="" /></td>
-        </tr>
-
-        <tr>
-            <td align="right"><span style="color: red">* </span>资源地址：</td>
-            <td colspan="2"><input type="text" name="source_url" value="" style="width:100%" required url="true"/></td>
-        </tr>
-
-
-        <tr>
-            <td align="right">获取密码方式：</td>
-            <td colspan="2">
-                <input type="radio" name="pwd_type" value="1" style="vertical-align: middle"> 公众号获取<br/>
-                <input type="radio" name="pwd_type" value="2" style="vertical-align: middle" checked> 付费直接显示
-            </td>
-        </tr>
-
-        <tr>
-            <td align="right"><span style="color: red">* </span>下载密码：</td>
-            <td colspan="2"><input type="text" name="source_pwd" value="" style="width:100%" required /></td>
-        </tr>
-
-        <tr>
-            <td align="right"><span style="color: red">* </span>简介内容：</td>
-            <td colspan="2">
-                <textarea id="content_page_form_textarea_editor" name="content"
-                          style="width:90%;height:360px" required></textarea>
-            </td>
-        </tr>
-
-        <tr>
-            <td align="right">资源积分：</td>
-            <td colspan="2"><input type="text" name="money" value="0" style="width:100%" placeholder="密码为直接显示时必须填写" number="true" required="input[name='pwd_type'][value=2]:checked"/> 会员上传资源需要按比例扣除积分归平台所有</td>
-        </tr>
-
-        <tr>
-            <td colspan="3"><a class="easyui-linkbutton" onclick="$('#content_page_form').submit()">提交</a></td>
-        </tr>
-    </table>
-</form>
+{{.form}}
 <script type="text/javascript">
     UM.getEditor('content_page_form_textarea_editor');
     parent.ajaxLoadEnd();

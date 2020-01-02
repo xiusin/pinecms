@@ -3,19 +3,21 @@
         <table cellspacing="10" class="mdoutable">
             <tr>
                 <td width="130">模型名称：</td>
-                <td colspan="2"><input class="easyui-textbox" type="text" name="name" style="width: 300px" data-options="required:true"/></td>
+                <td colspan="2"><input class="easyui-textbox" type="text" name="name" style="width: 300px"
+                                       data-options="required:true"/></td>
             </tr>
-
             <tr>
                 <td>模型Table：</td>
-                <td colspan="2"><input class="easyui-textbox" type="text" name="table" style="width: 300px" data-options="required:true"/></td>
+                <td colspan="2"><input class="easyui-textbox" type="text" name="table" style="width: 300px"
+                                       data-options="required:true"/></td>
             </tr>
 
             <tr>
                 <td>是否启用：</td>
                 <td colspan="2">
                     <div style="margin-bottom:20px">
-                        <input class="easyui-switchbutton" checked  name="enabled" label="Receive mail:" labelWidth="120" tabindex="1">
+                        <input class="easyui-switchbutton" checked name="enabled" label="Receive mail:" labelWidth="120"
+                               tabindex="1">
                     </div>
                 </td>
             </tr>
@@ -34,13 +36,13 @@
                             <table cellpadding="5" style="width: 100%;">
                                 <tr>
                                     <td style="width: 150px;">表单名称:</td>
-                                    <td><input class="easyui-textbox" type="text" name="field_name" style="width: 300px"
-                                               data-options="required:true, onChange: textBoxOnChange"/></td>
+                                    <td><input class="easyui-textbox" type="text" name="field_name" style="width: 300px" data-options="required:true, onChange: textBoxOnChange"/></td>
                                 </tr>
 
                                 <tr>
                                     <td style="width: 150px;">字段名称:</td>
-                                    <td><input class="easyui-textbox" type="text" name="field_field" style="width: 300px"
+                                    <td><input class="easyui-textbox" type="text" name="field_field"
+                                               style="width: 300px"
                                                data-options="required:true"/></td>
                                 </tr>
                                 <tr>
@@ -73,14 +75,14 @@
                                 <tr>
                                     <td>数据源:</td>
                                     <td><input class="easyui-textbox" name="field_datasource"
-                                               data-options="multiline:true, prompt: '组件数据源, 写入Json或者接口地址'" style="height:80px; width: 300px;"/>
+                                               data-options="multiline:true, prompt: '组件数据源, 写入Json或者接口地址'"
+                                               style="height:80px; width: 300px;"/>
                                     </td>
                                 </tr>
 
                                 <tr>
                                     <td>类型描述:</td>
                                     <td>
-                                        常用字段，如文章标题、作者等都属于直接输入少量内容的文本，设置这个文本之后需要指定文本长度，默认为250，如果大于255则为text类型
                                     </td>
                                 </tr>
 
@@ -95,7 +97,8 @@
 
                                 <tr>
                                     <td>控件html:</td>
-                                    <td class="html"><input class="easyui-textbox" name="field_html" data-options="multiline:true"
+                                    <td class="html"><input class="easyui-textbox" id="html_0" name="field_html"
+                                                            data-options="multiline:true"
                                                             style="height:150px; width: 500px;"/></td>
                                 </tr>
 
@@ -106,7 +109,7 @@
             </tr>
             <tr>
                 <td>封面页面</td>
-                <td colspan="2"> <input class="easyui-combotreegrid"  name="tpl_index" data-options="
+                <td colspan="2"><input class="easyui-combotreegrid" name="tpl_index" data-options="
 					method:'get',
 					width: 500,
 					panelWidth:750,
@@ -118,7 +121,7 @@
 
             <tr>
                 <td>列表页面</td>
-                <td colspan="2"> <input class="easyui-combotreegrid" name="tpl_list" data-options="
+                <td colspan="2"><input class="easyui-combotreegrid" name="tpl_list" data-options="
 					method:'get',
 					width: 500,
 					panelWidth:750,
@@ -132,7 +135,7 @@
 
             <tr>
                 <td>详情页面</td>
-                <td colspan="2"> <input class="easyui-combotreegrid" name="tpl_detail" data-options="
+                <td colspan="2"><input class="easyui-combotreegrid" name="tpl_detail" data-options="
 					method:'get',
 					width: 500,
 					panelWidth:750,
@@ -202,7 +205,6 @@
         <tr>
             <td>类型描述:</td>
             <td>
-                常用字段，如文章标题、作者等都属于直接输入少量内容的文本，设置这个文本之后需要指定文本长度，默认为250，如果大于255则为text类型
             </td>
         </tr>
 
@@ -217,7 +219,8 @@
 
         <tr>
             <td>控件html:</td>
-            <td class="html"><input class="easyui-textbox" name="field_html" data-options="multiline:true"
+            <td class="html"><input class="easyui-textbox" id="html_{$index$}" name="field_html"
+                                    data-options="multiline:true"
                                     style="height:150px; width: 500px;"/></td>
         </tr>
 
@@ -246,7 +249,7 @@
 
     function addPanel() {
         index++;
-        tt.tabs('add', {title: '字段' + index, content: $("#tpl").html(), closable: true});
+        tt.tabs('add', {title: '未命名字段' + index, content: $("#tpl").html().replace("{$index$}", index), closable: true});
     }
 
     let fields = JSON.parse({{.listJson}});
@@ -259,12 +262,13 @@
         if (rc === undefined || !hash.has(Number(rc.value))) {
             return
         }
-        const field = hash.get(Number(rc.value))
+        const field = hash.get(Number(rc.value));
         // 填充当前tab里的内容
         const that = $(this);
         const desc = that.parents("tr").next().next();
         desc.find("td").eq(1).html(field.Desc);
-        desc.next().next().find("textarea").eq(0).val(field.Html);
+        // 获取当前tab的索引
+        $("#html_" + getTabIndex("tt")).textbox("setValue", field.Html);
     }
 
 
@@ -276,17 +280,32 @@
         $(this).textbox("setValue", oldValue)
     }
 
+    var locker = false;
     $('#ff').form({
         url: "/b/model/add",
+
         onSubmit: function () {
-            let v = $(this).form('validate')
+            if (locker) return false;
+            $.messager.progress();
+            let v = $(this).form('validate');
             if (!v) {
                 $.messager.progress('close');
+            } else {
+                locker = true;
             }
             return v;
         },
         success: function (data) {
-            alert(data)
+            data = eval('(' + data + ')');
+            locker = false;
+            $.messager.progress('close');
+            if (data.errcode) {
+                $.messager.alert('提示信息', data.errmsg, 'error');
+            } else {
+                $.messager.alert('提示信息', data.errmsg, 'info', function (){
+                    $("#model_form_cancel").click();
+                })
+            }
         }
     });
 
@@ -296,8 +315,13 @@
 
     // 关闭窗口
     $("#model_form_cancel").click(function () {
-        let $pt = $('#pagetabs');
-        $pt.tabs('close', $pt.tabs('getTabIndex', $pt.tabs('getSelected')));
+        $('#pagetabs').tabs('close', getTabIndex("pagetabs"));
     });
+
+    function getTabIndex(tabsID) {
+        let tabs = $("#" + tabsID);
+        return tabs.tabs('getTabIndex', tabs.tabs('getSelected'));
+
+    }
 
 </script>

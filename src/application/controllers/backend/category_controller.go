@@ -1,16 +1,13 @@
 package backend
 
 import (
-	"fmt"
 	"html/template"
 	"strconv"
 
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/golog"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 	"github.com/kataras/iris/v12/sessions"
-	"github.com/xiusin/iriscms/src/application/controllers"
 	"github.com/xiusin/iriscms/src/application/models"
 	"github.com/xiusin/iriscms/src/application/models/tables"
 	"github.com/xiusin/iriscms/src/common/cache"
@@ -81,33 +78,47 @@ func (this *CategoryController) CategoryDelete() {
 
 func (this *CategoryController) CategoryAdd() {
 	var parentid int
+	var ModelID int
 	var err error
 	if this.Ctx.Method() == "POST" {
 		parentid, err = strconv.Atoi(this.Ctx.FormValue("parentid"))
+		ModelID, err = strconv.Atoi(this.Ctx.FormValue("model_id"))
 		cattype, _ := strconv.Atoi(this.Ctx.FormValue("type"))
 		ismenu, _ := strconv.Atoi(this.Ctx.FormValue("ismenu"))
 		if err != nil {
 			helper.Ajax(err.Error(), 1, this.Ctx)
 			return
 		}
+		url := this.Ctx.FormValue("url")
+		switch cattype {
+		case 0:
+			url = ""
+		case 1:
+			url = ""
+			ModelID = 0
+		case 2:
+			ModelID = 0
+		}
+
 		category := tables.IriscmsCategory{
 			Catname:     this.Ctx.FormValue("catname"),
 			Parentid:    int64(parentid),
 			Type:        int64(cattype),
+			ModelId:     int64(ModelID),
 			Thumb:       this.Ctx.FormValue("thumb"),
-			Url:         this.Ctx.FormValue("url"),
+			Url:         url,
 			Description: this.Ctx.FormValue("description"),
 			Ismenu:      int64(ismenu),
 		}
 		if !models.NewCategoryModel(this.Orm).AddCategory(category) {
 			helper.Ajax("添加分类失败", 1, this.Ctx)
 		} else {
-			cacheKey := fmt.Sprintf(controllers.CacheCategoryFormat, parentid)
-			if this.cache.IsExist(cacheKey) {
-				if this.cache.Delete(cacheKey) != nil {
-					golog.Error("刷新列表缓存失败")
-				}
-			}
+			//cacheKey := fmt.Sprintf(controllers.CacheCategoryFormat, parentid)
+			//if this.cache.IsExist(cacheKey) {
+			//	if this.cache.Delete(cacheKey) != nil {
+			//		golog.Error("刷新列表缓存失败")
+			//	}
+			//}
 
 			helper.Ajax("添加分类成功", 0, this.Ctx)
 		}
@@ -123,6 +134,10 @@ func (this *CategoryController) CategoryAdd() {
 		1: "页面",
 		2: "链接",
 	})
+
+	// 查询模型
+	list, _ := models.NewDocumentModel(this.Orm).GetList(1, 1000)
+	this.Ctx.ViewData("models", list)
 	this.Ctx.ViewData("parentid", parentid)
 	this.Ctx.View("backend/category_add.html")
 }
@@ -149,7 +164,6 @@ func (this *CategoryController) CategoryEdit() {
 	}
 	if this.Ctx.Method() == "POST" {
 		parentid, err := strconv.Atoi(this.Ctx.FormValue("parentid"))
-		cattype, _ := strconv.Atoi(this.Ctx.FormValue("type"))
 		ismenu, _ := strconv.Atoi(this.Ctx.FormValue("ismenu"))
 		if err != nil {
 			helper.Ajax(err.Error(), 1, this.Ctx)
@@ -164,13 +178,13 @@ func (this *CategoryController) CategoryEdit() {
 			helper.Ajax("不能把父级分类设置到子类", 1, this.Ctx)
 			return
 		}
+
 		category.Ismenu = int64(ismenu)
 		category.Catname = this.Ctx.FormValue("catname")
 		category.Parentid = int64(parentid)
-		category.Type = int64(cattype)
 		category.Thumb = this.Ctx.FormValue("thumb")
-		category.Url = this.Ctx.FormValue("url")
 		category.Description = this.Ctx.FormValue("description")
+
 		if !models.NewCategoryModel(this.Orm).UpdateCategory(category) {
 			helper.Ajax("修改分类失败", 1, this.Ctx)
 		} else {

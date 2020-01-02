@@ -105,19 +105,6 @@ func (this CategoryModel) GetCategory(id int64) (tables.IriscmsCategory, error) 
 	return category, nil
 }
 
-func (this CategoryModel) GetCategoryTplPrefix(cid int64, prefix string) string {
-	if prefix == "" {
-		category := tables.IriscmsCategory{Catid: cid}
-		this.orm.Get(&category)
-		if category.TplPrefix == "" && category.Parentid != 0 {
-			prefix = this.GetCategoryTplPrefix(category.Parentid, prefix)
-		} else {
-			prefix = category.TplPrefix
-		}
-	}
-	return prefix
-}
-
 func (this CategoryModel) AddCategory(category tables.IriscmsCategory) bool {
 	res, err := this.orm.Insert(&category)
 	if err != nil || res == 0 {
