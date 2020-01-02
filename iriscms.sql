@@ -1,7 +1,7 @@
 #
 # SQL Export
-# Created by Querious (201067)
-# Created: January 2, 2020 at 9:19:16 PM GMT+8
+# Created by Querious (201054)
+# Created: January 2, 2020 at 10:05:42 PM GMT+8
 # Encoding: Unicode (UTF-8)
 #
 
@@ -16,37 +16,16 @@ SET @PREVIOUS_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
 SET FOREIGN_KEY_CHECKS = 0;
 
 
-DROP TABLE IF EXISTS `iriscms_wechat_message_log`;
-DROP TABLE IF EXISTS `iriscms_wechat_member`;
-DROP TABLE IF EXISTS `iriscms_slide`;
-DROP TABLE IF EXISTS `iriscms_setting`;
-DROP TABLE IF EXISTS `iriscms_page`;
-DROP TABLE IF EXISTS `iriscms_news`;
-DROP TABLE IF EXISTS `iriscms_menu`;
-DROP TABLE IF EXISTS `iriscms_member`;
-DROP TABLE IF EXISTS `iriscms_log`;
-DROP TABLE IF EXISTS `iriscms_link`;
-DROP TABLE IF EXISTS `iriscms_document_model_field`;
-DROP TABLE IF EXISTS `iriscms_document_model_dsl`;
-DROP TABLE IF EXISTS `iriscms_document_model`;
-DROP TABLE IF EXISTS `iriscms_content`;
-DROP TABLE IF EXISTS `iriscms_category_priv`;
-DROP TABLE IF EXISTS `iriscms_category`;
-DROP TABLE IF EXISTS `iriscms_admin_role_priv`;
-DROP TABLE IF EXISTS `iriscms_admin_role`;
-DROP TABLE IF EXISTS `iriscms_admin`;
-
-
 CREATE TABLE `iriscms_admin` (
   `userid` mediumint(6) unsigned NOT NULL AUTO_INCREMENT,
-  `username` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `password` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `username` varchar(20) DEFAULT NULL,
+  `password` varchar(32) DEFAULT NULL,
   `roleid` smallint(5) DEFAULT '0',
-  `encrypt` varchar(6) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `lastloginip` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `encrypt` varchar(6) DEFAULT NULL,
+  `lastloginip` varchar(15) DEFAULT NULL,
   `lastlogintime` int(10) unsigned DEFAULT '0',
-  `email` varchar(40) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `realname` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
+  `email` varchar(40) DEFAULT NULL,
+  `realname` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`userid`) USING BTREE,
   UNIQUE KEY `UQE_iriscms_admin_username` (`username`) USING BTREE,
   KEY `username` (`username`) USING BTREE
@@ -55,8 +34,8 @@ CREATE TABLE `iriscms_admin` (
 
 CREATE TABLE `iriscms_admin_role` (
   `roleid` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
-  `rolename` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `description` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `rolename` varchar(50) NOT NULL,
+  `description` text NOT NULL,
   `listorder` smallint(5) unsigned NOT NULL DEFAULT '0',
   `disabled` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`roleid`) USING BTREE,
@@ -68,8 +47,8 @@ CREATE TABLE `iriscms_admin_role` (
 
 CREATE TABLE `iriscms_admin_role_priv` (
   `roleid` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `c` char(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `a` char(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `c` char(20) NOT NULL,
+  `a` char(20) NOT NULL,
   KEY `roleid` (`roleid`,`c`,`a`) USING BTREE
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='角色操作权限配置表';
 
@@ -78,15 +57,15 @@ CREATE TABLE `iriscms_category` (
   `catid` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `type` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '栏目类型',
   `parentid` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '父类ID',
-  `catname` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '分类名称',
-  `description` mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '描述',
-  `url` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '链接地址, 仅栏目类型为2的时候可用',
+  `catname` varchar(30) NOT NULL COMMENT '分类名称',
+  `description` mediumtext NOT NULL COMMENT '描述',
+  `url` varchar(100) NOT NULL COMMENT '链接地址, 仅栏目类型为2的时候可用',
   `listorder` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '排序号',
   `ismenu` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '是否为栏目, 最初设定是可以在前端展示',
-  `index_tpl` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '后台列表',
-  `list_tpl` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '前台列表模板',
-  `detail_tpl` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '前台内容页模板',
-  `thumb` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '栏目缩略图',
+  `index_tpl` varchar(255) NOT NULL DEFAULT '' COMMENT '后台列表',
+  `list_tpl` varchar(255) NOT NULL COMMENT '前台列表模板',
+  `detail_tpl` varchar(255) NOT NULL COMMENT '前台内容页模板',
+  `thumb` varchar(50) NOT NULL COMMENT '栏目缩略图',
   `model_id` bigint(20) DEFAULT NULL COMMENT '模型id,仅栏目类型为0的时候可用',
   `tpl_prefix` varchar(255) DEFAULT NULL,
   `home_tpl` varchar(255) DEFAULT NULL,
@@ -99,7 +78,7 @@ CREATE TABLE `iriscms_category_priv` (
   `catid` smallint(5) unsigned NOT NULL DEFAULT '0',
   `roleid` smallint(5) unsigned NOT NULL DEFAULT '0',
   `is_admin` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `action` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `action` char(30) NOT NULL,
   KEY `catid` (`catid`,`roleid`,`is_admin`,`action`) USING BTREE
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
 
@@ -107,11 +86,11 @@ CREATE TABLE `iriscms_category_priv` (
 CREATE TABLE `iriscms_content` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `catid` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `title` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `thumb` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `keywords` char(40) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `description` mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `content` mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `title` varchar(80) NOT NULL DEFAULT '',
+  `thumb` varchar(100) NOT NULL DEFAULT '',
+  `keywords` char(40) NOT NULL DEFAULT '',
+  `description` mediumtext NOT NULL,
+  `content` mediumtext NOT NULL,
   `listorder` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
   `recommend` tinyint(2) DEFAULT NULL,
@@ -120,10 +99,10 @@ CREATE TABLE `iriscms_content` (
   `created_at` int(11) DEFAULT NULL,
   `updated_at` int(11) DEFAULT NULL,
   `deleted_at` int(11) DEFAULT NULL,
-  `source_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `source_pwd` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `catids` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `tags` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `source_url` varchar(255) DEFAULT NULL,
+  `source_pwd` varchar(255) DEFAULT NULL,
+  `catids` varchar(255) DEFAULT NULL,
+  `tags` varchar(255) DEFAULT NULL,
   `userid` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   KEY `status` (`status`,`listorder`,`id`) USING BTREE,
@@ -134,51 +113,51 @@ CREATE TABLE `iriscms_content` (
 
 CREATE TABLE `iriscms_document_model` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '文档名称',
-  `table` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '对应的表名',
+  `name` varchar(128) DEFAULT NULL COMMENT '文档名称',
+  `table` varchar(128) DEFAULT NULL COMMENT '对应的表名',
   `enabled` tinyint(4) DEFAULT '0' COMMENT '是否启用',
   `is_system` tinyint(4) DEFAULT '0' COMMENT '是否为系统模型 无法删除',
   `model_type` tinyint(4) DEFAULT '0' COMMENT '模型类型: 扩展模型 和 独立模型',
-  `fe_tpl_index` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '模型前端主页模板地址',
-  `fe_tpl_list` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '模型前端列表模板地址',
-  `fe_tpl_detail` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '模型前端详情模板地址',
+  `fe_tpl_index` varchar(128) DEFAULT NULL COMMENT '模型前端主页模板地址',
+  `fe_tpl_list` varchar(128) DEFAULT NULL COMMENT '模型前端列表模板地址',
+  `fe_tpl_detail` varchar(128) DEFAULT NULL COMMENT '模型前端详情模板地址',
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='文档模型用于存储自定义类型的文档内容';
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='文档模型用于存储自定义类型的文档内容';
 
 
 CREATE TABLE `iriscms_document_model_dsl` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `mid` int(11) NOT NULL DEFAULT '0' COMMENT '模型id',
-  `form_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '字段在表单内的名称',
-  `table_field` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `html` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '字段html',
+  `form_name` varchar(128) DEFAULT NULL COMMENT '字段在表单内的名称',
+  `table_field` varchar(128) DEFAULT NULL,
+  `html` text COMMENT '字段html',
   `required` tinyint(4) DEFAULT '0' COMMENT '是否必填',
-  `datasource` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '数据源, 可以让下拉选项等高级功能有数据读取的源头,具体设计可以是提供列表函数类的',
-  `required_tips` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '必填(选)提醒',
-  `validator` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '验证器名称或内容',
+  `datasource` varchar(128) DEFAULT NULL COMMENT '数据源, 可以让下拉选项等高级功能有数据读取的源头,具体设计可以是提供列表函数类的',
+  `required_tips` varchar(128) DEFAULT NULL COMMENT '必填(选)提醒',
+  `validator` varchar(128) DEFAULT NULL COMMENT '验证器名称或内容',
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `iriscms_document_model_field` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '字段名称',
-  `type` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '字段对应的数据类型',
-  `desc` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '字段描述',
-  `html` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `name` varchar(128) DEFAULT NULL COMMENT '字段名称',
+  `type` varchar(128) DEFAULT NULL COMMENT '字段对应的数据类型',
+  `desc` varchar(128) DEFAULT NULL COMMENT '字段描述',
+  `html` text,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `iriscms_link` (
   `linkid` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `linktype` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `logo` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `introduce` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `name` varchar(50) NOT NULL DEFAULT '',
+  `url` varchar(255) NOT NULL DEFAULT '',
+  `logo` varchar(255) NOT NULL DEFAULT '',
+  `introduce` text NOT NULL,
   `listorder` smallint(5) unsigned NOT NULL DEFAULT '0',
   `passed` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `addtime` int(10) unsigned NOT NULL DEFAULT '0',
@@ -188,50 +167,50 @@ CREATE TABLE `iriscms_link` (
 
 CREATE TABLE `iriscms_log` (
   `logid` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `controller` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `action` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `querystring` mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `controller` varchar(15) NOT NULL,
+  `action` varchar(20) NOT NULL,
+  `querystring` mediumtext NOT NULL,
   `userid` mediumint(8) unsigned NOT NULL DEFAULT '0',
-  `username` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `ip` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `username` varchar(20) NOT NULL,
+  `ip` varchar(15) NOT NULL,
   `time` datetime NOT NULL,
   PRIMARY KEY (`logid`) USING BTREE,
   KEY `module` (`controller`,`action`) USING BTREE,
   KEY `username` (`username`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=1603 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='操作日志表';
+) ENGINE=MyISAM AUTO_INCREMENT=1641 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='操作日志表';
 
 
 CREATE TABLE `iriscms_member` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `account` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `avatar` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `nickname` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `account` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `avatar` varchar(255) DEFAULT NULL,
+  `nickname` varchar(255) DEFAULT NULL,
   `integral` int(255) DEFAULT NULL,
   `sale_integral` int(255) DEFAULT NULL,
-  `draw_account` varchar(0) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `telphone` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `qq` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `draw_account` varchar(0) DEFAULT NULL,
+  `telphone` varchar(255) DEFAULT NULL,
+  `qq` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
-  `email` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
   `enabled` tinyint(2) NOT NULL DEFAULT '0',
-  `verify_token` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `verify_token` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='系统配置表';
 
 
 CREATE TABLE `iriscms_menu` (
   `id` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
-  `name` char(40) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
+  `name` char(40) NOT NULL DEFAULT '',
   `parentid` smallint(6) NOT NULL DEFAULT '0',
-  `c` char(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `a` char(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `data` char(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
+  `c` char(20) NOT NULL DEFAULT '',
+  `a` char(20) NOT NULL DEFAULT '',
+  `data` char(255) NOT NULL DEFAULT '',
   `is_system` tinyint(1) NOT NULL DEFAULT '0',
   `listorder` smallint(6) unsigned NOT NULL DEFAULT '0',
-  `display` enum('1','0') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '1',
+  `display` enum('1','0') NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `listorder` (`listorder`) USING BTREE,
   KEY `parentid` (`parentid`) USING BTREE,
@@ -242,17 +221,17 @@ CREATE TABLE `iriscms_menu` (
 CREATE TABLE `iriscms_news` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `catid` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `title` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `thumb` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `keywords` char(40) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `description` mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `content` mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `title` varchar(80) NOT NULL DEFAULT '',
+  `thumb` varchar(100) NOT NULL DEFAULT '',
+  `keywords` char(40) NOT NULL DEFAULT '',
+  `description` mediumtext NOT NULL,
+  `content` mediumtext NOT NULL,
   `listorder` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '1',
-  `username` char(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `username` char(20) NOT NULL,
   `inputtime` int(10) unsigned NOT NULL DEFAULT '0',
   `updatetime` int(10) unsigned NOT NULL DEFAULT '0',
-  `tpl` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '//模板名称',
+  `tpl` varchar(255) NOT NULL COMMENT '//模板名称',
   `recommend` tinyint(1) NOT NULL DEFAULT '0' COMMENT '推荐',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `status` (`status`,`listorder`,`id`) USING BTREE,
@@ -263,17 +242,17 @@ CREATE TABLE `iriscms_news` (
 
 CREATE TABLE `iriscms_page` (
   `catid` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `title` varchar(160) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `keywords` varchar(40) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `content` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `title` varchar(160) NOT NULL,
+  `keywords` varchar(40) NOT NULL,
+  `content` text NOT NULL,
   `updatetime` int(10) unsigned NOT NULL DEFAULT '0',
   KEY `catid` (`catid`) USING BTREE
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='单页内容表';
 
 
 CREATE TABLE `iriscms_setting` (
-  `key` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `value` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `key` varchar(50) NOT NULL,
+  `value` text,
   PRIMARY KEY (`key`) USING BTREE,
   UNIQUE KEY `UQE_iriscms_setting_key` (`key`) USING BTREE
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='系统配置表';
@@ -281,14 +260,14 @@ CREATE TABLE `iriscms_setting` (
 
 CREATE TABLE `iriscms_slide` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '名称',
-  `name1` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `desc` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '地址',
-  `imgurl` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '图片地址',
-  `wapimgurl` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `sigin` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '图片标识',
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(255) NOT NULL DEFAULT '' COMMENT '名称',
+  `name1` varchar(255) NOT NULL DEFAULT '',
+  `desc` varchar(255) NOT NULL DEFAULT '',
+  `url` varchar(255) NOT NULL COMMENT '地址',
+  `imgurl` varchar(255) NOT NULL COMMENT '图片地址',
+  `wapimgurl` varchar(255) DEFAULT NULL,
+  `sigin` varchar(255) NOT NULL COMMENT '图片标识',
   `sort` int(5) NOT NULL DEFAULT '1' COMMENT '排序',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='幻灯片';
@@ -296,12 +275,12 @@ CREATE TABLE `iriscms_slide` (
 
 CREATE TABLE `iriscms_wechat_member` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `openid` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `mpid` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `nickname` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `openid` varchar(255) DEFAULT NULL,
+  `mpid` varchar(255) DEFAULT NULL,
+  `nickname` varchar(255) DEFAULT NULL,
   `sex` tinyint(2) DEFAULT NULL,
-  `headimgurl` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `subscribe_scene` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `headimgurl` varchar(255) DEFAULT NULL,
+  `subscribe_scene` varchar(255) DEFAULT NULL,
   `time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='系统配置表';
@@ -309,7 +288,7 @@ CREATE TABLE `iriscms_wechat_member` (
 
 CREATE TABLE `iriscms_wechat_message_log` (
   `logid` bigint(20) NOT NULL,
-  `content` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `content` varchar(255) DEFAULT NULL,
   `time` datetime DEFAULT NULL,
   PRIMARY KEY (`logid`) USING BTREE
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
@@ -383,7 +362,8 @@ UNLOCK TABLES;
 LOCK TABLES `iriscms_document_model` WRITE;
 ALTER TABLE `iriscms_document_model` DISABLE KEYS;
 INSERT INTO `iriscms_document_model` (`id`, `name`, `table`, `enabled`, `is_system`, `model_type`, `fe_tpl_index`, `fe_tpl_list`, `fe_tpl_detail`, `deleted_at`) VALUES 
-	(3,'文章模型','articles',1,0,0,'','','',NULL);
+	(3,'文章模型','articles',1,0,0,'','','',NULL),
+	(13,'测试模型','test',1,0,0,'','','',NULL);
 ALTER TABLE `iriscms_document_model` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -392,7 +372,15 @@ LOCK TABLES `iriscms_document_model_dsl` WRITE;
 ALTER TABLE `iriscms_document_model_dsl` DISABLE KEYS;
 INSERT INTO `iriscms_document_model_dsl` (`id`, `mid`, `form_name`, `table_field`, `html`, `required`, `datasource`, `required_tips`, `validator`, `deleted_at`) VALUES 
 	(5,3,'标题','title','<input class="easyui-textbox" {{attr}} style="width:300px">',1,'','','',NULL),
-	(6,3,'内容','content','<editor {{attr}} />',1,'','','',NULL);
+	(6,3,'内容','content','<editor {{attr}} />',1,'','','',NULL),
+	(17,13,'单行输入框','text','<input class="easyui-textbox" {{attr}} style="width:300px">',1,'','不能为空','',NULL),
+	(18,13,'多行数据框','textarea','<input class="easyui-textbox" {{attr}} style="width:300px">',1,'','不能为空','',NULL),
+	(19,13,'html输入框','html','<input class="easyui-textbox" {{attr}} style="width:300px">',1,'','html不能为空','',NULL),
+	(20,13,'单图上传','img','<input class="easyui-textbox" {{attr}} style="width:300px">',1,'','','',NULL),
+	(21,13,'多图上传','images','<input class="easyui-textbox" {{attr}} style="width:300px">',1,'','','',NULL),
+	(22,13,'单选','radio','<input class="easyui-textbox" {{attr}} style="width:300px">',1,'','','',NULL),
+	(23,13,'多选','checkbox','<input class="easyui-textbox" {{attr}} style="width:300px">',1,'','','',NULL),
+	(24,13,'附件上传','att','<input class="easyui-filebox" style="width:300px">',1,'','','',NULL);
 ALTER TABLE `iriscms_document_model_dsl` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -401,11 +389,11 @@ LOCK TABLES `iriscms_document_model_field` WRITE;
 ALTER TABLE `iriscms_document_model_field` DISABLE KEYS;
 INSERT INTO `iriscms_document_model_field` (`id`, `name`, `type`, `desc`, `html`) VALUES 
 	(1,'单行文本','varchar','常用字段，如文章标题、作者等都属于直接输入少量内容的文本，设置这个文本之后需要指定文本长度，默认为250，如果大于255则为text类型','<input class="easyui-textbox" {{attr}} style="width:300px">'),
-	(2,'多行文本','text','也是较为常用的字段类型，如个人简介、产品描述都可以使用多行文本进行存储','<input class="easyui-textbox" {{attr}} data-options="multiline:true" style="height:80px; width: 300px;" />'),
-	(3,'HTML文本','text','编辑器编辑产生的html内容，用于比较复杂的内容形式, 可以认为是附带编辑器的多行文本','<editor {{attr}} />'),
+	(2,'多行文本','text','也是较为常用的字段类型，如个人简介、产品描述都可以使用多行文本进行存储','<input class="easyui-textbox" {{attr}} style="height:80px; width: 300px;" />'),
+	(3,'HTML文本','text','编辑器编辑产生的html内容，用于比较复杂的内容形式, 可以认为是附带编辑器的多行文本','<editor />'),
 	(4,'附件','varshar','前端表现为input[file]类型,可以上传并且返回一个相对地址','<input class="easyui-filebox" style="width:300px">'),
-	(5,'下拉框','varchar','下拉选择，一般用于如软件类型、语言类型等字段','<input id="cc" class="easyui-combobox" {{attr}}  data-options="\'{{options}}\'">'),
-	(6,'联动类型','varchar','一种数组形式的数据类型，可以在系统后台联动类型管理中进行设置','select id="cc" class="easyui-combotree" {{attr}} style="width:200px;" data-options="{{options}}"></select>'),
+	(5,'下拉框','varchar','下拉选择，一般用于如软件类型、语言类型等字段','<input class="easyui-combobox" {{attr}} >'),
+	(6,'联动类型','varchar','一种数组形式的数据类型，可以在系统后台联动类型管理中进行设置','select class="easyui-combotree" {{attr}} style="width:200px;" data-options="{{options}}"></select>'),
 	(7,'单选框','varchar','平铺显示, 可以认为是下拉框的展开','<div>{{loop}}<input data-toggle="topjui-radiobutton" {{attr}} value="{{value}}"">{{end}}</div>'),
 	(8,'多选框','varchar','多选框, 平铺显示为多个选项','<div>{{loop}}<input data-toggle="topjui-checkbox" {{attr}} value="{{value}}">{{end}} </div>'),
 	(9,'整数类型','int','常用字段, 仅能输入数字','<input type="text" class="easyui-numberbox" value="{{value}}" {{attr}} data-options="min:0,precision:0">'),
@@ -1892,7 +1880,45 @@ INSERT INTO `iriscms_log` (`logid`, `controller`, `action`, `querystring`, `user
 	(1599,'content','right','/b/content/right',1,'admin','::1','2020-01-02 17:21:56'),
 	(1600,'content','right','/b/content/right',1,'admin','::1','2020-01-02 17:21:56'),
 	(1601,'content','right','/b/content/right',1,'admin','::1','2020-01-02 17:21:56'),
-	(1602,'content','right','/b/content/right',1,'admin','::1','2020-01-02 17:21:56');
+	(1602,'content','right','/b/content/right',1,'admin','::1','2020-01-02 17:21:56'),
+	(1603,'model','list','/b/model/list?menuid=62&&_=1577971241865',1,'admin','::1','2020-01-02 21:20:48'),
+	(1604,'model','list','/b/model/list?page=1&rows=20',1,'admin','::1','2020-01-02 21:20:48'),
+	(1605,'category','list','/b/category/list?menuid=36&&_=1577971241866',1,'admin','::1','2020-01-02 21:20:53'),
+	(1606,'category','list','/b/category/list?grid=treegrid',1,'admin','::1','2020-01-02 21:20:53'),
+	(1607,'content','index','/b/content/index?menuid=35&&_=1577971241867',1,'admin','::1','2020-01-02 21:20:55'),
+	(1608,'content','right','/b/content/right?_=1577971241868',1,'admin','::1','2020-01-02 21:20:55'),
+	(1609,'content','right','/b/content/right',1,'admin','::1','2020-01-02 21:20:55'),
+	(1610,'content','right','/b/content/right',1,'admin','::1','2020-01-02 21:20:55'),
+	(1611,'content','news-list','/b/content/news-list?catid=1&_=1577971241870',1,'admin','::1','2020-01-02 21:20:56'),
+	(1612,'content','news-list','/b/content/news-list?grid=datagrid&catid=1&page=1&rows=20',1,'admin','::1','2020-01-02 21:20:56'),
+	(1613,'content','add','/b/content/add?catid=1',1,'admin','::1','2020-01-02 21:20:57'),
+	(1614,'content','add','/b/content/add?catid=1',1,'admin','::1','2020-01-02 21:44:33'),
+	(1615,'content','add','/b/content/add?catid=1',1,'admin','::1','2020-01-02 21:44:40'),
+	(1616,'category','list','/b/category/list?menuid=36&&_=1577972764750',1,'admin','::1','2020-01-02 21:46:09'),
+	(1617,'category','list','/b/category/list?grid=treegrid',1,'admin','::1','2020-01-02 21:46:09'),
+	(1618,'content','index','/b/content/index?menuid=35&&_=1577972764751',1,'admin','::1','2020-01-02 21:46:10'),
+	(1619,'content','right','/b/content/right?_=1577972764752',1,'admin','::1','2020-01-02 21:46:11'),
+	(1620,'content','right','/b/content/right',1,'admin','::1','2020-01-02 21:46:11'),
+	(1621,'content','right','/b/content/right',1,'admin','::1','2020-01-02 21:46:11'),
+	(1622,'content','news-list','/b/content/news-list?catid=1&_=1577972764754',1,'admin','::1','2020-01-02 21:46:12'),
+	(1623,'content','news-list','/b/content/news-list?grid=datagrid&catid=1&page=1&rows=20',1,'admin','::1','2020-01-02 21:46:12'),
+	(1624,'content','add','/b/content/add?catid=1',1,'admin','::1','2020-01-02 21:46:15'),
+	(1625,'content','add','/b/content/add?catid=1',1,'admin','::1','2020-01-02 21:51:04'),
+	(1626,'category','list','/b/category/list?menuid=36&&_=1577972764755',1,'admin','::1','2020-01-02 21:52:31'),
+	(1627,'category','list','/b/category/list?grid=treegrid',1,'admin','::1','2020-01-02 21:52:31'),
+	(1628,'content','index','/b/content/index?menuid=35&&_=1577972764756',1,'admin','::1','2020-01-02 21:52:31'),
+	(1629,'content','right','/b/content/right?_=1577972764757',1,'admin','::1','2020-01-02 21:52:31'),
+	(1630,'content','right','/b/content/right',1,'admin','::1','2020-01-02 21:52:31'),
+	(1631,'content','right','/b/content/right',1,'admin','::1','2020-01-02 21:52:31'),
+	(1632,'content','news-list','/b/content/news-list?catid=1&_=1577972764759',1,'admin','::1','2020-01-02 21:52:33'),
+	(1633,'content','news-list','/b/content/news-list?grid=datagrid&catid=1&page=1&rows=20',1,'admin','::1','2020-01-02 21:52:33'),
+	(1634,'content','add','/b/content/add?catid=1',1,'admin','::1','2020-01-02 21:52:34'),
+	(1635,'content','add','/b/content/add?catid=1',1,'admin','::1','2020-01-02 21:53:51'),
+	(1636,'content','add','/b/content/add?catid=1',1,'admin','::1','2020-01-02 21:54:43'),
+	(1637,'model','list','/b/model/list?menuid=62&&_=1577972764760',1,'admin','::1','2020-01-02 22:00:32'),
+	(1638,'model','list','/b/model/list?page=1&rows=20',1,'admin','::1','2020-01-02 22:00:32'),
+	(1639,'model','add','/b/model/add?_=1577972764761',1,'admin','::1','2020-01-02 22:00:33'),
+	(1640,'model','add','/b/model/add',1,'admin','::1','2020-01-02 22:04:48');
 ALTER TABLE `iriscms_log` ENABLE KEYS;
 UNLOCK TABLES;
 
