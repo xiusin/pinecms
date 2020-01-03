@@ -1,5 +1,5 @@
 <div class="easyui-panel" data-options="fit:true,title:'{{.title}}',border:false">
-    <form id="ff1" method="post">
+    <form id="ff_edit" method="post">
         <input type="hidden" name="id" value="{{.document.Id}}">
         <table cellspacing="10" class="mdoutable">
             <tr>
@@ -32,10 +32,10 @@
                     <div id="tab-tools">
                         <a href="javascript:void(0)" class="easyui-linkbutton"
                            data-options="plain:true,iconCls:'icon-add'"
-                           onclick="addPanel()"></a>
+                           onclick="addPanelEdit()"></a>
                     </div>
 
-                    <div id="tt1" class="easyui-tabs" style="width:750px;height:576px;">
+                    <div id="tt_edit" class="easyui-tabs" style="width:750px;height:576px;">
                         {{range $i, $field := .fields}}
                             <div title="{{$field.FormName}}">
                                 <table cellpadding="5" style="width: 100%;">
@@ -43,7 +43,7 @@
                                         <td style="width: 150px;">表单名称:</td>
                                         <td><input class="easyui-textbox" type="text" name="field_name"
                                                    value="{{$field.FormName}}" style="width: 300px"
-                                                   data-options="required:true, onChange: textBoxOnChange"/></td>
+                                                   data-options="required:true, onChange: textBoxOnChangeEdit"/></td>
                                     </tr>
 
                                     <tr>
@@ -76,7 +76,7 @@
                                         <td>字段类型:</td>
                                         <td>
                                             <select class="easyui-combobox" name="field_type" style="width: 300px;"
-                                                    data-options="onSelect: onSelectChange">
+                                                    data-options="onSelect: onSelectChangeEdit">
                                                 {{range $index,$ele := $.list}}
                                                     {{if eq $field.FieldType $ele.Id}}
                                                         <option value="{{$ele.Id}}" selected>{{$ele.Name}}</option>
@@ -169,7 +169,7 @@
 					]]"></td>
             </tr>
             <tr>
-                <td colspan="3"><a id="model_form_submit1" class="easyui-linkbutton">提交</a> <a id="model_form_cancel1"
+                <td colspan="3"><a id="model_form_submit_edit" class="easyui-linkbutton">提交</a> <a id="model_form_cancel_edit"
                                                                                               class="easyui-linkbutton">取消</a>
                 </td>
             </tr>
@@ -177,12 +177,12 @@
     </form>
 </div>
 
-<script style="display: none" id="tpl1" type="text/template">
+<script style="display: none" id="tpl_edit" type="text/template">
     <table cellpadding="5" style="width: 100%;">
         <tr>
             <td style="width: 150px;">表单名称:</td>
             <td><input class="easyui-textbox" type="text" name="field_name" style="width: 300px"
-                       data-options="required:true, onChange: textBoxOnChange"/></td>
+                       data-options="required:true, onChange: textBoxOnChangeEdit"/></td>
         </tr>
 
         <tr>
@@ -209,7 +209,7 @@
             <td>字段类型:</td>
             <td>
                 <select class="easyui-combobox" name="field_type" style="width: 300px;"
-                        data-options="onSelect: onSelectChange">
+                        data-options="onSelect: onSelectChangeEdit">
                     {{range $index,$ele := .list}}
                         <option value="{{$ele.Id}}">{{$ele.Name}}</option>
                     {{end}}
@@ -250,7 +250,7 @@
 </script>
 
 <script>
-    var tt = $('#tt1');
+    var tt = $('#tt_edit');
     tt.width($("#mode-edit").width()).tabs({
         tools: '#tab-tools',
         onBeforeClose: function (title, index) {
@@ -265,13 +265,13 @@
             return false;	// prevent from closing
         }
     }).tabs({tabPosition: "left"});
-    let index = 989934;
+    let index = 200;
     var creating = -1;
 
-    function addPanel() {
+    function addPanelEdit() {
         index++;
         creating = index
-        tt.tabs('add', {title: '未命名字段' + index, content: $("#tpl1").html().replace("{$index$}", index), closable: true});
+        tt.tabs('add', {title: '未命名字段' + index, content: $("#tpl_edit").html().replace("{$index$}", index), closable: true});
     }
 
     let fields = JSON.parse({{.listJson}});
@@ -280,11 +280,11 @@
         hash.set(Number(v.Id), v);
     });
 
-    function onSelectChange(rc) {
+    function onSelectChangeEdit(rc) {
         if (rc === undefined || !hash.has(Number(rc.value))) {
             return
         }
-        var idx = getTabIndex("tt1");
+        var idx = getTabIndexEdit("tt_edit");
         if (creating !== -1 && creating !== idx) {
             console.log(creating, idx)
             idx = creating;
@@ -300,7 +300,7 @@
     }
 
 
-    function textBoxOnChange(newValue, oldValue) {
+    function textBoxOnChangeEdit(newValue, oldValue) {
         if (newValue !== "") {
             tt.find('.tabs-selected').find(".tabs-title").html(newValue);
             return
@@ -309,76 +309,47 @@
     }
 
     var locker = false;
-    // $('#ff1').form({
-    //     url: "/b/model/edit",
-    //     data:JSON.stringify($('#ff1').serializeObject()),
-    //     contentType:"application/json",  //缺失会出现URL编码，无法转成json对象
-    //     dataType: "json",
-    //     onSubmit: function () {
-    //         if (locker) return false;
-    //         $.messager.progress();
-    //         let v = $(this).form('validate');
-    //         if (!v) {
-    //             $.messager.progress('close');
-    //         } else {
-    //             locker = true;
-    //         }
-    //         return v;
-    //     },
-    //     success: function (data) {
-    //         data = eval('(' + data + ')');
-    //         locker = false;
-    //         $.messager.progress('close');
-    //         if (data.errcode) {
-    //             $.messager.alert('提示信息', data.errmsg, 'error');
-    //         } else {
-    //             $.messager.alert('提示信息', data.errmsg, 'info', function () {
-    //                 $("#model_form_cancel").click();
-    //             })
-    //         }
-    //     }
-    // });
-
-    $("#model_form_submit1").click(function () {
-        // $('#ff1').submit();
-        $.ajax({
-            url: "/b/model/edit",
-            method: "POST",
-            data:JSON.stringify($('#ff1').serializeObject()),
-            contentType:"application/json",  //缺失会出现URL编码，无法转成json对象
-            dataType: "json",
-            // onSubmit: function () {
-            //     if (locker) return false;
-            //     $.messager.progress();
-            //     let v = $(this).form('validate');
-            //     if (!v) {
-            //         $.messager.progress('close');
-            //     } else {
-            //         locker = true;
-            //     }
-            //     return v;
-            // },
-            success: function (data) {
-                data = eval('(' + data + ')');
-                locker = false;
+    $('#ff_edit').form({
+        url: "/b/model/edit",
+        data:JSON.stringify($('#ff_edit').serializeObject()),
+        contentType:"application/json",  //缺失会出现URL编码，无法转成json对象
+        dataType: "json",
+        onSubmit: function () {
+            if (locker) return false;
+            $.messager.progress();
+            let v = $(this).form('validate');
+            if (!v) {
                 $.messager.progress('close');
-                if (data.errcode) {
-                    $.messager.alert('提示信息', data.errmsg, 'error');
-                } else {
-                    $.messager.alert('提示信息', data.errmsg, 'info', function () {
-                        $("#model_form_cancel").click();
-                    })
-                }
+            } else {
+                locker = true;
             }
-        });
+            return v;
+        },
+        success: function (data) {
+            data = eval('(' + data + ')');
+            locker = false;
+            $.messager.progress('close');
+            if (data.errcode) {
+                $.messager.alert('提示信息', data.errmsg, 'error');
+            } else {
+                $.messager.alert('提示信息', data.errmsg, 'info', function () {
+                    $("#model_form_cancel").click();
+                })
+            }
+        }
+    });
+
+    $("#model_form_submit_edit").click(function () {
+        $('#ff_edit').submit();
+
     });
 
     // 关闭窗口
-    $("#model_form_cancel1").click(function () {
-        $('#pagetabs').tabs('close', getTabIndex("pagetabs"));
+    $("#model_form_cancel_edit").click(function () {
+        $('#pagetabs').tabs('close', getTabIndexEdit("pagetabs"));
     });
 
-    function getTabIndex(tabsID) {
+    function getTabIndexEdit(tabsID) {
         let tabs = $("#" + tabsID);
         return tabs.tabs('getTabIndex', tabs.tabs('getSelected'));
     }

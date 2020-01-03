@@ -228,6 +228,8 @@
 </script>
 
 <script>
+
+    // todo 关闭标题为"修改模型"
     var tt = $('#tt');
     tt.width($("#mode-definition").width()).tabs({
         tools: '#tab-tools',
@@ -275,8 +277,6 @@
         // 获取当前tab的索引
         $("#html_" + idx).textbox("setValue", field.Html);
     }
-
-
     function textBoxOnChange(newValue, oldValue) {
         if (newValue !== "") {
             tt.find('.tabs-selected').find(".tabs-title").html(newValue);
@@ -284,7 +284,6 @@
         }
         $(this).textbox("setValue", oldValue)
     }
-
     var locker = false;
     $('#ff').form({
         url: "/b/model/add",
@@ -296,21 +295,34 @@
                 $.messager.progress('close');
             } else {
                 locker = true;
+                let data = $('#ff').serializeObject();
+                for (let i in data) {
+                    if (i.indexOf("field_") > -1 && typeof data[i] == "string") {
+                        data[i] = [data[i]];
+                    }
+                }
+                $.ajax({
+                    url: "/b/model/add",
+                    method: "POST",
+                    data:JSON.stringify(data),
+                    contentType:"application/json",  //缺失会出现URL编码，无法转成json对象
+                    dataType: "json",
+                    success: function (data) {
+                        data = eval('(' + data + ')');
+                        locker = false;
+                        $.messager.progress('close');
+                        if (data.errcode) {
+                            $.messager.alert('提示信息', data.errmsg, 'error');
+                        } else {
+                            $.messager.alert('提示信息', data.errmsg, 'info', function () {
+                                $("#model_form_cancel").click();
+                            })
+                        }
+                    }
+                });
             }
-            return v;
+            return false;
         },
-        success: function (data) {
-            data = eval('(' + data + ')');
-            locker = false;
-            $.messager.progress('close');
-            if (data.errcode) {
-                $.messager.alert('提示信息', data.errmsg, 'error');
-            } else {
-                $.messager.alert('提示信息', data.errmsg, 'info', function (){
-                    $("#model_form_cancel").click();
-                })
-            }
-        }
     });
 
     $("#model_form_submit").click(function () {
