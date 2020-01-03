@@ -1,23 +1,12 @@
+<link rel="stylesheet" type="text/css" href="/assets/backend/static/css/admin/metro.css" title="metro" />
 <script type="text/javascript" src="/assets/backend/static/js/easyui/jquery.min.js"></script>
 <script type="text/javascript" src="/assets/backend/static/js/jquery.cookie.js"></script>
 <script type="text/javascript" src="/assets/backend/static/js/jquery.json.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/assets/backend/static/css/icons.css" />
+<link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/themes/icon.css" />
+<link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/themes/metro/easyui.css" title="metro" />
 <script type="text/javascript" src="/assets/backend/static/js/easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="/assets/backend/static/js/easyui/locale/easyui-lang-zh_CN.js"></script>
-<link rel="stylesheet" type="text/css" href="/assets/backend/static/css/icons.css" />
-<link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/themes/default/easyui.css" title="default" />
-<link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/themes/gray/easyui.css" title="gray" />
-<link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/themes/bootstrap/easyui.css" title="bootstrap" />
-<link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/themes/metro/easyui.css" title="metro" />
-<link rel="stylesheet" type="text/css" href="/assets/backend/static/css/admin/default.css" title="default" />
-<link rel="stylesheet" type="text/css" href="/assets/backend/static/css/admin/gray.css" title="gray" />
-<link rel="stylesheet" type="text/css" href="/assets/backend/static/css/admin/bootstrap.css" title="bootstrap" />
-<link rel="stylesheet" type="text/css" href="/assets/backend/static/css/admin/metro.css" title="metro" />
-<script type="text/javascript">
-    var theme = $.cookie('theme') || 'bootstrap';	//全局变量
-    $(document).ready(function(){
-        $('link[rel*=style][title]').each(function(i){
-            this.disabled = true;
-            if (this.getAttribute('title') === theme) this.disabled = false;
-        });
-    });
-</script>
+<script type="text/javascript" src="/assets/backend/static/js/formvalidator/formValidator.js"></script>
+<script type="text/javascript" src="/assets/backend/static/js/formvalidator/formValidatorRegex.js"></script>
+<script type="text/javascript">initConfig_setting.theme = 'App';</script>

@@ -2,8 +2,15 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8">
-    <meta name="author" content="wangdong">
-    <title>书籍资源发布</title>
+    <title>{{.category.Catname}} 内容发布</title>
+    {{template "backend/public_javascript.html"}}
+    {{template "backend/public_umeditor.html"}}
+    <link rel="stylesheet" type="text/css" href="/assets/backend/static/jquery.tagsinput.css"/>
+    <script src="/assets/backend/static/jquery.tagsinput.js"></script>
+    <script src="/assets/backend/static/jquery.upload.js"></script>
+{{/*    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>*/}}
+{{/*    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.min.js"></script>*/}}
+{{/*    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/localization/messages_zh.js"></script>*/}}
     <style>
         .dialogtable {
             width: 100%;
@@ -27,21 +34,55 @@
             margin: 8px;
             height: 25px;
         }
+
+        .imgbox {
+            display: inline-block;
+            margin-right: 10px;
+            position: relative;
+        }
+
+        .imgbox_inputBtn {
+            width: 95px;
+            height: 95px;
+            display: block;
+            border: 1px solid #ddd;
+            padding: 2px
+        }
+
+        table.mdoutable{
+            width: 100%;
+            color:#333333;
+            border-width: 1px;
+            border-color: #666666;
+            border-collapse: collapse;
+        }
+        table.mdoutable th {
+            border-width: 1px;
+            padding: 8px;
+            border-style: dotted;
+            border-color: rgb(204,204,204);
+            background-color: #dedede;
+        }
+        .textbox .textbox-text, .textbox {
+            -moz-border-radius: 0;
+            -webkit-border-radius: 0;
+            border-radius: 0;
+        }
+
+        table.mdoutable td {
+            border-width: 1px;
+            padding: 8px;
+            border-style: dotted;
+            border-color: rgb(204,204,204);
+            background-color: #ffffff;
+        }
+
     </style>
-{{template "backend/public_javascript.html"}}
-{{template "backend/public_umeditor.html"}}
-    <link rel="stylesheet" type="text/css" href="/assets/backend/static/jquery.tagsinput.css"/>
-    <script src="/assets/backend/static/jquery.tagsinput.js"></script>
-    <script src="/assets/backend/static/jquery.upload.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/localization/messages_zh.js"></script>
+
 </head>
 <body>
 {{.form}}
 <script type="text/javascript">
-    UM.getEditor('content_page_form_textarea_editor');
-    parent.ajaxLoadEnd();
     $('#tags').tagsInput({
         'height': '50px', //设置高度
         'width': '446px',  //设置宽度
@@ -71,32 +112,44 @@
         return false;
     }
 
-    $('#content_add_news_form_thumb_input').click(function (e) {
-        e.preventDefault();
-        doUpload();
-        return false;
-    });
 
-    /*文件上传*/
-    function doUpload() {
+    function doUpload(obj) {
         $.upload({
             url: "/public/upload",
-            fileName: 'filedata',
+            fileName: 'formfile',
             params: {},
             dataType: 'json',
             onSend: function () {
                 return true;
             },
+            onSubmit: function () {
+            },
             onComplate: function (data) {
-                if (!data.errcode) {
-                    $("#content_add_news_form_thumb_input").attr('src', data.errmsg);
-                    $("#content_add_news_form_thumb_input").next('input:hidden').val(data.errmsg);
+                if (data.errcode == 1) {
+                    parent.$.messager.alert("错误提醒", data.errmsg, "error")
                 } else {
-                    parent.$.messager.alert('提示信息', data.errmsg, 'error');
+                    $(obj).next().val(data.msg);
+                    $(obj).attr('src', data.msg);
                 }
             }
         });
+        return false;
     }
+
+    function createHtml(obj, maxNumInt) {
+        if (maxNumInt > 0 && $(obj).parent().find(".imgbox").size() >= maxNumInt + 1) {
+            parent.$.messager.alert("提醒","图片限制数量已达上限"+maxNumInt+",无法添加", "info");
+            return false;
+        }
+        var str = "<div class='imgbox'>\
+                  <input class='imgbox_inputBtn' type='image' onclick='return doUpload(this)' src='/assets/backend/mdou/images/uploadholder.png' alt='点击上传'/>\
+                  <input type='hidden' name='info[thumb][]' />\
+                  <span title=\"删除图片框\" style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer;    position: absolute;left: 92px;top: 10px;'  onclick=''>×</span>\
+        </div>";
+        $(obj).before(str);
+        return false;
+    }
+
 </script>
 
 

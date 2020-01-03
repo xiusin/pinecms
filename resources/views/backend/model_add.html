@@ -234,21 +234,20 @@
         onBeforeClose: function (title, index) {
             $.messager.confirm('删除字段', '确定要删除: "' + title + '" 吗, 如果字段已经存在表字段内,将不会删除表字段?', function (r) {
                 if (r) {
-                    var opts = $(target).tabs('options');
-                    var bc = opts.onBeforeClose;
-                    opts.onBeforeClose = function () {
-                    };  // allowed to close now
-                    $(target).tabs('close', index);
-                    opts.onBeforeClose = bc;  // restore the event function
+                    // var opts = tt.tabs('options');
+                    // var bc = opts.onBeforeClose;
+                    tt.tabs('close', index);
+                    // opts.onBeforeClose = bc;  // restore the event function
                 }
             });
             return false;	// prevent from closing
         }
     }).tabs({tabPosition: "left"});
     let index = 0;
-
+    var creating = -1;
     function addPanel() {
         index++;
+        creating = index
         tt.tabs('add', {title: '未命名字段' + index, content: $("#tpl").html().replace("{$index$}", index), closable: true});
     }
 
@@ -262,13 +261,19 @@
         if (rc === undefined || !hash.has(Number(rc.value))) {
             return
         }
+        var idx = getTabIndex("tt");
+        if (creating !== -1 && creating !== idx) {
+            console.log(creating, idx)
+            idx = creating;
+            creating = -1;
+        }
         const field = hash.get(Number(rc.value));
         // 填充当前tab里的内容
         const that = $(this);
         const desc = that.parents("tr").next().next();
         desc.find("td").eq(1).html(field.Desc);
         // 获取当前tab的索引
-        $("#html_" + getTabIndex("tt")).textbox("setValue", field.Html);
+        $("#html_" + idx).textbox("setValue", field.Html);
     }
 
 
@@ -283,7 +288,6 @@
     var locker = false;
     $('#ff').form({
         url: "/b/model/add",
-
         onSubmit: function () {
             if (locker) return false;
             $.messager.progress();
@@ -321,7 +325,6 @@
     function getTabIndex(tabsID) {
         let tabs = $("#" + tabsID);
         return tabs.tabs('getTabIndex', tabs.tabs('getSelected'));
-
     }
 
 </script>

@@ -3,8 +3,6 @@ package backend
 import (
 	"encoding/json"
 	"errors"
-	"html/template"
-
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/golog"
 	"github.com/kataras/iris/v12"
@@ -13,6 +11,8 @@ import (
 	"github.com/xiusin/iriscms/src/application/models"
 	"github.com/xiusin/iriscms/src/application/models/tables"
 	"github.com/xiusin/iriscms/src/common/helper"
+	"html/template"
+	"strings"
 )
 
 /**
@@ -64,11 +64,11 @@ func (c *DocumentController) ModelList() {
 		"title":   models.NewMenuModel(c.Orm).CurrentPos(menuid),
 		"toolbar": "model_list_datagrid_toolbar",
 	}, helper.EasyuiGridfields{
-		"模型名称": {"field": "name", "width": "30", "index": "0"},
+		"模型名称":  {"field": "name", "width": "30", "index": "0"},
 		"数据表名称": {"field": "table", "width": "30", "index": "1"},
-		"启用":   {"field": "enabled", "width": "25", "index": "2", "formatter": "enabledFormatter"},
-		"系统模型":   {"field": "is_system", "width": "25", "index": "3", "formatter": "systemFormatter"},
-		"操作":   {"field": "id", "width": "25", "index": "4", "formatter": "optFormatter"},
+		"启用":    {"field": "enabled", "width": "25", "index": "2", "formatter": "enabledFormatter"},
+		"系统模型":  {"field": "is_system", "width": "25", "index": "3", "formatter": "systemFormatter"},
+		"操作":    {"field": "id", "width": "25", "index": "4", "formatter": "optFormatter"},
 	})
 	c.Ctx.ViewData("dataGrid", template.HTML(table))
 	c.Ctx.View("backend/model_list.html")
@@ -78,15 +78,36 @@ func (c *DocumentController) ModelAdd() {
 	if c.Ctx.Method() == "POST" {
 		var data ModelForm
 		if err := c.Ctx.ReadForm(&data); err != nil {
-			helper.Ajax("表单参数错误: " + err.Error(), 1, c.Ctx)
+			helper.Ajax("表单参数错误: "+err.Error(), 1, c.Ctx)
 			return
 		}
 		//查找重复记录
-		exists, err := c.Orm.Where("`name`=? or `table`=?", data.Name, data.Table).Exist( &tables.IriscmsDocumentModel{})
+		exists, err := c.Orm.Where("`name`=? or `table`=?", data.Name, data.Table).Exist(&tables.IriscmsDocumentModel{})
 		if exists {
 			helper.Ajax("模型名称换货数据表已经存在", 1, c.Ctx)
 			return
 		}
+
+		// 判断后续字段名称是否一致
+		var m = map[string]struct{}{}
+		for _, v := range data.FieldName {
+			if _, ok := m[v]; ok {
+				helper.Ajax("表单名称重复: "+v, 1, c.Ctx)
+				return
+			} else {
+				m[v] = struct{}{}
+			}
+		}
+		m = map[string]struct{}{}
+		for _, v := range data.FieldField {
+			if _, ok := m[v]; ok {
+				helper.Ajax("字段名重复: "+v, 1, c.Ctx)
+				return
+			} else {
+				m[v] = struct{}{}
+			}
+		}
+
 		var enabled = 0
 		if data.Enabled == "on" {
 			enabled = 1
@@ -116,11 +137,18 @@ func (c *DocumentController) ModelAdd() {
 					FormName:   name,
 					TableField: data.FieldField[k],
 				}
+				// todo 需要验证数据是否一一对应, 比如html我只填写了两个能否对应上
 				if len(data.FieldHtml) >= k+1 {
 					f.Html = data.FieldHtml[k]
 				}
 				if len(data.FieldDataSource) >= k+1 {
 					f.Datasource = data.FieldDataSource[k]
+					if strings.HasPrefix(f.Datasource, "[") || strings.HasPrefix(f.Datasource, "{") {
+						var dataSourceJson interface{}
+						if err := json.Unmarshal([]byte(f.Datasource), &dataSourceJson); err != nil {
+							return nil, err
+						}
+					}
 				}
 				if len(data.FieldRequiredTips) >= k+1 {
 					f.RequiredTips = data.FieldRequiredTips[k]
@@ -164,7 +192,7 @@ func (c *DocumentController) ModelEdit() {
 }
 
 func (c *DocumentController) ModelDelete() {
-	modelID ,_ := c.Ctx.URLParamInt64("id")
+	modelID, _ := c.Ctx.URLParamInt64("id")
 	if modelID < 1 {
 		helper.Ajax("模型参数错误", 1, c.Ctx)
 		return
@@ -175,9 +203,9 @@ func (c *DocumentController) ModelDelete() {
 		helper.Ajax("模型不存在", 1, c.Ctx)
 		return
 	}
-	if model.DeleteByID(modelID) {
+	if _, err := model.DeleteByID(modelID); err == nil {
 		helper.Ajax("删除模型成功", 0, c.Ctx)
-	} else  {
-		helper.Ajax("删除模型失败", 1, c.Ctx)
+	} else {
+		helper.Ajax("删除模型失败: "+err.Error(), 1, c.Ctx)
 	}
 }

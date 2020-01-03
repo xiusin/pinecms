@@ -27,13 +27,18 @@ func (w *DocumentModel) GetList(page, limit int64) (list []tables.IriscmsDocumen
 }
 func (w *DocumentModel) GetByID(id int64) *tables.IriscmsDocumentModel {
 	var detail = &tables.IriscmsDocumentModel{}
-	if err := w.Orm.ID(id).Find(detail); err != nil {
-		golog.Error(err)
+	if _, err := w.Orm.ID(id).Get(detail); err != nil {
+		golog.Error("document.model", err)
 	}
 	return detail
 }
 
-func (w *DocumentModel) DeleteByID(id int64) bool {
+func (w *DocumentModel) DeleteByID(id int64) (bool, error) {
+	// 先查找是否在用
+	total, err := w.Orm.Where("model_id = ?", id).Count(&tables.IriscmsCategory{})
+	if err != nil || total > 0 {
+		return false, errors.New("模型已经被使用, 请删除使用分类后再执行删除操作")
+	}
 	if _, err := w.Orm.Transaction(func(session *xorm.Session) (i interface{}, err error) {
 		i, err = w.Orm.ID(id).Delete(&tables.IriscmsDocumentModel{})
 		if err != nil {
@@ -49,7 +54,7 @@ func (w *DocumentModel) DeleteByID(id int64) bool {
 		}
 		return true, nil
 	}); err != nil {
-		return false
+		return false, err
 	}
-	return true
+	return true, nil
 }

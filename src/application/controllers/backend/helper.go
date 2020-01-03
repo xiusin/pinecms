@@ -1,8 +1,10 @@
 package backend
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/rand"
+	"reflect"
 	"strconv"
 	"strings"
 
@@ -17,7 +19,6 @@ import (
 func clearMenuCache(cache cache.ICache, xorm *xorm.Engine) {
 	var roles []*tables.IriscmsAdminRole
 	var menus []*tables.IriscmsMenu
-
 	xorm.Where("parentid = ?", 0).Find(&menus)
 	xorm.Find(&roles)
 	for _, role := range roles {
@@ -33,62 +34,118 @@ func clearMenuCache(cache cache.ICache, xorm *xorm.Engine) {
 func buildModelForm(orm *xorm.Engine, mid int64) string {
 	model := models.NewDocumentModel(orm)
 	documentModel := model.GetByID(mid)
-	if documentModel == nil {
+	if documentModel == nil || documentModel.Id < 1 {
 		panic("模型不存在")
 	}
 	fields := models.NewDocumentFieldDslModel(orm).GetList(mid)
-	h := "<form><input type='hidden' value='" + documentModel.Table + "'><table cellpadding=\"2\" class=\"dialogtable\" style=\"width: 100%;\">"
+	h := "<form method='POST' enctype='multipart/form-data'><input type='hidden' value='" + documentModel.Table + "'><table cellpadding='2' class='dialogtable' style='width: 100%;'>"
 	for _, field := range fields {
 		h += `<tr><td style="width: 150px;">` + field.FormName + `:</td><td>`
-		attrs := []string{"name='" + field.TableField + "'"}
-		var options []string
-		var domOpts []string
-		//if field.Id == 2 {
-		//	options = append(options, "multiline:true")
-		//}
-
-		if field.Required == 1 {
-			options = append(options, "required:true")
-			domOpts = append(domOpts, "required")
-			if field.RequiredTips != "" {
-				options = append(options, "missingMessage:'"+field.RequiredTips+"'")
-			}
-		}
-
-		if field.Validator != "" {
-			options = append(options, "validType:"+field.Validator)
-			options = append(options, "invalidMessage:'"+field.RequiredTips+"'")
-		}
-
-		isEditor := strings.HasPrefix(field.Html, "<editor")
-		isImageUpload := strings.HasPrefix(field.Html, "<images")
-		isMulImageUpload := strings.HasPrefix(field.Html, "<mul-images")
-		if len(options) > 0 {
-			if isEditor {
-				attrs = append(attrs, domOpts...)
-			} else {
-				attrs = append(attrs, `data-options="`+strings.Join(options, ", ")+`"`)
-			}
-		}
-
-		value := ""
-		if isEditor {
-			field.Html = getEditor(value, strings.Join(attrs, " "), true)
-		} else if isImageUpload {
-			field.Html = helper.SiginUpload("", field.TableField)
-		} else if isMulImageUpload {
-			field.Html = helper.MultiUpload([]string{})
+		if strings.Contains(field.Html, "easyui-") {
+			h += easyUIComponents(&field)
 		} else {
-			field.Html = strings.Replace(field.Html, "{{attr}}", strings.Join(attrs, " "), 1)
-			field.Html = strings.Replace(field.Html, "{{value}}", value, 1)
+			h += domOrCustomTagComponents(&field)
 		}
-		// todo 匹配loop和数据源接入
-		h += field.Html
 		h += "</td></tr>"
-
 	}
 	h += "</form>"
 	return h
+}
+func domOrCustomTagComponents(field *tables.IriscmsDocumentModelDsl) string {
+	attrs := []string{"name='" + field.TableField + "'"}
+	isEditor := strings.HasPrefix(field.Html, "<editor")
+	isImageUpload := strings.HasPrefix(field.Html, "<images")
+	isMulImageUpload := strings.HasPrefix(field.Html, "<mul-images")
+	value := ""
+	if isEditor {
+		field.Html = getEditor(value, strings.Join(attrs, " "), true)
+	} else if isImageUpload {
+		field.Html = helper.SiginUpload("", field.TableField)
+	} else if isMulImageUpload {
+		field.Html = helper.MultiUpload([]string{}, 5)
+	} else {
+		field.Html = strings.Replace(field.Html, "{{attr}}", strings.Join(attrs, " "), 1)
+		field.Html = strings.Replace(field.Html, "{{value}}", value, 1)
+	}
+	if field.RequiredTips != "" {
+		field.Html += field.RequiredTips
+	}
+	return field.Html
+}
+
+func easyUIComponents(field *tables.IriscmsDocumentModelDsl) string {
+	var options []string
+	attrs := []string{"name='" + field.TableField + "'"}
+	if strings.Contains(field.Html, "multiline") {
+		options = append(options, "multiline:true")
+		field.Html = strings.Replace(field.Html, "multiline", "", 1)
+	}
+	if field.Required == 1 {
+		options = append(options, "required:true")
+		if field.RequiredTips != "" {
+			options = append(options, "missingMessage:'"+field.RequiredTips+"'")
+		}
+	}
+	if field.Validator != "" {
+		options = append(options, "validType:"+field.Validator)
+		options = append(options, "invalidMessage:'"+field.RequiredTips+"'")
+	}
+
+	if field.Datasource != "" {
+		options = append(options, "valueField:'value'")
+		options = append(options, "textField:'label'")
+		var dataSourceJson interface{}
+		if strings.HasPrefix(field.Datasource, "[") || strings.HasPrefix(field.Datasource, "{") {
+			err := json.Unmarshal([]byte(field.Datasource), &dataSourceJson)
+			if err == nil { // 能解出来json // 只支持kv格式,  符合ComboBox的JSON规范
+				var datas []struct {
+					Value string `json:"value"`
+					Label string `json:"label"`
+				}
+				fmt.Println(reflect.ValueOf(dataSourceJson).Type().String())
+				switch dataSourceJson.(type) {
+				case map[string]interface{}:
+					for k, v := range dataSourceJson.(map[string]interface{}) {
+						datas = append(datas, struct {
+							Value string `json:"value"`
+							Label string `json:"label"`
+						}{Value: k, Label: fmt.Sprintf("%s", v)})
+					}
+				case []interface{}:
+					for _, v := range dataSourceJson.([]interface{}) {
+						datas = append(datas, struct {
+							Value string `json:"value"`
+							Label string `json:"label"`
+						}{Value: fmt.Sprintf("%s", v), Label: fmt.Sprintf("%s", v)})
+					}
+				}
+				jsonstr, err := json.Marshal(&datas)
+
+				if err == nil {
+					s := strings.Replace( string(jsonstr), `"`, "'", -1)
+					s = strings.Replace( s, `'value'`, "value", -1)
+					s = strings.Replace( s, `'label'`, "label", -1)
+					options = append(options, "onSelect:function(record){ console.log(record) }")
+					options = append(options, "data: "+s )
+				} else {
+					panic("序列化数据失败:" + err.Error())
+				}
+			} else {
+				panic("解码失败:" + err.Error())
+			}
+		} else {
+			options = append(options, "url: '"+field.Datasource+"'")
+		}
+	}
+
+	if len(options) > 0 {
+		attrs = append(attrs, `data-options="`+strings.Join(options, ", ")+`"`)
+	}
+
+	value := ""
+	field.Html = strings.Replace(field.Html, "{{attr}}", strings.Join(attrs, " "), 1)
+	field.Html = strings.Replace(field.Html, "{{value}}", value, 1)
+	return field.Html
 }
 
 func getEditor(val, attrs string, required bool) string {

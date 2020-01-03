@@ -42,9 +42,10 @@ func (c *PublicController) Upload() {
 		isEditor = true
 	}
 	uploadDir := "upload"
-	conf := c.Ctx.Values().Get("app.config").(map[string]string)
+	//conf := c.Ctx.Values().Get("app.config").(map[string]string)
 	setting := c.Ctx.Values().Get("setting").(map[string]string)
-	engine := conf["uploadEngine"]
+	//engine := conf["uploadEngine"]
+	engine := ""
 	var uploader storage.Uploader
 	if engine != "oss" {
 		uploader = storage.NewFileUploader(uploadDir)

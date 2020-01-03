@@ -221,108 +221,31 @@ func GetImg(path, waterPath string) {
 }
 
 //MultiUpload 多图上传生成html内容
-func MultiUpload(data []string) string {
-	upload := "/public/upload"
+func MultiUpload(data []string, maxImgNum int) string {
 	box := ""
 	if len(data) > 0 {
 		for _, v := range data {
 			box += `<div class="imgbox">
-					<input
-					  class="imgbox_inputBtn"
-					  type="image"
-					  onclick="return doUpload(this)"
-					  src="` + v + `" alt="点击上传" />
+					<input class="imgbox_inputBtn" type="image" onclick="return doUpload(this)" src="` + v + `" alt="点击上传" onerror='this.src="/assets/backend/mdou/images/uploadholder.png"' />
 					<input type="hidden" value="` + v + `" name="info[thumb][]" />
+					<span style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer;    position: absolute;left: 92px;top: 10px;'  onclick=''>×</span>
 				</div>`
 		}
-	} else {
-		box += `<div class="imgbox">
-				<input
-				class="imgbox_inputBtn"
-				type="image"
-				onclick="return doUpload(this)"
-				src=""
-				alt="点击上传" />
-				<input type="hidden" value="" name="info[thumb][]" />
-		    	</div>`
 	}
 
-	str := `
-		<style>
-		.imgbox{
-			display: inline-block;
-			margin-right: 10px;
-		}
-		.imgbox_inputBtn {
-			width:50px;
-			height:50px;
-			display:block;
-			border:1px solid #ddd;
-			padding:2px
-		}
-		.add_imgbox_inputBtn{
-			width:50px;
-			height:56px;
-			display:inline;
-			border:1px solid #ddd;
-			padding:2px;
-			font-size: 54px;
-			outline: none
-		}
-		</style>
-		` + box + `
-		<div class="imgbox" onclick="return createHtml(this)">
-		  <input
-		  class="add_imgbox_inputBtn"
-		  type="button"
-		  value="+" alt="点击添加上传框"/>
-		</div>
-
-
-<script >
-    function doUpload(obj){
-            $.upload({
-                url:"` + upload + `",
-                fileName: 'formfile',
-                params: {},
-                dataType: 'json',
-                onSend: function() {
-                    return true;
-                },
-                onSubmit: function(){
-                },
-                onComplate: function(data) {
-                    if (data.errcode == 1) {
-			layer.msg(data.msg)
-		    }else{
-			$(obj).next().val(data.msg);
-			$(obj).attr('src',data.msg);
-		    }	
-                }
-            });
-            return false;
-    }
-
-    function createHtml(obj){
-        var str="<div class='imgbox'>\
-                  <input class='imgbox_inputBtn' type='image' onclick='return doUpload(this)' src='' alt='点击上传'/>\
-                  <input type='hidden' name='info[thumb][]' />\
-            </div>";
-            $(obj).before(str);
-        return false;
-    }
-
-</script>
-`
+	str := box + `
+		<div class="imgbox" onclick="return createHtml(this, ` + strconv.Itoa(maxImgNum) + `)" style="width: 95px; margin: 8px; ">
+			<img style="height: 95px;display: block;border: 1px dashed #888;padding: 30px;" src="/assets/backend/mdou/images/jiahao.png" />
+		</div>`
 	return str
 }
 
 //SiginUpload 单图上传
 func SiginUpload(data, field string) string {
 	upload := "/public/upload"
-	html := `<input onclick="` + field + `doUpload(this)" type="image" src="` + data + `" onerror='this.src="https://placeholdit.imgix.net/~text?txtsize=12&txt=暂无图片&w=100&h=100"' alt="点击上传" style="width:100px;height:100px;display:block;border:1px solid #ddd;padding:2px;float:left;" />
+	html := `<input onclick="` + field + `doUpload(this)" type="image" src="` + data + `" onerror='this.src="/assets/backend/mdou/images/uploadholder.png"' alt="点击上传" style="width:100px;height:100px;display:block;border:1px solid #ddd;padding:2px;float:left;" />
 			 <input type="hidden"  value="` + data + `" name="` + field + `" />
-			 <span style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer' onclick="` + field + `DelImg(this)">×</span>
+			 <span title="清空图片内容" style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer;position: relative;left: -25px;top: 10px;'  onclick="` + field + `DelImg(this)">×</span>
 			 `
 	html += `
 	<script>
@@ -342,6 +265,7 @@ func SiginUpload(data, field string) string {
 					}
 				}
 			});
+			return false;
 		}
 
 		function ` + field + `DelImg(obj) {
@@ -349,7 +273,7 @@ func SiginUpload(data, field string) string {
 			  btn: ['确定','取消']
 		 }, function(){
 		  $(obj).prev().val("");
-		  $(obj).prev().prev().attr('src',"https://placeholdit.imgix.net/~text?txtsize=12&txt=暂无图片&w=100&h=100");
+		  $(obj).prev().prev().attr('src',"/assets/backend/mdou/images/uploadholder.png");
 		  layer.closeAll();
 		 }, function(){});
 		}
