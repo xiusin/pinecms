@@ -12,6 +12,7 @@ import (
 	"github.com/xiusin/iriscms/src/application/models/tables"
 	"github.com/xiusin/iriscms/src/common/helper"
 	"html/template"
+	"strconv"
 	"strings"
 )
 
@@ -25,22 +26,25 @@ type DocumentController struct {
 }
 
 type ModelForm struct {
-	ID                uint     `form:"id"`
-	Enabled           string   `form:"enabled"`
-	Name              string   `form:"name"`
-	Table             string   `form:"table"`
-	FeTplIndex        string   `form:"tpl_index"`
-	FeTplList         string   `form:"tpl_list"`
-	FeTplDetail       string   `form:"tpl_detail"`
-	FieldID           []uint   `form:"field_id"`
-	FieldDataSource   []string `form:"field_datasource"`
-	FieldField        []string `form:"field_field"`
-	FieldHtml         []string `form:"field_html"`
-	FieldName         []string `form:"field_name"`
-	FieldRequired     []string `form:"field_required"`
-	FieldRequiredTips []string `form:"field_required_tips"`
-	FieldValidator    []string `form:"field_validator"`
-	FieldType         []int    `form:"field_type"`
+	ID                string   `form:"id" json:"id"`
+	intID             int64    // 赋值ID的int类型
+	Enabled           string   `form:"enabled" json:"enabled"`
+	Name              string   `form:"name" json:"name"`
+	Table             string   `form:"table" json:"table"`
+	FeTplIndex        string   `form:"tpl_index" json:"tpl_index"`
+	FeTplList         string   `form:"tpl_list" json:"tpl_list"`
+	FeTplDetail       string   `form:"tpl_detail" json:"tpl_detail"`
+	FieldID           []string `form:"field_id" json:"field_id"`
+	fieldID           []uint
+	FieldDataSource   []string `form:"field_datasource" json:"field_datasource"`
+	FieldField        []string `form:"field_field" json:"field_field"`
+	FieldHtml         []string `form:"field_html" json:"field_html"`
+	FieldName         []string `form:"field_name" json:"field_name"`
+	FieldRequired     []string `form:"field_required" json:"field_required"`
+	FieldRequiredTips []string `form:"field_required_tips" json:"field_required_tips"`
+	FieldValidator    []string `form:"field_validator" json:"field_validator"`
+	FieldType         []string `form:"field_type" json:"field_type"`
+	fieldType         []int64
 }
 
 func (c *DocumentController) BeforeActivation(b mvc.BeforeActivation) {
@@ -77,10 +81,16 @@ func (c *DocumentController) ModelList() {
 func (c *DocumentController) ModelAdd() {
 	if c.Ctx.Method() == "POST" {
 		var data ModelForm
-		if err := c.Ctx.ReadForm(&data); err != nil {
+		if err := c.Ctx.ReadJSON(&data); err != nil {
 			helper.Ajax("表单参数错误: "+err.Error(), 1, c.Ctx)
 			return
 		}
+		data.intID,_  = strconv.ParseInt(data.ID, 10, 64)
+		for _, v := range data.FieldType {
+			ty ,_  := strconv.ParseInt(v, 10, 64)
+			data.fieldType = append(data.fieldType, ty)
+		}
+
 		//查找重复记录
 		exists, err := c.Orm.Where("`name`=? or `table`=?", data.Name, data.Table).Exist(&tables.IriscmsDocumentModel{})
 		if exists {
@@ -136,6 +146,7 @@ func (c *DocumentController) ModelAdd() {
 					Mid:        documentModel.Id,
 					FormName:   name,
 					TableField: data.FieldField[k],
+					FieldType:  data.fieldType[k],
 				}
 				// todo 需要验证数据是否一一对应, 比如html我只填写了两个能否对应上
 				if len(data.FieldHtml) >= k+1 {
@@ -188,6 +199,137 @@ func (c *DocumentController) ModelAdd() {
 }
 
 func (c *DocumentController) ModelEdit() {
+	if c.Ctx.Method() == "POST" {
+		var data ModelForm
+		if err := c.Ctx.ReadJSON(&data); err != nil {
+			helper.Ajax("表单参数错误: "+err.Error(), 1, c.Ctx)
+			return
+		}
+
+		data.intID,_  = strconv.ParseInt(data.ID, 10, 64)
+		for _, v := range data.FieldType {
+			ty ,_  := strconv.ParseInt(v, 10, 64)
+			data.fieldType = append(data.fieldType, ty)
+		}
+
+		// 先看模型
+		document := models.NewDocumentModel(c.Orm).GetByID(data.intID)
+		if document == nil || document.Id < 1 {
+			helper.Ajax("模型不存在", 1, c.Ctx)
+			return
+		}
+		//查找重复记录
+		exists, err := c.Orm.Where("(`name`=? or `table`=?) and id <> ?", data.Name, data.Table, data.ID).Exist(&tables.IriscmsDocumentModel{})
+		if exists {
+			helper.Ajax("模型名称或表名已经存在", 1, c.Ctx)
+			return
+		}
+
+		// 判断后续字段名称是否一致
+		var m = map[string]struct{}{}
+		for _, v := range data.FieldName {
+			if _, ok := m[v]; ok {
+				helper.Ajax("表单名称重复: "+v, 1, c.Ctx)
+				return
+			} else {
+				m[v] = struct{}{}
+			}
+		}
+		m = map[string]struct{}{}
+		for _, v := range data.FieldField {
+			if _, ok := m[v]; ok {
+				helper.Ajax("字段名重复: "+v, 1, c.Ctx)
+				return
+			} else {
+				m[v] = struct{}{}
+			}
+		}
+
+		var enabled = 0
+		if data.Enabled == "on" {
+			enabled = 1
+		}
+		_, err = c.Orm.Transaction(func(session *xorm.Session) (i interface{}, err error) {
+			document.Name = data.Name
+			document.Enabled = enabled
+			document.FeTplIndex = helper.EasyUiIDToFilePath(data.FeTplIndex)
+			document.FeTplList = helper.EasyUiIDToFilePath(data.FeTplList)
+			document.FeTplDetail = helper.EasyUiIDToFilePath(data.FeTplDetail)
+			session.Update(document)
+			// 先删除所有字段
+			if models.NewDocumentFieldDslModel(c.Orm).DeleteByMID(document.Id) == false {
+				return nil, errors.New("删除表字段失败")
+			}
+			var fields []tables.IriscmsDocumentModelDsl
+			for k, name := range data.FieldName {
+				f := tables.IriscmsDocumentModelDsl{
+					Mid:        document.Id,
+					FormName:   name,
+					TableField: data.FieldField[k],
+					FieldType:  data.fieldType[k],
+				}
+				// todo 需要验证数据是否一一对应, 比如html我只填写了两个能否对应上
+				if len(data.FieldHtml) >= k+1 {
+					f.Html = data.FieldHtml[k]
+				}
+				if len(data.FieldDataSource) >= k+1 {
+					f.Datasource = data.FieldDataSource[k]
+					if strings.HasPrefix(f.Datasource, "[") || strings.HasPrefix(f.Datasource, "{") {
+						var dataSourceJson interface{}
+						if err := json.Unmarshal([]byte(f.Datasource), &dataSourceJson); err != nil {
+							return nil, err
+						}
+					}
+				}
+				if len(data.FieldRequiredTips) >= k+1 {
+					f.RequiredTips = data.FieldRequiredTips[k]
+				}
+				if len(data.FieldValidator) >= k+1 {
+					f.Validator = data.FieldValidator[k]
+				}
+				if len(data.FieldRequired) >= k+1 && data.FieldRequired[k] == "on" {
+					f.Required = 1
+				}
+				fields = append(fields, f)
+			}
+			rest, err := session.Insert(fields)
+			if rest < int64(len(fields)) {
+				if err == nil {
+					err = errors.New("批量添加模型字段失败")
+				}
+				return nil, err
+			}
+			return true, nil
+		})
+		if err != nil {
+			helper.Ajax("更新模型失败", 1, c.Ctx)
+			return
+		}
+		helper.Ajax("更新模型成功", 0, c.Ctx)
+		return
+	}
+	mid, err := c.Ctx.URLParamInt64("mid")
+	if err != nil || mid == 0 {
+		helper.Ajax("参数错误", 1, c.Ctx)
+		return
+	}
+	currentPos := models.NewMenuModel(c.Orm).CurrentPos(64)
+	list, _ := models.NewDocumentModelFieldModel(c.Orm).GetList(1, 1000)
+	// 查找模型信息
+	document := models.NewDocumentModel(c.Orm).GetByID(mid)
+	if document == nil || document.Id < 1 {
+		helper.Ajax("模型不存在或已删除", 1, c.Ctx)
+		return
+	}
+	fields := models.NewDocumentFieldDslModel(c.Orm).GetList(mid)
+	c.Ctx.ViewData("fields", fields)
+	c.Ctx.ViewData("document", document)
+	c.Ctx.ViewData("list", list)
+	c.Ctx.ViewData("title", currentPos)
+	listJson, _ := json.Marshal(list)
+	golog.Error(string(listJson))
+
+	c.Ctx.ViewData("listJson", string(listJson))
 	c.Ctx.View("backend/model_edit.html")
 }
 

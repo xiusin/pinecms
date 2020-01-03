@@ -242,43 +242,9 @@ func MultiUpload(data []string, maxImgNum int) string {
 
 //SiginUpload 单图上传
 func SiginUpload(data, field string) string {
-	upload := "/public/upload"
 	html := `<input onclick="` + field + `doUpload(this)" type="image" src="` + data + `" onerror='this.src="/assets/backend/mdou/images/uploadholder.png"' alt="点击上传" style="width:100px;height:100px;display:block;border:1px solid #ddd;padding:2px;float:left;" />
 			 <input type="hidden"  value="` + data + `" name="` + field + `" />
-			 <span title="清空图片内容" style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer;position: relative;left: -25px;top: 10px;'  onclick="` + field + `DelImg(this)">×</span>
-			 `
-	html += `
-	<script>
-		function ` + field + `doUpload(obj) {
-			$.upload({
-				url:"` + upload + `",
-				fileName: 'formfile',
-				dataType: 'json',
-				onSend: function (){return true;},
-				onSubmit:function(){return true;},
-				onComplate: function(data) {
-					if (data.errcode == 1) {
-						layer.msg(data.errmsg);
-					}else{
-						$(obj).next().val(data.errmsg);
-						$(obj).attr('src',data.errmsg);
-					}
-				}
-			});
-			return false;
-		}
-
-		function ` + field + `DelImg(obj) {
-		 layer.confirm('要删除此图片吗？', {
-			  btn: ['确定','取消']
-		 }, function(){
-		  $(obj).prev().val("");
-		  $(obj).prev().prev().attr('src',"/assets/backend/mdou/images/uploadholder.png");
-		  layer.closeAll();
-		 }, function(){});
-		}
-	</script>
-	`
+			 <span title="清空图片内容" style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer;position: relative;left: -25px;top: 10px;'  onclick="DelImg(this)">×</span>`
 	return html
 }
 

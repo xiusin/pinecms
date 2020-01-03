@@ -5,12 +5,10 @@
     <title>{{.category.Catname}} 内容发布</title>
     {{template "backend/public_javascript.html"}}
     {{template "backend/public_umeditor.html"}}
-    <link rel="stylesheet" type="text/css" href="/assets/backend/static/jquery.tagsinput.css"/>
-    <script src="/assets/backend/static/jquery.tagsinput.js"></script>
     <script src="/assets/backend/static/jquery.upload.js"></script>
-{{/*    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>*/}}
-{{/*    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.min.js"></script>*/}}
-{{/*    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/localization/messages_zh.js"></script>*/}}
+    {{/*    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>*/}}
+    {{/*    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.min.js"></script>*/}}
+    {{/*    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/localization/messages_zh.js"></script>*/}}
     <style>
         .dialogtable {
             width: 100%;
@@ -49,20 +47,22 @@
             padding: 2px
         }
 
-        table.mdoutable{
+        table.mdoutable {
             width: 100%;
-            color:#333333;
+            color: #333333;
             border-width: 1px;
             border-color: #666666;
             border-collapse: collapse;
         }
+
         table.mdoutable th {
             border-width: 1px;
             padding: 8px;
             border-style: dotted;
-            border-color: rgb(204,204,204);
+            border-color: rgb(204, 204, 204);
             background-color: #dedede;
         }
+
         .textbox .textbox-text, .textbox {
             -moz-border-radius: 0;
             -webkit-border-radius: 0;
@@ -73,7 +73,7 @@
             border-width: 1px;
             padding: 8px;
             border-style: dotted;
-            border-color: rgb(204,204,204);
+            border-color: rgb(204, 204, 204);
             background-color: #ffffff;
         }
 
@@ -83,22 +83,11 @@
 <body>
 {{.form}}
 <script type="text/javascript">
-    $('#tags').tagsInput({
-        'height': '50px', //设置高度
-        'width': '446px',  //设置宽度
-        'interactive': true, //是否允许添加标签，false为阻止
-        'defaultText': '添加标签', //默认文字
-        onChange: function (tag) {
-            console.log(arguments)
-        },
-        'placeholderColor': '#666666' //设置defaultText的颜色
-    });
     $.validator.setDefaults({
         submitHandler: function () {
             contentPageFormSubmit()
         }
     });
-    $("#content_page_form").validate();
 
     function contentPageFormSubmit() {
         $.post('/b/content/add?catid={{.category.Catid}}', $("#content_page_form").serialize(), function (res) {
@@ -122,8 +111,6 @@
             onSend: function () {
                 return true;
             },
-            onSubmit: function () {
-            },
             onComplate: function (data) {
                 if (data.errcode == 1) {
                     parent.$.messager.alert("错误提醒", data.errmsg, "error")
@@ -138,7 +125,7 @@
 
     function createHtml(obj, maxNumInt) {
         if (maxNumInt > 0 && $(obj).parent().find(".imgbox").size() >= maxNumInt + 1) {
-            parent.$.messager.alert("提醒","图片限制数量已达上限"+maxNumInt+",无法添加", "info");
+            parent.$.messager.alert("提醒", "图片限制数量已达上限" + maxNumInt + ",无法添加", "info");
             return false;
         }
         var str = "<div class='imgbox'>\
@@ -148,6 +135,17 @@
         </div>";
         $(obj).before(str);
         return false;
+    }
+
+
+    function DelImg(obj) {
+        layer.confirm('要删除此图片吗？', {
+            btn: ['确定','取消']
+        }, function(){
+            $(obj).prev().val("");
+            $(obj).prev().prev().attr('src',"/assets/backend/mdou/images/uploadholder.png");
+            layer.closeAll();
+        }, function(){});
     }
 
 </script>

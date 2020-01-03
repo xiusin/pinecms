@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
-	"reflect"
 	"strconv"
 	"strings"
 
@@ -38,7 +37,7 @@ func buildModelForm(orm *xorm.Engine, mid int64) string {
 		panic("模型不存在")
 	}
 	fields := models.NewDocumentFieldDslModel(orm).GetList(mid)
-	h := "<form method='POST' enctype='multipart/form-data'><input type='hidden' value='" + documentModel.Table + "'><table cellpadding='2' class='dialogtable' style='width: 100%;'>"
+	h := "<form method='POST' id='content_page_form' enctype='multipart/form-data'><input type='hidden' value='" + documentModel.Table + "'><table cellpadding='2' class='dialogtable' style='width: 100%;'>"
 	for _, field := range fields {
 		h += `<tr><td style="width: 150px;">` + field.FormName + `:</td><td>`
 		if strings.Contains(field.Html, "easyui-") {
@@ -92,17 +91,17 @@ func easyUIComponents(field *tables.IriscmsDocumentModelDsl) string {
 	}
 
 	if field.Datasource != "" {
+		// 多选  单选 下拉 联动需要在这里加载数据源
 		options = append(options, "valueField:'value'")
 		options = append(options, "textField:'label'")
+		var datas []struct {
+			Value string `json:"value"`
+			Label string `json:"label"`
+		}
 		var dataSourceJson interface{}
 		if strings.HasPrefix(field.Datasource, "[") || strings.HasPrefix(field.Datasource, "{") {
 			err := json.Unmarshal([]byte(field.Datasource), &dataSourceJson)
 			if err == nil { // 能解出来json // 只支持kv格式,  符合ComboBox的JSON规范
-				var datas []struct {
-					Value string `json:"value"`
-					Label string `json:"label"`
-				}
-				fmt.Println(reflect.ValueOf(dataSourceJson).Type().String())
 				switch dataSourceJson.(type) {
 				case map[string]interface{}:
 					for k, v := range dataSourceJson.(map[string]interface{}) {
@@ -119,29 +118,36 @@ func easyUIComponents(field *tables.IriscmsDocumentModelDsl) string {
 						}{Value: fmt.Sprintf("%s", v), Label: fmt.Sprintf("%s", v)})
 					}
 				}
-				jsonstr, err := json.Marshal(&datas)
-
-				if err == nil {
-					s := strings.Replace( string(jsonstr), `"`, "'", -1)
-					s = strings.Replace( s, `'value'`, "value", -1)
-					s = strings.Replace( s, `'label'`, "label", -1)
-					options = append(options, "onSelect:function(record){ console.log(record) }")
-					options = append(options, "data: "+s )
-				} else {
-					panic("序列化数据失败:" + err.Error())
-				}
 			} else {
 				panic("解码失败:" + err.Error())
 			}
-		} else {
-			options = append(options, "url: '"+field.Datasource+"'")
+		}
+		if field.FieldType == 5 || field.FieldType == 6 {
+			if len(datas) == 0 {
+				options = append(options, "url: '"+field.Datasource+"'")
+			} else {
+				jsonstr, err := json.Marshal(&datas)
+				if err == nil {
+					s := strings.Replace(string(jsonstr), `"`, "'", -1)
+					s = strings.Replace(s, `'value'`, "value", -1)
+					s = strings.Replace(s, `'label'`, "label", -1)
+					options = append(options, "onSelect:function(record){ console.log(record) }")
+					options = append(options, "data: "+s)
+				} else {
+					panic("序列化数据失败:" + err.Error())
+				}
+			}
+		} else if field.FieldType == 7 || field.FieldType == 8 {
+			var htm = ""
+			for _, item := range datas {
+				htm += strings.Replace(field.Html, "{{value}}", item.Value, 1) + strings.Repeat("&nbsp;", 3) + item.Label + strings.Repeat("&nbsp;", 8)
+			}
+			field.Html = htm
 		}
 	}
-
 	if len(options) > 0 {
 		attrs = append(attrs, `data-options="`+strings.Join(options, ", ")+`"`)
 	}
-
 	value := ""
 	field.Html = strings.Replace(field.Html, "{{attr}}", strings.Join(attrs, " "), 1)
 	field.Html = strings.Replace(field.Html, "{{value}}", value, 1)
@@ -150,6 +156,5 @@ func easyUIComponents(field *tables.IriscmsDocumentModelDsl) string {
 
 func getEditor(val, attrs string, required bool) string {
 	rid := strconv.Itoa(rand.Int())
-	return `<textarea id="component_editor_um_` + rid + `" ` + attrs + ` style="width:100%;height:360px" >` + val + `</textarea>
-<script> UM.getEditor('component_editor_um_` + rid + `');</script>`
+	return `<textarea id="component_editor_um_` + rid + `" ` + attrs + ` style="width:100%;height:360px" >` + val + `</textarea><script> UM.getEditor('component_editor_um_` + rid + `');</script>`
 }
