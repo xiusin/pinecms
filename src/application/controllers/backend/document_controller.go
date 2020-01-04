@@ -79,15 +79,16 @@ func (c *DocumentController) ModelList() {
 }
 
 func (c *DocumentController) ModelAdd() {
+	list, _ := models.NewDocumentModelFieldModel(c.Orm).GetList(1, 1000)
 	if c.Ctx.Method() == "POST" {
 		var data ModelForm
 		if err := c.Ctx.ReadJSON(&data); err != nil {
 			helper.Ajax("表单参数错误: "+err.Error(), 1, c.Ctx)
 			return
 		}
-		data.intID,_  = strconv.ParseInt(data.ID, 10, 64)
+		data.intID, _ = strconv.ParseInt(data.ID, 10, 64)
 		for _, v := range data.FieldType {
-			ty ,_  := strconv.ParseInt(v, 10, 64)
+			ty, _ := strconv.ParseInt(v, 10, 64)
 			data.fieldType = append(data.fieldType, ty)
 		}
 
@@ -140,34 +141,32 @@ func (c *DocumentController) ModelAdd() {
 				}
 				return nil, err
 			}
+
+			// 查找h
+			var fieldHtmlsMap = map[int64]*tables.IriscmsDocumentModelField{}
+			for _, field := range list {
+				fieldHtmlsMap[field.Id] = field
+			}
+
 			var fields []tables.IriscmsDocumentModelDsl
 			for k, name := range data.FieldName {
 				f := tables.IriscmsDocumentModelDsl{
-					Mid:        documentModel.Id,
-					FormName:   name,
-					TableField: data.FieldField[k],
-					FieldType:  data.fieldType[k],
+					Mid:          documentModel.Id,
+					FormName:     name,
+					TableField:   data.FieldField[k],
+					FieldType:    data.fieldType[k],
+					Datasource:   data.FieldDataSource[k],
+					RequiredTips: data.FieldRequiredTips[k],
+					Validator:    data.FieldValidator[k],
 				}
-				// todo 需要验证数据是否一一对应, 比如html我只填写了两个能否对应上
-				if len(data.FieldHtml) >= k+1 {
-					f.Html = data.FieldHtml[k]
-				}
-				if len(data.FieldDataSource) >= k+1 {
-					f.Datasource = data.FieldDataSource[k]
-					if strings.HasPrefix(f.Datasource, "[") || strings.HasPrefix(f.Datasource, "{") {
-						var dataSourceJson interface{}
-						if err := json.Unmarshal([]byte(f.Datasource), &dataSourceJson); err != nil {
-							return nil, err
-						}
+				f.Html = fieldHtmlsMap[data.fieldType[k]].Html
+				if strings.HasPrefix(f.Datasource, "[") || strings.HasPrefix(f.Datasource, "{") {
+					var dataSourceJson interface{}
+					if err := json.Unmarshal([]byte(f.Datasource), &dataSourceJson); err != nil {
+						return nil, err
 					}
 				}
-				if len(data.FieldRequiredTips) >= k+1 {
-					f.RequiredTips = data.FieldRequiredTips[k]
-				}
-				if len(data.FieldValidator) >= k+1 {
-					f.Validator = data.FieldValidator[k]
-				}
-				if len(data.FieldRequired) >= k+1 && data.FieldRequired[k] == "on" {
+				if data.FieldRequired[k] == "on" {
 					f.Required = 1
 				}
 				fields = append(fields, f)
@@ -190,7 +189,7 @@ func (c *DocumentController) ModelAdd() {
 		return
 	}
 	currentPos := models.NewMenuModel(c.Orm).CurrentPos(64)
-	list, _ := models.NewDocumentModelFieldModel(c.Orm).GetList(1, 1000)
+
 	c.Ctx.ViewData("list", list)
 	c.Ctx.ViewData("title", currentPos)
 	listJson, _ := json.Marshal(list)
@@ -199,6 +198,7 @@ func (c *DocumentController) ModelAdd() {
 }
 
 func (c *DocumentController) ModelEdit() {
+	list, _ := models.NewDocumentModelFieldModel(c.Orm).GetList(1, 1000)
 	if c.Ctx.Method() == "POST" {
 		var data ModelForm
 		if err := c.Ctx.ReadJSON(&data); err != nil {
@@ -206,9 +206,9 @@ func (c *DocumentController) ModelEdit() {
 			return
 		}
 
-		data.intID,_  = strconv.ParseInt(data.ID, 10, 64)
+		data.intID, _ = strconv.ParseInt(data.ID, 10, 64)
 		for _, v := range data.FieldType {
-			ty ,_  := strconv.ParseInt(v, 10, 64)
+			ty, _ := strconv.ParseInt(v, 10, 64)
 			data.fieldType = append(data.fieldType, ty)
 		}
 
@@ -251,6 +251,7 @@ func (c *DocumentController) ModelEdit() {
 		}
 		_, err = c.Orm.Transaction(func(session *xorm.Session) (i interface{}, err error) {
 			document.Name = data.Name
+			document.Table = data.Table
 			document.Enabled = enabled
 			document.FeTplIndex = helper.EasyUiIDToFilePath(data.FeTplIndex)
 			document.FeTplList = helper.EasyUiIDToFilePath(data.FeTplList)
@@ -260,34 +261,30 @@ func (c *DocumentController) ModelEdit() {
 			if models.NewDocumentFieldDslModel(c.Orm).DeleteByMID(document.Id) == false {
 				return nil, errors.New("删除表字段失败")
 			}
+			var fieldHtmlsMap = map[int64]*tables.IriscmsDocumentModelField{}
+			for _, field := range list {
+				fieldHtmlsMap[field.Id] = field
+			}
+
 			var fields []tables.IriscmsDocumentModelDsl
 			for k, name := range data.FieldName {
 				f := tables.IriscmsDocumentModelDsl{
-					Mid:        document.Id,
-					FormName:   name,
-					TableField: data.FieldField[k],
-					FieldType:  data.fieldType[k],
+					Mid:          document.Id,
+					FormName:     name,
+					TableField:   data.FieldField[k],
+					FieldType:    data.fieldType[k],
+					Datasource:   data.FieldDataSource[k],
+					RequiredTips: data.FieldRequiredTips[k],
+					Validator:    data.FieldValidator[k],
 				}
-				// todo 需要验证数据是否一一对应, 比如html我只填写了两个能否对应上
-				if len(data.FieldHtml) >= k+1 {
-					f.Html = data.FieldHtml[k]
-				}
-				if len(data.FieldDataSource) >= k+1 {
-					f.Datasource = data.FieldDataSource[k]
-					if strings.HasPrefix(f.Datasource, "[") || strings.HasPrefix(f.Datasource, "{") {
-						var dataSourceJson interface{}
-						if err := json.Unmarshal([]byte(f.Datasource), &dataSourceJson); err != nil {
-							return nil, err
-						}
+				f.Html = fieldHtmlsMap[data.fieldType[k]].Html
+				if strings.HasPrefix(f.Datasource, "[") || strings.HasPrefix(f.Datasource, "{") {
+					var dataSourceJson interface{}
+					if err := json.Unmarshal([]byte(f.Datasource), &dataSourceJson); err != nil {
+						return nil, err
 					}
 				}
-				if len(data.FieldRequiredTips) >= k+1 {
-					f.RequiredTips = data.FieldRequiredTips[k]
-				}
-				if len(data.FieldValidator) >= k+1 {
-					f.Validator = data.FieldValidator[k]
-				}
-				if len(data.FieldRequired) >= k+1 && data.FieldRequired[k] == "on" {
+				if data.FieldRequired[k] == "on" {
 					f.Required = 1
 				}
 				fields = append(fields, f)
@@ -297,12 +294,13 @@ func (c *DocumentController) ModelEdit() {
 				if err == nil {
 					err = errors.New("批量添加模型字段失败")
 				}
+				golog.Error("修改模型", err)
 				return nil, err
 			}
 			return true, nil
 		})
 		if err != nil {
-			helper.Ajax("更新模型失败", 1, c.Ctx)
+			helper.Ajax("更新模型失败:"+err.Error(), 1, c.Ctx)
 			return
 		}
 		helper.Ajax("更新模型成功", 0, c.Ctx)
@@ -314,7 +312,6 @@ func (c *DocumentController) ModelEdit() {
 		return
 	}
 	currentPos := models.NewMenuModel(c.Orm).CurrentPos(64)
-	list, _ := models.NewDocumentModelFieldModel(c.Orm).GetList(1, 1000)
 	// 查找模型信息
 	document := models.NewDocumentModel(c.Orm).GetByID(mid)
 	if document == nil || document.Id < 1 {
@@ -323,6 +320,7 @@ func (c *DocumentController) ModelEdit() {
 	}
 	fields := models.NewDocumentFieldDslModel(c.Orm).GetList(mid)
 	c.Ctx.ViewData("fields", fields)
+	c.Ctx.ViewData("fieldslen", len(fields))
 	c.Ctx.ViewData("document", document)
 	c.Ctx.ViewData("list", list)
 	c.Ctx.ViewData("title", currentPos)

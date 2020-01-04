@@ -28,6 +28,7 @@
 
     //添加模型
     function addModel() {
+        $("#pagetabs").tabs("close", "修改模型");
         var url = "/b/model/add";
         openUrl(url, "添加模型");
     }
@@ -54,6 +55,7 @@
     }
 
     function editModel(id) {
+        $("#pagetabs").tabs("close", "添加模型");
         var url = "/b/model/edit?mid=" + id;
         openUrl(url, "修改模型");
     }

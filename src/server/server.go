@@ -73,7 +73,7 @@ func initDatabase() {
 	_orm.SetMaxOpenConns(int(o.MaxOpenConns))
 	_orm.SetMaxIdleConns(int(o.MaxIdleConns))
 	XOrmEngine = _orm
-	syncTable()
+	//syncTable()
 }
 
 func initApp() {

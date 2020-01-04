@@ -24,9 +24,10 @@ func (w *DocumentModelDslModel) GetList(mid int64)  []tables.IriscmsDocumentMode
 }
 
 func (w *DocumentModelDslModel) DeleteByMID(mid int64) bool {
-	count, err := w.Orm.Where("mid=?", mid).Delete(&tables.IriscmsDocumentModelDsl{})
+	_, err := w.Orm.Where("mid=?", mid).Delete(&tables.IriscmsDocumentModelDsl{})
 	if err != nil {
-		golog.Error(err)
+		golog.Error("DocumentModelDslModel.DeleteByMID", err)
+		return false
 	}
-	return count > 0
+	return true
 }

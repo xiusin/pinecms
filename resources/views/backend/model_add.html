@@ -32,11 +32,12 @@
                     </div>
 
                     <div id="tt" class="easyui-tabs" style="width:750px;height:576px;">
-                        <div title="标题">
+                        <div title="未命名字段1"  data-options="closable:true">
                             <table cellpadding="5" style="width: 100%;">
                                 <tr>
                                     <td style="width: 150px;">表单名称:</td>
-                                    <td><input class="easyui-textbox" type="text" name="field_name" style="width: 300px" data-options="required:true, onChange: textBoxOnChange"/></td>
+                                    <td><input class="easyui-textbox" type="text" name="field_name" style="width: 300px"
+                                               data-options="required:true, onChange: textBoxOnChange"/></td>
                                 </tr>
 
                                 <tr>
@@ -75,8 +76,8 @@
                                 <tr>
                                     <td>数据源:</td>
                                     <td><input class="easyui-textbox" name="field_datasource"
-                                               data-options="multiline:true, prompt: '组件数据源, 写入Json或者接口地址'"
-                                               style="height:80px; width: 300px;"/>
+                                               data-options="multiline:true, prompt: '请填写如json/数组格式或者url接口地址, 如不能解析,导致页面无法渲染. json支持key为string格式. 其他格式可能无法达到预期'"
+                                               style="height:150px; width: 500px;"/>
                                     </td>
                                 </tr>
 
@@ -90,18 +91,10 @@
                                     <td>字段验证器:</td>
                                     <td>
                                         <input class="easyui-textbox html" name="field_validator"
-                                               data-options="multiline:true, prompt: '遵循easyui的验证规则或自定义'"
-                                               style="height:50px; width: 500px;"/>
+                                               data-options="multiline:true, prompt: 'easyui标准验证器'"
+                                               style="height:119px; width: 500px;"/>
                                     </td>
                                 </tr>
-
-                                <tr>
-                                    <td>控件html:</td>
-                                    <td class="html"><input class="easyui-textbox" id="html_0" name="field_html"
-                                                            data-options="multiline:true"
-                                                            style="height:150px; width: 500px;"/></td>
-                                </tr>
-
                             </table>
                         </div>
                     </div>
@@ -198,7 +191,7 @@
         <tr>
             <td>数据源:</td>
             <td><input class="easyui-textbox" name="field_datasource"
-                       data-options="multiline:true, prompt: '组件数据源, 写入Json或者接口地址'" style="height:80px; width: 300px;"/>
+                       data-options="multiline:true, prompt: '请填写如json/数组格式或者url接口地址, 如不能解析,导致页面无法渲染. json支持key为string格式. 其他格式可能无法达到预期'" style="height:150px; width: 500px;"/>
             </td>
         </tr>
 
@@ -212,45 +205,45 @@
             <td>字段验证器:</td>
             <td>
                 <input class="easyui-textbox html" name="field_validator"
-                       data-options="multiline:true, prompt: '遵循easyui的验证规则或自定义'"
-                       style="height:50px; width: 500px;"/>
+                       data-options="multiline:true, prompt: 'easyui标准验证器'"
+                       style="height:119px; width: 500px;"/>
             </td>
         </tr>
-
-        <tr>
-            <td>控件html:</td>
-            <td class="html"><input class="easyui-textbox" id="html_{$index$}" name="field_html"
-                                    data-options="multiline:true"
-                                    style="height:150px; width: 500px;"/></td>
-        </tr>
-
     </table>
 </script>
 
 <script>
-
-    // todo 关闭标题为"修改模型"
+    var htmlObjects = new Set();
     var tt = $('#tt');
     tt.width($("#mode-definition").width()).tabs({
         tools: '#tab-tools',
         onBeforeClose: function (title, index) {
             $.messager.confirm('删除字段', '确定要删除: "' + title + '" 吗, 如果字段已经存在表字段内,将不会删除表字段?', function (r) {
                 if (r) {
-                    // var opts = tt.tabs('options');
-                    // var bc = opts.onBeforeClose;
+                    var opts = tt.tabs('options');
+                    var bc = opts.onBeforeClose;
+                    opts.onBeforeClose = function () {
+                    };
                     tt.tabs('close', index);
-                    // opts.onBeforeClose = bc;  // restore the event function
+                    title = title.replace("未命名字段", "")
+                    htmlObjects.delete("#html_" + title)
+                    opts.onBeforeClose = bc;  // restore the event function
                 }
             });
             return false;	// prevent from closing
+        },
+        onSelect: function (title, index) {
+
         }
     }).tabs({tabPosition: "left"});
-    let index = 0;
+    let index = 1;
     var creating = -1;
+
     function addPanel() {
         index++;
         creating = index
         tt.tabs('add', {title: '未命名字段' + index, content: $("#tpl").html().replace("{$index$}", index), closable: true});
+        htmlObjects.add("#html_" + index)
     }
 
     let fields = JSON.parse({{.listJson}});
@@ -277,6 +270,7 @@
         // 获取当前tab的索引
         $("#html_" + idx).textbox("setValue", field.Html);
     }
+
     function textBoxOnChange(newValue, oldValue) {
         if (newValue !== "") {
             tt.find('.tabs-selected').find(".tabs-title").html(newValue);
@@ -284,6 +278,7 @@
         }
         $(this).textbox("setValue", oldValue)
     }
+
     var locker = false;
     $('#ff').form({
         url: "/b/model/add",
@@ -304,11 +299,10 @@
                 $.ajax({
                     url: "/b/model/add",
                     method: "POST",
-                    data:JSON.stringify(data),
-                    contentType:"application/json",  //缺失会出现URL编码，无法转成json对象
+                    data: JSON.stringify(data),
+                    contentType: "application/json",  //缺失会出现URL编码，无法转成json对象
                     dataType: "json",
                     success: function (data) {
-                        data = eval('(' + data + ')');
                         locker = false;
                         $.messager.progress('close');
                         if (data.errcode) {

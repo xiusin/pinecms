@@ -83,12 +83,11 @@
 <body>
 {{.form}}
 <script type="text/javascript">
-    $.validator.setDefaults({
-        submitHandler: function () {
-            contentPageFormSubmit()
-        }
-    });
-
+    // $.validator.setDefaults({
+    //     submitHandler: function () {
+    //         contentPageFormSubmit()
+    //     }
+    // });
     function contentPageFormSubmit() {
         $.post('/b/content/add?catid={{.category.Catid}}', $("#content_page_form").serialize(), function (res) {
             if (res.errcode) {
