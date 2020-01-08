@@ -97,6 +97,14 @@
                                     </tr>
 
                                     <tr>
+                                        <td>默认值:</td>
+                                        <td><input class="easyui-textbox" name="field_default"
+                                                   data-options="prompt: '数据源里的选项,否则无效, 仅对单选,多选,开关按钮生效'"
+                                                   style="width:300px; "/>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
                                         <td>类型描述:</td>
                                         <td>
                                         </td>
@@ -215,6 +223,14 @@
             </tr>
 
             <tr>
+                <td>默认值:</td>
+                <td><input class="easyui-textbox" name="field_default"
+                           data-options="prompt: '数据源里的选项,否则无效, 仅对单选,多选,开关按钮生效'"
+                           style="width:300px; "/>
+                </td>
+            </tr>
+
+            <tr>
                 <td>类型描述:</td>
                 <td>
                 </td>
@@ -291,7 +307,7 @@
         const field = hash.get(Number(rc.value));
         // 填充当前tab里的内容
         const that = $(this);
-        const desc = that.parents("tr").next().next();
+        const desc = that.parents("tr").next().next().next();
         desc.find("td").eq(1).html(field.Desc);
         // 获取当前tab的索引
         $("#html_" + idx).textbox("setValue", field.Html);
