@@ -37,9 +37,12 @@ func buildModelForm(orm *xorm.Engine, mid int64) string {
 		panic("模型不存在")
 	}
 	fields := models.NewDocumentFieldDslModel(orm).GetList(mid)
-	h := "<form method='POST' id='content_page_form' enctype='multipart/form-data'><input type='hidden' value='" + documentModel.Table + "'><table cellpadding='2' class='dialogtable' style='width: 100%;'>"
+	h := "<form method='POST' id='content_page_form' enctype='multipart/form-data'>" +
+		"	<input type='hidden' value='" + documentModel.Table + "'>" +
+		"		<table cellpadding='2' class='dialogtable' style='width: 100%;'>"
 	for _, field := range fields {
-		h += `<tr><td style="width: 150px;">` + field.FormName + `:</td><td>`
+		h += `			<tr><td style="width: 150px;">` + field.FormName + `:</td><td>
+`
 		if strings.Contains(field.Html, "easyui-") {
 			h += easyUIComponents(&field)
 		} else {
@@ -140,7 +143,12 @@ func easyUIComponents(field *tables.IriscmsDocumentModelDsl) string {
 		} else if field.FieldType == 7 || field.FieldType == 8 {
 			var htm = ""
 			for _, item := range datas {
-				htm += strings.Replace(field.Html, "{{value}}", item.Value, 1) + strings.Repeat("&nbsp;", 3) + item.Label + strings.Repeat("&nbsp;", 8)
+				if item.Value == field.Default {
+					field.Html = strings.Replace(field.Html, "{{default}}", "checked", 1)
+				} else {
+					field.Html = strings.Replace(field.Html, "{{default}}", "", 1)
+				}
+				htm += strings.Replace(field.Html, "{{value}}", item.Value, -1) + strings.Repeat("&nbsp;", 3) + item.Label + strings.Repeat("&nbsp;", 8)
 			}
 			field.Html = htm
 		}
@@ -149,8 +157,8 @@ func easyUIComponents(field *tables.IriscmsDocumentModelDsl) string {
 		attrs = append(attrs, `data-options="`+strings.Join(options, ", ")+`"`)
 	}
 	value := ""
-	field.Html = strings.Replace(field.Html, "{{attr}}", strings.Join(attrs, " "), 1)
-	field.Html = strings.Replace(field.Html, "{{value}}", value, 1)
+	field.Html = strings.Replace(field.Html, "{{attr}}", strings.Join(attrs, " "), -1)
+	field.Html = strings.Replace(field.Html, "{{value}}", value, -1)
 	return field.Html
 }
 

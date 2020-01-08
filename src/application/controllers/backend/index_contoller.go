@@ -93,11 +93,11 @@ func (this *IndexController) Menu() {
 	cacheKey := fmt.Sprintf(controllers.CacheAdminMenuByRoleIdAndMenuId, roleid, meid)
 	var menujs []map[string]interface{} //要返回json的对象
 	var data string
-	if meid > 0 {
-		data = this.Cache.Get(cacheKey)
-	} else {
+	//if meid > 0 {
+	//	data = this.Cache.Get(cacheKey)
+	//} else {
 		data = ""
-	}
+	//}
 	if data == "" || json.Unmarshal([]byte(data), &menujs) != nil {
 		for _, v := range menus {
 			menu := models.NewMenuModel(this.Orm).GetMenu(v.Id, roleid)

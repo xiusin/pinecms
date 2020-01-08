@@ -6,7 +6,7 @@
 #
 
 
-CREATE DATABASE IF NOT EXISTS `iriscms` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_0900_ai_ci;
+CREATE DATABASE IF NOT EXISTS `iriscms` DEFAULT CHARACTER SET utf8mb4;
 USE `iriscms`;
 
 
@@ -144,7 +144,7 @@ CREATE TABLE `iriscms_document_model` (
   `fe_tpl_detail` varchar(128) DEFAULT NULL COMMENT '模型前端详情模板地址',
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='文档模型用于存储自定义类型的文档内容';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4  ROW_FORMAT=DYNAMIC COMMENT='文档模型用于存储自定义类型的文档内容';
 
 
 CREATE TABLE `iriscms_document_model_dsl` (
@@ -160,7 +160,7 @@ CREATE TABLE `iriscms_document_model_dsl` (
   `deleted_at` datetime DEFAULT NULL,
   `field_type` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=305 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=305 DEFAULT CHARSET=utf8mb4  ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `iriscms_document_model_field` (
@@ -170,7 +170,7 @@ CREATE TABLE `iriscms_document_model_field` (
   `desc` varchar(128) DEFAULT NULL COMMENT '字段描述',
   `html` text,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4  ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `iriscms_link` (

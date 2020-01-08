@@ -3,6 +3,10 @@ package backend
 import (
 	"encoding/json"
 	"errors"
+	"html/template"
+	"strconv"
+	"strings"
+
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/golog"
 	"github.com/kataras/iris/v12"
@@ -11,9 +15,6 @@ import (
 	"github.com/xiusin/iriscms/src/application/models"
 	"github.com/xiusin/iriscms/src/application/models/tables"
 	"github.com/xiusin/iriscms/src/common/helper"
-	"html/template"
-	"strconv"
-	"strings"
 )
 
 /**
@@ -43,6 +44,7 @@ type ModelForm struct {
 	FieldRequired     []string `form:"field_required" json:"field_required"`
 	FieldRequiredTips []string `form:"field_required_tips" json:"field_required_tips"`
 	FieldValidator    []string `form:"field_validator" json:"field_validator"`
+	FieldDefault      []string `form:"field_default" json:"field_default"`
 	FieldType         []string `form:"field_type" json:"field_type"`
 	fieldType         []int64
 }
@@ -158,6 +160,7 @@ func (c *DocumentController) ModelAdd() {
 					Datasource:   data.FieldDataSource[k],
 					RequiredTips: data.FieldRequiredTips[k],
 					Validator:    data.FieldValidator[k],
+					Default:      data.FieldDefault[k],
 				}
 				f.Html = fieldHtmlsMap[data.fieldType[k]].Html
 				if strings.HasPrefix(f.Datasource, "[") || strings.HasPrefix(f.Datasource, "{") {
@@ -276,6 +279,7 @@ func (c *DocumentController) ModelEdit() {
 					Datasource:   data.FieldDataSource[k],
 					RequiredTips: data.FieldRequiredTips[k],
 					Validator:    data.FieldValidator[k],
+					Default:      data.FieldDefault[k],
 				}
 				f.Html = fieldHtmlsMap[data.fieldType[k]].Html
 				if strings.HasPrefix(f.Datasource, "[") || strings.HasPrefix(f.Datasource, "{") {
