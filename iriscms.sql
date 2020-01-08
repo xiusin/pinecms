@@ -1,12 +1,12 @@
 #
 # SQL Export
-# Created by Querious (201067)
-# Created: January 8, 2020 at 9:31:47 PM GMT+8
+# Created by Querious (201054)
+# Created: January 8, 2020 at 10:18:47 PM GMT+8
 # Encoding: Unicode (UTF-8)
 #
 
 
-CREATE DATABASE IF NOT EXISTS `iriscms` DEFAULT CHARACTER SET utf8mb4;
+CREATE DATABASE IF NOT EXISTS `iriscms` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;
 USE `iriscms`;
 
 
@@ -14,27 +14,6 @@ USE `iriscms`;
 
 SET @PREVIOUS_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
 SET FOREIGN_KEY_CHECKS = 0;
-
-
-DROP TABLE IF EXISTS `iriscms_wechat_message_log`;
-DROP TABLE IF EXISTS `iriscms_wechat_member`;
-DROP TABLE IF EXISTS `iriscms_slide`;
-DROP TABLE IF EXISTS `iriscms_setting`;
-DROP TABLE IF EXISTS `iriscms_page`;
-DROP TABLE IF EXISTS `iriscms_news`;
-DROP TABLE IF EXISTS `iriscms_menu`;
-DROP TABLE IF EXISTS `iriscms_member`;
-DROP TABLE IF EXISTS `iriscms_log`;
-DROP TABLE IF EXISTS `iriscms_link`;
-DROP TABLE IF EXISTS `iriscms_document_model_field`;
-DROP TABLE IF EXISTS `iriscms_document_model_dsl`;
-DROP TABLE IF EXISTS `iriscms_document_model`;
-DROP TABLE IF EXISTS `iriscms_content`;
-DROP TABLE IF EXISTS `iriscms_category_priv`;
-DROP TABLE IF EXISTS `iriscms_category`;
-DROP TABLE IF EXISTS `iriscms_admin_role_priv`;
-DROP TABLE IF EXISTS `iriscms_admin_role`;
-DROP TABLE IF EXISTS `iriscms_admin`;
 
 
 CREATE TABLE `iriscms_admin` (
@@ -144,7 +123,7 @@ CREATE TABLE `iriscms_document_model` (
   `fe_tpl_detail` varchar(128) DEFAULT NULL COMMENT '模型前端详情模板地址',
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4  ROW_FORMAT=DYNAMIC COMMENT='文档模型用于存储自定义类型的文档内容';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='文档模型用于存储自定义类型的文档内容';
 
 
 CREATE TABLE `iriscms_document_model_dsl` (
@@ -159,8 +138,9 @@ CREATE TABLE `iriscms_document_model_dsl` (
   `validator` varchar(128) DEFAULT NULL COMMENT '验证器名称或内容',
   `deleted_at` datetime DEFAULT NULL,
   `field_type` int(11) NOT NULL DEFAULT '0',
+  `default` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=305 DEFAULT CHARSET=utf8mb4  ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=344 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `iriscms_document_model_field` (
@@ -170,7 +150,7 @@ CREATE TABLE `iriscms_document_model_field` (
   `desc` varchar(128) DEFAULT NULL COMMENT '字段描述',
   `html` text,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4  ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `iriscms_link` (
@@ -199,7 +179,7 @@ CREATE TABLE `iriscms_log` (
   PRIMARY KEY (`logid`) USING BTREE,
   KEY `module` (`controller`,`action`) USING BTREE,
   KEY `username` (`username`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=1048 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='操作日志表';
+) ENGINE=MyISAM AUTO_INCREMENT=1207 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='操作日志表';
 
 
 CREATE TABLE `iriscms_member` (
@@ -391,20 +371,20 @@ UNLOCK TABLES;
 
 LOCK TABLES `iriscms_document_model_dsl` WRITE;
 ALTER TABLE `iriscms_document_model_dsl` DISABLE KEYS;
-INSERT INTO `iriscms_document_model_dsl` (`id`, `mid`, `form_name`, `table_field`, `html`, `required`, `datasource`, `required_tips`, `validator`, `deleted_at`, `field_type`) VALUES 
-	(292,3,'单行文本','text','<input class="easyui-textbox" {{attr}} style="width:300px">',1,'','请填写内容','',NULL,1),
-	(293,3,'多行文本','textarea','<input class="easyui-textbox" {{attr}} style="height:80px; width: 300px;"  multiline />',1,'','','',NULL,2),
-	(294,3,'HTML','html','<editor />',1,'','','',NULL,3),
-	(295,3,'单图上传','img','<images />',1,'','','',NULL,11),
-	(296,3,'多图上传','imgs','<mul-images />',1,'["张三", "李四", "王五"]','','',NULL,12),
-	(297,3,'下拉框','select','<input class="easyui-combobox" {{attr}} style="width:300px;" />',1,'["张三", "李四", "王五"]','','',NULL,5),
-	(298,3,'下拉框1','select1','<input class="easyui-combobox" {{attr}} style="width:300px;" />',1,'{"1":1111111,  "2":2222222}','','',NULL,5),
-	(299,3,'下拉框2','select2','<input class="easyui-combobox" {{attr}} style="width:300px;" />',1,'{"1":"zhangsan", "2":"lisi"}','','',NULL,5),
-	(300,3,'下拉框3','select3','<input class="easyui-combobox" {{attr}} style="width:300px;" />',1,'{"user1":"zhangsan", "user2":"lisi"}','','',NULL,5),
-	(301,3,'开关按钮','switch','<input class="easyui-switchbutton" name="{{name}}" />',1,'["是", "否"]','','',NULL,13),
-	(302,3,'多选','checkbox','<input class="easyui-checkbox" {{attr}} value="{{value}}" />',1,'["是", "否"]','','',NULL,8),
-	(303,3,'单选按钮','radio','<input class="easyui-radiobutton" {{attr}} value="{{value}}" />',1,'["是", "否"]','','',NULL,7),
-	(304,3,'日历组件','rili','<input class="easyui-datetimebox">',1,'','','',NULL,14);
+INSERT INTO `iriscms_document_model_dsl` (`id`, `mid`, `form_name`, `table_field`, `html`, `required`, `datasource`, `required_tips`, `validator`, `deleted_at`, `field_type`, `default`) VALUES 
+	(331,3,'单行文本','text','<input class="easyui-textbox" {{attr}} style="width:300px">',1,'','请填写内容','',NULL,1,''),
+	(332,3,'多行文本','textarea','<input class="easyui-textbox" {{attr}} style="height:80px; width: 300px;"  multiline />',1,'','','',NULL,2,''),
+	(333,3,'HTML','html','<editor />',1,'','','',NULL,3,''),
+	(334,3,'单图上传','img','<images />',1,'','','',NULL,11,''),
+	(335,3,'多图上传','imgs','<mul-images />',1,'["张三", "李四", "王五"]','','',NULL,12,''),
+	(336,3,'下拉框','select','<input class="easyui-combobox" {{attr}} style="width:300px;" />',1,'["张三", "李四", "王五"]','','',NULL,5,''),
+	(337,3,'下拉框1','select1','<input class="easyui-combobox" {{attr}} style="width:300px;" />',1,'{"1":1111111,  "2":2222222}','','',NULL,5,''),
+	(338,3,'下拉框2','select2','<input class="easyui-combobox" {{attr}} style="width:300px;" />',1,'{"1":"zhangsan", "2":"lisi"}','','',NULL,5,''),
+	(339,3,'下拉框3','select3','<input class="easyui-combobox" {{attr}} style="width:300px;" />',1,'{"user1":"zhangsan", "user2":"lisi"}','','',NULL,5,''),
+	(340,3,'开关按钮','switch','<input class="easyui-switchbutton" name="{{name}}" />',1,'["是", "否"]','','',NULL,13,''),
+	(341,3,'多选','checkbox','<input class="easyui-checkbox" {{attr}} value="{{value}}" {{default}} />',1,'["是", "否"]','','',NULL,8,'是'),
+	(342,3,'单选按钮','radio','<input class="easyui-radiobutton" {{attr}} value="{{value}}" {{default}} />',1,'["是", "否"]','','',NULL,7,'是'),
+	(343,3,'日历组件','rili','<input class="easyui-datetimebox" style="width:300px">',1,'','','',NULL,14,'');
 ALTER TABLE `iriscms_document_model_dsl` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -418,14 +398,14 @@ INSERT INTO `iriscms_document_model_field` (`id`, `name`, `type`, `desc`, `html`
 	(4,'附件','varshar','前端表现为input[file]类型,可以上传并且返回一个相对地址','<input class="easyui-filebox" style="width:300px">'),
 	(5,'下拉框','varchar','下拉选择，一般用于如软件类型、语言类型等字段','<input class="easyui-combobox" {{attr}} style="width:300px;" />'),
 	(6,'联动类型','varchar','一种数组形式的数据类型，请使用url接口方式提供','<select class="easyui-combotree" {{attr}} style="width:200px;">暂未实现</select>'),
-	(7,'单选框','varchar','平铺显示, 可以认为是下拉框的展开, 根据数据源展开为排列的组件','<input class="easyui-radiobutton" {{attr}} value="{{value}}" />'),
-	(8,'多选框','varchar','多选框, 平铺显示为多个选项,根据数据源展开为排列组件','<input class="easyui-checkbox" {{attr}} value="{{value}}" />'),
+	(7,'单选框','varchar','平铺显示, 可以认为是下拉框的展开, 根据数据源展开为排列的组件','<input class="easyui-radiobutton" {{attr}} value="{{value}}" {{default}} />'),
+	(8,'多选框','varchar','多选框, 平铺显示为多个选项,根据数据源展开为排列组件','<input class="easyui-checkbox" {{attr}} value="{{value}}" {{default}} />'),
 	(9,'整数类型','int','常用字段, 仅能输入数字','<input type="text" class="easyui-numberbox" value="{{value}}" {{attr}} />'),
 	(10,'浮点类型','float','常用字段, 仅能输入浮点数(小数)','<input type="text" class="easyui-numberbox" value="{{value}}" {{attr}} />'),
 	(11,'单图上传','varchar','常用字段, 会生成一个单图上传框','<images />'),
 	(12,'多图上传','varchar','生成一个多图上传的组件','<mul-images />'),
 	(13,'开关按钮','tinyint','用于做开关值的组件, 打开为1, 关闭为0','<input class="easyui-switchbutton" name="{{name}}" />'),
-	(14,'日历组件','datetime','选择日期组件','<input class="easyui-datetimebox">');
+	(14,'日历组件','datetime','选择日期组件','<input class="easyui-datetimebox" style="width:300px">');
 ALTER TABLE `iriscms_document_model_field` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -1485,7 +1465,166 @@ INSERT INTO `iriscms_log` (`logid`, `controller`, `action`, `querystring`, `user
 	(1044,'model','edit','/b/model/edit?mid=3&_=1578486295509',1,'admin','127.0.0.1','2020-01-08 20:30:54'),
 	(1045,'model','list','/b/model/list?menuid=62&&_=1578486295510',1,'admin','127.0.0.1','2020-01-08 20:31:26'),
 	(1046,'model','list','/b/model/list?page=1&rows=20',1,'admin','127.0.0.1','2020-01-08 20:31:26'),
-	(1047,'model','edit','/b/model/edit?mid=3&_=1578486295511',1,'admin','127.0.0.1','2020-01-08 20:31:28');
+	(1047,'model','edit','/b/model/edit?mid=3&_=1578486295511',1,'admin','127.0.0.1','2020-01-08 20:31:28'),
+	(1048,'model','list','/b/model/list?menuid=62&&_=1578490541648',1,'admin','127.0.0.1','2020-01-08 21:35:47'),
+	(1049,'model','list','/b/model/list?page=1&rows=20',1,'admin','127.0.0.1','2020-01-08 21:35:47'),
+	(1050,'model','edit','/b/model/edit?mid=3&_=1578490541649',1,'admin','127.0.0.1','2020-01-08 21:35:48'),
+	(1051,'category','list','/b/category/list?menuid=36&&_=1578491821835',1,'admin','127.0.0.1','2020-01-08 21:57:06'),
+	(1052,'category','list','/b/category/list?grid=treegrid',1,'admin','127.0.0.1','2020-01-08 21:57:06'),
+	(1053,'content','index','/b/content/index?menuid=35&&_=1578491821836',1,'admin','127.0.0.1','2020-01-08 21:57:06'),
+	(1054,'content','right','/b/content/right?_=1578491821837',1,'admin','127.0.0.1','2020-01-08 21:57:07'),
+	(1055,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-08 21:57:07'),
+	(1056,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-08 21:57:07'),
+	(1057,'category','list','/b/category/list?menuid=36&&_=1578491821839',1,'admin','127.0.0.1','2020-01-08 21:57:07'),
+	(1058,'category','list','/b/category/list?grid=treegrid',1,'admin','127.0.0.1','2020-01-08 21:57:08'),
+	(1059,'content','index','/b/content/index?menuid=35&&_=1578491821840',1,'admin','127.0.0.1','2020-01-08 21:57:08'),
+	(1060,'content','right','/b/content/right?_=1578491821841',1,'admin','127.0.0.1','2020-01-08 21:57:08'),
+	(1061,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-08 21:57:08'),
+	(1062,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-08 21:57:08'),
+	(1063,'category','list','/b/category/list?menuid=36&&_=1578491821843',1,'admin','127.0.0.1','2020-01-08 21:57:08'),
+	(1064,'category','list','/b/category/list?grid=treegrid',1,'admin','127.0.0.1','2020-01-08 21:57:09'),
+	(1065,'content','index','/b/content/index?menuid=35&&_=1578491821844',1,'admin','127.0.0.1','2020-01-08 21:57:09'),
+	(1066,'content','right','/b/content/right?_=1578491821845',1,'admin','127.0.0.1','2020-01-08 21:57:09'),
+	(1067,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-08 21:57:09'),
+	(1068,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-08 21:57:09'),
+	(1069,'content','news-list','/b/content/news-list?catid=2&_=1578491821847',1,'admin','127.0.0.1','2020-01-08 21:57:10'),
+	(1070,'content','news-list','/b/content/news-list?grid=datagrid&catid=2&page=1&rows=20',1,'admin','127.0.0.1','2020-01-08 21:57:11'),
+	(1071,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 21:57:12'),
+	(1072,'model','list','/b/model/list?menuid=62&&_=1578491821848',1,'admin','127.0.0.1','2020-01-08 21:59:16'),
+	(1073,'model','list','/b/model/list?page=1&rows=20',1,'admin','127.0.0.1','2020-01-08 21:59:17'),
+	(1074,'model','edit','/b/model/edit?mid=3&_=1578491821849',1,'admin','127.0.0.1','2020-01-08 21:59:18'),
+	(1075,'model','edit','/b/model/edit',1,'admin','127.0.0.1','2020-01-08 21:59:49'),
+	(1076,'model','list','/b/model/list?menuid=62&&_=1578491821850',1,'admin','127.0.0.1','2020-01-08 21:59:51'),
+	(1077,'model','list','/b/model/list?page=1&rows=20',1,'admin','127.0.0.1','2020-01-08 21:59:51'),
+	(1078,'model','edit','/b/model/edit?mid=3&_=1578491821851',1,'admin','127.0.0.1','2020-01-08 21:59:53'),
+	(1079,'content','index','/b/content/index?menuid=35&&_=1578491821852',1,'admin','127.0.0.1','2020-01-08 22:04:06'),
+	(1080,'content','right','/b/content/right?_=1578491821853',1,'admin','127.0.0.1','2020-01-08 22:04:06'),
+	(1081,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-08 22:04:06'),
+	(1082,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-08 22:04:06'),
+	(1083,'category','list','/b/category/list?menuid=36&&_=1578491821855',1,'admin','127.0.0.1','2020-01-08 22:04:06'),
+	(1084,'category','list','/b/category/list?grid=treegrid',1,'admin','127.0.0.1','2020-01-08 22:04:07'),
+	(1085,'content','index','/b/content/index?menuid=35&&_=1578491821856',1,'admin','127.0.0.1','2020-01-08 22:04:07'),
+	(1086,'content','right','/b/content/right?_=1578491821857',1,'admin','127.0.0.1','2020-01-08 22:04:07'),
+	(1087,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-08 22:04:08'),
+	(1088,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-08 22:04:08'),
+	(1089,'content','news-list','/b/content/news-list?catid=2&_=1578491821859',1,'admin','127.0.0.1','2020-01-08 22:04:08'),
+	(1090,'content','news-list','/b/content/news-list?grid=datagrid&catid=2&page=1&rows=20',1,'admin','127.0.0.1','2020-01-08 22:04:09'),
+	(1091,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:04:10'),
+	(1092,'category','list','/b/category/list?menuid=36&&_=1578491821860',1,'admin','127.0.0.1','2020-01-08 22:05:55'),
+	(1093,'category','list','/b/category/list?grid=treegrid',1,'admin','127.0.0.1','2020-01-08 22:05:56'),
+	(1094,'content','index','/b/content/index?menuid=35&&_=1578491821861',1,'admin','127.0.0.1','2020-01-08 22:05:58'),
+	(1095,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-08 22:05:58'),
+	(1096,'content','right','/b/content/right?_=1578491821862',1,'admin','127.0.0.1','2020-01-08 22:05:58'),
+	(1097,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-08 22:05:58'),
+	(1098,'content','news-list','/b/content/news-list?catid=2&_=1578491821864',1,'admin','127.0.0.1','2020-01-08 22:05:59'),
+	(1099,'content','news-list','/b/content/news-list?grid=datagrid&catid=2&page=1&rows=20',1,'admin','127.0.0.1','2020-01-08 22:05:59'),
+	(1100,'content','news-list','/b/content/news-list?grid=datagrid&catid=2&page=1&rows=20',1,'admin','127.0.0.1','2020-01-08 22:06:03'),
+	(1101,'content','news-list','/b/content/news-list?grid=datagrid&catid=2&page=1&rows=20',1,'admin','127.0.0.1','2020-01-08 22:06:04'),
+	(1102,'content','news-list','/b/content/news-list?grid=datagrid&catid=2&page=1&rows=20',1,'admin','127.0.0.1','2020-01-08 22:06:04'),
+	(1103,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:06:08'),
+	(1104,'category','list','/b/category/list?menuid=36&&_=1578491821865',1,'admin','127.0.0.1','2020-01-08 22:06:17'),
+	(1105,'category','list','/b/category/list?grid=treegrid',1,'admin','127.0.0.1','2020-01-08 22:06:18'),
+	(1106,'category','category-add','/b/category/category-add?parentid=0&_=1578491821866',1,'admin','127.0.0.1','2020-01-08 22:06:19'),
+	(1107,'category','category-select','/b/category/category-select',1,'admin','127.0.0.1','2020-01-08 22:06:20'),
+	(1108,'content','index','/b/content/index?menuid=35&&_=1578491821868',1,'admin','127.0.0.1','2020-01-08 22:06:21'),
+	(1109,'content','right','/b/content/right?_=1578491821869',1,'admin','127.0.0.1','2020-01-08 22:06:22'),
+	(1110,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-08 22:06:22'),
+	(1111,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-08 22:06:22'),
+	(1112,'content','news-list','/b/content/news-list?catid=2&_=1578491821871',1,'admin','127.0.0.1','2020-01-08 22:06:23'),
+	(1113,'content','news-list','/b/content/news-list?grid=datagrid&catid=2&page=1&rows=20',1,'admin','127.0.0.1','2020-01-08 22:06:23'),
+	(1114,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:06:24'),
+	(1115,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:06:45'),
+	(1116,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:11'),
+	(1117,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:12'),
+	(1118,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:12'),
+	(1119,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:12'),
+	(1120,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:12'),
+	(1121,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:12'),
+	(1122,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:13'),
+	(1123,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:13'),
+	(1124,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:13'),
+	(1125,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:13'),
+	(1126,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:14'),
+	(1127,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:14'),
+	(1128,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:14'),
+	(1129,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:15'),
+	(1130,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:15'),
+	(1131,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:16'),
+	(1132,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:16'),
+	(1133,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:16'),
+	(1134,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:16'),
+	(1135,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:16'),
+	(1136,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:17'),
+	(1137,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:17'),
+	(1138,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:18'),
+	(1139,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:18'),
+	(1140,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:19'),
+	(1141,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:19'),
+	(1142,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:20'),
+	(1143,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:20'),
+	(1144,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:21'),
+	(1145,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:21'),
+	(1146,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:21'),
+	(1147,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:24'),
+	(1148,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:24'),
+	(1149,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:09:25'),
+	(1150,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:10:09'),
+	(1151,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:10:10'),
+	(1152,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:10:10'),
+	(1153,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:10:56'),
+	(1154,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:10:57'),
+	(1155,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:10:58'),
+	(1156,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:10:58'),
+	(1157,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:10:59'),
+	(1158,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:11:00'),
+	(1159,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:11:56'),
+	(1160,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:11:57'),
+	(1161,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:11:58'),
+	(1162,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:11:58'),
+	(1163,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:11:58'),
+	(1164,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:11:59'),
+	(1165,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:11:59'),
+	(1166,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:12:02'),
+	(1167,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:12:02'),
+	(1168,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:12:02'),
+	(1169,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:12:03'),
+	(1170,'user','list','/b/user/list?menuid=56&&_=1578492894567',1,'admin','127.0.0.1','2020-01-08 22:14:58'),
+	(1171,'user','list','/b/user/list?page=1&rows=20',1,'admin','127.0.0.1','2020-01-08 22:14:58'),
+	(1172,'system','loglist','/b/system/loglist?menuid=15&&_=1578492894568',1,'admin','127.0.0.1','2020-01-08 22:15:00'),
+	(1173,'system','loglist','/b/system/loglist?page=1&rows=20',1,'admin','127.0.0.1','2020-01-08 22:15:00'),
+	(1174,'model','list','/b/model/list?menuid=62&&_=1578492894569',1,'admin','127.0.0.1','2020-01-08 22:15:01'),
+	(1175,'model','list','/b/model/list?page=1&rows=20',1,'admin','127.0.0.1','2020-01-08 22:15:01'),
+	(1176,'model','edit','/b/model/edit?mid=3&_=1578492894570',1,'admin','127.0.0.1','2020-01-08 22:15:02'),
+	(1177,'model','edit','/b/model/edit',1,'admin','127.0.0.1','2020-01-08 22:15:06'),
+	(1178,'model','list','/b/model/list?menuid=62&&_=1578492894571',1,'admin','127.0.0.1','2020-01-08 22:15:08'),
+	(1179,'model','list','/b/model/list?page=1&rows=20',1,'admin','127.0.0.1','2020-01-08 22:15:08'),
+	(1180,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:15:13'),
+	(1181,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:16:28'),
+	(1182,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:16:29'),
+	(1183,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:16:29'),
+	(1184,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:16:30'),
+	(1185,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:16:30'),
+	(1186,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:16:31'),
+	(1187,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:16:31'),
+	(1188,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:16:31'),
+	(1189,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:16:32'),
+	(1190,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:16:33'),
+	(1191,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:16:33'),
+	(1192,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:16:34'),
+	(1193,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:16:35'),
+	(1194,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:16:35'),
+	(1195,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:16:35'),
+	(1196,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:16:37'),
+	(1197,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:16:38'),
+	(1198,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:17:33'),
+	(1199,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:17:35'),
+	(1200,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:17:38'),
+	(1201,'model','edit','/b/model/edit?mid=3&_=1578492894572',1,'admin','127.0.0.1','2020-01-08 22:17:54'),
+	(1202,'model','edit','/b/model/edit',1,'admin','127.0.0.1','2020-01-08 22:18:05'),
+	(1203,'model','list','/b/model/list?menuid=62&&_=1578492894573',1,'admin','127.0.0.1','2020-01-08 22:18:07'),
+	(1204,'model','list','/b/model/list?page=1&rows=20',1,'admin','127.0.0.1','2020-01-08 22:18:07'),
+	(1205,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:18:08'),
+	(1206,'content','add','/b/content/add?catid=2',1,'admin','127.0.0.1','2020-01-08 22:18:09');
 ALTER TABLE `iriscms_log` ENABLE KEYS;
 UNLOCK TABLES;
 
