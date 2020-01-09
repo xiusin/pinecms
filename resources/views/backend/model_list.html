@@ -21,10 +21,23 @@
     <a href="javascript:;" onclick="addModel();" class="easyui-linkbutton" iconCls="icons-arrow-add">添加模型</a>
 </div>
 
+<div id="model_field_list_dialog" class="easyui-dialog" title="编辑列表页显示字段"
+     data-options="modal:true,closed:true,iconCls:'icons-application-application_edit',buttons:[{text:'确定',iconCls:'icons-other-tick',handler:function(){modelFieldShowInListPageFormSubmit();}},{text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#model_field_list_dialog').dialog('close');}}]"
+     style="width:100%;height:100%;"></div>
+
+
 <!-- 查看详细信息 -->
 
 <script type="text/javascript">
     const member_list = $('#model_list_datagrid');
+
+    function editModelFieldShowInList(mid) {
+        if (typeof(mid) !== 'number') mid = 0;
+        var url = "/b/model/list-field-show";
+        url += '?mid=' + mid;
+        $('#model_field_list_dialog').dialog({href: url});
+        $('#model_field_list_dialog').dialog('open');
+    }
 
     //添加模型
     function addModel() {
@@ -42,10 +55,11 @@
 
     //参数格式化
     function optFormatter(val) {
+        var link = '<a href="javascript:;" onclick="editModelFieldShowInList(' + val + ');">列表显示字段</a> | ';
         if (curIsSystemModel) {
-            var link = '<a href="javascript:;" onclick="editModel(' + val + ');" title="系统模型不可删除不可修改">查看</a> | <a href="javascript:;" disabled="disabled" style="color: #ccc;">删除</a>';
+             link +=  '<a href="javascript:;" onclick="editModel(' + val + ');" title="系统模型不可删除不可修改">查看</a> | <a href="javascript:;" disabled="disabled" style="color: #ccc;">删除</a>';
         } else {
-            var link = '<a href="javascript:;" onclick="editModel(' + val + ');">编辑</a> | <a href="javascript:;" onclick="delModel(' + val + ');">删除</a>';
+             link += '<a href="javascript:;" onclick="editModel(' + val + ');">编辑</a> | <a href="javascript:;" onclick="delModel(' + val + ');">删除</a>';
         }
         return link + ' ';
     }

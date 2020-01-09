@@ -94,9 +94,7 @@ func easyUIComponents(field *tables.IriscmsDocumentModelDsl) string {
 	}
 
 	if field.Datasource != "" {
-		// 多选  单选 下拉 联动需要在这里加载数据源
-		options = append(options, "valueField:'value'")
-		options = append(options, "textField:'label'")
+
 		var datas []struct {
 			Value string `json:"value"`
 			Label string `json:"label"`
@@ -126,6 +124,8 @@ func easyUIComponents(field *tables.IriscmsDocumentModelDsl) string {
 			}
 		}
 		if field.FieldType == 5 || field.FieldType == 6 {
+			options = append(options, "valueField:'value'")
+			options = append(options, "textField:'label'")
 			if len(datas) == 0 {
 				options = append(options, "url: '"+field.Datasource+"'")
 			} else {
@@ -141,16 +141,43 @@ func easyUIComponents(field *tables.IriscmsDocumentModelDsl) string {
 				}
 			}
 		} else if field.FieldType == 7 || field.FieldType == 8 {
+			options = append(options, "valueField:'value'")
+			options = append(options, "textField:'label'")
+			defaultVals := strings.Split(field.Default, "|")
 			var htm = ""
+			var htmlTmp string
 			for _, item := range datas {
-				if item.Value == field.Default {
+				 if field.FieldType == 8 {
+				 	for _, v := range defaultVals {
+						htmlTmp = field.Html
+						if v == item.Value {
+							htmlTmp = strings.Replace(htmlTmp, "{{default}}", "checked", 1)
+							break
+						} else {
+							htmlTmp = strings.Replace(htmlTmp, "{{default}}", "", 1)
+						}
+					}
+				 } else {
+					 htmlTmp = field.Html
+					 if item.Value == field.Default {
+						 htmlTmp = strings.Replace(htmlTmp, "{{default}}", "checked", 1)
+					 } else {
+						 htmlTmp = strings.Replace(htmlTmp, "{{default}}", "", 1)
+					 }
+				 }
+				htm += strings.Replace(htmlTmp, "{{value}}", item.Value, -1) + strings.Repeat("&nbsp;", 3) + item.Label + strings.Repeat("&nbsp;", 8)
+			}
+			field.Html = htm
+		} else if field.FieldType == 13 && len(datas) >= 1{	// 单选按钮
+			if field.Default != "" {
+				if field.Default == datas[0].Value {
 					field.Html = strings.Replace(field.Html, "{{default}}", "checked", 1)
 				} else {
 					field.Html = strings.Replace(field.Html, "{{default}}", "", 1)
 				}
-				htm += strings.Replace(field.Html, "{{value}}", item.Value, -1) + strings.Repeat("&nbsp;", 3) + item.Label + strings.Repeat("&nbsp;", 8)
 			}
-			field.Html = htm
+			options = append(options,"onText: '" + datas[0].Value + "'")
+			options = append(options,"offText: '" + datas[1].Value + "'")
 		}
 	}
 	if len(options) > 0 {

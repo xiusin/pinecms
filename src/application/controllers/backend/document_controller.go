@@ -54,6 +54,28 @@ func (c *DocumentController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("ANY", "/model/add", "ModelAdd")
 	b.Handle("ANY", "/model/edit", "ModelEdit")
 	b.Handle("ANY", "/model/delete", "ModelDelete")
+	b.Handle("ANY", "/model/list-field-show", "ModelFieldShowInListPage")
+
+}
+
+func (c *DocumentController) ModelFieldShowInListPage() {
+	mid, _ := c.Ctx.URLParamInt64("mid")
+	if mid < 1 {
+		return
+	}
+	model := models.NewDocumentModel(c.Orm).GetByID(mid)
+	if model == nil || model.Id < 1 {
+		return
+	}
+	fields := models.NewDocumentFieldDslModel(c.Orm).GetList(mid)
+
+	if c.Ctx.Method() == "POST" {
+		c.Ctx.JSON(c.Ctx.FormValues())
+		return
+	}
+	c.Ctx.ViewData("fields", fields)
+	c.Ctx.ViewData("mid", mid)
+	c.Ctx.View("backend/model_field_show_list_edit.html")
 }
 
 func (c *DocumentController) ModelList() {

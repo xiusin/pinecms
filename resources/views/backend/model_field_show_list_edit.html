@@ -1,0 +1,45 @@
+<style>
+    #model_showInList_form .textbox-label {
+        width: 40px;
+        margin-right: 20px;
+    }
+</style>
+<form id="model_showInList_form" method="post">
+    <table width="100%" class="mdoutable">
+        <tr>
+            <th width="15%">表单名称</th>
+            <th width="20%">显示隐藏</th>
+            <th>formatter(easyui字段格式化函数, 接受一个本字段的回调函数 内部可以直接使用变量ID 获取本记录的ID )</th>
+        </tr>
+        {{range $index, $ele := .fields}}
+            <tr>
+                <td style="text-align: right">{{$ele.FormName}}：</td>
+                <td>
+                    <input class="easyui-switchbutton" data-options="onText:'显示', offText:'隐藏'" value="off" name="show_{{$ele.TableField}}" style="width:100px;height:30px">
+                </td>
+                <td>
+                    <label>
+                        <textarea
+                                name="formatter_{{$ele.TableField}}"
+                                placeholder="如: function fieldFormatter({{$ele.TableField}}) { return '{{$ele.TableField}} formatted'; }"
+                                style="width: 90%; height: 100px; resize: none"></textarea>
+                    </label>
+                </td>
+            </tr>
+        {{end}}
+    </table>
+</form>
+
+<script type="text/javascript">
+    function modelFieldShowInListPageFormSubmit() {
+        $.post("/b/model/list-field-show?mid={{.mid}}", $("#model_showInList_form").serialize(), function (res) {
+            if (res.errcode) {
+                $.messager.alert('提示信息', res.errmsg, 'error');
+            } else {
+                $.messager.alert('提示信息', res.errmsg, 'info');
+                $('#model_field_list_dialog').dialog('close');
+                categoryCategoryListRefresh();
+            }
+        })
+    }
+</script>
