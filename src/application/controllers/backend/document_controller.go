@@ -3,6 +3,7 @@ package backend
 import (
 	"encoding/json"
 	"errors"
+	"github.com/xiusin/iriscms/src/application/controllers"
 	"html/template"
 	"strconv"
 	"strings"
@@ -58,6 +59,8 @@ func (c *DocumentController) BeforeActivation(b mvc.BeforeActivation) {
 
 }
 
+
+
 func (c *DocumentController) ModelFieldShowInListPage() {
 	mid, _ := c.Ctx.URLParamInt64("mid")
 	if mid < 1 {
@@ -68,13 +71,32 @@ func (c *DocumentController) ModelFieldShowInListPage() {
 		return
 	}
 	fields := models.NewDocumentFieldDslModel(c.Orm).GetList(mid)
-
+	var showInPage = map[string]controllers.FieldShowInPageList{}
 	if c.Ctx.Method() == "POST" {
-		c.Ctx.JSON(c.Ctx.FormValues())
+		postDatas := c.Ctx.FormValues()
+		for _, field := range fields {
+			_, ok := postDatas["show_"+field.TableField]
+			showInPage[field.TableField] = controllers.FieldShowInPageList{Show: ok, Formatter: postDatas["formatter_"+field.TableField][0]}
+		}
+		strs, _ := json.Marshal(showInPage)
+		model.FieldShowInList = string(strs)
+		model.Formatters = c.Ctx.PostValue("formatters")
+		_, err := c.Orm.Table(&tables.IriscmsDocumentModel{}).Where("id = ?", mid).Update(model)
+		if err != nil {
+			helper.Ajax("更新失败:"+err.Error(), 1, c.Ctx)
+		} else {
+			helper.Ajax("更新字段显示列表成功", 0, c.Ctx)
+		}
 		return
 	}
+
+	_ = json.Unmarshal([]byte(model.FieldShowInList), &showInPage)
+
+	c.Ctx.ViewData("shows", showInPage)
 	c.Ctx.ViewData("fields", fields)
+	c.Ctx.ViewData("l", len(fields))
 	c.Ctx.ViewData("mid", mid)
+	c.Ctx.ViewData("model", model)
 	c.Ctx.View("backend/model_field_show_list_edit.html")
 }
 
@@ -281,7 +303,11 @@ func (c *DocumentController) ModelEdit() {
 			document.FeTplIndex = helper.EasyUiIDToFilePath(data.FeTplIndex)
 			document.FeTplList = helper.EasyUiIDToFilePath(data.FeTplList)
 			document.FeTplDetail = helper.EasyUiIDToFilePath(data.FeTplDetail)
-			session.Update(document)
+			document.FieldShowInList = ""
+			_, err = session.Update(document)
+			if err != nil {
+				return nil, err
+			}
 			// 先删除所有字段
 			if models.NewDocumentFieldDslModel(c.Orm).DeleteByMID(document.Id) == false {
 				return nil, errors.New("删除表字段失败")

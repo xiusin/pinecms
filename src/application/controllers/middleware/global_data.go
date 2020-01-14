@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"encoding/json"
-
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"

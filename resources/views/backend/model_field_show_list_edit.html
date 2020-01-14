@@ -7,24 +7,39 @@
 <form id="model_showInList_form" method="post">
     <table width="100%" class="mdoutable">
         <tr>
-            <th width="15%">表单名称</th>
-            <th width="20%">显示隐藏</th>
-            <th>formatter(easyui字段格式化函数, 接受一个本字段的回调函数 内部可以直接使用变量ID 获取本记录的ID )</th>
+            <th width="100px">表单名称</th>
+            <th width="120px">显示隐藏</th>
+            <th width="150px">formatter函数名称</th>
+            <th>formatter函数内容</th>
         </tr>
         {{range $index, $ele := .fields}}
+            {{$str1 := $ele.TableField | GetInMap $.shows}}
             <tr>
                 <td style="text-align: right">{{$ele.FormName}}：</td>
                 <td>
-                    <input class="easyui-switchbutton" data-options="onText:'显示', offText:'隐藏'" value="off" name="show_{{$ele.TableField}}" style="width:100px;height:30px">
+                    {{if eq $str1.Show true }}
+                    <input class="easyui-switchbutton" data-options="onText:'显示', offText:'隐藏'" checked name="show_{{$ele.TableField}}" style="width:100px;height:30px" />
+                    {{else}}
+                    <input class="easyui-switchbutton" data-options="onText:'显示', offText:'隐藏'" name="show_{{$ele.TableField}}" style="width:100px;height:30px"/>
+                    {{end}}
                 </td>
                 <td>
+{{/*                    (easyui字段格式化函数, 接受一个本字段的回调函数 内部可以直接使用变量ID 获取本记录的ID )*/}}
+{{/*                    如: */}}
                     <label>
-                        <textarea
+                        <input
+                                class="easyui-textbox"
+                                value="{{$str1.Formatter}}"
                                 name="formatter_{{$ele.TableField}}"
-                                placeholder="如: function fieldFormatter({{$ele.TableField}}) { return '{{$ele.TableField}} formatted'; }"
-                                style="width: 90%; height: 100px; resize: none"></textarea>
+                                data-options="prompt: '请填写函数名称或不填写'"
+                                style="width: 350px; " />
                     </label>
                 </td>
+                {{if eq $index 0}}
+                <td rowspan="{{$.l}}">
+                    <input class="easyui-textbox" value="{{$.model.Formatters}}" data-options="multiline: true, prompt: '如: function fieldFormatter(fieldVal) { return \'fieldVal\'; }; fieldFormatter 就可以填写到`formatter函数名称`字段'" name="formatters" style="width:98%; height: 98%">
+                </td>
+                {{end}}
             </tr>
         {{end}}
     </table>
@@ -32,7 +47,15 @@
 
 <script type="text/javascript">
     function modelFieldShowInListPageFormSubmit() {
-        $.post("/b/model/list-field-show?mid={{.mid}}", $("#model_showInList_form").serialize(), function (res) {
+        locker = true;
+        let data = $('#model_showInList_form').serializeObject();
+        for (let i in data) {
+            if (i.indexOf("field_") > -1 && typeof data[i] == "string") {
+                data[i] = [data[i]];
+            }
+        }
+
+        $.post("/b/model/list-field-show?mid={{.mid}}",data, function (res) {
             if (res.errcode) {
                 $.messager.alert('提示信息', res.errmsg, 'error');
             } else {

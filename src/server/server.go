@@ -33,8 +33,10 @@ import (
 )
 
 var (
-	app             *iris.Application
-	mvcApp          *mvc.Application
+	app    *iris.Application
+	mvcApp *mvc.Application
+
+	htmlEngine      *view.HTMLEngine
 	XOrmEngine      *xorm.Engine
 	sess            *sessions.Sessions
 	sessionInitSync sync.Once
@@ -95,15 +97,13 @@ func initApp() {
 		app.Logger().Debug("注册模板引擎Django")
 		app.RegisterView(view.Django(engines.Django.Path, engines.Django.Suffix).Reload(conf.View.Reload)) //不缓存模板
 	}
-	if engines.Html.Path != "" && engines.Html.Suffix != "" {
-		app.Logger().Debug("注册模板引擎Html")
-		viewEngine++
-		app.RegisterView(view.HTML(engines.Html.Path, engines.Html.Suffix).Reload(conf.View.Reload))
+	if engines.Html.Path == "" || engines.Html.Suffix == "" {
+		panic("请配置HTML模板引擎参数")
 	}
-	if viewEngine == 0 {
-		app.Logger().Error("请至少配置一个模板引擎")
-		panic("请至少配置一个模板引擎")
-	}
+	app.Logger().Debug("注册模板引擎Html")
+	htmlEngine = view.HTML(engines.Html.Path, engines.Html.Suffix).Reload(conf.View.Reload)
+	htmlEngine.AddFunc("GetInMap",controllers.GetInMap)
+	app.RegisterView(htmlEngine)
 }
 
 func Server() {

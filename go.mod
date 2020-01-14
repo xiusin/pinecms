@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/CloudyKit/fastprinter v0.0.0-20170127035650-74b38d55f37a // indirect
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
+	github.com/Workiva/go-datastructures v1.0.50
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/aliyun/aliyun-oss-go-sdk v2.0.4+incompatible
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect

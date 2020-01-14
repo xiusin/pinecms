@@ -34,9 +34,14 @@
 - [ ] 迁移数据模块
 - [ ] 文档模型(存储库结构,字段描述, 数据页面根据文档模型动态展示内容, 以及相关的权限管理) doing
 - [ ] 文档列表添加一个每行列数据全局id formatterId 可以让字段formatter获取到
+- [ ] plugin
 # bug #
 - [ ] dev无法监听yml的注册
 
 # 查看性能 #
 1. 访问pprof页面 
 2. 使用tool命令打印图形 如: `go tool pprof -http=0.0.0.0:1234 profile`
+
+
+# 相似的php项目 #
+https://pro.cltphp.com/admin/index/index.html

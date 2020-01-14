@@ -15,6 +15,7 @@ func NewDocumentFieldDslModel(orm *xorm.Engine) *DocumentModelDslModel {
 }
 
 func (w *DocumentModelDslModel) GetList(mid int64)  []tables.IriscmsDocumentModelDsl {
+	//todo need cache handler
 	var list []tables.IriscmsDocumentModelDsl
 	err := w.Orm.Where("mid = ?", mid).Find(&list)
 	if err != nil {

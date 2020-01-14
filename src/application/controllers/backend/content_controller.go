@@ -1,6 +1,8 @@
 package backend
 
 import (
+	"encoding/json"
+	"github.com/xiusin/iriscms/src/application/controllers"
 	"html/template"
 	"strconv"
 	"strings"
@@ -61,16 +63,62 @@ func (this *ContentController) NewsList() {
 		this.Ctx.JSON(map[string]interface{}{"rows": contents, "total": total})
 		return
 	}
+
+	fields := helper.EasyuiGridfields{
+		"排序": {"field": "listorder", "width": "15", "formatter": "contentNewsListOrderFormatter", "index": "0"},
+	}
+	catogoryModel, err := models.NewCategoryModel(this.Orm).GetCategory(catid)
+	if err != nil {
+		panic(err)
+	}
+	if catogoryModel.ModelId < 1 {
+		helper.Ajax("找不到关联模型", 1, this.Ctx)
+		return
+	}
+	relationDocumentModel := models.NewDocumentModel(this.Orm).GetByID(catogoryModel.ModelId)
+	if relationDocumentModel.Id == 0 {
+		helper.Ajax("找不到关联模型", 1, this.Ctx)
+		return
+	}
+
+	// 获取所有字段
+	dslFields := models.NewDocumentFieldDslModel(this.Orm).GetList(catogoryModel.ModelId)
+	// tableField => formName
+	var tMapF = map[string]string{}
+	var ff []string
+	for _, dsl := range dslFields {
+		tMapF[dsl.TableField] = dsl.FormName
+		ff = append(ff, dsl.TableField)
+	}
+	var showInPage = map[string]controllers.FieldShowInPageList{}
+	_ = json.Unmarshal([]byte(relationDocumentModel.FieldShowInList), &showInPage)
+	if len(showInPage)  == 0 {
+		helper.Ajax("请配置模型字段显隐属性", 1, this.Ctx)
+		return
+	}
+	var index = 1
+	// 系统模型需要固定追加标题, 描述等字段
+	if relationDocumentModel.IsSystem == 1 {
+		fields["标题"] = map[string]string{"field": "title", "width": "50", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
+		index++
+	}
+
+	for _, field := range ff {
+		conf := showInPage[field]
+		if conf.Show {
+			f := map[string]string{"field": field, "width": "50", "index": strconv.Itoa(index)}
+			if conf.Formatter != "" {
+				f["formatter"] = conf.Formatter
+			}
+			fields[tMapF[field]] = f
+			index++
+		}
+	}
+	fields["管理操作"] = map[string]string{"field": "id", "width": "50", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
 	table := helper.Datagrid("category_categorylist_datagrid", "/b/content/news-list?grid=datagrid&catid="+strconv.Itoa(int(catid)), helper.EasyuiOptions{
 		"toolbar":      "content_newslist_datagrid_toolbar",
 		"singleSelect": "true",
-	}, helper.EasyuiGridfields{
-		"排序":   {"field": "listorder", "width": "15", "formatter": "contentNewsListOrderFormatter", "index": "0"},
-		"资源标题": {"field": "title", "width": "130", "index": "1"},
-		"下载扣分": {"field": "money", "width": "30", "index": "2"},
-		"获密方式": {"field": "pwd_type", "width": "30", "formatter": "getPwdTypeFormatter", "index": "3"},
-		"管理操作": {"field": "id", "width": "50", "formatter": "contentNewsListOperateFormatter", "index": "4"},
-	})
+	}, fields)
 
 	this.Ctx.ViewData("DataGrid", template.HTML(table))
 	this.Ctx.ViewData("catid", catid)
