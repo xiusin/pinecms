@@ -56,10 +56,9 @@
                                         <td>是否必填:</td>
                                         <td>
                                             {{if eq $field.Required 1}}
-                                                <input class="easyui-switchbutton" name="field_required" checked
-                                                       tabindex="1">
+                                                <input class="easyui-checkbox" name="field_required" value="on" checked />
                                             {{else}}
-                                                <input class="easyui-switchbutton" name="field_required" tabindex="1">
+                                                <input class="easyui-checkbox" name="field_required" value="on" />
                                             {{end}}
                                         </td>
                                     </tr>
@@ -190,7 +189,7 @@
             <tr>
                 <td>是否必填:</td>
                 <td>
-                    <input class="easyui-switchbutton" name="field_required" checked tabindex="1">
+                    <input class="easyui-checkbox" name="field_required" value="on" >
                 </td>
             </tr>
 

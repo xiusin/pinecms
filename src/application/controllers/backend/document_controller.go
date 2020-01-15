@@ -296,6 +296,11 @@ func (c *DocumentController) ModelEdit() {
 		if data.Enabled == "on" {
 			enabled = 1
 		}
+
+		//if len(data.FieldField) != len(data.FieldRequired)  {
+		//
+		//}
+
 		_, err = c.Orm.Transaction(func(session *xorm.Session) (i interface{}, err error) {
 			document.Name = data.Name
 			document.Table = data.Table
