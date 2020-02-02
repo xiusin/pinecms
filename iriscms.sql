@@ -1,12 +1,13 @@
 #
 # SQL Export
 # Created by Querious (201067)
-# Created: January 14, 2020 at 6:36:08 PM GMT+8
+# Created: February 2, 2020 at 12:24:59 PM GMT+8
 # Encoding: Unicode (UTF-8)
 #
 
 
-CREATE DATABASE IF NOT EXISTS `iriscms` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_0900_ai_ci;
+DROP DATABASE IF EXISTS `iriscms`;
+CREATE DATABASE `iriscms` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_0900_ai_ci;
 USE `iriscms`;
 
 
@@ -134,46 +135,46 @@ CREATE TABLE `iriscms_content` (
 
 CREATE TABLE `iriscms_document_model` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(128) DEFAULT NULL COMMENT '文档名称',
-  `table` varchar(128) DEFAULT NULL COMMENT '对应的表名',
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '文档名称',
+  `table` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '对应的表名',
   `enabled` tinyint(4) DEFAULT '0' COMMENT '是否启用',
   `is_system` tinyint(4) DEFAULT '0' COMMENT '是否为系统模型 无法删除',
   `model_type` tinyint(4) DEFAULT '0' COMMENT '模型类型: 扩展模型 和 独立模型',
-  `fe_tpl_index` varchar(128) DEFAULT NULL COMMENT '模型前端主页模板地址',
-  `fe_tpl_list` varchar(128) DEFAULT NULL COMMENT '模型前端列表模板地址',
-  `fe_tpl_detail` varchar(128) DEFAULT NULL COMMENT '模型前端详情模板地址',
+  `fe_tpl_index` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '模型前端主页模板地址',
+  `fe_tpl_list` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '模型前端列表模板地址',
+  `fe_tpl_detail` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '模型前端详情模板地址',
   `deleted_at` datetime DEFAULT NULL,
   `field_show_in_list` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '在后端列表页需要展示的字段以及字段应用的formatter函数.',
   `formatters` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '所有函数内容, 原样渲染到Html里',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='文档模型用于存储自定义类型的文档内容';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='文档模型用于存储自定义类型的文档内容';
 
 
 CREATE TABLE `iriscms_document_model_dsl` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `mid` int(11) NOT NULL DEFAULT '0' COMMENT '模型id',
-  `form_name` varchar(128) DEFAULT NULL COMMENT '字段在表单内的名称',
-  `table_field` varchar(128) DEFAULT NULL,
-  `html` text COMMENT '字段html',
+  `form_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字段在表单内的名称',
+  `table_field` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `html` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '字段html',
   `required` tinyint(4) DEFAULT '0' COMMENT '是否必填',
-  `datasource` varchar(128) DEFAULT NULL COMMENT '数据源, 可以让下拉选项等高级功能有数据读取的源头,具体设计可以是提供列表函数类的',
-  `required_tips` varchar(128) DEFAULT NULL COMMENT '必填(选)提醒',
-  `validator` varchar(128) DEFAULT NULL COMMENT '验证器名称或内容',
+  `datasource` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '数据源, 可以让下拉选项等高级功能有数据读取的源头,具体设计可以是提供列表函数类的',
+  `required_tips` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '必填(选)提醒',
+  `validator` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '验证器名称或内容',
   `deleted_at` datetime DEFAULT NULL,
   `field_type` int(11) NOT NULL DEFAULT '0',
-  `default` varchar(128) DEFAULT NULL,
+  `default` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=418 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=418 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `iriscms_document_model_field` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(128) DEFAULT NULL COMMENT '字段名称',
-  `type` varchar(128) DEFAULT NULL COMMENT '字段对应的数据类型',
-  `desc` varchar(128) DEFAULT NULL COMMENT '字段描述',
-  `html` text,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字段名称',
+  `type` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字段对应的数据类型',
+  `desc` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字段描述',
+  `html` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `iriscms_link` (
@@ -202,7 +203,7 @@ CREATE TABLE `iriscms_log` (
   PRIMARY KEY (`logid`) USING BTREE,
   KEY `module` (`controller`,`action`) USING BTREE,
   KEY `username` (`username`) USING BTREE
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='操作日志表';
+) ENGINE=MyISAM AUTO_INCREMENT=43 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='操作日志表';
 
 
 CREATE TABLE `iriscms_member` (
@@ -443,6 +444,49 @@ UNLOCK TABLES;
 
 LOCK TABLES `iriscms_log` WRITE;
 ALTER TABLE `iriscms_log` DISABLE KEYS;
+INSERT INTO `iriscms_log` (`logid`, `controller`, `action`, `querystring`, `userid`, `username`, `ip`, `time`) VALUES 
+	(1,'category','list','/b/category/list?menuid=36&&_=1579053363466',1,'admin','127.0.0.1','2020-01-15 09:57:00'),
+	(2,'category','list','/b/category/list?grid=treegrid',1,'admin','127.0.0.1','2020-01-15 09:57:00'),
+	(3,'content','index','/b/content/index?menuid=35&&_=1579053363467',1,'admin','127.0.0.1','2020-01-15 09:57:00'),
+	(4,'content','right','/b/content/right?_=1579053363468',1,'admin','127.0.0.1','2020-01-15 09:57:00'),
+	(5,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-15 09:57:00'),
+	(6,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-15 09:57:00'),
+	(7,'category','list','/b/category/list?menuid=36&&_=1579053363470',1,'admin','127.0.0.1','2020-01-15 09:57:01'),
+	(8,'category','list','/b/category/list?grid=treegrid',1,'admin','127.0.0.1','2020-01-15 09:57:01'),
+	(9,'content','index','/b/content/index?menuid=35&&_=1579053363471',1,'admin','127.0.0.1','2020-01-15 09:57:03'),
+	(10,'content','right','/b/content/right?_=1579053363472',1,'admin','127.0.0.1','2020-01-15 09:57:03'),
+	(11,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-15 09:57:03'),
+	(12,'content','right','/b/content/right',1,'admin','127.0.0.1','2020-01-15 09:57:03'),
+	(13,'model','list','/b/model/list?menuid=62&&_=1579053363474',1,'admin','127.0.0.1','2020-01-15 09:57:05'),
+	(14,'model','list','/b/model/list?page=1&rows=20',1,'admin','127.0.0.1','2020-01-15 09:57:05'),
+	(15,'model','list-field-show','/b/model/list-field-show?mid=5&_=1579053363475',1,'admin','127.0.0.1','2020-01-15 09:57:07'),
+	(16,'model','list-field-show','/b/model/list-field-show?mid=5&_=1579053363476',1,'admin','127.0.0.1','2020-01-15 09:57:12'),
+	(17,'model','edit','/b/model/edit?mid=5&_=1579053363477',1,'admin','127.0.0.1','2020-01-15 09:57:15'),
+	(18,'model','edit','/b/model/edit',1,'admin','127.0.0.1','2020-01-15 10:01:26'),
+	(19,'model','edit','/b/model/edit',1,'admin','127.0.0.1','2020-01-15 10:01:35'),
+	(20,'model','list','/b/model/list?menuid=62&&_=1579053982048',1,'admin','127.0.0.1','2020-01-15 10:06:26'),
+	(21,'model','list','/b/model/list?page=1&rows=20',1,'admin','127.0.0.1','2020-01-15 10:06:26'),
+	(22,'model','add','/b/model/add?_=1579053982049',1,'admin','127.0.0.1','2020-01-15 10:06:26'),
+	(23,'model','list','/b/model/list?menuid=62&&_=1579053982050',1,'admin','127.0.0.1','2020-01-15 10:08:08'),
+	(24,'model','list','/b/model/list?page=1&rows=20',1,'admin','127.0.0.1','2020-01-15 10:08:08'),
+	(25,'model','add','/b/model/add?_=1579053982051',1,'admin','127.0.0.1','2020-01-15 10:08:09'),
+	(26,'model','list','/b/model/list?menuid=62&&_=1579053982052',1,'admin','127.0.0.1','2020-01-15 10:08:28'),
+	(27,'model','list','/b/model/list?page=1&rows=20',1,'admin','127.0.0.1','2020-01-15 10:08:28'),
+	(28,'model','list-field-show','/b/model/list-field-show?mid=3&_=1579053982053',1,'admin','127.0.0.1','2020-01-15 10:08:31'),
+	(29,'model','list-field-show','/b/model/list-field-show?mid=5&_=1579053982054',1,'admin','127.0.0.1','2020-01-15 10:08:35'),
+	(30,'model','list-field-show','/b/model/list-field-show?mid=5&_=1579053982055',1,'admin','127.0.0.1','2020-01-15 10:19:13'),
+	(31,'model','edit','/b/model/edit?mid=5&_=1579053982056',1,'admin','127.0.0.1','2020-01-15 10:19:16'),
+	(32,'model','edit','/b/model/edit',1,'admin','127.0.0.1','2020-01-15 10:26:27'),
+	(33,'model','list','/b/model/list?menuid=62&&_=1579053982057',1,'admin','127.0.0.1','2020-01-15 10:28:04'),
+	(34,'model','list','/b/model/list?page=1&rows=20',1,'admin','127.0.0.1','2020-01-15 10:28:05'),
+	(35,'model','edit','/b/model/edit?mid=5&_=1579053982058',1,'admin','127.0.0.1','2020-01-15 10:28:11'),
+	(36,'model','edit','/b/model/edit',1,'admin','127.0.0.1','2020-01-15 10:28:24'),
+	(37,'wechat','userinfo','/b/wechat/userinfo?menuid=59&&_=1579055569342',1,'admin','127.0.0.1','2020-01-15 10:32:55'),
+	(38,'model','list','/b/model/list?menuid=62&&_=1579055569343',1,'admin','127.0.0.1','2020-01-15 10:32:56'),
+	(39,'model','list','/b/model/list?page=1&rows=20',1,'admin','127.0.0.1','2020-01-15 10:32:56'),
+	(40,'model','list-field-show','/b/model/list-field-show?mid=5&_=1579055569344',1,'admin','127.0.0.1','2020-01-15 10:32:58'),
+	(41,'model','edit','/b/model/edit?mid=5&_=1579055569345',1,'admin','127.0.0.1','2020-01-15 10:33:01'),
+	(42,'model','edit','/b/model/edit',1,'admin','127.0.0.1','2020-01-15 10:33:14');
 ALTER TABLE `iriscms_log` ENABLE KEYS;
 UNLOCK TABLES;
 
