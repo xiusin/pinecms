@@ -45,11 +45,12 @@ func (this *CategoryController) CategoryList() {
 		"treeField": "catname",
 	}, helper.EasyuiGridfields{
 		"排序":   {"field": "listorder", "width": "15", "align": "center", "formatter": "categoryCategoryListOrderFormatter", "index": "0"},
-		"栏目名称": {"field": "catname", "width": "130", "index": "1"},
+		"栏目名称": {"field": "catname", "width": "80", "index": "1"},
 		"栏目类型": {"field": "type", "width": "30", "formatter": "categoryCategoryListTypeFormatter", "index": "2"},
-		"描述":   {"field": "description", "width": "80", "index": "3"},
-		"状态":   {"field": "ismenu", "width": "20", "formatter": "categoryCategoryListStateFormatter", "index": "4"},
-		"管理操作": {"field": "catid", "width": "50", "sortable": "true", "align": "center", "formatter": "categoryCategoryListOperateFormatter", "index": "5"},
+		"栏目模型": {"field": "model_id", "width": "30", "index": "3"},
+		"描述":   {"field": "description", "width": "80", "index": "4"},
+		"状态":   {"field": "ismenu", "width": "20", "formatter": "categoryCategoryListStateFormatter", "index": "5"},
+		"管理操作": {"field": "catid", "align": "center", "formatter": "categoryCategoryListOperateFormatter", "index": "6"},
 	})
 	this.Ctx.ViewData("TreeGrid", template.HTML(table))
 	this.Ctx.View("backend/category_list.html")

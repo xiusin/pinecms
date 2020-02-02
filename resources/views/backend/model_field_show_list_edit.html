@@ -37,7 +37,7 @@
                 </td>
                 {{if eq $index 0}}
                 <td rowspan="{{$.l}}">
-                    <input class="easyui-textbox" value="{{$.model.Formatters}}" data-options="multiline: true, prompt: '如: function fieldFormatter(fieldVal) { return \'fieldVal\'; }; fieldFormatter 就可以填写到`formatter函数名称`字段'" name="formatters" style="width:98%; height: 98%">
+                    <input class="easyui-textbox" value="{{$.model.Formatters}}" data-options="multiline: true, prompt: '如: function fieldFormatter(fieldVal) { return \'fieldVal, 内部可以直接使用全局变量rowID获取每列数据的ID\'; }; fieldFormatter 就可以填写到`formatter函数名称`字段'" name="formatters" style="width:98%; height: 98%">
                 </td>
                 {{end}}
             </tr>

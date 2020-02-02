@@ -17,13 +17,21 @@ func NewCategoryModel(orm *xorm.Engine) *CategoryModel {
 }
 
 func (this CategoryModel) GetTree(categorys []tables.IriscmsCategory, parentid int64) []map[string]interface{} {
-	res := []map[string]interface{}{}
+	var res []map[string]interface{}
 	if len(categorys) != 0 {
+		// 筛选
+		models ,_ := NewDocumentModel(this.orm).GetList(1, 1000)
+		var m = map[int64]string {}
+		for _, model := range models {
+			m[model.Id] = model.Name
+		}
+
 		for _, category := range categorys {
 			if category.Parentid == parentid {
 				son := map[string]interface{}{
 					"catid":       category.Catid,
 					"catname":     category.Catname,
+					"model_id":    m[category.ModelId],
 					"type":        category.Type,
 					"description": category.Description,
 					"ismenu":      category.Ismenu,

@@ -19,8 +19,10 @@
 
 <script type="text/javascript">
     var content_newslist_datagrid_id = 'category_categorylist_datagrid';
+    var rowID = 0 ;
     //排序格式化
     function contentNewsListOrderFormatter(val, arr) {
+        rowID = val;
         return '<input class="content_gridlist_order_input" type="text" name="order[' + arr['id'] + ']" value="' + val + '" size="2" style="text-align:center">';
     }
     //时间格式化
