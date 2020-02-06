@@ -8,6 +8,12 @@ import (
 	"github.com/xiusin/iriscms/src/application/models/tables"
 )
 
+
+const (
+	CUSTOM_TYPE = iota
+	SYSTEM_TYPE
+)
+
 type DocumentModel struct {
 	Orm *xorm.Engine
 }

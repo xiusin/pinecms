@@ -98,7 +98,7 @@ func (this *ContentController) NewsList() {
 	}
 	var index = 1
 	// 系统模型需要固定追加标题, 描述等字段
-	if relationDocumentModel.IsSystem == 1 {
+	if relationDocumentModel.IsSystem == models.SYSTEM_TYPE {
 		fields["标题"] = map[string]string{"field": "title", "width": "50", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
 		index++
 	}

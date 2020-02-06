@@ -129,5 +129,5 @@ func (this *IndexController) Menu() {
 //维持session不过期
 func (this *IndexController) Sessionlife() {
 	//维持session防止过期
-	this.Ctx.WriteString("1")
+	_, _ = this.Ctx.WriteString("1")
 }

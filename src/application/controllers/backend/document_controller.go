@@ -3,10 +3,13 @@ package backend
 import (
 	"encoding/json"
 	"errors"
-	"github.com/xiusin/iriscms/src/application/controllers"
+	"fmt"
 	"html/template"
+	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/xiusin/iriscms/src/application/controllers"
 
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/golog"
@@ -50,16 +53,66 @@ type ModelForm struct {
 	fieldType         []int64
 }
 
+var extraFields = []map[string]string{
+	{
+		"COLUMN_NAME":    "id",
+		"EXTRA":          "auto_increment",
+		"COLUMN_TYPE":    "int(11) unsigned",
+		"IS_NULLABLE":    "NO",
+		"COLUMN_COMMENT": "",
+		"COLUMN_DEFAULT": "",
+	},
+	{
+		"COLUMN_NAME":    "visit_count",
+		"EXTRA":          "",
+		"COLUMN_TYPE":    "int(11) unsigned",
+		"IS_NULLABLE":    "NO",
+		"COLUMN_COMMENT": "访问次数",
+		"COLUMN_DEFAULT": "0",
+	},
+	{
+		"COLUMN_NAME":    "status",
+		"EXTRA":          "",
+		"COLUMN_TYPE":    "tinyint(1) unsigned",
+		"IS_NULLABLE":    "NO",
+		"COLUMN_COMMENT": "状态",
+		"COLUMN_DEFAULT": "0",
+	},
+	{
+		"COLUMN_NAME":    "created_time",
+		"EXTRA":          "",
+		"COLUMN_TYPE":    "datetime",
+		"IS_NULLABLE":    "YES",
+		"COLUMN_COMMENT": "",
+		"COLUMN_DEFAULT": "",
+	},
+	{
+		"COLUMN_NAME":    "updated_time",
+		"EXTRA":          "",
+		"COLUMN_TYPE":    "datetime",
+		"IS_NULLABLE":    "YES",
+		"COLUMN_COMMENT": "",
+		"COLUMN_DEFAULT": "",
+	},
+	{
+		"COLUMN_NAME":    "deleted_time",
+		"EXTRA":          "",
+		"COLUMN_TYPE":    "datetime",
+		"IS_NULLABLE":    "YES",
+		"COLUMN_COMMENT": "",
+		"COLUMN_DEFAULT": "",
+	},
+}
+
 func (c *DocumentController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("ANY", "/model/list", "ModelList")
 	b.Handle("ANY", "/model/add", "ModelAdd")
 	b.Handle("ANY", "/model/edit", "ModelEdit")
 	b.Handle("ANY", "/model/delete", "ModelDelete")
 	b.Handle("ANY", "/model/list-field-show", "ModelFieldShowInListPage")
-
+	b.Handle("ANY", "/model/gen-sql", "GenSQL")
+	b.Handle("ANY", "/model/preview-page", "PreviewPage")
 }
-
-
 
 func (c *DocumentController) ModelFieldShowInListPage() {
 	mid, _ := c.Ctx.URLParamInt64("mid")
@@ -174,7 +227,7 @@ func (c *DocumentController) ModelAdd() {
 				Name:        data.Name,
 				Table:       data.Table,
 				Enabled:     enabled,
-				IsSystem:    0,
+				IsSystem:    models.CUSTOM_TYPE,
 				ModelType:   0,
 				FeTplIndex:  helper.EasyUiIDToFilePath(data.FeTplIndex),
 				FeTplList:   helper.EasyUiIDToFilePath(data.FeTplList),
@@ -406,3 +459,71 @@ func (c *DocumentController) ModelDelete() {
 		helper.Ajax("删除模型失败: "+err.Error(), 1, c.Ctx)
 	}
 }
+
+// 生成SQL 传入模型ID
+func (c *DocumentController) GenSQL() {
+	modelID, _ := c.Ctx.URLParamInt64("mid")
+	if modelID < 1 {
+		helper.Ajax("模型参数错误", 1, c.Ctx)
+		return
+	}
+	model := models.NewDocumentModel(c.Orm)
+	dm := model.GetByID(modelID)
+	if dm == nil {
+		helper.Ajax("模型不存在", 1, c.Ctx)
+		return
+	}
+
+	// 模型字段
+	fields := models.NewDocumentFieldDslModel(c.Orm).GetList(modelID)
+	// 关联数据
+	fieldTypes := models.NewDocumentModelFieldModel(c.Orm).GetMap()
+	preg, _ := regexp.Compile("/(.+?)\\?")
+	tableSchema := strings.TrimLeft(preg.FindString(c.Orm.DataSourceName()), "/")
+	tableSchema = strings.TrimRight(tableSchema, "?")
+
+	var existsFields []map[string]string
+
+	var creating bool
+
+	if ok, _ := c.Orm.IsTableExist("iriscms_" + dm.Table); ok {
+		existsFields, _ = c.Orm.QueryString("select * from information_schema.columns where TABLE_NAME='iriscms_" + dm.Table + "' and  table_schema = '" + tableSchema + "'")
+	} else {
+		creating = true
+		existsFields = append(existsFields, extraFields...)
+	}
+	fmt.Println(fields, fieldTypes)
+	querySQL := ""
+	if creating && dm.IsSystem != models.SYSTEM_TYPE {
+		querySQL += "CREATE TABLE `" + dm.Table + "` ( \n"
+		for _, f := range existsFields {
+			var notNull = ""
+			if f["IS_NULLABLE"] == "NO" {
+				notNull = "NOT NULL"
+			}
+			var defaultVal = ""
+			if f["COLUMN_DEFAULT"] != "" {
+				defaultVal = "DEFAULT '" + f["COLUMN_DEFAULT"] + "'"
+			}
+			querySQL += fmt.Sprintf("\t%s %s %s %s %s %s,\n",
+				f["COLUMN_NAME"], f["COLUMN_TYPE"], notNull,
+				defaultVal, f["EXTRA"], `COMMENT "`+f["COLUMN_COMMENT"]+`"`,
+			)
+		}
+		querySQL += "\tPRIMARY KEY (`id`) USING BTREE\n);"
+	}  else {
+
+	}
+	helper.Ajax(querySQL, 1, c.Ctx)
+}
+
+func (c *DocumentController) PreviewPage() {
+	modelID, _ := c.Ctx.URLParamInt64("mid")
+	if modelID < 1 {
+		helper.Ajax("模型参数错误", 1, c.Ctx)
+		return
+	}
+	c.Ctx.ViewData("form", template.HTML(buildModelForm(c.Orm, modelID)))
+	c.Ctx.View("backend/model_publish_add.html")
+}
+

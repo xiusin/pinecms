@@ -16,6 +16,12 @@
         width: 180px;
     }
 
+    #model_preview_page_iframe {
+        width: 100%;
+        height : 100%;
+        border: none;
+    }
+
 </style>
 <div id="model_list_datagrid_toolbar" style="padding:5px;height:auto">
     <a href="javascript:;" onclick="addModel();" class="easyui-linkbutton" iconCls="icons-arrow-add">添加模型</a>
@@ -25,6 +31,17 @@
      data-options="modal:true,closed:true,iconCls:'icons-application-application_edit',buttons:[{text:'确定',iconCls:'icons-other-tick',handler:function(){modelFieldShowInListPageFormSubmit();}},{text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#model_field_list_dialog').dialog('close');}}]"
      style="width:100%;height:100%;"></div>
 
+
+<div id="model_preview_page_dialog" class="easyui-dialog" title="预览模型页面"
+     data-options="modal:false,closed:true,iconCls:'icons-application-application_edit',buttons:[{text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#model_preview_page_dialog').dialog('close');}}]"
+     style="width:100%;height:100%;">
+    <iframe id="model_preview_page_iframe" src=""></iframe>
+</div>
+
+<div id="model_edit_gen_sql_dialog" class="easyui-dialog" style="width:600px;height:300px"
+     data-options="title:'模型建表SQL',closed:true,modal:true">
+    <pre id="model_edit_gen_sql"></pre>
+</div>
 
 <!-- 查看详细信息 -->
 
@@ -37,6 +54,25 @@
         url += '?mid=' + mid;
         $('#model_field_list_dialog').dialog({href: url});
         $('#model_field_list_dialog').dialog('open');
+    }
+
+
+    function editModelPreviewPage(mid) {
+        if (typeof(mid) !== 'number') mid = 0;
+        var url = "/b/model/preview-page";
+        url += '?mid=' + mid;
+        $('#model_preview_page_iframe').attr("src", url);
+        $('#model_preview_page_dialog').dialog('open');
+    }
+
+
+    function getEditModelSQL(mid) {
+        var url = "/b/model/gen-sql";
+        url += '?mid=' + mid;
+        $.get(url, function (data) {
+            $('#model_edit_gen_sql').html(data.errmsg);
+            $('#model_edit_gen_sql_dialog').dialog('open');
+        },"json");
     }
 
     //添加模型
@@ -55,7 +91,10 @@
 
     //参数格式化
     function optFormatter(val) {
-        var link = '<a href="javascript:;" onclick="editModelFieldShowInList(' + val + ');">列表显示字段</a> | ';
+        var link = '<a href="javascript:;" onclick="getEditModelSQL(' + val + ');">查看SQL</a> | ';
+
+        link += '<a href="javascript:;" onclick="editModelFieldShowInList(' + val + ');">列表显示字段</a> | ';
+        link += '<a href="javascript:;" onclick="editModelPreviewPage(' + val + ');">预览页面</a> | ';
         if (curIsSystemModel) {
              link +=  '<a href="javascript:;" onclick="editModel(' + val + ');" title="系统模型不可删除不可修改">查看</a> | <a href="javascript:;" disabled="disabled" style="color: #ccc;">删除</a>';
         } else {
