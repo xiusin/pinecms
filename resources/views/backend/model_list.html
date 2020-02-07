@@ -1,4 +1,6 @@
 {{ .dataGrid }}
+<link rel="stylesheet" href="/assets/backend/highlight/styles/default.css">
+<script src="/assets/backend/highlight/highlight.pack.js"></script>
 <style>
     .dialogtable {
         width: 100%;
@@ -38,9 +40,9 @@
     <iframe id="model_preview_page_iframe" src=""></iframe>
 </div>
 
-<div id="model_edit_gen_sql_dialog" class="easyui-dialog" style="width:600px;height:300px"
+<div id="model_edit_gen_sql_dialog" class="easyui-dialog" style="width:800px;height:500px"
      data-options="title:'模型建表SQL',closed:true,modal:true">
-    <pre id="model_edit_gen_sql"></pre>
+    <pre><code class="sql" id="model_edit_gen_sql"></code></pre>
 </div>
 
 <!-- 查看详细信息 -->
@@ -60,7 +62,7 @@
     function editModelPreviewPage(mid) {
         if (typeof(mid) !== 'number') mid = 0;
         var url = "/b/model/preview-page";
-        url += '?mid=' + mid;
+        url += '?mid=' + mid + "&preview=true";
         $('#model_preview_page_iframe').attr("src", url);
         $('#model_preview_page_dialog').dialog('open');
     }
@@ -71,6 +73,9 @@
         url += '?mid=' + mid;
         $.get(url, function (data) {
             $('#model_edit_gen_sql').html(data.errmsg);
+            $('#model_edit_gen_sql').parent().parent().append("<script> document.querySelectorAll('pre code').forEach((block) => {\n" +
+                "    hljs.highlightBlock(block);\n" +
+                "  });<\/script>")
             $('#model_edit_gen_sql_dialog').dialog('open');
         },"json");
     }

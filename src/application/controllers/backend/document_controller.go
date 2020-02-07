@@ -460,8 +460,14 @@ func (c *DocumentController) ModelDelete() {
 	}
 }
 
+var sqlFieldTypeMap = map[string]string{
+	"varchar": "varchar(100)",
+	"int":     "int(10)",
+}
+
 // 生成SQL 传入模型ID
 func (c *DocumentController) GenSQL() {
+
 	modelID, _ := c.Ctx.URLParamInt64("mid")
 	if modelID < 1 {
 		helper.Ajax("模型参数错误", 1, c.Ctx)
@@ -483,37 +489,58 @@ func (c *DocumentController) GenSQL() {
 	tableSchema = strings.TrimRight(tableSchema, "?")
 
 	var existsFields []map[string]string
-
-	var creating bool
-
-	if ok, _ := c.Orm.IsTableExist("iriscms_" + dm.Table); ok {
-		existsFields, _ = c.Orm.QueryString("select * from information_schema.columns where TABLE_NAME='iriscms_" + dm.Table + "' and  table_schema = '" + tableSchema + "'")
-	} else {
-		creating = true
-		existsFields = append(existsFields, extraFields...)
-	}
-	fmt.Println(fields, fieldTypes)
+	var fieldStrs []string
 	querySQL := ""
-	if creating && dm.IsSystem != models.SYSTEM_TYPE {
-		querySQL += "CREATE TABLE `" + dm.Table + "` ( \n"
-		for _, f := range existsFields {
-			var notNull = ""
-			if f["IS_NULLABLE"] == "NO" {
-				notNull = "NOT NULL"
+	tableName := "iriscms_" + dm.Table
+	if ok, _ := c.Orm.IsTableExist(tableName); ok {
+		querySQL = "ALTER TABLE `"+tableName+"` "
+		existsFields, _ = c.Orm.QueryString("select * from information_schema.columns where TABLE_NAME='" + tableName + "' and  table_schema = '" + tableSchema + "'")
+		for _, field := range fields {
+			var exists bool
+			for _, existsField := range existsFields {
+				if field.TableField == existsField["COLUMN_NAME"] {
+					exists = true
+					break
+				}
 			}
-			var defaultVal = ""
-			if f["COLUMN_DEFAULT"] != "" {
-				defaultVal = "DEFAULT '" + f["COLUMN_DEFAULT"] + "'"
+			if !exists {
+				colType, ok := sqlFieldTypeMap[fieldTypes[field.FieldType].Type]
+				if !ok {
+					colType = fieldTypes[field.FieldType].Type
+				}
+				fieldStrs = append(fieldStrs, fmt.Sprintf("ADD `%s` %s %s %s %s %s", field.TableField, colType, "", "", "", `COMMENT "`+field.FormName+`"`))
 			}
-			querySQL += fmt.Sprintf("\t%s %s %s %s %s %s,\n",
-				f["COLUMN_NAME"], f["COLUMN_TYPE"], notNull,
-				defaultVal, f["EXTRA"], `COMMENT "`+f["COLUMN_COMMENT"]+`"`,
-			)
 		}
-		querySQL += "\tPRIMARY KEY (`id`) USING BTREE\n);"
-	}  else {
-
+		querySQL += regexp.MustCompile(" +").ReplaceAllString(strings.Join(fieldStrs, ", "), " ")
+		querySQL += ";"
+	} else {
+		existsFields = append(existsFields, extraFields...)
+		if dm.IsSystem != models.SYSTEM_TYPE {
+			querySQL += "CREATE TABLE `" + tableName + "` ( \n"
+			for _, f := range existsFields {
+				var notNull = ""
+				if f["IS_NULLABLE"] == "NO" {
+					notNull = "NOT NULL"
+				}
+				var defaultVal = ""
+				if f["COLUMN_DEFAULT"] != "" {
+					defaultVal = "DEFAULT '" + f["COLUMN_DEFAULT"] + "'"
+				}
+				querySQL += fmt.Sprintf("\t`%s` %s %s %s %s %s,\n", f["COLUMN_NAME"], f["COLUMN_TYPE"], notNull, defaultVal, f["EXTRA"], `COMMENT "`+f["COLUMN_COMMENT"]+`"`)
+				if f["COLUMN_NAME"] == "id" {
+					for _, field := range fields {
+						colType, ok := sqlFieldTypeMap[fieldTypes[field.FieldType].Type]
+						if !ok {
+							colType = fieldTypes[field.FieldType].Type
+						}
+						querySQL += fmt.Sprintf("\t`%s` %s %s %s %s %s,\n", field.TableField, colType, "", "", "", `COMMENT "`+field.FormName+`"`)
+					}
+				}
+			}
+			querySQL += "\tPRIMARY KEY (`id`) USING BTREE\n);"
+		}
 	}
+	querySQL = regexp.MustCompile(" +").ReplaceAllString(querySQL, " ")
 	helper.Ajax(querySQL, 1, c.Ctx)
 }
 
@@ -526,4 +553,3 @@ func (c *DocumentController) PreviewPage() {
 	c.Ctx.ViewData("form", template.HTML(buildModelForm(c.Orm, modelID)))
 	c.Ctx.View("backend/model_publish_add.html")
 }
-
