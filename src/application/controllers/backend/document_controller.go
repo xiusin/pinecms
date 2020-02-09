@@ -63,6 +63,22 @@ var extraFields = []map[string]string{
 		"COLUMN_DEFAULT": "",
 	},
 	{
+		"COLUMN_NAME":    "cat_id",
+		"EXTRA":          "",
+		"COLUMN_TYPE":    "int(11) unsigned",
+		"IS_NULLABLE":    "NO",
+		"COLUMN_COMMENT": "所属栏目ID",
+		"COLUMN_DEFAULT": "0",
+	},
+	{
+		"COLUMN_NAME":    "ref_id",
+		"EXTRA":          "",
+		"COLUMN_TYPE":    "int(11) unsigned",
+		"IS_NULLABLE":    "NO",
+		"COLUMN_COMMENT": "模型关联的文章ID",
+		"COLUMN_DEFAULT": "0",
+	},
+	{
 		"COLUMN_NAME":    "visit_count",
 		"EXTRA":          "",
 		"COLUMN_TYPE":    "int(11) unsigned",
@@ -169,9 +185,9 @@ func (c *DocumentController) ModelList() {
 	}, helper.EasyuiGridfields{
 		"模型名称":  {"field": "name", "width": "30", "index": "0"},
 		"数据表名称": {"field": "table", "width": "30", "index": "1"},
-		"启用":    {"field": "enabled", "width": "25", "index": "2", "formatter": "enabledFormatter"},
-		"系统模型":  {"field": "is_system", "width": "25", "index": "3", "formatter": "systemFormatter"},
-		"操作":    {"field": "id", "width": "25", "index": "4", "formatter": "optFormatter"},
+		"启用":    {"field": "enabled", "width": "20", "index": "2", "formatter": "enabledFormatter"},
+		"系统模型":  {"field": "is_system", "width": "20", "index": "3", "formatter": "systemFormatter"},
+		"操作":    {"field": "id", "index": "4", "formatter": "optFormatter"},
 	})
 	c.Ctx.ViewData("dataGrid", template.HTML(table))
 	c.Ctx.View("backend/model_list.html")
@@ -266,9 +282,9 @@ func (c *DocumentController) ModelAdd() {
 						return nil, err
 					}
 				}
-				if data.FieldRequired[k] == "on" {
-					f.Required = 1
-				}
+				//if data.FieldRequired[k] == "on" {
+				//	f.Required = 1
+				//}
 				fields = append(fields, f)
 			}
 			rest, err := session.Insert(fields)
@@ -350,10 +366,6 @@ func (c *DocumentController) ModelEdit() {
 			enabled = 1
 		}
 
-		//if len(data.FieldField) != len(data.FieldRequired)  {
-		//
-		//}
-
 		_, err = c.Orm.Transaction(func(session *xorm.Session) (i interface{}, err error) {
 			document.Name = data.Name
 			document.Table = data.Table
@@ -362,7 +374,8 @@ func (c *DocumentController) ModelEdit() {
 			document.FeTplList = helper.EasyUiIDToFilePath(data.FeTplList)
 			document.FeTplDetail = helper.EasyUiIDToFilePath(data.FeTplDetail)
 			document.FieldShowInList = ""
-			_, err = session.Update(document)
+			document.Execed = 0
+			_, err = session.ID(document.Id).AllCols().Update(document)
 			if err != nil {
 				return nil, err
 			}
@@ -435,7 +448,7 @@ func (c *DocumentController) ModelEdit() {
 	c.Ctx.ViewData("list", list)
 	c.Ctx.ViewData("title", currentPos)
 	listJson, _ := json.Marshal(list)
-	golog.Error(string(listJson))
+	//golog.Error(string(listJson))
 
 	c.Ctx.ViewData("listJson", string(listJson))
 	c.Ctx.View("backend/model_edit.html")
@@ -467,7 +480,6 @@ var sqlFieldTypeMap = map[string]string{
 
 // 生成SQL 传入模型ID
 func (c *DocumentController) GenSQL() {
-
 	modelID, _ := c.Ctx.URLParamInt64("mid")
 	if modelID < 1 {
 		helper.Ajax("模型参数错误", 1, c.Ctx)
@@ -480,6 +492,11 @@ func (c *DocumentController) GenSQL() {
 		return
 	}
 
+	if dm.Execed == 1 {
+		helper.Ajax("没有任何改动可以执行", 1, c.Ctx)
+		return
+	}
+	exec, _ := c.Ctx.URLParamBool("exec")
 	// 模型字段
 	fields := models.NewDocumentFieldDslModel(c.Orm).GetList(modelID)
 	// 关联数据
@@ -493,7 +510,7 @@ func (c *DocumentController) GenSQL() {
 	querySQL := ""
 	tableName := "iriscms_" + dm.Table
 	if ok, _ := c.Orm.IsTableExist(tableName); ok {
-		querySQL = "ALTER TABLE `"+tableName+"` "
+		querySQL = "ALTER TABLE `" + tableName + "` \n"
 		existsFields, _ = c.Orm.QueryString("select * from information_schema.columns where TABLE_NAME='" + tableName + "' and  table_schema = '" + tableSchema + "'")
 		for _, field := range fields {
 			var exists bool
@@ -508,10 +525,10 @@ func (c *DocumentController) GenSQL() {
 				if !ok {
 					colType = fieldTypes[field.FieldType].Type
 				}
-				fieldStrs = append(fieldStrs, fmt.Sprintf("ADD `%s` %s %s %s %s %s", field.TableField, colType, "", "", "", `COMMENT "`+field.FormName+`"`))
+				fieldStrs = append(fieldStrs, fmt.Sprintf("\tADD `%s` %s %s %s %s %s", field.TableField, colType, "", "", "", `COMMENT "`+field.FormName+`"`))
 			}
 		}
-		querySQL += regexp.MustCompile(" +").ReplaceAllString(strings.Join(fieldStrs, ", "), " ")
+		querySQL += regexp.MustCompile(" +").ReplaceAllString(strings.Join(fieldStrs, ",\n"), " ")
 		querySQL += ";"
 	} else {
 		existsFields = append(existsFields, extraFields...)
@@ -537,11 +554,26 @@ func (c *DocumentController) GenSQL() {
 					}
 				}
 			}
-			querySQL += "\tPRIMARY KEY (`id`) USING BTREE\n);"
+			querySQL += "\tPRIMARY KEY (`id`) USING BTREE\n, KEY `ref_id` (`ref_id`)  USING BTREE) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 		}
 	}
 	querySQL = regexp.MustCompile(" +").ReplaceAllString(querySQL, " ")
-	helper.Ajax(querySQL, 1, c.Ctx)
+	if exec {
+		_, err := c.Orm.Exec(querySQL)
+		if err != nil {
+			helper.Ajax(err.Error(), 1, c.Ctx)
+			return
+		}
+		af, err := c.Orm.ID(modelID).Table(&tables.IriscmsDocumentModel{}).Update(map[string]interface{}{"execed": 1})
+		if af > 0 {
+			helper.Ajax("执行SQL成功", 0, c.Ctx)
+			return
+		}
+		helper.Ajax("执行SQL失败", 1, c.Ctx)
+	} else {
+		helper.Ajax(querySQL, 0, c.Ctx)
+	}
+
 }
 
 func (c *DocumentController) PreviewPage() {

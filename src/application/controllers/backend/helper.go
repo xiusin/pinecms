@@ -38,11 +38,10 @@ func buildModelForm(orm *xorm.Engine, mid int64) string {
 	}
 	fields := models.NewDocumentFieldDslModel(orm).GetList(mid)
 	h := "<form method='POST' id='content_page_form' enctype='multipart/form-data'>" +
-		"	<input type='hidden' value='" + documentModel.Table + "'>" +
-		"		<table cellpadding='2' class='dialogtable' style='width: 100%;'>"
+		"<input type='hidden' value='" + documentModel.Table + "'>" +
+		"<table cellpadding='2' class='dialogtable' style='width: 100%;'>"
 	for _, field := range fields {
-		h += `			<tr><td style="width: 150px;">` + field.FormName + `:</td><td>
-`
+		h += `<tr><td style="width: 100px;text-align:right;">` + field.FormName + `：</td><td>`
 		if strings.Contains(field.Html, "easyui-") {
 			h += easyUIComponents(&field)
 		} else {
@@ -50,7 +49,10 @@ func buildModelForm(orm *xorm.Engine, mid int64) string {
 		}
 		h += "</td></tr>"
 	}
-	h += "</form>"
+	h += `<tr><td colspan=2>
+<a href="javascript:void(0);" onclick="submitForm()" class="easyui-linkbutton" style="margin-right:10px">发布</a>
+<a href="javascript:void(0);" onclick="clearForm()" class="easyui-linkbutton">取消</a></td></tr>`
+	h += "</table></form>"
 	return h
 }
 func domOrCustomTagComponents(field *tables.IriscmsDocumentModelDsl) string {

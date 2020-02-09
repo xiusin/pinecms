@@ -16,7 +16,7 @@
             border-style: dotted;
             border-color: #ccc;
             /*margin: 0;*/
-            padding: 3px;
+            padding: 15px 7px;
         }
 
         #tags_tagsinput {
@@ -75,10 +75,11 @@
         }
 
     </style>
-
 </head>
 <body>
-{{.form}}
+<div>
+    {{.form}}
+</div>
 <script type="text/javascript">
     // $.validator.setDefaults({
     //     submitHandler: function () {
@@ -142,6 +143,14 @@
             $(obj).prev().prev().attr('src',"/assets/backend/mdou/images/uploadholder.png");
             layer.closeAll();
         }, function(){});
+    }
+
+
+    function submitForm(){
+        $('#content_page_form').form('submit');
+    }
+    function clearForm(){
+        $('#content_page_form').form('clear');
     }
 
 </script>

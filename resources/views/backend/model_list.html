@@ -41,7 +41,7 @@
 </div>
 
 <div id="model_edit_gen_sql_dialog" class="easyui-dialog" style="width:800px;height:500px"
-     data-options="title:'模型建表SQL',closed:true,modal:true">
+     data-options="title:'模型建表SQL',closed:true,modal:true, buttons:[{text:'执行SQL',iconCls:'icons-other-tick',handler:function(){getEditModelSQL();}}, {text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#model_edit_gen_sql_dialog').dialog('close');}}]">
     <pre><code class="sql" id="model_edit_gen_sql"></code></pre>
 </div>
 
@@ -49,7 +49,7 @@
 
 <script type="text/javascript">
     const member_list = $('#model_list_datagrid');
-
+    var curMid = 0;
     function editModelFieldShowInList(mid) {
         if (typeof(mid) !== 'number') mid = 0;
         var url = "/b/model/list-field-show";
@@ -70,13 +70,27 @@
 
     function getEditModelSQL(mid) {
         var url = "/b/model/gen-sql";
-        url += '?mid=' + mid;
+        var exec = false
+        if (typeof mid === "undefined") {
+            url += '?mid=' + curMid + '&exec=true';
+            mid = curMid
+            exec = true
+        } else {
+            url += '?mid=' + mid;
+        }
+        curMid = mid
         $.get(url, function (data) {
-            $('#model_edit_gen_sql').html(data.errmsg);
-            $('#model_edit_gen_sql').parent().parent().append("<script> document.querySelectorAll('pre code').forEach((block) => {\n" +
-                "    hljs.highlightBlock(block);\n" +
-                "  });<\/script>")
-            $('#model_edit_gen_sql_dialog').dialog('open');
+            if (data.errcode == 1) {
+                $.messager.alert('提示信息', data.errmsg, 'error');
+                return
+            }
+            if (!exec) {
+                $('#model_edit_gen_sql').html(data.errmsg);
+                $('#model_edit_gen_sql').parent().parent().append("<script> document.querySelectorAll('pre code').forEach((block) => { hljs.highlightBlock(block); });<\/script>")
+                $('#model_edit_gen_sql_dialog').dialog('open');
+            } else {
+                $.messager.alert('提示信息', data.errmsg, 'info');
+            }
         },"json");
     }
 

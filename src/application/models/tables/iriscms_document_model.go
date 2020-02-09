@@ -15,4 +15,5 @@ type IriscmsDocumentModel struct {
 	DeletedAt       time.Time `xorm:"deleted_at" json:"deleted_at"`
 	FieldShowInList string    `json:"field_show_in_list"`
 	Formatters      string    `json:"formatters"`
+	Execed          int       `json:"execed"`
 }
