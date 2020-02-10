@@ -28,14 +28,15 @@ hashkey: "the-big-and-secret-fash-key-here"  # 只支持固定大小到字节, �
 blockkey: "lot-secret-of-characters-big-too"
 backend_route_party: "/b/"
 
-
 max_bodysize: 32 # MB
+
 upload:
   engine: "oss" #oss or file
   base_path: "assets" # 基本路径
 
 statics:
   - {route: "/assets", path: "./resources/assets"}
+  - {route: "/upload", path: "./resources/assets/upload"}
 
 redis:
   host: "115.159.71.60:6379"

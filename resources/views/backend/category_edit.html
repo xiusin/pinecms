@@ -86,7 +86,26 @@
                 <div id="category_category_edit_dialog_form_typeTip"></div>
             </td>
         </tr>
-
+        {{ if gt .category.ModelId 0}}
+        <tr id="model_select">
+            <td>文档模型：</td>
+            <td>
+                <select name="model_id" class="easyui-combobox"
+                        data-options="editable:false,panelHeight:'auto'"
+                        style="width:280px"
+                        disabled>
+                    {{range $v := .models}}
+                        {{if eq $v.Id $.model_id}}
+                            <option value="{{$v.Id}}">{{$v.Name}}</option>
+                        {{end}}
+                    {{end}}
+                </select>
+                <span style="color:gray;padding-left:15px">设置后不可修改</span>
+            </td>
+            <td>
+            </td>
+        </tr>
+        {{end}}
         <tr>
             <td>缩略图：</td>
             <td>

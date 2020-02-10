@@ -81,7 +81,7 @@ func serve() {
 		if err := cmd.Start(); err != nil {
 			log.Println(fmt.Sprintf("%s %s", color.RedString("[ERRO]"), err.Error()))
 		}
-		log.Println(fmt.Sprintf("%s %s", color.YellowString("[INFO]"), "构建执行文件, 并且启动服务成功"))
+		log.Println(fmt.Sprintf("%s %s", color.GreenString("[INFO]"), "构建执行文件, 并且启动服务成功"))
 		if err := cmd.Wait(); err != nil && err.Error() != "signal: killed" {
 			log.Println(fmt.Sprintf("%s %s", color.RedString("[ERRO]"), err.Error()))
 		}
@@ -89,6 +89,7 @@ func serve() {
 	}
 }
 func build() error {
+	start := time.Now()
 	cmd := exec.Command("go", "build", "-o", buildName)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
@@ -96,6 +97,7 @@ func build() error {
 	if err := cmd.Run(); err != nil {
 		return err
 	}
+	log.Println(fmt.Sprintf("%s 构建耗时: %s", color.GreenString("[INFO]"), time.Now().Sub(start).String()))
 	return nil
 }
 

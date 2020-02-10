@@ -15,6 +15,7 @@ import (
 	"github.com/xiusin/iriscms/src/common/helper"
 )
 
+//todo 清理缓存， 结合最终
 func clearMenuCache(cache cache.ICache, xorm *xorm.Engine) {
 	var roles []*tables.IriscmsAdminRole
 	var menus []*tables.IriscmsMenu
@@ -25,59 +26,66 @@ func clearMenuCache(cache cache.ICache, xorm *xorm.Engine) {
 			cacheKey := fmt.Sprintf(controllers.CacheAdminMenuByRoleIdAndMenuId, role.Roleid, menu.Id)
 			cache.Delete(cacheKey)
 		}
-
 	}
 }
 
 // 构建模型表单
-func buildModelForm(orm *xorm.Engine, mid int64) string {
+func buildModelForm(orm *xorm.Engine, mid int64, data map[string]string) string {
 	model := models.NewDocumentModel(orm)
 	documentModel := model.GetByID(mid)
 	if documentModel == nil || documentModel.Id < 1 {
 		panic("模型不存在")
 	}
+	idInput := ""
+	buttonTxt := "发布"
+	if id, ok := data["id"]; ok {
+		idInput = "<input type='hidden' name='id' value='" + id + "'>"
+		buttonTxt = "更新"
+	}
 	fields := models.NewDocumentFieldDslModel(orm).GetList(mid)
 	h := "<form method='POST' id='content_page_form' enctype='multipart/form-data'>" +
-		"<input type='hidden' value='" + documentModel.Table + "'>" +
+		"<input type='hidden' name='table_name' value='" + documentModel.Table + "'>" +
+		"<input type='hidden' name='mid' value='" + strconv.Itoa(int(mid)) + "'>" +
+		idInput +
 		"<table cellpadding='2' class='dialogtable' style='width: 100%;'>"
 	for _, field := range fields {
 		h += `<tr><td style="width: 100px;text-align:right;">` + field.FormName + `：</td><td>`
+		val, _ := data[field.TableField]	// 读取字段值
 		if strings.Contains(field.Html, "easyui-") {
-			h += easyUIComponents(&field)
+			h += easyUIComponents(&field, val)
 		} else {
-			h += domOrCustomTagComponents(&field)
+			h += domOrCustomTagComponents(&field, val)
 		}
 		h += "</td></tr>"
 	}
 	h += `<tr><td colspan=2>
-<a href="javascript:void(0);" onclick="submitForm()" class="easyui-linkbutton" style="margin-right:10px">发布</a>
-<a href="javascript:void(0);" onclick="clearForm()" class="easyui-linkbutton">取消</a></td></tr>`
-	h += "</table></form>"
+<a href="javascript:void(0);" onclick="submitForm()" class="easyui-linkbutton" style="margin-right:10px">`+buttonTxt+`</a>
+<a href="javascript:void(0);" onclick="clearForm()" class="easyui-linkbutton">取消</a></td></tr>
+</table></form>`
 	return h
 }
-func domOrCustomTagComponents(field *tables.IriscmsDocumentModelDsl) string {
+func domOrCustomTagComponents(field *tables.IriscmsDocumentModelDsl, val string) string {
 	attrs := []string{"name='" + field.TableField + "'"}
 	isEditor := strings.HasPrefix(field.Html, "<editor")
 	isImageUpload := strings.HasPrefix(field.Html, "<images")
 	isMulImageUpload := strings.HasPrefix(field.Html, "<mul-images")
-	value := ""
+	isTags := strings.HasPrefix(field.Html, "<tags")
 	if isEditor {
-		field.Html = getEditor(value, strings.Join(attrs, " "), true)
+		field.Html = getEditor(field.TableField, val, strings.Join(attrs, " "), field.Required == 1, field.FormName, field.Default, field.RequiredTips)
 	} else if isImageUpload {
-		field.Html = helper.SiginUpload("", field.TableField)
+		field.Html = helper.SiginUpload(field.TableField, val, field.Required == 1, field.FormName, field.Default, field.RequiredTips)
 	} else if isMulImageUpload {
-		field.Html = helper.MultiUpload([]string{}, 5)
+		field.Html = helper.MultiUpload(field.TableField, strings.Split(val, ","), 5, field.Required == 1, field.FormName, field.Default, field.RequiredTips)
+	} else if isTags{
+		field.Html = helper.Tags(field.TableField, val, field.Required == 1, field.FormName, field.Default, field.RequiredTips)
 	} else {
 		field.Html = strings.Replace(field.Html, "{{attr}}", strings.Join(attrs, " "), 1)
-		field.Html = strings.Replace(field.Html, "{{value}}", value, 1)
-	}
-	if field.RequiredTips != "" {
-		field.Html += field.RequiredTips
+		field.Html = strings.Replace(field.Html, "{{value}}", val, 1)
 	}
 	return field.Html
 }
 
-func easyUIComponents(field *tables.IriscmsDocumentModelDsl) string {
+func easyUIComponents(field *tables.IriscmsDocumentModelDsl, val string) string {
 	var options []string
 	attrs := []string{"name='" + field.TableField + "'"}
 	if strings.Contains(field.Html, "multiline") {
@@ -88,11 +96,13 @@ func easyUIComponents(field *tables.IriscmsDocumentModelDsl) string {
 		options = append(options, "required:true")
 		if field.RequiredTips != "" {
 			options = append(options, "missingMessage:'"+field.RequiredTips+"'")
+		} else {
+			options = append(options, "missingMessage:'"+field.FormName+"必须填写'")
 		}
 	}
 	if field.Validator != "" {
 		options = append(options, "validType:"+field.Validator)
-		options = append(options, "invalidMessage:'"+field.RequiredTips+"'")
+		options = append(options, "invalidMessage:'"+field.FormName+"输入数据内容无效'")
 	}
 
 	if field.Datasource != "" {
@@ -149,8 +159,8 @@ func easyUIComponents(field *tables.IriscmsDocumentModelDsl) string {
 			var htm = ""
 			var htmlTmp string
 			for _, item := range datas {
-				 if field.FieldType == 8 {
-				 	for _, v := range defaultVals {
+				if field.FieldType == 8 {
+					for _, v := range defaultVals {
 						htmlTmp = field.Html
 						if v == item.Value {
 							htmlTmp = strings.Replace(htmlTmp, "{{default}}", "checked", 1)
@@ -159,18 +169,18 @@ func easyUIComponents(field *tables.IriscmsDocumentModelDsl) string {
 							htmlTmp = strings.Replace(htmlTmp, "{{default}}", "", 1)
 						}
 					}
-				 } else {
-					 htmlTmp = field.Html
-					 if item.Value == field.Default {
-						 htmlTmp = strings.Replace(htmlTmp, "{{default}}", "checked", 1)
-					 } else {
-						 htmlTmp = strings.Replace(htmlTmp, "{{default}}", "", 1)
-					 }
-				 }
+				} else {
+					htmlTmp = field.Html
+					if item.Value == field.Default {
+						htmlTmp = strings.Replace(htmlTmp, "{{default}}", "checked", 1)
+					} else {
+						htmlTmp = strings.Replace(htmlTmp, "{{default}}", "", 1)
+					}
+				}
 				htm += strings.Replace(htmlTmp, "{{value}}", item.Value, -1) + strings.Repeat("&nbsp;", 3) + item.Label + strings.Repeat("&nbsp;", 8)
 			}
 			field.Html = htm
-		} else if field.FieldType == 13 && len(datas) >= 1{	// 单选按钮
+		} else if field.FieldType == 13 && len(datas) >= 1 { // 单选按钮
 			if field.Default != "" {
 				if field.Default == datas[0].Value {
 					field.Html = strings.Replace(field.Html, "{{default}}", "checked", 1)
@@ -178,20 +188,28 @@ func easyUIComponents(field *tables.IriscmsDocumentModelDsl) string {
 					field.Html = strings.Replace(field.Html, "{{default}}", "", 1)
 				}
 			}
-			options = append(options,"onText: '" + datas[0].Value + "'")
-			options = append(options,"offText: '" + datas[1].Value + "'")
+			options = append(options, "onText: '"+datas[0].Value+"'")
+			options = append(options, "offText: '"+datas[1].Value+"'")
 		}
 	}
 	if len(options) > 0 {
 		attrs = append(attrs, `data-options="`+strings.Join(options, ", ")+`"`)
 	}
-	value := ""
 	field.Html = strings.Replace(field.Html, "{{attr}}", strings.Join(attrs, " "), -1)
-	field.Html = strings.Replace(field.Html, "{{value}}", value, -1)
+	field.Html = strings.Replace(field.Html, "{{value}}", val, -1)
 	return field.Html
 }
 
-func getEditor(val, attrs string, required bool) string {
-	rid := strconv.Itoa(rand.Int())
-	return `<textarea id="component_editor_um_` + rid + `" ` + attrs + ` style="width:100%;height:360px" >` + val + `</textarea><script> UM.getEditor('component_editor_um_` + rid + `');</script>`
+func getEditor(field, val, attrs string, required bool, formName, defaultVal, RequiredTips string) string {
+	rid := "component_editor_um_" + strconv.Itoa(rand.Int())
+	if RequiredTips == "" {
+		RequiredTips = formName + "必须填写"
+	}
+	var requiredFunc = ""
+	if required {
+		requiredFunc = `editors.push(function(){ if (!` + rid + `.hasContents()) {$('#` + rid + `_tip').html("` + RequiredTips + `"); return false; } $('#` + rid + `_tip').html(''); return true; });`
+	}
+	return `<textarea id="` + rid + `" ` + attrs + ` style="width:100%;height:360px" name="` + field + `">` + val + `</textarea>
+<div id='` + rid + `_tip' class='errtips'></div>
+<script>var ` + rid + ` = UE.getEditor('` + rid + `'); ` + requiredFunc + `</script>`
 }

@@ -1,11 +1,20 @@
 package backend
 
 import (
-	"github.com/kataras/iris/v12"
-	"github.com/xiusin/iriscms/src/config"
-
+	"encoding/base64"
+	"io/ioutil"
+	"math/rand"
+	"mime/multipart"
+	"os"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/golang/glog"
+	"github.com/kataras/iris/v12"
+	"github.com/xiusin/iriscms/src/application/models"
+	"github.com/xiusin/iriscms/src/application/models/tables"
+	"github.com/xiusin/iriscms/src/config"
 
 	"github.com/xiusin/iriscms/src/common/helper"
 
@@ -24,6 +33,8 @@ type PublicController struct {
 func (c *PublicController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("ANY", "/upload", "Upload")
 	b.Handle("ANY", "/fedir-scan", "FeDirScan")
+	b.Handle("ANY", "/attachments", "Attachments")
+	b.Handle("ANY", "/ueditor", "UEditor")
 }
 
 func (c *PublicController) FeDirScan() {
@@ -58,16 +69,37 @@ func (c *PublicController) Upload() {
 	uploadDir = uploadDir + "/" + mid + "/" + nowTime
 	file, fs, err := c.Ctx.FormFile("filedata")
 	if err != nil {
-		c.Ctx.Application().Logger().Error("上传文件失败", err.Error())
-		uploadAjax(c.Ctx, map[string]string{
-			"errmsg":  "打开上传临时文件失败 : " + err.Error(),
-			"state":   "打开上传临时文件失败 : " + err.Error(),
-			"errcode": "1",
-		}, isEditor)
-		return
+		if fileData := c.Ctx.FormValue("filedata"); fileData == "" {
+			glog.Error("上传文件失败", err.Error())
+			uploadAjax(c.Ctx, map[string]interface{}{"state": "打开上传临时文件失败 : " + err.Error(), "errcode": "1",}, isEditor)
+			return
+		} else {
+			dist, err := base64.StdEncoding.DecodeString(fileData)
+			if err != nil {
+				uploadAjax(c.Ctx, map[string]interface{}{"state": "解码base64数据失败 : " + err.Error(), "errcode": "1",}, isEditor)
+			}
+			//写入新文件
+			f, err := ioutil.TempFile("", "tempfile_"+strconv.Itoa(rand.Intn(10000)))
+			if err != nil {
+				uploadAjax(c.Ctx, map[string]interface{}{"state": "上传失败 : " + err.Error(), "errcode": "1",}, isEditor)
+			}
+			f.Write(dist)
+			f.Close()
+			fo, _ := os.Open(f.Name())
+			file = multipart.File(fo)
+			defer os.Remove(f.Name())
+		}
 	}
 	defer file.Close()
-	fname := fs.Filename
+	var fname string
+	var size int64
+	if fs != nil {
+		size = fs.Size
+		fname = fs.Filename
+	} else {
+		fname = helper.GetRandomString(10) + ".png"
+	}
+
 	info := strings.Split(fname, ".")
 	ext := strings.ToLower(info[len(info)-1])
 	canUpload := []string{"jpg", "jpeg", "png"}
@@ -78,37 +110,40 @@ func (c *PublicController) Upload() {
 		}
 	}
 	if !flag {
-		uploadAjax(c.Ctx, map[string]string{
-			"errmsg":  "不支持的文件类型",
-			"state":   "不支持的文件类型",
-			"errcode": "1",
-		}, isEditor)
+		uploadAjax(c.Ctx, map[string]interface{}{"state": "不支持的文件类型", "errcode": "1",}, isEditor)
 		return
 	}
 	filename := string(helper.Krand(10, 3)) + "." + ext
 	storageName := uploadDir + "/" + filename
 	path, err := uploader.Upload(storageName, file)
 	if err != nil {
-		uploadAjax(c.Ctx, map[string]string{
-			"errmsg":  "上传失败:" + err.Error(),
-			"state":   "上传失败:" + err.Error(),
-			"errcode": "1",
-		}, isEditor)
+		uploadAjax(c.Ctx, map[string]interface{}{"state": "上传失败:" + err.Error(), "errcode": "1"}, isEditor)
 		return
 	}
-
-	resJson := map[string]string{
-		"originalName": fname,        //原始名称
-		"name":         filename,     //新文件名称
-		"url":          path,         //完整文件名,即从当前配置目录开始的URL
-		"size":         "",           //文件大小
-		"type":         "image/jpeg", //文件类型
-		"state":        "上传成功",       //上传状态
+	resJson := map[string]interface{}{
+		"originalName": fname,     //原始名称
+		"name":         filename,  //新文件名称
+		"url":          path,      //完整文件名,即从当前配置目录开始的URL
+		"size":         size,      //文件大小
+		"type":         "." + ext, //文件类型
+		"state":        "SUCCESS", //上传状态
 		"errmsg":       path,
 		"errcode":      "0",
 	}
-	uploadAjax(c.Ctx, resJson, isEditor)
-	return
+	if id, _ := c.Orm.InsertOne(&tables.IriscmsAttachments{
+		Name:       filename,
+		Url:        path,
+		OriginName: fname,
+		Size:       size,
+		UploadTime: time.Now(),
+		Type:       models.IMG_TYPE,
+	}); id > 0 {
+		uploadAjax(c.Ctx, resJson, isEditor)
+	} else {
+		os.Remove(storageName)
+		uploadAjax(c.Ctx, map[string]interface{}{"state":   "保存上传失败", "errcode": "1"}, isEditor)
+	}
+
 }
 
 ////生成验证码
@@ -124,20 +159,81 @@ func (c *PublicController) Upload() {
 //	png.Encode(this.Ctx.ResponseWriter(), img) //发送图片内容到浏览器
 //}
 
-func uploadAjax(ctx iris.Context, uploadData map[string]string, isEditor bool) {
-	if !isEditor {
-		errmsg, ok := uploadData["errmsg"]
-		if !ok {
-			helper.Ajax("未知错误", 1, ctx)
-			return
-		}
-		errcode, ok := uploadData["errcode"]
-		code, err := strconv.Atoi(errcode)
-		if err != nil {
-			errmsg = "未知错误"
-		}
-		helper.Ajax(errmsg, int64(code), ctx)
-	} else {
-		ctx.JSON(uploadData)
+func (c *PublicController) UEditor() {
+	action := c.Ctx.URLParam("action")
+	switch action {
+	case "config":
+		c.Ctx.Text("%s", `
+{
+    "imageActionName": "upload", 
+    "imageFieldName": "filedata",
+    "imageMaxSize": 2048000, 
+    "imageAllowFiles": [".png", ".jpg", ".jpeg", ".gif", ".bmp"],
+    "imageCompressEnable": true, 
+    "imageCompressBorder": 1600, 
+    "imageInsertAlign": "none", 
+    "imageUrlPrefix": "", 
+    "scrawlActionName": "upload", 
+    "scrawlFieldName": "filedata", 
+    "scrawlMaxSize": 2048000, 
+    "scrawlUrlPrefix": "", 
+    "scrawlInsertAlign": "none",
+    "catcherLocalDomain": ["127.0.0.1", "localhost", "img.baidu.com"],
+    "catcherActionName": "catchimage", 
+    "catcherFieldName": "source", 
+    "catcherPathFormat": "/ueditor/php/upload/image/{yyyy}{mm}{dd}/{time}{rand:6}", 
+    "catcherUrlPrefix": "",
+    "catcherMaxSize": 2048000,
+    "catcherAllowFiles": [".png", ".jpg", ".jpeg", ".gif", ".bmp"],
+    "imageManagerActionName": "attachments-img", 
+    "imageManagerUrlPrefix": "",
+    "imageManagerInsertAlign": "none", 
+    "imageManagerAllowFiles": [".png", ".jpg", ".jpeg", ".gif", ".bmp"],
+    "fileManagerActionName": "attachments-file", 
+    "fileManagerListPath": "/ueditor/php/upload/file/", 
+    "fileManagerUrlPrefix": "", 
+    "fileManagerListSize": 20, 
+    "fileManagerAllowFiles": [
+        ".png", ".jpg", ".jpeg", ".gif", ".bmp",
+        ".flv", ".swf", ".mkv", ".avi", ".rm", ".rmvb", ".mpeg", ".mpg",
+        ".ogg", ".ogv", ".mov", ".wmv", ".mp4", ".webm", ".mp3", ".wav", ".mid",
+        ".rar", ".zip", ".tar", ".gz", ".7z", ".bz2", ".cab", ".iso",
+        ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".pdf", ".txt", ".md", ".xml"
+    ] 
+}
+`)
+	case "upload":
+		c.Upload()
+	case "attachments-img":
+		c.Ctx.Request().ParseForm()
+		c.Ctx.Request().Form.Add("type", models.IMG_TYPE)
+		c.Attachments()
 	}
+}
+
+func uploadAjax(ctx iris.Context, uploadData map[string]interface{}, isEditor bool) {
+	ctx.JSON(uploadData)
+}
+
+// 读取资源列表
+func (c *PublicController) Attachments() {
+	page, _ := c.Ctx.URLParamInt64("page")
+	if page < 1 {
+		page = 1
+	}
+	start, _ := c.Ctx.URLParamInt64("start")
+	if start < 0 {
+		start = 0
+	}
+	var data []*tables.IriscmsAttachments
+	attachmentType := c.Ctx.URLParamDefault("type", models.IMG_TYPE)
+	cnt, _ := c.Orm.Limit(30, int(start)).Where("`type` = ?", attachmentType).FindAndCount(&data)
+	c.Ctx.JSON(map[string]interface{}{
+		"state":   "SUCCESS",
+		"list":    data,
+		"total":   cnt,
+		"start":   start,
+		"errmsg":  "读取成功",
+		"errcode": "0",
+	})
 }

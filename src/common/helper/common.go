@@ -44,6 +44,8 @@ func GetRootPath() string {
 
 var location, _ = time.LoadLocation("PRC")
 
+const TIME_FORMAT = "2006-01-02 15:04:05"
+
 func GetLocation() *time.Location {
 	return location
 }
@@ -126,32 +128,28 @@ func GetTimeStamp() int {
 
 //NowDate 当前时间 Y m d H:i:s
 func NowDate(str string) string {
-	t := time.Now().In(location)
+	return time.Now().In(location).Format(format(str))
+}
+
+func format(str string) string {
 	str = strings.Replace(str, "Y", "2006", 1)
 	str = strings.Replace(str, "m", "01", 1)
 	str = strings.Replace(str, "d", "02", 1)
-	str = strings.Replace(str, "H", "15", 1)
+	str = strings.Replace(str, "H", "13", 1)
 	str = strings.Replace(str, "i", "04", 1)
 	str = strings.Replace(str, "s", "05", 1)
-	return t.Format(str)
+	return str
 }
 
 //FormatTime 时间戳格式化时间
 func FormatTime(timestamp int64) string {
 	t := time.Unix(timestamp, 0).In(location)
-	str := "Y-m-d H:i:s"
-	str = strings.Replace(str, "Y", "2006", 1)
-	str = strings.Replace(str, "m", "01", 1)
-	str = strings.Replace(str, "d", "02", 1)
-	str = strings.Replace(str, "H", "15", 1)
-	str = strings.Replace(str, "i", "04", 1)
-	str = strings.Replace(str, "s", "05", 1)
+	str := TIME_FORMAT
 	return t.Format(str)
 }
 
 //GetImg 根据图片路径生成图片,待优化函数
 func GetImg(path, waterPath string) {
-	fmt.Println("开始处理图片")
 	f, err := os.Open(path) //打开文件
 	if err != nil {
 		fmt.Println("打开文件失败:", err.Error())
@@ -162,8 +160,6 @@ func GetImg(path, waterPath string) {
 	if len(filename) != 2 || (filename[1] != "jpg" && filename[1] != "jpeg" && filename[1] != "gif" && filename[1] != "png") {
 		return
 	}
-	fmt.Println("解析文件信息：", filename)
-
 	var imager image.Image
 	if filename[1] == "jpg" {
 		imager, err = jpeg.Decode(f)
@@ -179,8 +175,6 @@ func GetImg(path, waterPath string) {
 		return
 	}
 
-	fmt.Println("解码文件:", imager)
-
 	//获取图片缩略图
 	thumbnail := resize.Thumbnail(120, 120, imager, resize.Lanczos3)
 	fileThumb, err := os.Create(filename[0] + strconv.Itoa(int(time.Now().Unix())) + "_thmub.jpg")
@@ -190,16 +184,13 @@ func GetImg(path, waterPath string) {
 		fileThumb.Close()
 	}
 	rectangler := imager.Bounds()
-	fmt.Println("获取图片的0点和尾点:", rectangler)
 	//创建画布
 	newWidth := 200
 	m := image.NewRGBA(image.Rect(0, 0, newWidth, newWidth*rectangler.Dy()/rectangler.Dx()))
 	//在画布上绘制图片 m画布 m.bounds画布参数, imager 要参照打开的图片信息 image.Point 图片绘制的其实地址 绘制资源
 	draw.Draw(m, m.Bounds(), imager, image.Point{100, 100}, draw.Src)
 	//绘制水印图
-
 	//必须是PNG图片
-
 	warter, wterr := os.Open(waterPath)
 	if wterr == nil {
 		//无错误的时候解码
@@ -216,35 +207,67 @@ func GetImg(path, waterPath string) {
 	toimg, _ := os.Create(filename[0] + strconv.Itoa(GetTimeStamp()) + "-120-80.jpg") //创建文件系统
 	defer toimg.Close()
 	//toimg 保存的名称 要参照的画布，图片选项。默认透明图
-	jpeg.Encode(toimg, m, &jpeg.Options{
-		Quality: jpeg.DefaultQuality}) //保存为jpeg图片
+	jpeg.Encode(toimg, m, &jpeg.Options{Quality: jpeg.DefaultQuality}) //保存为jpeg图片
 }
 
 //MultiUpload 多图上传生成html内容
-func MultiUpload(data []string, maxImgNum int) string {
+func MultiUpload(field string, data []string, maxImgNum int, required bool, formName, defaultVal, RequiredTips string) string {
 	box := ""
+	rid := "MultiUploader_" + strconv.Itoa(rand.Int())
+	if RequiredTips == "" {
+		RequiredTips = formName + "最少上传一张图片"
+	}
+	var requiredFunc = ""
+	if required {
+		requiredFunc = `<script>MultiUploader.push(function(){ 
+var flag = false; $("[name='` + field + `']").each(function () { if($(this).val()) { flag = true; } });
+if (!flag) { $('#` + rid + `_tip').html("` + RequiredTips + `"); return false; } $('#` + rid + `_tip').html(''); return true; });</script>`
+	}
 	if len(data) > 0 {
 		for _, v := range data {
 			box += `<div class="imgbox">
 					<input class="imgbox_inputBtn" type="image" onclick="return doUpload(this)" src="` + v + `" alt="点击上传" onerror='this.src="/assets/backend/mdou/images/uploadholder.png"' />
-					<input type="hidden" value="` + v + `" name="info[thumb][]" />
-					<span style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer;    position: absolute;left: 92px;top: 10px;'  onclick=''>×</span>
+					<input type="hidden" value="` + v + `" name="` + field + `" />
+					<span style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer;    position: absolute;left: 92px;top: 10px;'   onclick=''>×</span>
 				</div>`
 		}
 	}
 
 	str := box + `
-		<div class="imgbox" onclick="return createHtml(this, ` + strconv.Itoa(maxImgNum) + `)" style="width: 95px; margin: 8px; ">
+		<div class="imgbox" onclick="return createHtml(this,'` + field + `', ` + strconv.Itoa(maxImgNum) + `)" style="width: 95px; margin: 8px; ">
 			<img style="height: 95px;display: block;border: 1px dashed #888;padding: 30px;" src="/assets/backend/mdou/images/jiahao.png" />
 		</div>`
-	return str
+	return str + `<div id='` + rid + `_tip' class='errtips'></div>` + requiredFunc
 }
 
 //SiginUpload 单图上传
-func SiginUpload(data, field string) string {
-	html := `<input onclick="` + field + `doUpload(this)" type="image" src="` + data + `" onerror='this.src="/assets/backend/mdou/images/uploadholder.png"' alt="点击上传" style="width:100px;height:100px;display:block;border:1px solid #ddd;padding:2px;float:left;" />
-			 <input type="hidden"  value="` + data + `" name="` + field + `" />
-			 <span title="清空图片内容" style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer;position: relative;left: -25px;top: 10px;'  onclick="DelImg(this)">×</span>`
+func SiginUpload(field, data string, required bool, formName, defaultVal, RequiredTips string) string {
+	rid := "siginUploader_" + strconv.Itoa(rand.Int())
+	if RequiredTips == "" {
+		RequiredTips = formName + "必须上传"
+	}
+	var requiredFunc = ""
+	if required {
+		requiredFunc = `<script>siginUploader.push(function(){ if ($('#` + rid + `').val() == '') {$('#` + rid + `_tip').html("` + RequiredTips + `"); return false; } $('#` + rid + `_tip').html(''); return true; });</script>`
+	}
+	html := `<input onclick="doUpload(this)" type="image" src="` + data + `" onerror='this.src="/assets/backend/mdou/images/uploadholder.png"' alt="点击上传" style="width:100px;height:100px;display:block;border:1px solid #ddd;padding:2px;float:left;" />
+			 <input id='` + rid + `' type="hidden"  value="` + data + `" name="` + field + `" />
+			 <span title="清空图片内容" class='delImg'  onclick="DelImg(this)">×</span>
+<div id='` + rid + `_tip' class='errtips'></div>` + requiredFunc
+	return html
+}
+
+//Tags 标签
+func Tags(field, data string, required bool, formName, defaultVal, RequiredTips string) string {
+	rid := "tags_" + strconv.Itoa(rand.Int())
+	if RequiredTips == "" {
+		RequiredTips = formName + "必须上传"
+	}
+	var requiredFunc = `<script>$('#` + rid + `').tagsInput({ 'height': '100px',  'width': '446px','interactive': true, 'defaultText': '添加标签', onChange: function (tag) {console.log(arguments);},'placeholderColor': '#666666'});`
+	if required {
+		requiredFunc += `tagger.push(function(){ if ($('#` + rid + `').val() == '') {$('#` + rid + `_tip').html("` + RequiredTips + `"); return false; } $('#` + rid + `_tip').html(''); return true; });`
+	}
+	html := `<input type="text" id="` + rid + `" name="` + field + `" value="` + data + `" /><div id='` + rid + `_tip' class='errtips'></div>` + requiredFunc + "</script>"
 	return html
 }
 
@@ -430,4 +453,15 @@ func clip(in io.Reader, out io.Writer, x0, y0, x1, y1, quality int) error {
 		return errors.New("ERROR FORMAT")
 	}
 	return nil
+}
+
+func  GetRandomString(l int) string {
+	str := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	bytes := []byte(str)
+	var result []byte
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	for i := 0; i < l; i++ {
+		result = append(result, bytes[r.Intn(len(bytes))])
+	}
+	return string(result)
 }

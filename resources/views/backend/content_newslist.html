@@ -14,6 +14,9 @@
     <div>
         <a href="javascript:;" class="easyui-linkbutton" data-options="plain:true,iconCls:'icons-arrow-add'"
            onclick="contentNewsListAdd()">添加</a>
+
+        <a href="javascript:;" class="easyui-linkbutton" data-options="plain:true,iconCls:'icons-arrow-arrow_down'"
+           onclick="contentNewsListOrder()">排序</a>
     </div>
 </div>
 
@@ -23,7 +26,7 @@
     //排序格式化
     function contentNewsListOrderFormatter(val, arr) {
         rowID = val;
-        return '<input class="content_gridlist_order_input" type="text" name="order[' + arr['id'] + ']" value="' + val + '" size="2" style="text-align:center">';
+        return '<input class="content_gridlist_order_input" type="text" name="order[' + arr['id'] + ']" value="' + val + '" size="4" style="text-align:center">';
     }
     //时间格式化
     function contentNewsListTimeFormatter(val, arr) {
@@ -83,7 +86,7 @@
         }
         $.messager.confirm('提示信息', '确定要删除吗？', function (result) {
             if (!result) return false;
-            $.post("/b/content/delete?catid={{.catid}}", {ids: ids.join(',')}, function (res) {
+            $.post("/b/content/delete?catid={{.catid}}&id=" + ids[0], {}, function (res) {
                 if (res.errcode) {
                     $.messager.alert('提示信息', res.errmsg, 'error');
                 } else {
@@ -95,7 +98,7 @@
     }
     //排序
     function contentNewsListOrder() {
-        $.post("/b/content/order_news?catid={{.catid}}'", $('.content_gridlist_order_input').serialize(), function (res) {
+        $.post("/b/content/order?catid={{.catid}}", $('.content_gridlist_order_input').serialize(), function (res) {
             if (res.errcode) {
                 $.messager.alert('提示信息', res.errmsg, 'error');
             } else {
@@ -104,5 +107,5 @@
             }
         }, 'json');
     }
-
+    {{ .formatters }}
 </script>

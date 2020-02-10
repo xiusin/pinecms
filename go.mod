@@ -16,6 +16,7 @@ require (
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/go-xorm/xorm v0.7.9
+	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/gorilla/securecookie v1.1.1
 	github.com/imkira/go-interpol v1.1.0 // indirect
@@ -30,6 +31,7 @@ require (
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-isatty v0.0.11 // indirect
 	github.com/mattn/go-runewidth v0.0.7 // indirect
+	github.com/mholt/binding v0.3.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect

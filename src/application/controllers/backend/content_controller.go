@@ -2,17 +2,20 @@ package backend
 
 import (
 	"encoding/json"
-	"github.com/xiusin/iriscms/src/application/controllers"
+	"fmt"
 	"html/template"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/golang/glog"
+	"github.com/xiusin/iriscms/src/application/controllers"
 
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 	"github.com/kataras/iris/v12/sessions"
 	"github.com/xiusin/iriscms/src/application/models"
-	"github.com/xiusin/iriscms/src/application/models/tables"
 	"github.com/xiusin/iriscms/src/common/helper"
 )
 
@@ -34,56 +37,67 @@ func (c *ContentController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("ANY", "/content/order", "OrderContent")
 }
 
-func (this *ContentController) Index() {
-	menuid, _ := this.Ctx.URLParamInt64("menuid")
-	this.Ctx.ViewData("currentPos", models.NewMenuModel(this.Orm).CurrentPos(menuid))
-	this.Ctx.View("backend/content_index.html")
+func (c *ContentController) Index() {
+	menuid, _ := c.Ctx.URLParamInt64("menuid")
+	c.Ctx.ViewData("currentPos", models.NewMenuModel(c.Orm).CurrentPos(menuid))
+	c.Ctx.View("backend/content_index.html")
 }
 
-func (this *ContentController) Welcome() {
-	this.Ctx.View("backend/content_welcome.html")
+func (c *ContentController) Welcome() {
+	c.Ctx.View("backend/content_welcome.html")
 }
 
-func (this *ContentController) Right() {
-	if this.Ctx.Method() == "POST" {
-		cats := models.NewCategoryModel(this.Orm).GetContentRightCategoryTree(models.NewCategoryModel(this.Orm).GetAll(), 0)
-		this.Ctx.JSON(cats)
+func (c *ContentController) Right() {
+	if c.Ctx.Method() == "POST" {
+		cats := models.NewCategoryModel(c.Orm).GetContentRightCategoryTree(models.NewCategoryModel(c.Orm).GetAll(), 0)
+		c.Ctx.JSON(cats)
 		return
 	}
-	this.Ctx.View("backend/content_right.html")
+	c.Ctx.View("backend/content_right.html")
 }
 
-func (this *ContentController) NewsList() {
-	catid, _ := this.Ctx.URLParamInt64("catid")
-	page, _ := this.Ctx.URLParamInt64("page")
-	rows, _ := this.Ctx.URLParamInt64("rows")
+func (c *ContentController) NewsList() {
+	catid, _ := c.Ctx.URLParamInt64("catid")
+	page, _ := c.Ctx.URLParamInt64("page")
+	//rows, _ := c.Ctx.URLParamInt64("rows")
+	catogoryModel, err := models.NewCategoryModel(c.Orm).GetCategory(catid)
+	if err != nil {
+		panic(err)
+	}
+	if catogoryModel.ModelId < 1 {
+		helper.Ajax("找不到关联模型", 1, c.Ctx)
+		return
+	}
+	relationDocumentModel := models.NewDocumentModel(c.Orm).GetByID(catogoryModel.ModelId)
+	if relationDocumentModel.Id == 0 {
+		helper.Ajax("找不到关联模型", 1, c.Ctx)
+		return
+	}
 	if page > 0 {
-		var contents []tables.IriscmsContent
-		total, _ := this.Orm.Where("catid = ? and deleted_at = 0", catid).Limit(int(rows), int((page-1)*rows)).Desc("id").FindAndCount(&contents)
-		this.Ctx.JSON(map[string]interface{}{"rows": contents, "total": total})
+		sql := []interface{}{fmt.Sprintf("SELECT * FROM `iriscms_%s` WHERE catid=? and deleted_time IS NULL ORDER BY listorder DESC, id DESC", relationDocumentModel.Table), catid}
+		contents, err := c.Orm.QueryString(sql...)
+		if err != nil {
+			glog.Error(helper.GetCallerFuncName(), err.Error())
+			helper.Ajax("获取文档列表错误", 1, c.Ctx)
+			return
+		}
+
+		sql = []interface{}{fmt.Sprintf("SELECT COUNT(*) total FROM `iriscms_%s` WHERE catid=? and deleted_time IS NULL", relationDocumentModel.Table), catid}
+		totals, _ := c.Orm.QueryString(sql...)
+		var total = "0"
+		if len(totals) > 0 {
+			total = totals[0]["total"]
+		}
+		c.Ctx.JSON(map[string]interface{}{"rows": contents, "total": total})
 		return
 	}
 
 	fields := helper.EasyuiGridfields{
 		"排序": {"field": "listorder", "width": "15", "formatter": "contentNewsListOrderFormatter", "index": "0"},
 	}
-	catogoryModel, err := models.NewCategoryModel(this.Orm).GetCategory(catid)
-	if err != nil {
-		panic(err)
-	}
-	if catogoryModel.ModelId < 1 {
-		helper.Ajax("找不到关联模型", 1, this.Ctx)
-		return
-	}
-	relationDocumentModel := models.NewDocumentModel(this.Orm).GetByID(catogoryModel.ModelId)
-	if relationDocumentModel.Id == 0 {
-		helper.Ajax("找不到关联模型", 1, this.Ctx)
-		return
-	}
 
 	// 获取所有字段
-	dslFields := models.NewDocumentFieldDslModel(this.Orm).GetList(catogoryModel.ModelId)
-	// tableField => formName
+	dslFields := models.NewDocumentFieldDslModel(c.Orm).GetList(catogoryModel.ModelId)
 	var tMapF = map[string]string{}
 	var ff []string
 	for _, dsl := range dslFields {
@@ -92,8 +106,8 @@ func (this *ContentController) NewsList() {
 	}
 	var showInPage = map[string]controllers.FieldShowInPageList{}
 	_ = json.Unmarshal([]byte(relationDocumentModel.FieldShowInList), &showInPage)
-	if len(showInPage)  == 0 {
-		helper.Ajax("请配置模型字段显隐属性", 1, this.Ctx)
+	if len(showInPage) == 0 {
+		helper.Ajax("请配置模型字段显隐属性", 1, c.Ctx)
 		return
 	}
 	var index = 1
@@ -102,7 +116,6 @@ func (this *ContentController) NewsList() {
 		fields["标题"] = map[string]string{"field": "title", "width": "50", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
 		index++
 	}
-
 	for _, field := range ff {
 		conf := showInPage[field]
 		if conf.Show {
@@ -120,28 +133,29 @@ func (this *ContentController) NewsList() {
 		"singleSelect": "true",
 	}, fields)
 
-	this.Ctx.ViewData("DataGrid", template.HTML(table))
-	this.Ctx.ViewData("catid", catid)
-	this.Ctx.View("backend/content_newslist.html")
+	c.Ctx.ViewData("DataGrid", template.HTML(table))
+	c.Ctx.ViewData("catid", catid)
+	c.Ctx.ViewData("formatters", template.JS(relationDocumentModel.Formatters))
+	c.Ctx.View("backend/content_newslist.html")
 }
 
-func (this *ContentController) Page() {
-	catid, _ := this.Ctx.URLParamInt64("catid")
+func (c *ContentController) Page() {
+	catid, _ := c.Ctx.URLParamInt64("catid")
 	if catid == 0 {
-		helper.Ajax("页面错误", 1, this.Ctx)
+		helper.Ajax("页面错误", 1, c.Ctx)
 		return
 	}
-	pageModel := models.NewPageModel(this.Orm)
+	pageModel := models.NewPageModel(c.Orm)
 	page := pageModel.GetPage(catid)
 	var hasPage bool = false
 	if page.Title != "" {
 		hasPage = true
 	}
 	var res bool
-	if this.Ctx.Method() == "POST" {
-		page.Title = this.Ctx.FormValue("title")
-		page.Content = this.Ctx.FormValue("content")
-		page.Keywords = this.Ctx.FormValue("keywords")
+	if c.Ctx.Method() == "POST" {
+		page.Title = c.Ctx.FormValue("title")
+		page.Content = c.Ctx.FormValue("content")
+		page.Keywords = c.Ctx.FormValue("keywords")
 		page.Updatetime = int64(helper.GetTimeStamp())
 		if !hasPage {
 			page.Catid = catid
@@ -150,130 +164,255 @@ func (this *ContentController) Page() {
 			res = pageModel.UpdatePage(page)
 		}
 		if res {
-			helper.Ajax("发布成功", 0, this.Ctx)
+			helper.Ajax("发布成功", 0, c.Ctx)
 		} else {
-			helper.Ajax("发布失败", 1, this.Ctx)
+			helper.Ajax("发布失败", 1, c.Ctx)
 		}
 		return
 	}
 
-	this.Ctx.ViewData("catid", catid)
-	this.Ctx.ViewData("info", page)
-	this.Ctx.View("backend/content_page.html")
+	c.Ctx.ViewData("catid", catid)
+	c.Ctx.ViewData("info", page)
+	c.Ctx.View("backend/content_page.html")
 
+}
+
+type customForm map[string]string
+
+func (c customForm) MustCheck() bool {
+	var ok bool
+	if _, ok = c["catid"]; !ok {
+		return false
+	}
+	if _, ok = c["mid"]; !ok {
+		return false
+	}
+	if _, ok = c["table_name"]; !ok {
+		return false
+	}
+	return true
 }
 
 //添加内容
-func (this *ContentController) AddContent() {
-	if this.Ctx.Method() == "POST" {
-		var content tables.IriscmsContent
-		if err := this.Ctx.ReadForm(&content); err != nil {
-			helper.Ajax("添加失败"+err.Error(), 1, this.Ctx)
+func (c *ContentController) AddContent() {
+	if c.Ctx.Method() == "POST" {
+		mid, _ := strconv.Atoi(c.Ctx.FormValue("mid"))
+		if mid < 1 {
+			helper.Ajax("模型参数错误， 无法确定所属模型", 1, c.Ctx)
 			return
 		}
-		content.Id = 0
-		content.Status = 1
-		content.UpdatedAt = int64(helper.GetTimeStamp())
-		content.CreatedAt = content.UpdatedAt
-		id, err := this.Orm.InsertOne(&content)
+		var data = customForm{}
+		postData := c.Ctx.FormValues()
+		for formName, values := range postData {
+			data[formName] = values[0] //	todo 多项值根据字段类型合并 strings.Join(values, ",")
+		}
+		if !data.MustCheck() {
+			helper.Ajax("缺少必要参数", 1, c.Ctx)
+			return
+		}
+		data["status"] = "0"
+		data["created_time"] = time.Now().In(helper.GetLocation()).Format(helper.TIME_FORMAT)
+		model := models.NewDocumentModel(c.Orm).GetByID(int64(mid))
+		var fields []string
+		var values []interface{}
+		for k, v := range data {
+			if k == "table_name" {
+				continue
+			}
+			fields = append(fields, "`"+k+"`")
+			values = append(values, v)
+		}
+		// 通用字段更新
+
+		if model.IsSystem == models.SYSTEM_TYPE {
+
+		}
+		params := append([]interface{}{fmt.Sprintf("INSERT INTO `iriscms_%s` (%s) VALUES (%s)", model.Table, strings.Join(fields, ","), strings.TrimRight(strings.Repeat("?,", len(values)), ","))}, values...)
+		// 先直接入库对应表内
+		insertID, err := c.Orm.Exec(params...)
 		if err != nil {
-			helper.Ajax("添加失败:getid:"+strconv.Itoa(int(id))+":"+err.Error(), 1, this.Ctx)
+			glog.Error(err)
+			helper.Ajax("添加失败:"+err.Error(), 1, c.Ctx)
 			return
 		}
-		if id == 0 {
-			helper.Ajax("添加失败", 1, this.Ctx)
-			return
+		id, _ := insertID.LastInsertId()
+		if id > 0 {
+			helper.Ajax(id, 0, c.Ctx)
+		} else {
+			helper.Ajax("添加失败", 1, c.Ctx)
 		}
-		helper.Ajax("添加成功", 0, this.Ctx)
 		return
 	}
 	//根据catid读取出相应的添加模板
-	catid, _ := this.Ctx.URLParamInt64("catid")
+	catid, _ := c.Ctx.URLParamInt64("catid")
 	if catid == 0 {
-		helper.Ajax("参数错误", 1, this.Ctx)
+		helper.Ajax("参数错误", 1, c.Ctx)
 		return
 	}
-	cat, err := models.NewCategoryModel(this.Orm).GetCategory(catid)
+	cat, err := models.NewCategoryModel(c.Orm).GetCategory(catid)
 	if err != nil {
-		helper.Ajax("读取数据错误:"+err.Error(), 1, this.Ctx)
+		helper.Ajax("读取数据错误:"+err.Error(), 1, c.Ctx)
 		return
 	}
 	if cat.Catid == 0 {
-		helper.Ajax("不存在的分类", 1, this.Ctx)
+		helper.Ajax("不存在的分类", 1, c.Ctx)
 		return
 	}
-	this.Ctx.ViewData("category", cat)
-	if cat.Type == 0 {
-		this.Ctx.ViewData("form", template.HTML(buildModelForm(this.Orm, cat.ModelId)))
-	}
-	this.Ctx.View("backend/model_publish_add.html")
+	c.Ctx.ViewData("category", cat)
+	c.Ctx.ViewData("form", template.HTML(buildModelForm(c.Orm, cat.ModelId, nil)))
+	c.Ctx.ViewData("submitURL", template.HTML("/b/content/add"))
+	c.Ctx.View("backend/model_publish.html")
 }
 
 //修改内容
-func (this *ContentController) EditContent() {
+func (c *ContentController) EditContent() {
 	//根据catid读取出相应的添加模板
-	catid, _ := this.Ctx.URLParamInt64("catid")
-	id, _ := this.Ctx.URLParamInt64("id")
-	if catid == 0 || id == 0 {
-		helper.Ajax("参数错误", 1, this.Ctx)
+	catid, _ := c.Ctx.URLParamInt64("catid")
+	id, _ := c.Ctx.URLParamInt64("id")
+	if catid < 1 || id < 1 {
+		helper.Ajax("参数错误", 1, c.Ctx)
 		return
 	}
-	var content = tables.IriscmsContent{Id: id}
-	ok, _ := this.Orm.Get(&content)
-	if !ok {
-		helper.Ajax("无法获取内容", 1, this.Ctx)
-		return
-	}
-	if this.Ctx.Method() == "POST" {
-		if err := this.Ctx.ReadForm(&content); err != nil {
-			helper.Ajax("添加失败:readform:"+err.Error(), 1, this.Ctx)
-			return
-		}
-		content.UpdatedAt = int64(helper.GetTimeStamp())
-		res, err := this.Orm.Where("id=? and catid=?", id, catid).Update(&content)
-		if err != nil {
-			helper.Ajax("修改失败:"+err.Error(), 1, this.Ctx)
-			return
-		}
-		if res == 0 {
-			helper.Ajax("修改失败", 1, this.Ctx)
-			return
-		}
-		helper.Ajax("修改成功", 0, this.Ctx)
-		return
-	}
-
-	cat, err := models.NewCategoryModel(this.Orm).GetCategory(catid)
+	catogoryModel, err := models.NewCategoryModel(c.Orm).GetCategory(catid)
 	if err != nil {
-		helper.Ajax("读取数据错误:"+err.Error(), 1, this.Ctx)
+		panic(err)
+	}
+	if catogoryModel.ModelId < 1 {
+		helper.Ajax("找不到关联模型", 1, c.Ctx)
 		return
 	}
-	if cat.Catid == 0 {
-		helper.Ajax("不存在的分类", 1, this.Ctx)
+	relationDocumentModel := models.NewDocumentModel(c.Orm).GetByID(catogoryModel.ModelId)
+	if relationDocumentModel.Id == 0 {
+		helper.Ajax("找不到关联模型", 1, c.Ctx)
+		return
+	}
+	sql := []interface{}{fmt.Sprintf("SELECT * FROM `iriscms_%s` WHERE catid=? and deleted_time IS NULL AND id = ? LIMIT 1", relationDocumentModel.Table), catid, id}
+	contents, err := c.Orm.QueryString(sql...)
+	if err != nil {
+		glog.Error(helper.GetCallerFuncName(), err.Error())
+		helper.Ajax("获取文章内容错误", 1, c.Ctx)
 		return
 	}
 
-	this.Ctx.ViewData("content", content)
-	this.Ctx.ViewData("category", cat)
+	if len(contents) == 0 {
+		helper.Ajax("文章不存在或已删除", 1, c.Ctx)
+		return
+	}
+	if c.Ctx.Method() == "POST" {
+		var data = customForm{}
+		postData := c.Ctx.FormValues()
+		for formName, values := range postData {
+			data[formName] = values[0] //	todo 多项值根据字段类型合并 strings.Join(values, ",")
+		}
+		if !data.MustCheck() {
+			helper.Ajax("缺少必要参数", 1, c.Ctx)
+			return
+		}
+		delete(data, "id")
+		data["status"] = "0"
+		data["updated_time"] = time.Now().In(helper.GetLocation()).Format(helper.TIME_FORMAT)
+		var sets []string
+		var values []interface{}
+		for k, v := range data {
+			if k == "table_name" {
+				continue
+			}
+			sets = append(sets, "`"+k+"`= ?")
+			values = append(values, v)
+		}
+		// 通用字段更新
+		if relationDocumentModel.IsSystem == models.SYSTEM_TYPE {
+
+		}
+		values = append(values, id, catid)
+		params := append([]interface{}{fmt.Sprintf("UPDATE `iriscms_%s` SET %s WHERE id=? and catid=?", relationDocumentModel.Table, strings.Join(sets, ", "))}, values...)
+		insertID, err := c.Orm.Exec(params...)
+		if err != nil {
+			glog.Error(err)
+			helper.Ajax("修改失败:"+err.Error(), 1, c.Ctx)
+			return
+		}
+		res, _ := insertID.RowsAffected()
+		if res > 0 {
+			helper.Ajax("修改成功", 0, c.Ctx)
+		} else {
+			helper.Ajax("修改失败", 1, c.Ctx)
+		}
+		return
+	}
+	c.Ctx.ViewData("form", template.HTML(buildModelForm(c.Orm, catogoryModel.ModelId, contents[0])))
+	c.Ctx.ViewData("category", catogoryModel)
+	c.Ctx.ViewData("submitURL", template.HTML("/b/content/edit"))
+	c.Ctx.View("backend/model_publish.html")
 }
 
 //删除内容
-func (this *ContentController) DeleteContent() {
-	id := this.Ctx.FormValue("ids")
-	if id == "" {
-		helper.Ajax("参数错误", 1, this.Ctx)
+func (c *ContentController) DeleteContent() {
+	catid, _ := c.Ctx.URLParamInt64("catid")
+	id, _ := c.Ctx.URLParamInt64("id")
+	if catid < 1 || id < 1 {
+		helper.Ajax("参数错误", 1, c.Ctx)
 		return
 	}
-	ids := strings.Split(id, ",")
-	res, _ := this.Orm.In("id", ids).Update(&tables.IriscmsContent{DeletedAt: int64(helper.GetTimeStamp())})
-	if res > 0 {
-		helper.Ajax("删除成功", 0, this.Ctx)
+	catogoryModel, err := models.NewCategoryModel(c.Orm).GetCategory(catid)
+	if err != nil {
+		panic(err)
+	}
+	if catogoryModel.ModelId < 1 {
+		helper.Ajax("找不到关联模型", 1, c.Ctx)
+		return
+	}
+	relationDocumentModel := models.NewDocumentModel(c.Orm).GetByID(catogoryModel.ModelId)
+	if relationDocumentModel.Id == 0 {
+		helper.Ajax("找不到关联模型", 1, c.Ctx)
+		return
+	}
+	sqlOrArgs := []interface{}{fmt.Sprintf("UPDATE `iriscms_%s` SET `deleted_time`='"+time.Now().In(helper.GetLocation()).Format(helper.TIME_FORMAT)+"' WHERE id = ? and catid=?", relationDocumentModel.Table), id, catid}
+	res, err := c.Orm.Exec(sqlOrArgs...)
+	if err != nil {
+		glog.Error(helper.GetCallerFuncName(), err.Error())
+		helper.Ajax("删除失败", 1, c.Ctx)
+		return
+	}
+	if ret, _ := res.RowsAffected(); ret > 0 {
+		helper.Ajax("删除成功", 0, c.Ctx)
 	} else {
-		helper.Ajax("删除失败", 1, this.Ctx)
+		helper.Ajax("删除失败", 1, c.Ctx)
 	}
 }
 
 //排序内容
-func (this *ContentController) OrderContent() {
-
+func (c *ContentController) OrderContent() {
+	data := c.Ctx.FormValues()
+	var order = map[string]string{}
+	for k, v := range data {
+		order[strings.ReplaceAll(strings.ReplaceAll(k, "order[", ""), "]", "")] = v[0]
+	}
+	id, _ := c.Ctx.URLParamInt64("catid")
+	if id < 1 {
+		helper.Ajax("参数错误", 1, c.Ctx)
+		return
+	}
+	catogoryModel, err := models.NewCategoryModel(c.Orm).GetCategory(id)
+	if err != nil {
+		panic(err)
+	}
+	if catogoryModel.ModelId < 1 {
+		helper.Ajax("找不到关联模型", 1, c.Ctx)
+		return
+	}
+	relationDocumentModel := models.NewDocumentModel(c.Orm).GetByID(catogoryModel.ModelId)
+	if relationDocumentModel.Id == 0 {
+		helper.Ajax("找不到关联模型", 1, c.Ctx)
+		return
+	}
+	for artID, orderNum := range order {
+		sqlOrArgs := []interface{}{fmt.Sprintf("UPDATE `iriscms_%s` SET `listorder`=? , updated_time = '"+time.Now().In(helper.GetLocation()).Format(helper.TIME_FORMAT)+"' WHERE id = ? and catid=?", relationDocumentModel.Table), orderNum, artID, id}
+		if _, err := c.Orm.Exec(sqlOrArgs...); err != nil {
+			glog.Error(helper.GetCallerFuncName(), err.Error())
+			helper.Ajax("更新文档排序失败", 1, c.Ctx)
+			return
+		}
+	}
+	helper.Ajax("更新排序成功", 0, c.Ctx)
 }

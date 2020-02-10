@@ -17,11 +17,6 @@
     }
 
 </style>
-<div id="wechat_member_list_datagrid_toolbar" style="padding:5px;height:auto">
-    <form>
-        <a href="javascript:;" onclick="systemLogDelete();" class="easyui-linkbutton" iconCls="icons-other-delete">删除一月前数据</a>
-    </form>
-</div>
 
 <!-- 查看详细信息 -->
 <div id="wechat_member_list_detail_dialog" class="easyui-dialog word-wrap" title="查看粉丝信息"
@@ -48,17 +43,6 @@
         $('#' + wechat_member_list_datagrid_id).datagrid('reload');
     }
 
-    //删除日志
-    function systemLogDelete() {
-        $.post('/b/system/log-delete', {week: 4}, function (res) {
-            if (res.errcode) {
-                $.messager.alert('提示信息', res.errmsg, 'error');
-            } else {
-                $('#' + wechat_member_list_datagrid_id).datagrid('reload');
-                $.messager.alert('提示信息', res.errmsg, 'info');
-            }
-        }, 'json');
-    }
 
     //参数格式化
     function optFormatter(val) {

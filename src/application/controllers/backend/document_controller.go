@@ -63,7 +63,7 @@ var extraFields = []map[string]string{
 		"COLUMN_DEFAULT": "",
 	},
 	{
-		"COLUMN_NAME":    "cat_id",
+		"COLUMN_NAME":    "catid",
 		"EXTRA":          "",
 		"COLUMN_TYPE":    "int(11) unsigned",
 		"IS_NULLABLE":    "NO",
@@ -71,11 +71,27 @@ var extraFields = []map[string]string{
 		"COLUMN_DEFAULT": "0",
 	},
 	{
-		"COLUMN_NAME":    "ref_id",
+		"COLUMN_NAME":    "mid",
+		"EXTRA":          "",
+		"COLUMN_TYPE":    "int(5) unsigned",
+		"IS_NULLABLE":    "NO",
+		"COLUMN_COMMENT": "模型ID",
+		"COLUMN_DEFAULT": "0",
+	},
+	{
+		"COLUMN_NAME":    "refid",
 		"EXTRA":          "",
 		"COLUMN_TYPE":    "int(11) unsigned",
 		"IS_NULLABLE":    "NO",
 		"COLUMN_COMMENT": "模型关联的文章ID",
+		"COLUMN_DEFAULT": "0",
+	},
+	{
+		"COLUMN_NAME":    "listorder",
+		"EXTRA":          "",
+		"COLUMN_TYPE":    "int(5) unsigned",
+		"IS_NULLABLE":    "NO",
+		"COLUMN_COMMENT": "排序值",
 		"COLUMN_DEFAULT": "0",
 	},
 	{
@@ -510,7 +526,7 @@ func (c *DocumentController) GenSQL() {
 	querySQL := ""
 	tableName := "iriscms_" + dm.Table
 	if ok, _ := c.Orm.IsTableExist(tableName); ok {
-		querySQL = "ALTER TABLE `" + tableName + "` \n"
+		querySQL = "ALTER TABLE `" + tableName + "` "
 		existsFields, _ = c.Orm.QueryString("select * from information_schema.columns where TABLE_NAME='" + tableName + "' and  table_schema = '" + tableSchema + "'")
 		for _, field := range fields {
 			var exists bool
@@ -528,8 +544,11 @@ func (c *DocumentController) GenSQL() {
 				fieldStrs = append(fieldStrs, fmt.Sprintf("\tADD `%s` %s %s %s %s %s", field.TableField, colType, "", "", "", `COMMENT "`+field.FormName+`"`))
 			}
 		}
-		querySQL += regexp.MustCompile(" +").ReplaceAllString(strings.Join(fieldStrs, ",\n"), " ")
-		querySQL += ";"
+		if len(fieldStrs) > 0 {
+			querySQL += "\n"+regexp.MustCompile(" +").ReplaceAllString(strings.Join(fieldStrs, ",\n"), " ")
+		} else {
+			querySQL = ""
+		}
 	} else {
 		existsFields = append(existsFields, extraFields...)
 		if dm.IsSystem != models.SYSTEM_TYPE {
@@ -554,11 +573,11 @@ func (c *DocumentController) GenSQL() {
 					}
 				}
 			}
-			querySQL += "\tPRIMARY KEY (`id`) USING BTREE\n, KEY `ref_id` (`ref_id`)  USING BTREE) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+			querySQL += "\tPRIMARY KEY (`id`) USING BTREE\n, KEY `refid` (`refid`)  USING BTREE) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 		}
 	}
 	querySQL = regexp.MustCompile(" +").ReplaceAllString(querySQL, " ")
-	if exec {
+	if exec && querySQL != ""{
 		_, err := c.Orm.Exec(querySQL)
 		if err != nil {
 			helper.Ajax(err.Error(), 1, c.Ctx)
@@ -582,6 +601,6 @@ func (c *DocumentController) PreviewPage() {
 		helper.Ajax("模型参数错误", 1, c.Ctx)
 		return
 	}
-	c.Ctx.ViewData("form", template.HTML(buildModelForm(c.Orm, modelID)))
-	c.Ctx.View("backend/model_publish_add.html")
+	c.Ctx.ViewData("form", template.HTML(buildModelForm(c.Orm, modelID, nil)))
+	c.Ctx.View("backend/model_publish.html")
 }

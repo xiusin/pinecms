@@ -193,7 +193,10 @@ func (this *CategoryController) CategoryEdit() {
 		}
 		return
 	}
-
+	// 查询模型
+	list, _ := models.NewDocumentModel(this.Orm).GetList(1, 1000)
+	this.Ctx.ViewData("models", list)
+	this.Ctx.ViewData("model_id", int(category.ModelId))
 	this.Ctx.ViewData("category", category)
 	this.Ctx.ViewData("typelist", []string{
 		0: "栏目",

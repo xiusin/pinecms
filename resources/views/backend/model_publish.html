@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>{{.category.Catname}} 内容发布</title>
+    {{template "backend/public_javascript.html"}}
+    {{template "backend/public_umeditor.html"}}
+    <link rel="stylesheet" type="text/css" href="/assets/backend/static/jquery.tagsinput.css"/>
+    <script src="/assets/backend/static/jquery.tagsinput.js"></script>
+    <script src="/assets/backend/static/jquery.upload.js"></script>
+    <script>
+        let editors = [];
+        let siginUploader = [];
+        let MultiUploader = [];
+        let tagger = [];
+    </script>
+    <link rel="stylesheet" type="text/css" href="/assets/backend/mdou/css/publish.css"/>
+</head>
+<body>
+<div>
+    {{.form}}
+</div>
+<script type="text/javascript">
+    function contentPageFormSubmit() {
+        $.post('{{.submitURL}}?catid={{.category.Catid}}'.replace("\\/","/"), $("#content_page_form").serialize(), function (res) {
+            if (res.errcode) {
+                parent.$.messager.alert('提示信息', res.errmsg, 'error');
+            } else {
+                parent.$.messager.alert('提示信息', res.errmsg, 'info');
+                parent.contentMainOpenUrl("/b/content/news-list?catid={{.category.Catid}}")
+            }
+        });
+        return false;
+    }
+
+    function doUpload(obj) {
+        event.preventDefault();
+        $.upload({
+            url: "/public/upload",
+            fileName: 'filedata',
+            params: {},
+            dataType: 'json',
+            onSend: function () {
+                return true;
+            },
+            onComplate: function (data) {
+                if (data.errcode == 1) {
+                    $.messager.alert("错误提醒", data.errmsg, "error")
+                } else {
+                    $(obj).next().val(data.errmsg);
+                    $(obj).attr('src', data.errmsg);
+                }
+            }
+        });
+        return false;
+    }
+
+    function createHtml(obj,field, maxNumInt) {
+        if (maxNumInt > 0 && $(obj).parent().find(".imgbox").size() >= maxNumInt + 1) {
+            $.messager.alert("提醒", "图片限制数量已达上限" + maxNumInt + ",无法添加", "info");
+            return false;
+        }
+        var str = "<div class='imgbox'>\
+                  <input class='imgbox_inputBtn' type='image' onclick='return doUpload(this)' src='/assets/backend/mdou/images/uploadholder.png' alt='点击上传'/>\
+                  <input type='hidden' name='"+field+"' />\
+                  <span title=\"删除图片框\" style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer;    position: absolute;left: 92px;top: 10px;'  onclick='delImgBox(this)'>×</span>\
+        </div>";
+        $(obj).before(str);
+        return false;
+    }
+
+    function DelImg(obj) {
+        $.messager.confirm('清空提醒', '要清空此图片吗？', function(r){
+            if (r) {
+                $(obj).prev().val("");
+                $(obj).prev().prev().attr('src',"/assets/backend/mdou/images/uploadholder.png");
+            }
+        });
+    }
+
+    function delImgBox(obj) {
+        $.messager.confirm('删除提醒', '要删除此图片吗？', function(r){
+            if (r) {
+                $(obj).parents(".imgbox").remove();
+            }
+        });
+    }
+
+    function submitForm(){
+        $('#content_page_form').form('submit', {
+            onSubmit:function(){
+                for (let i in siginUploader) {
+                    if (!siginUploader[i]()) return false;
+                }
+                for (let i in MultiUploader) {
+                    if (!MultiUploader[i]()) return false;
+                }
+                for (let i in editors) {
+                    if (!editors[i]()) return false;
+                }
+                for (let i in tagger) {
+                    if (!tagger[i]()) return false;
+                }
+                return $(this).form('enableValidation').form('validate');
+            }
+        });
+    }
+
+    function clearForm(){
+        $('#content_page_form').form('clear');
+    }
+
+</script>
+</body>
+</html>

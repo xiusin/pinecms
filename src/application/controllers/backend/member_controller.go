@@ -97,7 +97,6 @@ func (c *MemberController) WechatMemberList() {
 	menuid, _ := c.Ctx.URLParamInt64("menuid")
 	table := helper.Datagrid("wechat_member_list_datagrid", "/b/wechat/userlist", helper.EasyuiOptions{
 		"title":   models.NewMenuModel(c.Orm).CurrentPos(menuid),
-		"toolbar": "wechat_member_list_datagrid_toolbar",
 	}, helper.EasyuiGridfields{
 		"昵称": {"field": "nickname", "width": "30", "index": "0"},
 		"账户": {"field": "account", "width": "30", "index": "1"},
