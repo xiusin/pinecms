@@ -28,7 +28,6 @@ var settingWg sync.WaitGroup
 
 func (c *SettingController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("ANY", "/setting/site", "Site")
-	b.Handle("ANY", "/setting/site-default", "SiteDefault")
 }
 
 var SiteConfig = ConfigStruct{
@@ -68,14 +67,12 @@ var SiteConfig = ConfigStruct{
 		},
 		"default": "开启",
 	},
-
 	"DATAGRID_PAGE_SIZE": {
 		"name":    "列表默认分页数",
 		"group":   "后台设置",
 		"editor":  "numberbox",
 		"default": "25",
 	},
-
 	"EMAIL_SMTP": {
 		"name":    "SMTP",
 		"group":   "邮箱设置",
@@ -106,7 +103,6 @@ var SiteConfig = ConfigStruct{
 		"editor":  "text",
 		"default": "",
 	},
-
 	"WX_APPID": {
 		"name":    "APPID",
 		"group":   "微信配置",
@@ -119,7 +115,6 @@ var SiteConfig = ConfigStruct{
 		"editor":  "text",
 		"default": "",
 	},
-
 	"WX_TOKEN": {
 		"name":    "TOKEN",
 		"group":   "微信配置",
@@ -132,65 +127,46 @@ var SiteConfig = ConfigStruct{
 		"editor":  "text",
 		"default": "",
 	},
-
 	"OSS_ENDPOINT": {
 		"name":    "ENDPOINT",
 		"group":   "OSS存储配置",
 		"editor":  "text",
 		"default": "",
 	},
-
 	"OSS_KEYID": {
 		"name":    "KEYID",
 		"group":   "OSS存储配置",
 		"editor":  "text",
 		"default": "",
 	},
-
 	"OSS_KEYSECRET": {
 		"name":    "SECRET",
 		"group":   "OSS存储配置",
 		"editor":  "text",
 		"default": "",
 	},
-
 	"OSS_BUCKETNAME": {
 		"name":    "BUCKETNAME",
 		"group":   "OSS存储配置",
 		"editor":  "text",
 		"default": "",
 	},
-
 	"OSS_HOST": {
 		"name":    "HOST",
 		"group":   "OSS存储配置",
 		"editor":  "text",
 		"default": "",
 	},
-
-	"HPJ_APPID": {
-		"name":    "应用ID",
-		"group":   "虎皮椒支付",
-		"editor":  "text",
-		"default": "",
-	},
-
-	"HPJ_APPSECRET": {
-		"name":    "密钥",
-		"group":   "虎皮椒支付",
-		"editor":  "text",
-		"default": "",
-	},
 }
 
 //系统配置 -> 站点配置
-func (this *SettingController) Site() {
-	if this.Ctx.Method() == "POST" {
+func (c *SettingController) Site() {
+	if c.Ctx.Method() == "POST" {
 		var setting []tables.IriscmsSetting
-		act := this.Ctx.URLParam("dosubmit")
+		act := c.Ctx.URLParam("dosubmit")
 		var setval []ConfigItem
 		if act == "" {
-			this.Orm.Find(&setting)
+			c.Orm.Find(&setting)
 			var keys []string
 			if len(setting) != 0 {
 				for _, v := range setting {
@@ -220,7 +196,7 @@ func (this *SettingController) Site() {
 				if keysStr != "" && strings.Contains(keysStr, k) {
 					continue
 				}
-				this.Orm.Insert(&tables.IriscmsSetting{Key: k, Value: v["default"].(string)})
+				c.Orm.Insert(&tables.IriscmsSetting{Key: k, Value: v["default"].(string)})
 				setval = append(setval, ConfigItem{
 					"key":     k,
 					"name":    v["name"],
@@ -234,10 +210,10 @@ func (this *SettingController) Site() {
 				"rows":  setval,
 				"total": len(setval),
 			}
-			this.Ctx.JSON(result)
+			c.Ctx.JSON(result)
 			return
 		}
-		post := this.Ctx.FormValues()
+		post := c.Ctx.FormValues()
 		for k, v := range post {
 			if k == "dosubmit" || len(v) == 0 {
 				continue
@@ -246,40 +222,30 @@ func (this *SettingController) Site() {
 			go func(k, v string) {
 				settingWg.Add(1)
 				setting := tables.IriscmsSetting{Key: k}
-				bol, _ := this.Orm.Get(&setting) //逐个查找,判断添加还是修改配置
+				bol, _ := c.Orm.Get(&setting) //逐个查找,判断添加还是修改配置
 				if bol {
-					this.Orm.Table(new(tables.IriscmsSetting)).Where("`key`=?", k).Update(&tables.IriscmsSetting{Value: v})
+					c.Orm.Table(new(tables.IriscmsSetting)).Where("`key`=?", k).Update(&tables.IriscmsSetting{Value: v})
 				} else {
 					setting.Value = v
-					this.Orm.Insert(setting)
+					c.Orm.Insert(setting)
 				}
 				defer settingWg.Done()
 			}(k, v[0])
 		}
 		settingWg.Wait()
-		helper.Ajax("更新配置信息成功", 0, this.Ctx)
+		helper.Ajax("更新配置信息成功", 0, c.Ctx)
 		return
 	}
-	menuid, err := this.Ctx.URLParamInt64("menuid")
+	menuid, err := c.Ctx.URLParamInt64("menuid")
 	if err != nil {
 		menuid = 0
 	}
-	currentpos := models.NewMenuModel(this.Orm).CurrentPos(menuid)
+	currentpos := models.NewMenuModel(c.Orm).CurrentPos(menuid)
 	grid := helper.Propertygrid("setting_site_propertygrid", helper.EasyuiOptions{
 		"title":   currentpos,
 		"url":     "/b/setting/site?grid=propertygrid",
 		"toolbar": "setting_site_propertygrid_toolbar",
 	})
-	this.Ctx.ViewData("grid", template.HTML(grid))
-	this.Ctx.View("backend/setting_site.html")
-}
-
-//站点配置恢复默认
-func (this *SettingController) SiteDefault() {
-	//ok, _ := this.Orm.Where("1").Delete(new(tables.IriscmsSetting))
-	//if ok == 0 {
-	helper.Ajax("操作失败,禁止恢复默认设置", 1, this.Ctx)
-	//} else {
-	//	helper.Ajax("操作成功", 0, this.Ctx)
-	//}
+	c.Ctx.ViewData("grid", template.HTML(grid))
+	c.Ctx.View("backend/setting_site.html")
 }

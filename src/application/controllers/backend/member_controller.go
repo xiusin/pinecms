@@ -87,13 +87,11 @@ func (c *MemberController) Edit() {
 func (c *MemberController) WechatMemberList() {
 	page, _ := c.Ctx.URLParamInt64("page")
 	rows, _ := c.Ctx.URLParamInt64("rows")
-
 	if page > 0 {
 		list, total := models.NewWechatMemberModel(c.Orm).GetList(page, rows)
 		c.Ctx.JSON(map[string]interface{}{"rows": list, "total": total})
 		return
 	}
-
 	menuid, _ := c.Ctx.URLParamInt64("menuid")
 	table := helper.Datagrid("wechat_member_list_datagrid", "/b/wechat/userlist", helper.EasyuiOptions{
 		"title":   models.NewMenuModel(c.Orm).CurrentPos(menuid),

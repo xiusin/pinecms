@@ -58,10 +58,7 @@ func buildModelForm(orm *xorm.Engine, mid int64, data map[string]string) string 
 		}
 		h += "</td></tr>"
 	}
-	h += `<tr><td colspan=2>
-<a href="javascript:void(0);" onclick="submitForm()" class="easyui-linkbutton" style="margin-right:10px">`+buttonTxt+`</a>
-<a href="javascript:void(0);" onclick="clearForm()" class="easyui-linkbutton">取消</a></td></tr>
-</table></form>`
+	h += `<tr><td colspan=2><a href="javascript:void(0);" onclick="submitForm()" class="easyui-linkbutton">`+buttonTxt+`</a></td></tr></table></form>`
 	return h
 }
 func domOrCustomTagComponents(field *tables.IriscmsDocumentModelDsl, val string) string {

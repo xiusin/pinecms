@@ -21,6 +21,7 @@
     {{.form}}
 </div>
 <script type="text/javascript">
+    parent.ajaxLoadEnd()
     function contentPageFormSubmit() {
         $.post('{{.submitURL}}?catid={{.category.Catid}}'.replace("\\/","/"), $("#content_page_form").serialize(), function (res) {
             if (res.errcode) {
@@ -102,12 +103,22 @@
                     if (!tagger[i]()) return false;
                 }
                 return $(this).form('enableValidation').form('validate');
+            },
+            success:function(data){
+                if (typeof data === "string") {
+                    data = JSON.parse(data)
+                }
+                if (!data.errcode) {
+                    if ('{{.submitURL}}'.indexOf("edit")) {
+                        $.messager.alert("提醒", "修改文档成功", "info");
+                    } else {
+                        $.messager.alert("提醒", "添加文档成功", "info");
+                    }
+                } else {
+                    $.messager.alert("提醒", data.errmsg, "error");
+                }
             }
         });
-    }
-
-    function clearForm(){
-        $('#content_page_form').form('clear');
     }
 
 </script>

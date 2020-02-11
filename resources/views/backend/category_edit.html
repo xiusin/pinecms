@@ -109,8 +109,8 @@
         <tr>
             <td>缩略图：</td>
             <td>
-                <input id="content_add_news_form_thumb_input" type="image" src="{{.category.Thumb}}" onerror="this.src='/assets/backend/static/nopic.jpg'" alt="点击上传缩略图"
-                       style="width:200px;height:100px;display:block;border:1px solid #ddd;padding:2px"/>
+                <input id="content_edit_news_form_thumb_input" type="image" src="{{.category.Thumb}}" onerror="this.src='/assets/backend/static/nopic.jpg'" alt="点击上传缩略图"
+                       style="height:100px;display:block;border:1px solid #ddd;padding:2px"/>
                 <input type="hidden" name="thumb" value="{{.category.Thumb}}"/>
             </td>
             <td></td>
@@ -142,12 +142,8 @@
 </form>
 
 <script>
-    $('#content_add_news_form_thumb_input').click(function (e) {
-        doUpload(this);
-        return false;
-    });
-    /*文件上传*/
-    function doUpload(obj) {
+    $('#content_edit_news_form_thumb_input').click(function (e) {
+        e.preventDefault();
         $.upload({
             url: "/public/upload",
             fileName: 'filedata',
@@ -157,13 +153,14 @@
                 return true;
             },
             onComplate: function (data) {
-                if (!data.errcode) {
-                    $(obj).attr('src', data.errmag);
-                    $(obj).next('input:hidden').val(data.errmag);
+                if (0 === Number(data.errcode)) {
+                    $('#content_edit_news_form_thumb_input').attr('src', data.errmsg);
+                    $('#content_edit_news_form_thumb_input').next('input:hidden').val(data.errmsg);
                 } else {
-                    parent.$.messager.alert('提示信息', data.errmsg, 'error');
+                    $.messager.alert('提示信息', data.errmsg, 'error');
                 }
             }
         });
-    }
+        return false;
+    });
 </script>

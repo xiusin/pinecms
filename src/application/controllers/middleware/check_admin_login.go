@@ -53,7 +53,7 @@ func CheckAdminLoginAndAccess(sess *sessions.Sessions, cache cache.ICache, xorm 
 					this.StopExecution()
 					return
 				}
-				go ManageLog(this, xorm)
+				//go ManageLog(this, xorm)
 			}
 			this.Next()
 		}
@@ -97,26 +97,26 @@ func CheckPriv(this iris.Context, sess *sessions.Session, cache cache.ICache, xo
 	return false
 }
 
-func ManageLog(this iris.Context, xorm *xorm.Engine) {
-	pathinfo := strings.Split(strings.Trim(this.Path(), "/"), "/")
-	if len(pathinfo) == 3 {
-		aid, _ := this.Values().Get("adminid").(int64)
-		ip := this.RemoteAddr()
-		username := this.Values().GetString("username")
-		time := helper.NowDate("Y-m-d H:i:s")
-		uri := this.Request().RequestURI
-		log := tables.IriscmsLog{
-			Ip:          ip,
-			Username:    username,
-			Querystring: uri,
-			Time:        time,
-			Controller:  pathinfo[1],
-			Action:      pathinfo[2],
-			Userid:      aid,
-		}
-		_, err := xorm.Insert(log)
-		if err != nil {
-			golog.Error(helper.GetCallerFuncName(), err)
-		}
-	}
-}
+//func ManageLog(this iris.Context, xorm *xorm.Engine) {
+//	pathinfo := strings.Split(strings.Trim(this.Path(), "/"), "/")
+//	if len(pathinfo) == 3 {
+//		aid, _ := this.Values().Get("adminid").(int64)
+//		ip := this.RemoteAddr()
+//		username := this.Values().GetString("username")
+//		time := helper.NowDate("Y-m-d H:i:s")
+//		uri := this.Request().RequestURI
+//		log := tables.IriscmsLog{
+//			Ip:          ip,
+//			Username:    username,
+//			Querystring: uri,
+//			Time:        time,
+//			Controller:  pathinfo[1],
+//			Action:      pathinfo[2],
+//			Userid:      aid,
+//		}
+//		_, err := xorm.Insert(log)
+//		if err != nil {
+//			golog.Error(helper.GetCallerFuncName(), err)
+//		}
+//	}
+//}

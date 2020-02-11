@@ -34,19 +34,19 @@ func (c *IndexController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("ANY", "/index/sessionlife", "Sessionlife")
 }
 
-func (this *IndexController) Index() {
-	roleid, _ := this.Ctx.Values().GetInt64("roleid")
+func (c *IndexController) Index() {
+	roleid, _ := c.Ctx.Values().GetInt64("roleid")
 	if roleid == -1 {
-		this.Ctx.Redirect("/b/login/index")
+		c.Ctx.Redirect("/b/login/index")
 		return
 	}
-	menus := models.NewMenuModel(this.Orm).GetMenu(0, roleid) //读取一级菜单
-	this.Ctx.ViewData("menus", menus)
-	this.Ctx.ViewData("username", this.Session.Get("username").(string))
-	this.Ctx.View("backend/index_index.html")
+	menus := models.NewMenuModel(c.Orm).GetMenu(0, roleid) //读取一级菜单
+	c.Ctx.ViewData("menus", menus)
+	c.Ctx.ViewData("username", c.Session.Get("username").(string))
+	c.Ctx.View("backend/index_index.html")
 }
 
-func (this *IndexController) Main() {
+func (c *IndexController) Main() {
 	//统计尺寸
 	us, _ := disk.Usage(helper.GetRootPath())
 
@@ -72,24 +72,24 @@ func (this *IndexController) Main() {
 	//要转换的值，fmt方式，切割长度如果为-1则显示最大长度，64是float64
 	siteSize := formatMem(us.Total)
 
-	this.Ctx.ViewData("SiteSize", siteSize)
-	this.Ctx.ViewData("NumCPU", runtime.NumCPU())
-	this.Ctx.ViewData("GoVersion", "Version "+strings.ToUpper(runtime.Version()))
-	this.Ctx.ViewData("IrisVersion", "Version "+iris.Version)
-	this.Ctx.ViewData("Goos", strings.ToUpper(runtime.GOOS))
-	this.Ctx.ViewData("Grountues", runtime.NumGoroutine())
+	c.Ctx.ViewData("SiteSize", siteSize)
+	c.Ctx.ViewData("NumCPU", runtime.NumCPU())
+	c.Ctx.ViewData("GoVersion", "Version "+strings.ToUpper(runtime.Version()))
+	c.Ctx.ViewData("IrisVersion", "Version "+iris.Version)
+	c.Ctx.ViewData("Goos", strings.ToUpper(runtime.GOOS))
+	c.Ctx.ViewData("Grountues", runtime.NumGoroutine())
 	if vm != nil {
-		this.Ctx.ViewData("Mem", "总内存:"+formatMem(vm.Total)+",已使用:"+formatMem(vm.Used))
+		c.Ctx.ViewData("Mem", "总内存:"+formatMem(vm.Total)+",已使用:"+formatMem(vm.Used))
 	} else {
-		this.Ctx.ViewData("Mem", "未获得内存情况")
+		c.Ctx.ViewData("Mem", "未获得内存情况")
 	}
-	this.Ctx.View("backend/index_main.html")
+	c.Ctx.View("backend/index_main.html")
 }
 
-func (this *IndexController) Menu() {
-	meid, _ := strconv.Atoi(this.Ctx.PostValue("menuid"))
-	roleid, _ := this.Ctx.Values().GetInt64("roleid")
-	menus := models.NewMenuModel(this.Orm).GetMenu(int64(meid), roleid) //获取menuid内容
+func (c *IndexController) Menu() {
+	meid, _ := strconv.Atoi(c.Ctx.PostValue("menuid"))
+	roleid, _ := c.Ctx.Values().GetInt64("roleid")
+	menus := models.NewMenuModel(c.Orm).GetMenu(int64(meid), roleid) //获取menuid内容
 	cacheKey := fmt.Sprintf(controllers.CacheAdminMenuByRoleIdAndMenuId, roleid, meid)
 	var menujs []map[string]interface{} //要返回json的对象
 	var data string
@@ -100,7 +100,7 @@ func (this *IndexController) Menu() {
 	//}
 	if data == "" || json.Unmarshal([]byte(data), &menujs) != nil {
 		for _, v := range menus {
-			menu := models.NewMenuModel(this.Orm).GetMenu(v.Id, roleid)
+			menu := models.NewMenuModel(c.Orm).GetMenu(v.Id, roleid)
 			if len(menu) == 0 {
 				continue
 			}
@@ -120,14 +120,14 @@ func (this *IndexController) Menu() {
 		}
 		strs, err := json.Marshal(&menujs)
 		if err == nil {
-			this.Cache.Set(cacheKey, strs)
+			c.Cache.Set(cacheKey, strs)
 		}
 	}
-	this.Ctx.JSON(menujs)
+	c.Ctx.JSON(menujs)
 }
 
 //维持session不过期
-func (this *IndexController) Sessionlife() {
+func (c *IndexController) Sessionlife() {
 	//维持session防止过期
-	_, _ = this.Ctx.WriteString("1")
+	_, _ = c.Ctx.WriteString("1")
 }

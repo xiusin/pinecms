@@ -20,14 +20,14 @@ func (c *LoginController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("ANY", "/login/logout", "Logout")
 }
 
-func (this *LoginController) Index() {
-	if this.Ctx.Method() == "POST" {
-		username := this.Ctx.PostValue("username")
-		password := this.Ctx.PostValue("password")
-		code := this.Ctx.PostValue("code")
+func (c *LoginController) Index() {
+	if c.Ctx.Method() == "POST" {
+		username := c.Ctx.PostValue("username")
+		password := c.Ctx.PostValue("password")
+		code := c.Ctx.PostValue("code")
 		//verify, _ := this.Session.GetFlash("verify_code").(string)
 		if helper.IsFalse(username, password, code) {
-			helper.Ajax("参数不能为空", 1, this.Ctx)
+			helper.Ajax("参数不能为空", 1, c.Ctx)
 			return
 		}
 		//if verify == "" {
@@ -38,26 +38,26 @@ func (this *LoginController) Index() {
 		//	helper.Ajax("验证码错误", 1, this.Ctx)
 		//	return
 		//}
-		admin, err := models.NewAdminModel(this.Orm).Login(username, password, this.Ctx.RemoteAddr())
+		admin, err := models.NewAdminModel(c.Orm).Login(username, password, c.Ctx.RemoteAddr())
 		if err != nil {
-			helper.Ajax(err.Error(), 1, this.Ctx)
+			helper.Ajax(err.Error(), 1, c.Ctx)
 		} else {
-			this.Session.Set("roleid", admin.Roleid)
-			this.Session.Set("adminid", admin.Userid)
-			this.Session.Set("username", admin.Username)
-			helper.Ajax("登录成功", 0, this.Ctx)
+			c.Session.Set("roleid", admin.Roleid)
+			c.Session.Set("adminid", admin.Userid)
+			c.Session.Set("username", admin.Username)
+			helper.Ajax("登录成功", 0, c.Ctx)
 		}
 		return
 	}
 
-	this.Ctx.View("backend/login_index.html")
+	c.Ctx.View("backend/login_index.html")
 }
 
 //退出系统
-func (this *LoginController) Logout() {
-	this.Session.Delete("adminid")
-	this.Session.Delete("roleid")
-	this.Ctx.RemoveCookie("username")
-	this.Ctx.RemoveCookie("userid")
-	this.Ctx.Redirect("/b/login/index", iris.StatusFound)
+func (c *LoginController) Logout() {
+	c.Session.Delete("adminid")
+	c.Session.Delete("roleid")
+	c.Ctx.RemoveCookie("username")
+	c.Ctx.RemoveCookie("userid")
+	c.Ctx.Redirect("/b/login/index", iris.StatusFound)
 }
