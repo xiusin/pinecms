@@ -59,7 +59,7 @@ func (c *ContentController) Right() {
 func (c *ContentController) NewsList() {
 	catid, _ := c.Ctx.URLParamInt64("catid")
 	page, _ := c.Ctx.URLParamInt64("page")
-	//rows, _ := c.Ctx.URLParamInt64("rows")
+	rows, _ := c.Ctx.URLParamInt64("rows")
 	catogoryModel, err := models.NewCategoryModel(c.Orm).GetCategory(catid)
 	if err != nil {
 		panic(err)
@@ -74,7 +74,8 @@ func (c *ContentController) NewsList() {
 		return
 	}
 	if page > 0 {
-		sql := []interface{}{fmt.Sprintf("SELECT * FROM `iriscms_%s` WHERE catid=? and deleted_time IS NULL ORDER BY listorder DESC, id DESC", relationDocumentModel.Table), catid}
+		offset := (page - 1) * rows
+		sql := []interface{}{fmt.Sprintf("SELECT * FROM `iriscms_%s` WHERE catid=? and deleted_time IS NULL ORDER BY listorder DESC, id DESC LIMIT %d,%d", relationDocumentModel.Table, offset, rows), catid}
 		contents, err := c.Orm.QueryString(sql...)
 		if err != nil {
 			glog.Error(helper.GetCallerFuncName(), err.Error())
@@ -113,13 +114,13 @@ func (c *ContentController) NewsList() {
 	var index = 1
 	// 系统模型需要固定追加标题, 描述等字段
 	if relationDocumentModel.IsSystem == models.SYSTEM_TYPE {
-		fields["标题"] = map[string]string{"field": "title", "width": "50", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
+		fields["标题"] = map[string]string{"field": "title", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
 		index++
 	}
 	for _, field := range ff {
 		conf := showInPage[field]
 		if conf.Show {
-			f := map[string]string{"field": field, "width": "50", "index": strconv.Itoa(index)}
+			f := map[string]string{"field": field, "index": strconv.Itoa(index)}
 			if conf.Formatter != "" {
 				f["formatter"] = conf.Formatter
 			}
@@ -127,7 +128,7 @@ func (c *ContentController) NewsList() {
 			index++
 		}
 	}
-	fields["管理操作"] = map[string]string{"field": "id", "width": "50", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
+	fields["管理操作"] = map[string]string{"field": "id", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
 	table := helper.Datagrid("category_categorylist_datagrid", "/b/content/news-list?grid=datagrid&catid="+strconv.Itoa(int(catid)), helper.EasyuiOptions{
 		"toolbar":      "content_newslist_datagrid_toolbar",
 		"singleSelect": "true",

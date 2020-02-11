@@ -1,0 +1,72 @@
+<script src="/assets/backend/static/jquery.upload.js"></script>
+<form id="link_add_dialog_form" action="/b/link/add" method="post">
+    <table width="100%" class="mdoutable">
+        <tr>
+            <td>名称：</td>
+            <td><input name="name" class="easyui-textbox" type="text" style="width: 250px;" data-options="required:true"/></td>
+        </tr>
+        <tr>
+            <td>Logo：</td>
+            <td>
+                <input id="link_add_news_form_thumb_input" type="image" src="" onerror="this.src='/assets/backend/static/nopic.jpg'" alt="点击上传缩略图"
+                       style="height:100px; width: 100px; display:block;border:1px solid #ddd;padding:2px"/>
+                <input type="hidden" name="logo"/>
+            </td>
+        </tr>
+        <tr>
+            <td>链接：</td>
+            <td><input name="url"  class="easyui-textbox" type="text" style="width: 250px;" data-options="required:true,validType: 'url'"/></td>
+        </tr>
+        <tr>
+            <td>描述：</td>
+            <td><textarea name="introduce" style="width:450px;height:60px; resize: none"></textarea></td>
+        </tr>
+
+        <tr>
+            <td>是否启用：</td>
+            <td>
+                <label><input name="passed" value="1" type="radio" checked/>是</label>
+                <label><input name="passed" value="0" type="radio"/>否</label>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script type="text/javascript">
+    function linkListAddDialogFormSubmit() {
+        $("#link_add_dialog_form").form("submit", {
+            success: function (res) {
+                res = JSON.parse(res)
+                if (res.errcode) {
+                    $.messager.alert('提示信息', res.errmsg, 'error');
+                } else {
+                    $.messager.alert('提示信息', res.errmsg, 'info');
+                    $('#category_category_add_dialog').dialog('close');
+                    linkListRefresh();
+                }
+            }
+        })
+    }
+
+    $('#link_add_news_form_thumb_input').click(function (e) {
+        e.preventDefault();
+        $.upload({
+            url: "/public/upload",
+            fileName: 'filedata',
+            params: {},
+            dataType: 'json',
+            onSend: function () {
+                return true;
+            },
+            onComplate: function (data) {
+                if (0 === Number(data.errcode)) {
+                    $("#link_add_news_form_thumb_input").attr('src', data.errmsg);
+                    $("#link_add_news_form_thumb_input").next('input:hidden').val(data.errmsg);
+                } else {
+                    parent.$.messager.alert('提示信息', data.errmsg, 'error');
+                }
+            }
+        });
+        return false;
+    });
+</script>

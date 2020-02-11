@@ -32,7 +32,7 @@ type DocumentController struct {
 
 type ModelForm struct {
 	ID                string   `form:"id" json:"id"`
-	intID             int64    // 赋值ID的int类型
+	intID             int64
 	Enabled           string   `form:"enabled" json:"enabled"`
 	Name              string   `form:"name" json:"name"`
 	Table             string   `form:"table" json:"table"`

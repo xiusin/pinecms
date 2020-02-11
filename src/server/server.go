@@ -2,8 +2,6 @@ package config
 
 import (
 	"fmt"
-	"github.com/xiusin/iriscms/src/config"
-	"github.com/xiusin/iriscms/src/router"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -11,6 +9,9 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/xiusin/iriscms/src/config"
+	"github.com/xiusin/iriscms/src/router"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
@@ -102,7 +103,7 @@ func initApp() {
 	}
 	app.Logger().Debug("注册模板引擎Html")
 	htmlEngine = view.HTML(engines.Html.Path, engines.Html.Suffix).Reload(conf.View.Reload)
-	htmlEngine.AddFunc("GetInMap",controllers.GetInMap)
+	htmlEngine.AddFunc("GetInMap", controllers.GetInMap)
 	app.RegisterView(htmlEngine)
 }
 
@@ -141,7 +142,8 @@ func registerBackendRoutes() {
 		Handle(new(backend.SettingController)).
 		Handle(new(backend.SystemController)).
 		Handle(new(backend.MemberController)).
-		Handle(new(backend.DocumentController))
+		Handle(new(backend.DocumentController)).
+		Handle(new(backend.LinkController))
 	mvcApp.Party("/public", middleware.SetGlobalConfigData(XOrmEngine, iCache), injectConfig()).Handle(new(backend.PublicController))
 }
 
