@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"encoding/json"
+
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
@@ -38,7 +39,7 @@ func SetGlobalConfigData(xorm *xorm.Engine, cache cache.ICache) func(ctx context
 			ctx.StopExecution()
 			return
 		}
-		ctx.Values().Set(string(controllers.CacheSetting), settingData) //todo 这里有问题吗?
+		ctx.Values().Set(controllers.CacheSetting, settingData)
 		ctx.Next()
 	}
 

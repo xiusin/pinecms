@@ -36,7 +36,7 @@ func Datagrid(id, url string, tableoptions EasyuiOptions, field EasyuiGridfields
 		"pageSize":     "20",
 	}
 	style := "width:100%;height:100%;"
-	tabopt := []string{}
+	var tabopt []string
 	if len(tableoptions) != 0 {
 		for tabk, tabv := range tableoptions {
 			if tabk == "title" {
@@ -55,7 +55,7 @@ func Datagrid(id, url string, tableoptions EasyuiOptions, field EasyuiGridfields
 	i := 0
 	ths := make([]string, count_field)
 	for k, v := range field {
-		troptions := []string{}
+		var troptions []string
 		currentIndex := 0
 		for k1, v1 := range v {
 			if k1 == "index" {
@@ -102,12 +102,11 @@ func Datagrid(id, url string, tableoptions EasyuiOptions, field EasyuiGridfields
 }
 
 func Propertygrid(id string, options EasyuiOptions) string {
-
 	title, ok1 := options["title"]
 	url, ok2 := options["url"]
 	toolbar, ok3 := options["toolbar"]
 	if !ok1 || !ok2 || !ok3 {
-		return "Propertygrid Error : 必须包含元素 : title,url,toolbar"
+		return "Propertygrid Error : 必须包含属性 : title,url,toolbar"
 	}
 	str := `<table id="` + id + `" class="easyui-propertygrid"
 	data-options="
@@ -118,7 +117,7 @@ func Propertygrid(id string, options EasyuiOptions) string {
 	toolbar:` + toolbar + `,
 	showHeader:true,
 	showGroup:true,
-	columns: [[{ field: 'name', title: '属性名称', sortable:true,width:80},{ field: 'value',title: '属性值',width:200}]],
+	columns: [[{ field: 'name', title: '属性名称',width:80},{ field: 'value',title: '属性值',width:200}]],
 	scrollbarSize:0" ></table>`
 	return str
 }
@@ -159,7 +158,7 @@ func Treegrid(id string, url string, options EasyuiOptions, field EasyuiGridfiel
 	i := 0
 	ths := make([]string, count_field)
 	for k, v := range field {
-		troptions := []string{}
+		var troptions []string
 		currentIndex := 0
 		for k1, v1 := range v {
 			if k1 == "index" {

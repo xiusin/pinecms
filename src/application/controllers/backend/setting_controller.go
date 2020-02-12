@@ -1,16 +1,18 @@
 package backend
 
 import (
+	"encoding/json"
 	"html/template"
 	"strings"
-	"sync"
 
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 	"github.com/kataras/iris/v12/sessions"
+	"github.com/xiusin/iriscms/src/application/controllers"
 	"github.com/xiusin/iriscms/src/application/models"
 	"github.com/xiusin/iriscms/src/application/models/tables"
+	"github.com/xiusin/iriscms/src/common/cache"
 	"github.com/xiusin/iriscms/src/common/helper"
 )
 
@@ -21,189 +23,39 @@ type ConfigStruct map[string]ConfigItem
 type SettingController struct {
 	Ctx     iris.Context
 	Orm     *xorm.Engine
+	Cache   cache.ICache
 	Session *sessions.Session
 }
-
-var settingWg sync.WaitGroup
 
 func (c *SettingController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("ANY", "/setting/site", "Site")
 }
 
-var SiteConfig = ConfigStruct{
-	"SITE_TITLE": {
-		"name":    "站点标题",
-		"group":   "前台设置",
-		"editor":  "text",
-		"default": "iriscms项目",
-	},
-	"SITE_KEYWORDS": {
-		"name":    "关键字",
-		"group":   "前台设置",
-		"editor":  "text",
-		"default": "iriscms项目",
-	},
-	"SITE_DESCRIPTION": {
-		"name":    "描述",
-		"group":   "前台设置",
-		"editor":  "textarea",
-		"default": "iriscms项目",
-	},
-	"SITE_ICP": {
-		"name":    "备案号",
-		"group":   "前台设置",
-		"editor":  "text",
-		"default": "",
-	},
-	"SITE_OPEN": {
-		"name":  "站点开启",
-		"group": "前台设置",
-		"editor": ConfigItem{
-			"type": "checkbox",
-			"options": map[string]interface{}{
-				"on":  "开启",
-				"off": "关闭",
-			},
-		},
-		"default": "开启",
-	},
-	"DATAGRID_PAGE_SIZE": {
-		"name":    "列表默认分页数",
-		"group":   "后台设置",
-		"editor":  "numberbox",
-		"default": "25",
-	},
-	"EMAIL_SMTP": {
-		"name":    "SMTP",
-		"group":   "邮箱设置",
-		"editor":  "text",
-		"default": "",
-	},
-	"EMAIL_PORT": {
-		"name":    "端口",
-		"group":   "邮箱设置",
-		"editor":  "numberbox",
-		"default": "25",
-	},
-	"EMAIL_EMAIL": {
-		"name":    "邮箱地址",
-		"group":   "邮箱设置",
-		"editor":  "text",
-		"default": "",
-	},
-	"EMAIL_USER": {
-		"name":    "用户名",
-		"group":   "邮箱设置",
-		"editor":  "text",
-		"default": "",
-	},
-	"EMAIL_PWD": {
-		"name":    "密码",
-		"group":   "邮箱设置",
-		"editor":  "text",
-		"default": "",
-	},
-	"WX_APPID": {
-		"name":    "APPID",
-		"group":   "微信配置",
-		"editor":  "text",
-		"default": "",
-	},
-	"WX_APPSECRET": {
-		"name":    "APPSECTET",
-		"group":   "微信配置",
-		"editor":  "text",
-		"default": "",
-	},
-	"WX_TOKEN": {
-		"name":    "TOKEN",
-		"group":   "微信配置",
-		"editor":  "text",
-		"default": "",
-	},
-	"WX_AESKEY": {
-		"name":    "AESKEY",
-		"group":   "微信配置",
-		"editor":  "text",
-		"default": "",
-	},
-	"OSS_ENDPOINT": {
-		"name":    "ENDPOINT",
-		"group":   "OSS存储配置",
-		"editor":  "text",
-		"default": "",
-	},
-	"OSS_KEYID": {
-		"name":    "KEYID",
-		"group":   "OSS存储配置",
-		"editor":  "text",
-		"default": "",
-	},
-	"OSS_KEYSECRET": {
-		"name":    "SECRET",
-		"group":   "OSS存储配置",
-		"editor":  "text",
-		"default": "",
-	},
-	"OSS_BUCKETNAME": {
-		"name":    "BUCKETNAME",
-		"group":   "OSS存储配置",
-		"editor":  "text",
-		"default": "",
-	},
-	"OSS_HOST": {
-		"name":    "HOST",
-		"group":   "OSS存储配置",
-		"editor":  "text",
-		"default": "",
-	},
-}
-
-//系统配置 -> 站点配置
 func (c *SettingController) Site() {
 	if c.Ctx.Method() == "POST" {
-		var setting []tables.IriscmsSetting
+		var setting []*tables.IriscmsSetting
 		act := c.Ctx.URLParam("dosubmit")
 		var setval []ConfigItem
 		if act == "" {
-			c.Orm.Find(&setting)
-			var keys []string
-			if len(setting) != 0 {
-				for _, v := range setting {
-					if _, ok := SiteConfig[v.Key]; !ok {
-						continue
-					}
-					keys = append(keys, v.Key)
-					setval = append(setval, ConfigItem{
-						"name":    SiteConfig[v.Key]["name"],
-						"key":     v.Key,
-						"group":   SiteConfig[v.Key]["group"],
-						"editor":  SiteConfig[v.Key]["editor"],
-						"default": SiteConfig[v.Key]["default"],
-						"value":   v.Value,
-					})
-				}
+			if err := c.Orm.Asc("listorder").Find(&setting); err != nil {
+				return
 			}
-			var keysStr string
-			if len(keys) > 0 {
-				keysStr = strings.Join(keys, "|")
-			} else {
-				keysStr = ""
-			}
-
 			//没有值的配置项自动合并
-			for k, v := range SiteConfig {
-				if keysStr != "" && strings.Contains(keysStr, k) {
-					continue
+			for _, v := range setting {
+				v.EditorOpt = v.Editor
+				if strings.HasPrefix(v.Editor, "{") {
+					var options = map[string]interface{}{}
+					if err := json.Unmarshal([]byte(v.Editor), &options); err == nil {
+						v.EditorOpt = options
+					}
 				}
-				c.Orm.Insert(&tables.IriscmsSetting{Key: k, Value: v["default"].(string)})
 				setval = append(setval, ConfigItem{
-					"key":     k,
-					"name":    v["name"],
-					"group":   v["group"],
-					"editor":  v["editor"],
-					"default": v["default"],
-					"value":   v["default"],
+					"key":     v.Key,
+					"name":    v.FormName,
+					"group":   v.Group,
+					"editor":  v.EditorOpt,
+					"default": v.Default,
+					"value":   v.Value,
 				})
 			}
 			result := map[string]interface{}{
@@ -218,21 +70,9 @@ func (c *SettingController) Site() {
 			if k == "dosubmit" || len(v) == 0 {
 				continue
 			}
-			//更新数据
-			go func(k, v string) {
-				settingWg.Add(1)
-				setting := tables.IriscmsSetting{Key: k}
-				bol, _ := c.Orm.Get(&setting) //逐个查找,判断添加还是修改配置
-				if bol {
-					c.Orm.Table(new(tables.IriscmsSetting)).Where("`key`=?", k).Update(&tables.IriscmsSetting{Value: v})
-				} else {
-					setting.Value = v
-					c.Orm.Insert(setting)
-				}
-				defer settingWg.Done()
-			}(k, v[0])
+			c.Orm.Table(new(tables.IriscmsSetting)).Where("`key`=?", k).MustCols("value").Update(&tables.IriscmsSetting{Value: v[0]})
 		}
-		settingWg.Wait()
+		c.Cache.Delete(controllers.CacheSetting)
 		helper.Ajax("更新配置信息成功", 0, c.Ctx)
 		return
 	}

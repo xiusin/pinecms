@@ -145,13 +145,13 @@ func (c *AdminController) Memberlist() {
 		"title":   models.NewMenuModel(c.Orm).CurrentPos(menuid),
 		"toolbar": "admin_memberlist_datagrid_toolbar",
 	}, helper.EasyuiGridfields{
-		"用户名":    {"field": "Username", "width": "15", "sortable": "true", "index": "0"},
-		"所属角色":   {"field": "Rolename", "width": "15", "sortable": "true", "index": "1"},
+		"用户名":  {"field": "Username", "width": "15", "index": "0"},
+		"所属角色": {"field": "Rolename", "width": "15", "index": "1"},
 		//"最后登录IP": {"field": "Lastloginip", "width": "15", "sortable": "true", "index": "2"},
-		"最后登录时间": {"field": "Lastlogintime", "width": "15", "sortable": "true", "formatter": "adminMemberListTimeFormatter", "index": "2"},
-		"E-mail": {"field": "Email", "width": "25", "sortable": "true", "index": "3"},
-		"真实姓名":   {"field": "Realname", "width": "15", "sortable": "true", "index": "4"},
-		"管理操作":   {"field": "Userid", "width": "15", "sortable": "true", "formatter": "adminMemberListOperateFormatter", "index": "5"},
+		"最后登录时间": {"field": "Lastlogintime", "width": "15", "formatter": "adminMemberListTimeFormatter", "index": "2"},
+		"E-mail": {"field": "Email", "width": "25", "index": "3"},
+		"真实姓名":   {"field": "Realname", "width": "15", "index": "4"},
+		"管理操作":   {"field": "Userid", "width": "15", "formatter": "adminMemberListOperateFormatter", "index": "5"},
 	})
 	c.Ctx.ViewData("table", template.HTML(table))
 	c.Ctx.View("backend/admin_memberlist.html")
@@ -368,7 +368,7 @@ func (c *AdminController) RoleList() {
 	}, helper.EasyuiGridfields{
 		"角色名称": {"field": "Rolename", "width": "15", "index": "0"},
 		"角色描述": {"field": "Description", "width": "35", "index": "1"},
-		"管理操作": {"field": "Roleid",  "formatter": "adminRoleListOperateFormatter", "index": "2"},
+		"管理操作": {"field": "Roleid", "formatter": "adminRoleListOperateFormatter", "index": "2"},
 	})
 	c.Ctx.ViewData("datagrid", template.HTML(datagrid))
 	c.Ctx.View("backend/member_rolelist.html")

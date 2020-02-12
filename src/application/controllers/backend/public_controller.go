@@ -2,6 +2,7 @@ package backend
 
 import (
 	"encoding/base64"
+	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"mime/multipart"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/kataras/iris/v12"
+	"github.com/xiusin/iriscms/src/application/controllers"
 	"github.com/xiusin/iriscms/src/application/models"
 	"github.com/xiusin/iriscms/src/application/models/tables"
 	"github.com/xiusin/iriscms/src/config"
@@ -43,30 +45,24 @@ func (c *PublicController) FeDirScan() {
 
 //上传图片
 func (c *PublicController) Upload() {
+	isEditor := true
+	settingData := c.Ctx.Values().Get(controllers.CacheSetting).(map[string]string)
 	mid := c.Session.GetString("mid")
 	if mid == "" {
 		mid = "public"
 	}
-	var isEditor = false
-	if c.Ctx.URLParam("editorid") != "" {
-		//百度编辑器的返回内容
-		isEditor = true
-	}
-	uploadDir := "upload"
-	//conf := c.Ctx.Values().Get("app.config").(map[string]string)
-	setting := c.Ctx.Values().Get("setting").(map[string]string)
-	//engine := conf["uploadEngine"]
-	engine := ""
+	uploadDir := settingData["UPLOAD_DIR"]
+	engine := settingData["UPLOAD_ENGINE"]
 	var uploader storage.Uploader
-	if engine != "oss" {
+	switch engine {
+	case "OSS存储":
+		uploader = storage.NewOssUploader(settingData)
+	default :
 		uploader = storage.NewFileUploader(uploadDir)
 		uploadDir = uploader.(*storage.FileUploader).BaseDir
-	} else {
-		uploader = storage.NewOssUploader(setting)
 	}
 	//生成要保存到目录和名称
-	nowTime := helper.NowDate("Ymd")
-	uploadDir = uploadDir + "/" + mid + "/" + nowTime
+	uploadDir = fmt.Sprintf("%s/%s/%s", uploadDir, mid, helper.NowDate("Ymd"))
 	file, fs, err := c.Ctx.FormFile("filedata")
 	if err != nil {
 		if fileData := c.Ctx.FormValue("filedata"); fileData == "" {

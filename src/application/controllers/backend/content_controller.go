@@ -94,7 +94,7 @@ func (c *ContentController) NewsList() {
 	}
 
 	fields := helper.EasyuiGridfields{
-		"排序": {"field": "listorder", "width": "15", "formatter": "contentNewsListOrderFormatter", "index": "0"},
+		"排序": {"field": "listorder", "formatter": "contentNewsListOrderFormatter", "index": "0"},
 	}
 
 	// 获取所有字段
