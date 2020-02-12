@@ -16,7 +16,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 	"github.com/gorilla/securecookie"
-	"github.com/kataras/golog"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/middleware/pprof"
@@ -27,7 +26,6 @@ import (
 	"github.com/xiusin/iriscms/src/application/controllers"
 	"github.com/xiusin/iriscms/src/application/controllers/backend"
 	"github.com/xiusin/iriscms/src/application/controllers/middleware"
-	"github.com/xiusin/iriscms/src/application/models/tables"
 	"github.com/xiusin/iriscms/src/common/cache"
 	"github.com/xiusin/iriscms/src/common/helper"
 	"github.com/xiusin/iriscms/src/common/logger"
@@ -45,18 +43,6 @@ var (
 	iCache          cache.ICache
 	conf            = config.AppConfig()
 )
-
-func syncTable() {
-	if err := XOrmEngine.Sync( // 同步表结构
-		new(tables.IriscmsAdmin), new(tables.IriscmsAdminRole), new(tables.IriscmsAdminRolePriv),
-		new(tables.IriscmsCategory), new(tables.IriscmsCategoryPriv), new(tables.IriscmsContent),
-		new(tables.IriscmsLog), new(tables.IriscmsMember), new(tables.IriscmsPage),
-		new(tables.IriscmsMenu), new(tables.IriscmsSetting), new(tables.IriscmsWechatMember),
-		new(tables.IriscmsWechatMessageLog),
-	); err != nil {
-		golog.Error("同步表结构失败", err)
-	}
-}
 
 func initDatabase() {
 	dc := config.DBConfig()
@@ -90,20 +76,12 @@ func initApp() {
 		app.Logger().Debug("pprof enabled")
 		app.Get(conf.Pprof.Route, pprof.New())
 	}
-	var viewEngine = 0
-	engines := conf.View.Engine
 	//附加视图
-	if engines.Django.Path != "" && engines.Django.Suffix != "" {
-		viewEngine++
-		app.Logger().Debug("注册模板引擎Django")
-		app.RegisterView(view.Django(engines.Django.Path, engines.Django.Suffix).Reload(conf.View.Reload)) //不缓存模板
-	}
-	if engines.Html.Path == "" || engines.Html.Suffix == "" {
-		panic("请配置HTML模板引擎参数")
-	}
-	app.Logger().Debug("注册模板引擎Html")
-	htmlEngine = view.HTML(engines.Html.Path, engines.Html.Suffix).Reload(conf.View.Reload)
-	htmlEngine.AddFunc("GetInMap", controllers.GetInMap)
+	djangoEngine := view.Django(conf.View.Path, ".tpl").Reload(conf.View.Reload)
+	registerDjangoFunc(djangoEngine)
+	app.RegisterView(djangoEngine)
+	htmlEngine = view.HTML(conf.View.Path, ".html").Reload(conf.View.Reload)
+	registerHtmlFunc(htmlEngine)
 	app.RegisterView(htmlEngine)
 }
 

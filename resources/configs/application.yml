@@ -1,14 +1,7 @@
 view:
   reload: true
   fedirname: "./resources/views/backend"
-  engine:
-    #    django :
-    #      path: "./resources/views/"
-    #      suffix: ".tpl"
-    html:
-      path: "./resources/views/"
-      suffix: ".html"
-
+  path: "./resources/views/"
 
 session:
   name: "gosessionid"

@@ -46,15 +46,6 @@ type Session struct {
 	Name    string        `yaml:"name"`
 	Expires time.Duration `yaml:"expires"`
 }
-type Engine struct {
-	Django Django `yaml:"django"`
-	Html   Html   `yaml:"html"`
-}
-
-type Django struct {
-	Path   string `yaml:"path"`
-	Suffix string `yaml:"suffix"`
-}
 
 type Html struct {
 	Path   string `yaml:"path"`
@@ -69,8 +60,8 @@ type Pprof struct {
 
 type View struct {
 	Reload    bool   `yaml:"reload"`
-	FeDirname string `yaml:"fedirname"` // 前端页面目录. 管理端会扫描目录选择模板
-	Engine    Engine `yaml:"engine"`
+	FeDirname string `yaml:"fedirname"`
+	Path	  string `yaml:"path"`
 }
 
 const dbYml = "resources/configs/database.yml"
