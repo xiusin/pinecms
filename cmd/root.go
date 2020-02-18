@@ -11,7 +11,7 @@ import (
 
 var cfgFile string
 
-// http://www.network-science.de/ascii/ 字符画
+// http://www.network-science.de/ascii/
 var rootCmd = &cobra.Command{
 	Use: "iriscms",
 	Long: ` _         _                           

@@ -52,17 +52,16 @@ func (c *PublicController) Upload() {
 		mid = "public"
 	}
 	uploadDir := settingData["UPLOAD_DIR"]
+	urlPrefixDir := settingData["UPLOAD_URL_PREFIX"]
 	engine := settingData["UPLOAD_ENGINE"]
 	var uploader storage.Uploader
 	switch engine {
 	case "OSS存储":
 		uploader = storage.NewOssUploader(settingData)
 	default :
-		uploader = storage.NewFileUploader(uploadDir)
-		uploadDir = uploader.(*storage.FileUploader).BaseDir
+		uploader = storage.NewFileUploader(urlPrefixDir, uploadDir)
 	}
-	//生成要保存到目录和名称
-	uploadDir = fmt.Sprintf("%s/%s/%s", uploadDir, mid, helper.NowDate("Ymd"))
+	uploadDir = fmt.Sprintf("%s/%s", mid, helper.NowDate("Ymd"))
 	file, fs, err := c.Ctx.FormFile("filedata")
 	if err != nil {
 		if fileData := c.Ctx.FormValue("filedata"); fileData == "" {
@@ -73,14 +72,15 @@ func (c *PublicController) Upload() {
 			dist, err := base64.StdEncoding.DecodeString(fileData)
 			if err != nil {
 				uploadAjax(c.Ctx, map[string]interface{}{"state": "解码base64数据失败 : " + err.Error(), "errcode": "1",}, isEditor)
+				return
 			}
-			//写入新文件
 			f, err := ioutil.TempFile("", "tempfile_"+strconv.Itoa(rand.Intn(10000)))
 			if err != nil {
 				uploadAjax(c.Ctx, map[string]interface{}{"state": "上传失败 : " + err.Error(), "errcode": "1",}, isEditor)
+				return
 			}
-			f.Write(dist)
-			f.Close()
+			_, _ = f.Write(dist)
+			_ = f.Close()
 			fo, _ := os.Open(f.Name())
 			file = multipart.File(fo)
 			defer os.Remove(f.Name())

@@ -16,14 +16,12 @@ func New(db *bbolt.DB, table string) *Cache { return &Cache{db: db, table: []byt
 
 func (c *Cache) Get(key string) string {
 	var res []byte
-	c.db.View(func(tx *bbolt.Tx) error {
+	_ = c.db.View(func(tx *bbolt.Tx) error {
 		bu := tx.Bucket(c.table)
-		// 桶不存在
 		if bu == nil {
 			return nil
 		}
 		r := bu.Get([]byte(key))
-		// key不存在
 		if r != nil {
 			res = r
 		}

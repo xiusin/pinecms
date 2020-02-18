@@ -1,3 +1,5 @@
+port: 2019
+
 view:
   reload: true
   fedirname: "./resources/views/backend"
@@ -6,9 +8,9 @@ view:
 session:
   name: "gosessionid"
   expires: 0
+
 cache_db: "./runtime/cache/store.db"  # 包括session
 
-port: 2019
 pprof:
   open: true
   port: 6060

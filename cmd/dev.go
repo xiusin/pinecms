@@ -36,8 +36,8 @@ func init() {
 	serveCmd.AddCommand(devCmd)
 	devCmd.Flags().StringSlice("ignoreDirs", []string{"vendor", ".git", ".idea", "node_modules"}, "忽略变动监听的目录")
 	devCmd.Flags().StringSlice("types", []string{".go", ".yml"}, "需要监听的文件类型, .*为监听任意文件")
-	devCmd.Flags().String("root", util.AppPath()+"/src", "监听的根目录")
-	devCmd.Flags().Int32("delay", 2, "每次构建进程的延迟时间单位：秒")
+	devCmd.Flags().String("root", util.AppPath(), "监听的根目录")
+	devCmd.Flags().Int32("delay", 3, "每次构建进程的延迟时间单位：秒")
 	devCmd.Flags().Int32("limit", 500, "监听文件的最大数量")
 	var err error
 	watcher, err = fsnotify.NewWatcher()
@@ -106,6 +106,7 @@ func registerFileToWatcher() error {
 	if err != nil {
 		return err
 	}
+	fmt.Println("types", types)
 	for _, file := range files {
 		if counter > limit {
 			log.Println(fmt.Sprintf("%s %s", color.RedString("[ERRO]"), "监听文件已达上限"))
@@ -113,7 +114,7 @@ func registerFileToWatcher() error {
 		}
 		if len(types) > 0 && !util.InSlice(".*", types) && !file.IsDir {
 			suffixPartial := strings.Split(file.Path, ".")
-			if len(suffixPartial) > 2 && !util.InSlice("."+suffixPartial[len(suffixPartial)-1], types) {
+			if !util.InSlice("."+suffixPartial[len(suffixPartial)-1], types) {
 				continue
 			}
 		}
@@ -144,12 +145,16 @@ func eventNotify() {
 	for {
 		select {
 		case event, _ := <-watcher.Events:
-			if time.Now().Sub(lockerTimestamp) > time.Second * time.Duration(delay) && !building {
+			if time.Now().Sub(lockerTimestamp) > time.Second*time.Duration(delay) && !building {
 				if isIgnoreAction(&event) {
 					continue
 				}
-				lockerTimestamp, building = time.Now(), true
 				name := util.Replace(event.Name, util.AppPath(), "")
+				fileInfo := strings.Split(name, ".")
+				if !util.InSlice(".*", types) && !util.InSlice("."+strings.TrimRight(fileInfo[len(fileInfo)-1], "~"), types) {
+					continue
+				}
+				lockerTimestamp, building = time.Now(), true
 				if event.Op&fsnotify.Create == fsnotify.Create {
 					_ = watcher.Add(event.Name)
 				} else if event.Op&fsnotify.Remove == fsnotify.Remove {
@@ -191,7 +196,6 @@ func getCommandFlags(cmd *cobra.Command) (err error) {
 	if err != nil {
 		return
 	}
-
 	limit, err = cmd.Flags().GetInt32("limit")
 	if err != nil {
 		return

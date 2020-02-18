@@ -8,7 +8,6 @@ import (
 
 const Version = "dev 0.1.2"
 
-// versionCmd represents the version command
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "显示版本号",

@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"sync"
 	"time"
+	"xorm.io/core"
 
 	"github.com/xiusin/iriscms/src/config"
 	"github.com/xiusin/iriscms/src/router"
@@ -52,7 +53,7 @@ func initDatabase() {
 	if err != nil {
 		panic(err.Error())
 	}
-	_orm.SetLogger(logger.NewIrisCmsXormLogger(helper.NewOrmLogFile(conf.LogPath)))
+	_orm.SetLogger(logger.NewIrisCmsXormLogger(helper.NewOrmLogFile(conf.LogPath), core.LOG_INFO))
 	err = _orm.Ping() //检测是否联通数据库
 	if err != nil {
 		panic(err.Error())

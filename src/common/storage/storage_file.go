@@ -4,18 +4,17 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 type FileUploader struct {
-	cutStr  string
-	BaseDir string
+	fixDir  string
+	baseDir string
 }
 
-func NewFileUploader(uploadDir string) *FileUploader {
+func NewFileUploader(fixDir, uploadDir string) *FileUploader {
 	return &FileUploader{
-		cutStr:  "resources/assets",
-		BaseDir: "resources/assets/" + uploadDir,
+		fixDir:  fixDir,
+		baseDir: uploadDir,
 	}
 }
 
@@ -24,6 +23,8 @@ func NewFileUploader(uploadDir string) *FileUploader {
 // LocalFile 要上传的文件名
 func (s *FileUploader) Upload(storageName string, LocalFile io.Reader) (string, error) {
 	//检测是否可以生成目录
+	originName := storageName
+	storageName = filepath.Join(s.baseDir, storageName)
 	uploadDir := filepath.Dir(storageName)
 	f, err := os.Open(uploadDir)
 	if err != nil && os.IsNotExist(err) {
@@ -42,5 +43,5 @@ func (s *FileUploader) Upload(storageName string, LocalFile io.Reader) (string, 
 	if err != nil {
 		return "", err
 	}
-	return strings.Replace(storageName, s.cutStr, "", 1), nil
+	return filepath.Join(s.fixDir, originName), nil
 }

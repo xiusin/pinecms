@@ -19,8 +19,8 @@ type IrisCmsXormLogger struct {
 
 var _ core.ILogger = &IrisCmsXormLogger{}
 
-func NewIrisCmsXormLogger(out io.Writer) *IrisCmsXormLogger {
-	prefix, flag, l := "[ORM]", log.LstdFlags, core.LOG_DEBUG
+func NewIrisCmsXormLogger(out io.Writer, level core.LogLevel) *IrisCmsXormLogger {
+	prefix, flag, l := "[ORM]", log.LstdFlags, level
 	return &IrisCmsXormLogger{
 		DEBUG: log.New(out, fmt.Sprintf("%s [DEBU] ", prefix), flag),
 		ERR:   log.New(out, fmt.Sprintf("%s [ERRO] ", prefix), flag),

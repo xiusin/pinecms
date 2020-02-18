@@ -3,39 +3,41 @@ package storage
 import (
 	"errors"
 	"io"
+	"path/filepath"
 	"strings"
 
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 )
 
 type OssUploader struct {
-	client *oss.Client
-	bucket *oss.Bucket
-	host   string
+	client    *oss.Client
+	bucket    *oss.Bucket
+	host      string
+	urlPrefix string
 }
 
 func NewOssUploader(config map[string]string) *OssUploader {
 	client, err := oss.New(config["OSS_ENDPOINT"], config["OSS_KEYID"], config["OSS_KEYSECRET"])
 	if err != nil {
-		return &OssUploader{
-			client: client,
-		}
+		panic(err)
 	}
 	bucket, err := client.Bucket(config["OSS_BUCKETNAME"])
 	if err != nil {
 		return nil
 	}
 	return &OssUploader{
-		client: client,
-		bucket: bucket,
-		host:   config["OSS_HOST"],
+		client:    client,
+		bucket:    bucket,
+		host:      config["OSS_HOST"],
+		urlPrefix: config["UPLOAD_URL_PREFIX"],
 	}
 }
 
 // Upload 上传图片
-// storageName 云端路径名.
+// storageName 云端路径名. 最终上传相对urlPrefix生成地址
 // LocalFile 要上传的文件名
 func (s *OssUploader) Upload(storageName string, LocalFile io.Reader) (string, error) {
+	storageName = filepath.Join(s.urlPrefix, storageName)
 	if s.client == nil {
 		return "", errors.New("ossClient is error")
 	}
