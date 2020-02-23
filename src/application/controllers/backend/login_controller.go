@@ -3,31 +3,29 @@ package backend
 import (
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/mvc"
-	"github.com/kataras/iris/v12/sessions"
 	"github.com/xiusin/iriscms/src/application/models"
 	"github.com/xiusin/iriscms/src/common/helper"
+	"github.com/xiusin/pine"
+	"strconv"
 )
 
 type LoginController struct {
-	Orm     *xorm.Engine
-	Ctx     iris.Context
-	Session *sessions.Session
+	pine.Controller
 }
 
-func (c *LoginController) BeforeActivation(b mvc.BeforeActivation) {
-	b.Handle("ANY", "/login/index", "Index")
-	b.Handle("ANY", "/login/logout", "Logout")
+func (c *LoginController) RegisterRoute(b pine.IRouterWrapper) {
+	b.ANY( "/login/index", "Index")
+	b.ANY( "/login/logout", "Logout")
 }
 
 func (c *LoginController) Index() {
-	if c.Ctx.Method() == "POST" {
-		username := c.Ctx.PostValue("username")
-		password := c.Ctx.PostValue("password")
-		code := c.Ctx.PostValue("code")
+	if c.Ctx().IsPost() {
+		username := c.Ctx().PostString("username")
+		password := c.Ctx().PostString("password")
+		code := c.Ctx().PostString("code")
 		//verify, _ := this.Session.GetFlash("verify_code").(string)
 		if helper.IsFalse(username, password, code) {
-			helper.Ajax("参数不能为空", 1, c.Ctx)
+			helper.Ajax("参数不能为空", 1, c.Ctx())
 			return
 		}
 		//if verify == "" {
@@ -38,26 +36,26 @@ func (c *LoginController) Index() {
 		//	helper.Ajax("验证码错误", 1, this.Ctx)
 		//	return
 		//}
-		admin, err := models.NewAdminModel(c.Orm).Login(username, password, c.Ctx.RemoteAddr())
+		admin, err := models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).Login(username, password, c.Ctx().ClientIP())
 		if err != nil {
-			helper.Ajax(err.Error(), 1, c.Ctx)
+			helper.Ajax(err.Error(), 1, c.Ctx())
 		} else {
-			c.Session.Set("roleid", admin.Roleid)
-			c.Session.Set("adminid", admin.Userid)
-			c.Session.Set("username", admin.Username)
-			helper.Ajax("登录成功", 0, c.Ctx)
+			c.Session().Set("roleid", strconv.Itoa(int(admin.Roleid)))
+			c.Session().Set("adminid", strconv.Itoa(int(admin.Userid)))
+			c.Session().Set("username", admin.Username)
+			helper.Ajax("登录成功", 0, c.Ctx())
 		}
 		return
 	}
 
-	c.Ctx.View("backend/login_index.html")
+	c.Ctx().Render().HTML("backend/login_index.html")
 }
 
 //退出系统
 func (c *LoginController) Logout() {
-	c.Session.Delete("adminid")
-	c.Session.Delete("roleid")
-	c.Ctx.RemoveCookie("username")
-	c.Ctx.RemoveCookie("userid")
-	c.Ctx.Redirect("/b/login/index", iris.StatusFound)
+	c.Session().Remove("adminid")
+	c.Session().Remove("roleid")
+	c.Ctx().RemoveCookie("username")
+	c.Ctx().RemoveCookie("userid")
+	c.Ctx().Redirect("/b/login/index", iris.StatusFound)
 }

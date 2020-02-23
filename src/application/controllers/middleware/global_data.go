@@ -2,44 +2,22 @@ package middleware
 
 import (
 	"encoding/json"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/cache"
 
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/context"
 	"github.com/xiusin/iriscms/src/application/controllers"
 	"github.com/xiusin/iriscms/src/application/models/tables"
-	"github.com/xiusin/iriscms/src/common/cache"
 )
 
-func FrontendGlobalViewData(xorm *xorm.Engine, cache cache.ICache) func(ctx context.Context) {
-	return func(ctx context.Context) {
-		if ctx.Path() == "/" {
-			settingData, err := getSetting(xorm, cache)
-			if err != nil {
-				ctx.Application().Logger().Error("无法读取到配置内容:" + err.Error())
-				ctx.StopExecution()
-				return
-			}
-			if settingData["SITE_OPEN"] == "关闭" {
-				ctx.Redirect("/site/close", iris.StatusFound)
-				return
-			}
-			ctx.ViewData("setting", settingData)
-		}
-		ctx.Next()
-	}
-}
-
-func SetGlobalConfigData(xorm *xorm.Engine, cache cache.ICache) func(ctx context.Context) {
-	//读取配置项
-	return func(ctx context.Context) {
-		settingData, err := getSetting(xorm, cache)
+func SetGlobalConfigData(xorm *xorm.Engine, iCache cache.ICache) pine.Handler {
+	return func(ctx *pine.Context) {
+		settingData, err := getSetting(xorm, iCache)
 		if err != nil {
-			ctx.Application().Logger().Error("无法读取到配置内容:" + err.Error())
-			ctx.StopExecution()
+			pine.Logger().Error("无法读取到配置内容:" + err.Error())
 			return
 		}
-		ctx.Values().Set(controllers.CacheSetting, settingData)
+		ctx.Set(controllers.CacheSetting, settingData)
 		ctx.Next()
 	}
 
@@ -47,8 +25,8 @@ func SetGlobalConfigData(xorm *xorm.Engine, cache cache.ICache) func(ctx context
 
 func getSetting(xorm *xorm.Engine, cache cache.ICache) (map[string]string, error) {
 	var settingData = map[string]string{}
-	res := cache.Get(controllers.CacheSetting)
-	if len(res) == 0 {
+	res, err := cache.Get(controllers.CacheSetting)
+	if err != nil {
 		var settings []tables.IriscmsSetting
 		err := xorm.Find(&settings)
 		if err != nil {
@@ -59,16 +37,13 @@ func getSetting(xorm *xorm.Engine, cache cache.ICache) (map[string]string, error
 				settingData[v.Key] = v.Value
 			}
 		}
-		setDataStr, err := json.Marshal(&settingData)
-		if err == nil {
-			if err := cache.Set(controllers.CacheSetting, setDataStr); err != nil {
-				return nil, err
-			}
-		} else {
+		setDataStr, _ := json.Marshal(&settingData)
+		if err := cache.Set(controllers.CacheSetting, setDataStr); err != nil {
 			return nil, err
 		}
+
 	} else {
-		err := json.Unmarshal([]byte(res), &settingData)
+		err := json.Unmarshal(res, &settingData)
 		if err != nil {
 			return nil, err
 		}

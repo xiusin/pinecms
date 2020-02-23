@@ -3,6 +3,7 @@ package backend
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/xiusin/pine/cache"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -11,7 +12,6 @@ import (
 	"github.com/xiusin/iriscms/src/application/controllers"
 	"github.com/xiusin/iriscms/src/application/models"
 	"github.com/xiusin/iriscms/src/application/models/tables"
-	"github.com/xiusin/iriscms/src/common/cache"
 	"github.com/xiusin/iriscms/src/common/helper"
 )
 

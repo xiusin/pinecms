@@ -9,7 +9,7 @@ session:
   name: "gosessionid"
   expires: 0
 
-cache_db: "./runtime/cache/store.db"  # 包括session
+cache_db: "./runtime/cache/"  # 包括session
 
 pprof:
   open: true
@@ -21,7 +21,7 @@ favicon: "./resources/assets/favicon.ico"
 charset: "UTF-8"
 hashkey: "the-big-and-secret-fash-key-here"  # 只支持固定大小到字节, 妈的, 因为这个浪费了4个小时到时间找bug AES only supports key sizes of 16, 24 or 32 bytes.
 blockkey: "lot-secret-of-characters-big-too"
-backend_route_party: "/b/"
+backend_route_party: "/b"
 
 max_bodysize: 32 # MB
 

@@ -1,12 +1,12 @@
 #
 # SQL Export
-# Created by Querious (201054)
-# Created: February 12, 2020 at 5:32:44 PM GMT+8
+# Created by Querious (201067)
+# Created: February 23, 2020 at 12:23:48 PM GMT+8
 # Encoding: Unicode (UTF-8)
 #
 
 
-CREATE DATABASE IF NOT EXISTS `iriscms` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS `iriscms` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_0900_ai_ci;
 USE `iriscms`;
 
 
@@ -88,7 +88,7 @@ CREATE TABLE `iriscms_attachments` (
   `upload_time` datetime DEFAULT NULL,
   `type` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=117 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 CREATE TABLE `iriscms_category` (
@@ -164,7 +164,7 @@ CREATE TABLE `iriscms_document_model` (
   `formatters` text COMMENT '所有函数内容, 原样渲染到Html里',
   `execed` tinyint(1) unsigned DEFAULT '0' COMMENT '是否已经执行过改动',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='文档模型用于存储自定义类型的文档内容';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='文档模型用于存储自定义类型的文档内容';
 
 
 CREATE TABLE `iriscms_document_model_dsl` (
@@ -181,7 +181,7 @@ CREATE TABLE `iriscms_document_model_dsl` (
   `field_type` int(11) NOT NULL DEFAULT '0',
   `default` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=520 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=520 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `iriscms_document_model_field` (
@@ -191,7 +191,7 @@ CREATE TABLE `iriscms_document_model_field` (
   `desc` varchar(128) DEFAULT NULL COMMENT '字段描述',
   `html` text,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
 
 CREATE TABLE `iriscms_link` (
@@ -354,8 +354,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 LOCK TABLES `iriscms_admin` WRITE;
 ALTER TABLE `iriscms_admin` DISABLE KEYS;
 INSERT INTO `iriscms_admin` (`userid`, `username`, `password`, `roleid`, `encrypt`, `lastloginip`, `lastlogintime`, `email`, `realname`) VALUES 
-	(1,'admin','0087af20a551a8b804f89469534b7859',1,'qmRlFL','::1',1474291850,'chenchengbin92111@gmail.com','mirchen.com'),
-	(11,'test','834a33db060873a7a208617930edb29a',9,'5u2G0w','::1',0,'asdasd@asdasd.com1','ccc1');
+	(1,'admin','5736a2a40f752bf2e82953702d25075b',1,'qmRlFL','127.0.0.1',1474291850,'chenchengbin92111@gmail.com2','mirchen.com1'),
+	(11,'test','834a33db060873a7a208617930edb29a',1,'5u2G0w','::1',0,'asdasd@asdasd.com1','ccc1');
 ALTER TABLE `iriscms_admin` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -504,15 +504,26 @@ INSERT INTO `iriscms_attachments` (`id`, `name`, `url`, `origin_name`, `size`, `
 	(100,'86ZI22CG39.jpg','/upload/public/20200211/86ZI22CG39.jpg','64673db6d9.jpg',604762,'2020-02-11 12:12:48','img'),
 	(101,'T6ia54P5Fb.jpg','/upload/public/20200211/T6ia54P5Fb.jpg','64673db6d9.jpg',604762,'2020-02-11 15:01:27','img'),
 	(102,'TECwi9HrNX.jpg','/upload/public/20200211/TECwi9HrNX.jpg','64673db6d9.jpg',604762,'2020-02-11 21:07:09','img'),
-	(103,'56ooFr2t27.jpg','/upload/public/20200212/56ooFr2t27.jpg','64673db6d9.jpg',604762,'2020-02-12 12:33:47','img');
+	(103,'56ooFr2t27.jpg','/upload/public/20200212/56ooFr2t27.jpg','64673db6d9.jpg',604762,'2020-02-12 12:33:47','img'),
+	(104,'gRl0i0cP7X.png','//public/20200212/gRl0i0cP7X.png','page.png',202109,'2020-02-12 19:36:23','img'),
+	(105,'ixaGq0EChv.png','//public/20200212/ixaGq0EChv.png','page.png',202109,'2020-02-12 19:36:47','img'),
+	(106,'xEAPFi0cYS.png','//public/20200212/xEAPFi0cYS.png','page.png',202109,'2020-02-12 19:37:09','img'),
+	(107,'z9f5WOgTRa.png','public/20200212/z9f5WOgTRa.png','page.png',202109,'2020-02-12 19:47:42','img'),
+	(108,'iwfz5POG9y.png','public/20200212/iwfz5POG9y.png','page.png',202109,'2020-02-12 19:48:23','img'),
+	(109,'jy54Y6kQr6.png','public/20200212/jy54Y6kQr6.png','page.png',202109,'2020-02-12 19:49:21','img'),
+	(110,'8enWIHKc7h.png','public/20200212/8enWIHKc7h.png','page.png',202109,'2020-02-12 19:50:06','img'),
+	(111,'ww9yZHU57V.png','public/20200212/ww9yZHU57V.png','page.png',202109,'2020-02-12 19:50:28','img'),
+	(112,'F215jUu1vJ.png','public/20200212/F215jUu1vJ.png','page.png',202109,'2020-02-12 19:50:49','img'),
+	(113,'564u4p4rx4.png','/upload/public/20200212/564u4p4rx4.png','page.png',202109,'2020-02-12 19:51:43','img'),
+	(114,'7CYWiFm5Bs.png','iriscms-test.oss-cn-beijing.aliyuncs.com/public/20200212/7CYWiFm5Bs.png','page.png',202109,'2020-02-12 19:57:41','img'),
+	(115,'Qc0NY6ME36.png','http://iriscms-test.oss-cn-beijing.aliyuncs.com/public/20200212/Qc0NY6ME36.png','page.png',202109,'2020-02-12 19:58:23','img'),
+	(116,'AYcL1slsZm.png','/upload/public/20200221/AYcL1slsZm.png','15d5e6410d49263.90261089.png',221324,'2020-02-21 11:59:07','img');
 ALTER TABLE `iriscms_attachments` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `iriscms_category` WRITE;
 ALTER TABLE `iriscms_category` DISABLE KEYS;
-INSERT INTO `iriscms_category` (`catid`, `type`, `parentid`, `catname`, `description`, `url`, `listorder`, `ismenu`, `index_tpl`, `list_tpl`, `detail_tpl`, `thumb`, `model_id`, `tpl_prefix`, `home_tpl`, `content_tpl`) VALUES 
-	(3,0,0,'新闻内容','国内新闻大事件','',1,1,'','','','/upload/public/20200211/86ZI22CG39.jpg',5,NULL,NULL,NULL);
 ALTER TABLE `iriscms_category` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -579,7 +590,7 @@ UNLOCK TABLES;
 LOCK TABLES `iriscms_link` WRITE;
 ALTER TABLE `iriscms_link` DISABLE KEYS;
 INSERT INTO `iriscms_link` (`linkid`, `linktype`, `name`, `url`, `logo`, `introduce`, `listorder`, `passed`, `addtime`) VALUES 
-	(1,0,'aasdasd','http://www.baidu.com','/upload/public/20200211/TECwi9HrNX.jpg','adaseee',1,1,'2020-02-11 21:07:11');
+	(1,0,'aasdasd','http://www.baidu.com','/upload/public/20200221/AYcL1slsZm.png','adaseee',1,1,'2020-02-21 11:59:10');
 ALTER TABLE `iriscms_link` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -685,20 +696,21 @@ INSERT INTO `iriscms_setting` (`key`, `value`, `group`, `default`, `form_name`, 
 	('SITE_DESCRIPTION','iriscms','前台设置',NULL,'描述','text',3),
 	('SITE_TITLE','iriscms','前台设置',NULL,'站点标题','text',1),
 	('WX_TOKEN','','微信配置',NULL,'TOKEN','text',13),
-	('OSS_HOST','','OSS存储配置',NULL,'HOST','text',19),
-	('SITE_OPEN','关闭','前台设置','开启','站点开启','{"type":"checkbox", "options": {"on":"开启", "off":"关闭"}}',0),
+	('OSS_HOST','http://iriscms-test.oss-cn-beijing.aliyuncs.com','OSS存储配置',NULL,'HOST','text',19),
+	('SITE_OPEN','开启','前台设置','开启','站点开启','{"type":"checkbox", "options": {"on":"开启", "off":"关闭"}}',0),
 	('EMAIL_PORT','25','邮箱设置','25','端口','text',10),
 	('WX_APPSECRET','','微信配置',NULL,'APPSECTET','text',12),
 	('WX_AESKEY','','微信配置',NULL,'AESKEY','text',14),
 	('DATAGRID_PAGE_SIZE','25','前台设置','25','列表默认分页数','text',5),
 	('WX_APPID','','微信配置',NULL,'APPID','text',11),
-	('OSS_ENDPOINT','','OSS存储配置',NULL,'ENDPOINT','text',17),
-	('OSS_KEYID','','OSS存储配置',NULL,'KEYID','text',15),
-	('OSS_BUCKETNAME','','OSS存储配置',NULL,'BUCKETNAME','text',18),
-	('OSS_KEYSECRET','','OSS存储配置',NULL,'SECRET','text',16),
-	('UPLOAD_DIR','upload','存储配置','upload','存储目录','text',21),
-	('UPLOAD_ENGINE','OSS存储','存储配置','local','存储引擎','{"type":"combogrid","options":{"idField":"key","textField":"key","fitColumns":true,"columns":[[{"field":"key","title":"存储引擎","width":120}]],"data":[{"key":"本地存储","value":"local"},{"key":"OSS存储","value":"oss"}]}}',20),
-	('UPLOAD_IMG_TYPES','jpg,jpeg,png,gif,bmp','存储配置','jpg,jpeg,png,gif,bmp','可上传图片类型','text',22);
+	('OSS_ENDPOINT','oss-cn-beijing.aliyuncs.com','OSS存储配置',NULL,'ENDPOINT','text',17),
+	('OSS_KEYID','LTAI06jdqBkVzLp2','OSS存储配置',NULL,'KEYID','text',15),
+	('OSS_BUCKETNAME','iriscms-test','OSS存储配置',NULL,'BUCKETNAME','text',18),
+	('OSS_KEYSECRET','PS0Hjxpw6FcmV0yGuzf0KfxuKCZJUM','OSS存储配置',NULL,'SECRET','text',16),
+	('UPLOAD_DIR','resources/assets/upload','存储配置','upload','存储目录','text',21),
+	('UPLOAD_ENGINE','本地存储','存储配置','local','存储引擎','{"type":"combogrid","options":{"idField":"key","textField":"key","fitColumns":true,"columns":[[{"field":"key","title":"存储引擎","width":120}]],"data":[{"key":"本地存储","value":"local"},{"key":"OSS存储","value":"oss"}]}}',20),
+	('UPLOAD_IMG_TYPES','jpg,jpeg,png,gif,bmp','存储配置','jpg,jpeg,png,gif,bmp','可上传图片类型','text',22),
+	('UPLOAD_URL_PREFIX','/upload','存储配置','upload','地址前缀','text',23);
 ALTER TABLE `iriscms_setting` ENABLE KEYS;
 UNLOCK TABLES;
 

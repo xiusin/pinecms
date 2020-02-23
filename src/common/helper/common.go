@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/xiusin/pine"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -113,11 +114,8 @@ func GetMd5(str string) string {
 }
 
 //Ajax Ajax返回数据给前端
-func Ajax(errmsg interface{}, errcode int64, this context.Context) {
-	this.JSON(map[string]interface{}{
-		"errcode": errcode,
-		"errmsg":  errmsg,
-	})
+func Ajax(errmsg interface{}, errcode int64, this *pine.Context) {
+	this.Render().JSON(pine.H{"errcode": errcode, "errmsg": errmsg})
 }
 
 //GetTimeStamp 获取时间戳
@@ -455,7 +453,7 @@ func clip(in io.Reader, out io.Writer, x0, y0, x1, y1, quality int) error {
 	return nil
 }
 
-func  GetRandomString(l int) string {
+func GetRandomString(l int) string {
 	str := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	bytes := []byte(str)
 	var result []byte

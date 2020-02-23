@@ -1,10 +1,10 @@
 package cmd
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/landoop/tableprinter"
 	"github.com/spf13/cobra"
 	"github.com/xiusin/iriscms/src/server"
+	"github.com/xiusin/pine"
 	"os"
 	"runtime"
 )
@@ -29,7 +29,7 @@ var startCmd = &cobra.Command{
 				{"Version", "Development"},
 				{"Author", "xiusin"},
 				{"WebSite", "http://www.xiusin.com/"},
-				{"IrisVersion", iris.Version},
+				{"PineVersion", pine.Version},
 				{"Version", Version},
 				{"GoVersion", runtime.Version()},
 			})
