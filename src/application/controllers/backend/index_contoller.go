@@ -3,17 +3,19 @@ package backend
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-xorm/xorm"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
 	"runtime"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/go-xorm/xorm"
+	"github.com/shirou/gopsutil/cpu"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/cache"
 
 	"github.com/xiusin/iriscms/src/application/controllers"
 	"github.com/xiusin/iriscms/src/application/models"
 
-	"github.com/kataras/iris/v12"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/xiusin/iriscms/src/common/helper"
@@ -23,12 +25,80 @@ type IndexController struct {
 	pine.Controller
 }
 
+
+type MemPos struct {
+	TimePos string `json:"time_pos"`
+	Percent int `json:"percent"`
+}
+
+type CpuPos struct {
+	TimePos string `json:"time_pos"`
+	Value []float64 `json:"percent"`
+}
+
 func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/index/index", "Index")
 	b.ANY("/index/menu", "Menu")
 	b.ANY("/index/main", "Main")
 	b.ANY("/index/sessionlife", "Sessionlife")
+
+
+	// mem cpu collect
+		go func() {
+
+			// 每10秒采集一次服务器信息
+			for range time.Tick(10 * time.Second) {
+				vm, err := mem.VirtualMemory()
+				if err != nil {
+					pine.Logger().Error("读取服务器内存信息错误:", err)
+				} else {
+					mems := getMems()
+					mems = append(mems, MemPos{TimePos: time.Now().In(helper.GetLocation()).Format("15:04:05"), Percent: int(vm.UsedPercent)})
+					memsSaveData, _ := json.Marshal(mems)
+					pine.Make("cache.ICache").(cache.ICache).Set("memCollect", memsSaveData)
+				}
+				cpuInfos, err := cpu.Percent(0, true)
+				if err != nil {
+					pine.Logger().Error("读取服务器CPU信息错误:", err)
+				} else {
+					cpus := getCpus()
+					cpus = append(cpus, CpuPos{TimePos: time.Now().In(helper.GetLocation()).Format("15:04:05"), Value: cpuInfos})
+					memsSaveData, _ := json.Marshal(cpus)
+					pine.Make("cache.ICache").(cache.ICache).Set("cpuCollect", memsSaveData)
+				}
+			}
+		}()
+
 }
+
+func getMems() []MemPos{
+	var mems []MemPos
+	c := pine.Make("cache.ICache").(cache.ICache)
+	memCollect, _ := c.Get("memCollect")
+	if memCollect == nil {
+		memCollect = []byte{}
+	}
+	_ = json.Unmarshal(memCollect, &mems)
+	if len(mems) > 10 {
+		mems = mems[len(mems)-10:]
+	}
+	return mems
+}
+
+func getCpus() []CpuPos{
+	var cpus []CpuPos
+	c := pine.Make("cache.ICache").(cache.ICache)
+	memCollect, _ := c.Get("cpuCollect")
+	if memCollect == nil {
+		memCollect = []byte{}
+	}
+	_ = json.Unmarshal(memCollect, &cpus)
+	if len(cpus) > 10 {
+		cpus = cpus[len(cpus)-10:]
+	}
+	return cpus
+}
+
 
 func (c *IndexController) Index() {
 	roleid := c.Ctx().Value("roleid")
@@ -42,11 +112,11 @@ func (c *IndexController) Index() {
 	c.Ctx().Render().HTML("backend/index_index.html")
 }
 
-func (c *IndexController) Main() {
-	//统计尺寸
-	us, _ := disk.Usage(helper.GetRootPath())
 
-	vm, _ := mem.VirtualMemory()
+var us, _ = disk.Usage(helper.GetRootPath())
+
+
+func (c *IndexController) Main() {
 
 	formatMem := func(mem uint64) string {
 		fm := map[int64]string{
@@ -71,14 +141,16 @@ func (c *IndexController) Main() {
 	c.Ctx().Render().ViewData("SiteSize", siteSize)
 	c.Ctx().Render().ViewData("NumCPU", runtime.NumCPU())
 	c.Ctx().Render().ViewData("GoVersion", "Version "+strings.ToUpper(runtime.Version()))
-	c.Ctx().Render().ViewData("IrisVersion", "Version "+iris.Version)
+	c.Ctx().Render().ViewData("pineVersion", "Version "+pine.Version)
 	c.Ctx().Render().ViewData("Goos", strings.ToUpper(runtime.GOOS))
 	c.Ctx().Render().ViewData("Grountues", runtime.NumGoroutine())
-	if vm != nil {
-		c.Ctx().Render().ViewData("Mem", "总内存:"+formatMem(vm.Total)+",已使用:"+formatMem(vm.Used))
-	} else {
-		c.Ctx().Render().ViewData("Mem", "未获得内存情况")
-	}
+
+	c.Ctx().Render().ViewData("Mem", "未获得内存情况")
+
+
+	c.Ctx().Render().ViewData("cpus", getCpus())
+	c.Ctx().Render().ViewData("mems", getMems())
+
 	c.Ctx().Render().HTML("backend/index_main.html")
 }
 

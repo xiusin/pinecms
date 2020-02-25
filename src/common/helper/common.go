@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/xiusin/pine"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -21,12 +20,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/xiusin/pine"
+
 	"golang.org/x/image/bmp"
 
 	"github.com/imroc/req"
 	"github.com/kataras/go-mailer"
 
-	"github.com/kataras/iris/v12/context"
 	"github.com/nfnt/resize"
 	"golang.org/x/image/draw"
 )
@@ -45,7 +45,7 @@ func GetRootPath() string {
 
 var location, _ = time.LoadLocation("PRC")
 
-const TIME_FORMAT = "2006-01-02 15:04:05"
+const TimeFormat = "2006-01-02 15:04:05"
 
 func GetLocation() *time.Location {
 	return location
@@ -142,7 +142,7 @@ func format(str string) string {
 //FormatTime 时间戳格式化时间
 func FormatTime(timestamp int64) string {
 	t := time.Unix(timestamp, 0).In(location)
-	str := TIME_FORMAT
+	str := TimeFormat
 	return t.Format(str)
 }
 
@@ -305,11 +305,6 @@ func IsError(args ...error) bool {
 		}
 	}
 	return false
-}
-
-//IsAjax 判断是否是ajax
-func IsAjax(this context.Context) bool {
-	return this.GetHeader("X-Requested-With") == "XMLHttpRequest"
 }
 
 /**

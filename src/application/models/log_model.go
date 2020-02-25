@@ -15,20 +15,20 @@ func NewLogModel(orm *xorm.Engine) *LogModel {
 	return &LogModel{Orm: orm}
 }
 
-func (m *LogModel) GetList(page, limit int64) ([]tables.IriscmsLog, int64) {
+func (l *LogModel) GetList(page, limit int64) ([]tables.IriscmsLog, int64) {
 	offset := (page - 1) * limit
 	var list []tables.IriscmsLog
 	var total int64
-	total, _ = m.Orm.Count(&tables.IriscmsLog{})
-	if err := m.Orm.Desc("logid").Limit(int(limit), int(offset)).Find(&list); err != nil {
+	total, _ = l.Orm.Count(&tables.IriscmsLog{})
+	if err := l.Orm.Desc("logid").Limit(int(limit), int(offset)).Find(&list); err != nil {
 		golog.Error(helper.GetCallerFuncName(), err)
 	}
 	return list, total
 }
 
 
-func (m *LogModel) DeleteAll() bool {
-	res, err := m.Orm.Where("1=1").Delete(&tables.IriscmsLog{})
+func (l *LogModel) DeleteAll() bool {
+	res, err := l.Orm.Where("1=1").Delete(&tables.IriscmsLog{})
 	if err != nil {
 		golog.Error(helper.GetCallerFuncName(), err)
 		return false
@@ -39,8 +39,8 @@ func (m *LogModel) DeleteAll() bool {
 	return false
 }
 
-func (m *LogModel) DeleteBeforeByDate(date string) bool {
-	res, err := m.Orm.Where("`time` <= ? ", date).Delete(&tables.IriscmsLog{})
+func (l *LogModel) DeleteBeforeByDate(date string) bool {
+	res, err := l.Orm.Where("`time` <= ? ", date).Delete(&tables.IriscmsLog{})
 	if err != nil {
 		golog.Error(helper.GetCallerFuncName(), err)
 		return false

@@ -3,6 +3,7 @@ package config
 import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"time"
 )
@@ -71,6 +72,10 @@ var config *Config // config 全局配置文件对象
 func init() {
 	config = &Config{}
 	parseConfig(appYml, config)
+
+	//创建目录
+	os.MkdirAll(config.LogPath, os.ModePerm)
+
 }
 
 func AppConfig() *Config {

@@ -209,7 +209,7 @@ func (c *ContentController) AddContent() {
 			return
 		}
 		data["status"] = "0"
-		data["created_time"] = time.Now().In(helper.GetLocation()).Format(helper.TIME_FORMAT)
+		data["created_time"] = time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)
 		model := models.NewDocumentModel(c.Ctx().Value("orm").(*xorm.Engine)).GetByID(int64(mid))
 		var fields []string
 		var values []interface{}
@@ -308,7 +308,7 @@ func (c *ContentController) EditContent() {
 		}
 		delete(data, "id")
 		data["status"] = "0"
-		data["updated_time"] = time.Now().In(helper.GetLocation()).Format(helper.TIME_FORMAT)
+		data["updated_time"] = time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)
 		var sets []string
 		var values []interface{}
 		for k, v := range data {
@@ -365,7 +365,7 @@ func (c *ContentController) DeleteContent() {
 		helper.Ajax("找不到关联模型", 1, c.Ctx())
 		return
 	}
-	sqlOrArgs := []interface{}{fmt.Sprintf("UPDATE `iriscms_%s` SET `deleted_time`='"+time.Now().In(helper.GetLocation()).Format(helper.TIME_FORMAT)+"' WHERE id = ? and catid=?", relationDocumentModel.Table), id, catid}
+	sqlOrArgs := []interface{}{fmt.Sprintf("UPDATE `iriscms_%s` SET `deleted_time`='"+time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)+"' WHERE id = ? and catid=?", relationDocumentModel.Table), id, catid}
 	res, err := c.Ctx().Value("orm").(*xorm.Engine).Exec(sqlOrArgs...)
 	if err != nil {
 		glog.Error(helper.GetCallerFuncName(), err.Error())
@@ -405,7 +405,7 @@ func (c *ContentController) OrderContent() {
 		return
 	}
 	for artID, orderNum := range order {
-		sqlOrArgs := []interface{}{fmt.Sprintf("UPDATE `iriscms_%s` SET `listorder`=? , updated_time = '"+time.Now().In(helper.GetLocation()).Format(helper.TIME_FORMAT)+"' WHERE id = ? and catid=?", relationDocumentModel.Table), orderNum, artID, id}
+		sqlOrArgs := []interface{}{fmt.Sprintf("UPDATE `iriscms_%s` SET `listorder`=? , updated_time = '"+time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)+"' WHERE id = ? and catid=?", relationDocumentModel.Table), orderNum, artID, id}
 		if _, err := c.Ctx().Value("orm").(*xorm.Engine).Exec(sqlOrArgs...); err != nil {
 			glog.Error(helper.GetCallerFuncName(), err.Error())
 			helper.Ajax("更新文档排序失败", 1, c.Ctx())

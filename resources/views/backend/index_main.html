@@ -1,4 +1,6 @@
 <link rel="stylesheet" type="text/css" href="/assets/backend/mdou/css/style.css" />
+<script type="text/javascript" src="/assets/backend/static/echarts.min.js"></script>
+
 <div class="content">
     <div class="top_bg"></div>
     <div class="content_home">
@@ -17,8 +19,8 @@
                 <td>{{ .GoVersion }}</td>
             </tr>
             <tr>
-                <td class="name" width="20%">IRIS-GO VERSION：</td>
-                <td>{{ .IrisVersion }}</td>
+                <td class="name" width="20%">PINE VERSION：</td>
+                <td>{{ .pineVersion }}</td>
             </tr>
             <tr>
                 <td class="name" width="20%">数据库类型及版本：</td>
@@ -32,10 +34,7 @@
                 <td class="name" width="20%">处理器数量：</td>
                 <td>{{ .NumCPU }}个</td>
             </tr>
-            <tr>
-                <td class="name" width="20%">内存使用：</td>
-                <td>{{ .Mem }}</td>
-            </tr>
+
         </table>
         <div class="home_title">技术支持</div>
         <table width="100%" class="home_table">
@@ -49,13 +48,131 @@
             </tr>
             <tr>
                 <td class="name" width="20%">开发者网站：</td>
-                <td><a href="https://www.mirchen.com/" target="_blank">www.mirchen.com</a></td>
+                <td><a href="https://www.xiusin.com/" target="_blank">www.xiusin.com</a></td>
             </tr>
             <tr>
                 <td class="name" width="20%">CMS网站：</td>
-                <td><a href="https://iriscms.mirchen.com/" target="_blank">iriscms.mirchen.com</a></td>
+                <td><a href="https://pinecms.xiusin.com/" target="_blank">pinecms.xiusin.com</a></td>
             </tr>
         </table>
+
+        <div class="home_title">内存使用率</div>
+        <div id="memChart" style="width: 100%;height:400px; margin-bottom: 30px;"></div>
+
+        <div class="home_title">CPU使用率</div>
+        <div id="cpuChart" style="width: 100%;height:400px;"></div>
     </div>
+
+
 </div>
 
+
+
+
+<script>
+    var memChart = echarts.init(document.getElementById('memChart'));
+
+    var mems = {{.mems}};
+    var memDataArr = [];
+    var memPercentArr = [];
+    for (let i in mems) {
+        memDataArr.push(mems[i].time_pos)
+        memPercentArr.push(mems[i].percent)
+    }
+
+    var memChartOption = {
+        title: {
+            show: false,
+            text: "内存使用率",
+        },
+        xAxis: {
+            name: '采集时间',
+            type: 'category',
+            data: memDataArr
+        },
+        yAxis: {
+            name: "使用率(%)",
+            type: 'value',
+            max: 100
+        },
+        series: [{
+            detail: {formatter: '{value}%'},
+            data: memPercentArr,
+            type: 'line',
+        }]
+    };
+
+
+    memChart.setOption(memChartOption, true);
+
+
+    var cpuChart = echarts.init(document.getElementById('cpuChart'));
+
+    cpus = {{.cpus}};
+
+    var cpuDataArr = [];
+    var cpuPercentArr = [];
+
+    // x date time
+    var legend = [];
+
+    var legendDataArr = {};
+
+    for (let i in cpus) {
+        cpuDataArr.push(cpus[i].time_pos)
+        if (legend.length === 0) {
+            for (let j in cpus[i].percent) {
+                var cpuCoreName = "CORE " + (Number(j) + 1);
+                legend.push(cpuCoreName);
+            };
+        }
+
+        for (let j in cpus[i].percent) {
+            var cpuCoreName = "CORE " + (Number(j) + 1);
+            if (!legendDataArr[cpuCoreName]) {
+                legendDataArr[cpuCoreName] = {
+                    name: cpuCoreName,
+                    type: 'line',
+                    // stack: '总量',
+                    areaStyle: {},
+                    data: []
+                };
+            }
+            legendDataArr[cpuCoreName].data.push(cpus[i].percent[j])
+        }
+
+    }
+
+
+    var echartCpuOption = {
+        legend: {
+            data: legend
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: [
+            {
+                type: 'category',
+                boundaryGap: false,
+                data: cpuDataArr
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value'
+            }
+        ],
+        series: Object.values(legendDataArr)
+    };
+
+    cpuChart.setOption(echartCpuOption, true);
+
+    // setInterval(function () {
+    //     echartOption.series[0].data[0].value = (Math.random() * 100).toFixed(2) - 0;
+    //     memChart.setOption(echartOption, true);
+    // },2000);
+</script>

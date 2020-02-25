@@ -1,0 +1,60 @@
+
+.radiobox{ 
+  text-decoration: none;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: middle;
+  cursor: pointer; 
+  position: relative;
+  height: 16px;
+}
+
+.radiobox-inner {
+  display: inline-block;
+  overflow: hidden;
+  position: relative;
+  height: 16px;
+}
+.radiobox-checked,
+.radiobox-unchecked{
+  position: relative;
+  left: -1px;
+  top: 0;
+  float: left;
+  width: 16px; height: 16px;
+  display: inline-block;
+  text-align: center;
+  font-size: 12px;
+  background-image: url(images/radiobox.png);
+}
+.radiobox-checked {
+  display: none;
+  background-position: 0 0;
+}
+.radiobox-unchecked {
+  display: block;
+  background-position: -32px 0;
+}
+.radiobox-label{height: 16px; line-height: 16px; padding: 0 5px;}
+
+.radiobox-value {
+  position: absolute;
+  display: none;
+}
+.radiobox-disabled .radiobox-checked,
+.radiobox-readonly .radiobox-checked{
+  background-position: -16px 0;
+}
+.radiobox-disabled .radiobox-unchecked,
+.radiobox-readonly .radiobox-unchecked{
+  background-position: -48px 0;
+}
+.radiobox-disabled,
+.radiobox-readonly {
+  cursor: default;
+}
+.radiobox-disabled {
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+  cursor: url(images/disable.png), default;
+}

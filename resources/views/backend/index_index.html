@@ -116,11 +116,6 @@
             background-color: #ffffff;
         }
 
-        .tabs .tabs-selected{
-            border-radius:  0px;
-            color: #fff;
-            background-color: rgb(90,116,131);
-        }
         .tabs li.tabs-selected a.tabs-inner{
             font-weight: normal;
         }
@@ -146,6 +141,9 @@
                     onclick="getLeft('{{ $ele.Id }}','{{ $ele.Name }}', this)">{{ $ele.Name }}</a>
             </li>
             {{ end }}
+
+            <li><a onclick="logout()">退出</a></li>
+
         </ul>
     </div>
     <div class="position">
@@ -161,53 +159,17 @@
 
 <!-- 内容 -->
 <div id="mainarea" data-options="region:'center'">
-    <div id="pagetabs" class="easyui-tabs" data-options="tabPosition:'bottom',fit:true,border:false,plain:false">
+    <div id="pagetabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:false">
         <div title="后台首页" href="main" data-options="cache:false,title:'后台首页'"></div>
     </div>
 </div>
 
-<!-- 右键菜单 -->
-{{/*<div id="rightmenu" class="easyui-menu" data-options="onClick:rightMenuHandler">*/}}
-{{/*    <div data-options="name:'home',iconCls:'icons-application-application_home'">访问前台</div>*/}}
-{{/*    <div class="menu-sep"></div>*/}}
-{{/*    <div data-options="name:'refresh',iconCls:'icons-arrow-arrow_refresh'">刷新后台</div>*/}}
-{{/*    <div class="menu-sep"></div>*/}}
-{{/*    <div data-options="name:'exit'">退出登录</div>*/}}
-{{/*</div>*/}}
 
 <script type="text/javascript">
     $(function(){
         getLeft(1, '我的信息');
-        //初始化右键菜单
-        // $(document).bind('contextmenu',function(e){
-        //     e.preventDefault();
-        //     $('#rightmenu').menu('show', {
-        //         left: e.pageX,
-        //         top: e.pageY
-        //     });
-        // });
     });
-    // //右键菜单点击事件
-    // function rightMenuHandler(item){
-    //     if(!item.name) return;
-    //     switch(item.name){
-    //         case 'home':
-    //             window.open('/');
-    //             break;
-    //         case 'refresh': //刷新后台
-    //             window.location.href = window.location.href;
-    //             break;
-    //         case 'exit': //退出登录
-    //             logout();
-    //             break;
-    //     }
-    // }
-    //主题内容初始化
-    function themeInit(row){
-        if(row.value == theme) row.selected = true;
-        var opts = $('#themeswitchcombobox').combobox('options');
-        return row[opts.textField];
-    }
+
 
     //退出登录
     function logout(){
@@ -296,6 +258,7 @@
         $("<div class=\"datagrid-mask\"></div>").css({display:"block",width:"100%",height:$(window).height()}).appendTo("body");
         $("<div class=\"datagrid-mask-msg\"></div>").html("正在处理，请稍候。。。").appendTo("body").css({display:"block",left:($(document.body).outerWidth(true) - 190) / 2,top:($(window).height() - 45) / 2});
     }
+
     function ajaxLoadEnd(){
         $(".datagrid-mask").remove();
         $(".datagrid-mask-msg").remove();

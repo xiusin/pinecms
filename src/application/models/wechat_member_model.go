@@ -16,6 +16,9 @@ func NewWechatMemberModel(orm *xorm.Engine) *WechatMemberModel {
 func (w *WechatMemberModel) GetList(page, limit int64) (list []tables.IriscmsWechatMember, total int64) {
 	offset := (page - 1) * limit
 	total, _ = w.Orm.Limit(int(limit), int(offset)).FindAndCount(&list)
+	if list == nil {
+		list = []tables.IriscmsWechatMember{}
+	}
 	return list, total
 }
 

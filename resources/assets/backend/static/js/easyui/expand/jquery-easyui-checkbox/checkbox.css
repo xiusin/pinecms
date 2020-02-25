@@ -1,0 +1,57 @@
+.checkbox,.checkbox-inner,.checkbox-checked,.checkbox-unchecked,.checkbox-label{height: 16px; line-height: 16px;} 
+.checkbox{ 
+  text-decoration: none;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: middle;
+  cursor: pointer; 
+  position: relative;
+}
+.checkbox-inner {
+  display: inline-block;
+  overflow: hidden;
+  position: relative;
+}
+.checkbox-checked,
+.checkbox-unchecked{
+  position: relative;
+  left: -1px;
+  top: 0;
+  float: left;
+  width: 16px; 
+  display: inline-block;
+  text-align: center;
+  font-size: 12px;
+  background-image: url(images/checkbox.png);
+}
+.checkbox-checked {
+  background-position: 0 0;
+}
+.checkbox-unchecked {
+  background-position: -32px 0;
+}
+.checkbox-label{ padding: 0 5px;}
+
+.checkbox-value {
+  position: absolute;
+  display: none;
+}
+.checkbox-disabled .checkbox-checked,
+.checkbox-readonly .checkbox-checked{
+  background-position: -16px 0;
+}
+.checkbox-disabled .checkbox-unchecked,
+.checkbox-readonly .checkbox-unchecked{
+  background-position: -48px 0;
+}
+.checkbox-disabled,
+.checkbox-readonly {
+  cursor: default;
+}
+.checkbox-disabled {
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+  cursor: url(images/disable.png), default;
+}
+
+

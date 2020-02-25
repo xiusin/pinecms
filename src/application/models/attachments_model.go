@@ -20,10 +20,10 @@ func NewAttachmentsModel(orm *xorm.Engine) *AttachmentsModel {
 	return &AttachmentsModel{Orm: orm}
 }
 
-func (w *AttachmentsModel) GetList(page, limit int64) (list []tables.IriscmsAttachments, total int64) {
+func (a *AttachmentsModel) GetList(page, limit int64) (list []tables.IriscmsAttachments, total int64) {
 	offset := (page - 1) * limit
 	var err error
-	total, err = w.Orm.Limit(int(limit), int(offset)).FindAndCount(&list)
+	total, err = a.Orm.Limit(int(limit), int(offset)).FindAndCount(&list)
 	if err != nil {
 		golog.Error(err)
 	}

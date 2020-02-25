@@ -15,44 +15,44 @@ func NewLinkModel(orm *xorm.Engine) *LinkModel {
 	return &LinkModel{orm: orm}
 }
 
-func (m *LinkModel) GetList(page, limit int64) ([]tables.IriscmsLink, int64) {
+func (l *LinkModel) GetList(page, limit int64) ([]tables.IriscmsLink, int64) {
 	offset := (page - 1) * limit
 	var list []tables.IriscmsLink
 	var total int64
 	var err error
-	if total, err = m.orm.Desc("listorder").Limit(int(limit), int(offset)).FindAndCount(&list); err != nil {
+	if total, err = l.orm.Desc("listorder").Limit(int(limit), int(offset)).FindAndCount(&list); err != nil {
 		golog.Error(helper.GetCallerFuncName(), err)
 	}
 	return list, total
 }
 
-func (m *LinkModel) Add(data *tables.IriscmsLink) int64 {
-	id, err := m.orm.InsertOne(data)
+func (l *LinkModel) Add(data *tables.IriscmsLink) int64 {
+	id, err := l.orm.InsertOne(data)
 	if err != nil {
 		golog.Error(helper.GetCallerFuncName(), err)
 	}
 	return id
 }
 
-func (m *LinkModel) Delete(id int64) bool {
-	res, err := m.orm.ID(id).Delete(&tables.IriscmsLink{})
+func (l *LinkModel) Delete(id int64) bool {
+	res, err := l.orm.ID(id).Delete(&tables.IriscmsLink{})
 	if err != nil {
 		golog.Error(helper.GetCallerFuncName(), err)
 	}
 	return res > 0
 }
 
-func (m *LinkModel) Get(id int64) *tables.IriscmsLink {
+func (l *LinkModel) Get(id int64) *tables.IriscmsLink {
 	var link = &tables.IriscmsLink{}
-	ok, _ := m.orm.ID(id).Get(link)
+	ok, _ := l.orm.ID(id).Get(link)
 	if !ok {
 		return nil
 	}
 	return link
 }
 
-func (m *LinkModel) Update(data *tables.IriscmsLink) bool {
-	id, err := m.orm.ID(data.Linkid).Update(data)
+func (l *LinkModel) Update(data *tables.IriscmsLink) bool {
+	id, err := l.orm.ID(data.Linkid).Update(data)
 	if err != nil {
 		golog.Error(helper.GetCallerFuncName(), err)
 	}
