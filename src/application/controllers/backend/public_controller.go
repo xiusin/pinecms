@@ -3,12 +3,7 @@ package backend
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/xiusin/iriscms/src/application/controllers"
-	"github.com/xiusin/iriscms/src/application/models"
-	"github.com/xiusin/iriscms/src/application/models/tables"
-	"github.com/xiusin/iriscms/src/common/storage"
-	"github.com/xiusin/iriscms/src/config"
-	"github.com/xiusin/pine"
+	"image/png"
 	"io/ioutil"
 	"math/rand"
 	"mime/multipart"
@@ -17,6 +12,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/xiusin/iriscms/src/application/controllers"
+	"github.com/xiusin/iriscms/src/application/models"
+	"github.com/xiusin/iriscms/src/application/models/tables"
+	"github.com/xiusin/iriscms/src/config"
+	"github.com/xiusin/pine"
+
+	"github.com/afocus/captcha"
 	"github.com/xiusin/iriscms/src/common/helper"
 
 	"github.com/go-xorm/xorm"
@@ -31,6 +33,7 @@ func (c *PublicController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY( "/fedir-scan", "FeDirScan")
 	b.ANY( "/attachments", "Attachments")
 	b.ANY( "/ueditor", "UEditor")
+	b.ANY( "/verify-code", "VerifyCode")
 }
 
 func (c *PublicController) FeDirScan() {
@@ -45,17 +48,8 @@ func (c *PublicController) Upload() {
 	if mid == "" {
 		mid = "public"
 	}
-	uploadDir := settingData["UPLOAD_DIR"]
-	urlPrefixDir := settingData["UPLOAD_URL_PREFIX"]
-	engine := settingData["UPLOAD_ENGINE"]
-	var uploader storage.Uploader
-	switch engine {
-	case "OSS存储":
-		uploader = storage.NewOssUploader(settingData)
-	default :
-		uploader = storage.NewFileUploader(urlPrefixDir, uploadDir)
-	}
-	uploadDir = fmt.Sprintf("%s/%s", mid, helper.NowDate("Ymd"))
+	uploader := getStorageEngine(settingData)
+	uploadDir := fmt.Sprintf("%s/%s", mid, helper.NowDate("Ymd"))
 	file, fs, err := c.Ctx().Files("filedata")
 	if err != nil {
 		if fileData := c.Ctx().FormValue("filedata"); fileData == "" {
@@ -137,17 +131,17 @@ func (c *PublicController) Upload() {
 }
 
 ////生成验证码
-//func (this *PublicController) VerifyCode() {
-//	cpt := captcha.New()
-//	fontPath := helper.GetRootPath() + "/resources/fonts/comic.ttf"
-//	// 设置字体
-//	cpt.SetFont(fontPath)
-//	// 返回验证码图像对象以及验证码字符串 后期可以对字符串进行对比 判断验证
-//	this.Ctx().ContentType("img/png")
-//	img, str := cpt.Create(1, captcha.ALL)
-//	this.Session.SetFlash("verify_code", str)
-//	png.Encode(this.Ctx().ResponseWriter(), img) //发送图片内容到浏览器
-//}
+func (c *PublicController) VerifyCode() {
+	cpt := captcha.New()
+	fontPath := helper.GetRootPath() + "/resources/fonts/comic.ttf"
+	// 设置字体
+	cpt.SetFont(fontPath)
+	// 返回验证码图像对象以及验证码字符串 后期可以对字符串进行对比 判断验证
+	c.Ctx().Writer().Header().Set("Content-type","img/png")
+	img, _ := cpt.Create(1, captcha.ALL)
+	//c.Session.SetFlash("verify_code", str)
+	png.Encode(c.Ctx().Writer(), img) //发送图片内容到浏览器
+}
 
 func (c *PublicController) UEditor() {
 	action := c.Ctx().URLParam("action")
@@ -195,12 +189,14 @@ func (c *PublicController) UEditor() {
 	case "upload":
 		c.Upload()
 	case "attachments-img":
+		c.Ctx().Request().ParseForm()
 		c.Ctx().Request().Form.Add("type", models.IMG_TYPE)
 		c.Attachments()
 	}
 }
 
 func uploadAjax(ctx *pine.Context, uploadData map[string]interface{}, isEditor bool) {
+	uploadData["errmsg"] = uploadData["state"]
 	ctx.Render().JSON(uploadData)
 }
 

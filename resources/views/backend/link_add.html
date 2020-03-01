@@ -25,8 +25,7 @@
         <tr>
             <td>是否启用：</td>
             <td>
-                <label><input name="passed" value="1" type="radio" checked/>是</label>
-                <label><input name="passed" value="0" type="radio"/>否</label>
+                <input class="easyui-switchbutton" name="passed" data-options="onText:'是',offText:'否'">
             </td>
         </tr>
     </table>
@@ -41,7 +40,7 @@
                     $.messager.alert('提示信息', res.errmsg, 'error');
                 } else {
                     $.messager.alert('提示信息', res.errmsg, 'info');
-                    $('#category_category_add_dialog').dialog('close');
+                    $('#link_list_add_dialog').dialog('close');
                     linkListRefresh();
                 }
             }

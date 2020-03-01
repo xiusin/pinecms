@@ -2,6 +2,7 @@ package backend
 
 import (
 	"github.com/xiusin/pine"
+	"fmt"
 	"html/template"
 	"strconv"
 	"time"
@@ -54,6 +55,9 @@ func (c *LinkController) List() {
 
 func (c *LinkController) Add() {
 	if c.Ctx().IsPost() {
+		if c.Ctx().Request().PostForm.Get("passed") == "on" {
+			c.Ctx().Request().PostForm.Set("passed", "1")
+		}
 		var d tables.IriscmsLink
 		if err := c.Ctx().BindForm(&d); err != nil {
 			helper.Ajax("参数错误："+err.Error(), 1, c.Ctx())
@@ -72,9 +76,12 @@ func (c *LinkController) Add() {
 
 func (c *LinkController) Edit() {
 	if c.Ctx().IsPost() {
+		if c.Ctx().Request().PostForm.Get("passed") == "on" {
+			c.Ctx().Request().PostForm.Set("passed", "1")
+		}
 		var d tables.IriscmsLink
 		if err := c.Ctx().BindForm(&d); err != nil || d.Linkid < 1 {
-			helper.Ajax("参数错误", 1, c.Ctx())
+			helper.Ajax(fmt.Sprintf("参数错误:%s", err), 1, c.Ctx())
 			return
 		}
 		d.Addtime = time.Now().In(helper.GetLocation())

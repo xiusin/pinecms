@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/xiusin/pine"
 	"html/template"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/xiusin/pine"
 
 	"github.com/xiusin/iriscms/src/application/controllers"
 
@@ -27,9 +28,10 @@ type DocumentController struct {
 }
 
 type ModelForm struct {
-	ID                string   `form:"id" json:"id"`
+	ID                string `form:"id" json:"id"`
 	intID             int64
 	Enabled           string   `form:"enabled" json:"enabled"`
+	ModelType         int      `form:"model_type" json:"model_type"`
 	Name              string   `form:"name" json:"name"`
 	Table             string   `form:"table" json:"table"`
 	FeTplIndex        string   `form:"tpl_index" json:"tpl_index"`
@@ -133,13 +135,13 @@ var extraFields = []map[string]string{
 }
 
 func (c *DocumentController) RegisterRoute(b pine.IRouterWrapper) {
-	b.ANY( "/model/list", "ModelList")
-	b.ANY( "/model/add", "ModelAdd")
-	b.ANY( "/model/edit", "ModelEdit")
-	b.ANY( "/model/delete", "ModelDelete")
-	b.ANY( "/model/list-field-show", "ModelFieldShowInListPage")
-	b.ANY( "/model/gen-sql", "GenSQL")
-	b.ANY( "/model/preview-page", "PreviewPage")
+	b.ANY("/model/list", "ModelList")
+	b.ANY("/model/add", "ModelAdd")
+	b.ANY("/model/edit", "ModelEdit")
+	b.ANY("/model/delete", "ModelDelete")
+	b.ANY("/model/list-field-show", "ModelFieldShowInListPage")
+	b.ANY("/model/gen-sql", "GenSQL")
+	b.ANY("/model/preview-page", "PreviewPage")
 }
 
 func (c *DocumentController) ModelFieldShowInListPage() {
@@ -176,6 +178,7 @@ func (c *DocumentController) ModelFieldShowInListPage() {
 	c.Ctx().Render().ViewData("shows", showInPage)
 	c.Ctx().Render().ViewData("fields", fields)
 	c.Ctx().Render().ViewData("l", len(fields))
+	c.Ctx().Render().ViewData("codeEditorHeight", len(fields)*49)
 	c.Ctx().Render().ViewData("mid", mid)
 	c.Ctx().Render().ViewData("model", model)
 	c.Ctx().Render().HTML("backend/model_field_show_list_edit.html")
@@ -255,8 +258,7 @@ func (c *DocumentController) ModelAdd() {
 				Name:        data.Name,
 				Table:       data.Table,
 				Enabled:     enabled,
-				IsSystem:    models.CUSTOM_TYPE,
-				ModelType:   0,
+				ModelType:   data.ModelType,
 				FeTplIndex:  helper.EasyUiIDToFilePath(data.FeTplIndex),
 				FeTplList:   helper.EasyUiIDToFilePath(data.FeTplList),
 				FeTplDetail: helper.EasyUiIDToFilePath(data.FeTplDetail),
@@ -541,13 +543,13 @@ func (c *DocumentController) GenSQL() {
 			}
 		}
 		if len(fieldStrs) > 0 {
-			querySQL += "\n"+regexp.MustCompile(" +").ReplaceAllString(strings.Join(fieldStrs, ",\n"), " ")
+			querySQL += "\n" + regexp.MustCompile(" +").ReplaceAllString(strings.Join(fieldStrs, ",\n"), " ")
 		} else {
 			querySQL = ""
 		}
 	} else {
 		existsFields = append(existsFields, extraFields...)
-		if dm.IsSystem != models.SYSTEM_TYPE {
+		if dm.ModelType != models.SYSTEM_TYPE {
 			querySQL += "CREATE TABLE `" + tableName + "` ( \n"
 			for _, f := range existsFields {
 				var notNull = ""
@@ -573,7 +575,7 @@ func (c *DocumentController) GenSQL() {
 		}
 	}
 	querySQL = regexp.MustCompile(" +").ReplaceAllString(querySQL, " ")
-	if exec && querySQL != ""{
+	if exec && querySQL != "" {
 		_, err := c.Ctx().Value("orm").(*xorm.Engine).Exec(querySQL)
 		if err != nil {
 			helper.Ajax(err.Error(), 1, c.Ctx())

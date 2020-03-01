@@ -4,63 +4,52 @@
 <div class="content">
     <div class="top_bg"></div>
     <div class="content_home">
+        <div style="height: auto; overflow: hidden">
+            <div style="width: 47%; float: left">
+                <div class="home_title">CPU使用率</div>
+                <div id="cpuChart" style="width: 100%;height:400px;"></div>
+            </div>
+            <div style="width: 47%; float: right;">
+                <div class="home_title">内存使用率</div>
+                <div id="memChart" style="width: 100%;height:400px; margin-bottom: 30px;"></div>
+            </div>
+        </div>
+
+
         <div class="home_title">系统信息</div>
-        <table width="100%" class="home_table">
+
+        <table class="home_table" style="width: 100%;">
             <tr>
-                <td class="name" width="20%">操作系统：</td>
+                <td class="name" width="150px">操作系统：</td>
                 <td>{{ .Goos }}</td>
             </tr>
             <tr>
-                <td class="name" width="20%">当前线程数：</td>
+                <td class="name">当前线程数：</td>
                 <td>{{ .Grountues }}个</td>
             </tr>
             <tr>
-                <td class="name" width="20%">GO VERSION：</td>
+                <td class="name" >GO：</td>
                 <td>{{ .GoVersion }}</td>
             </tr>
             <tr>
-                <td class="name" width="20%">PINE VERSION：</td>
+                <td class="name" >PINE：</td>
                 <td>{{ .pineVersion }}</td>
             </tr>
             <tr>
-                <td class="name" width="20%">数据库类型及版本：</td>
+                <td class="name" >数据库：</td>
                 <td>MySql</td>
             </tr>
             <tr>
-                <td class="name" width="20%">当前网站尺寸：</td>
+                <td class="name" >当前网站尺寸：</td>
                 <td>{{.SiteSize}}</td>
             </tr>
             <tr>
-                <td class="name" width="20%">处理器数量：</td>
+                <td class="name">处理器数量：</td>
                 <td>{{ .NumCPU }}个</td>
             </tr>
 
         </table>
-        <div class="home_title">技术支持</div>
-        <table width="100%" class="home_table">
-            <tr>
-                <td class="name" width="20%">技术支持：</td>
-                <td>开源有限公司</td>
-            </tr>
-            <tr>
-                <td class="name" width="20%">IRIS框架网站：</td>
-                <td><a target="_blank" href="http://www.iris-go.com/">www.iris-go.com</a></td>
-            </tr>
-            <tr>
-                <td class="name" width="20%">开发者网站：</td>
-                <td><a href="https://www.xiusin.com/" target="_blank">www.xiusin.com</a></td>
-            </tr>
-            <tr>
-                <td class="name" width="20%">CMS网站：</td>
-                <td><a href="https://pinecms.xiusin.com/" target="_blank">pinecms.xiusin.com</a></td>
-            </tr>
-        </table>
 
-        <div class="home_title">内存使用率</div>
-        <div id="memChart" style="width: 100%;height:400px; margin-bottom: 30px;"></div>
-
-        <div class="home_title">CPU使用率</div>
-        <div id="cpuChart" style="width: 100%;height:400px;"></div>
     </div>
 
 
@@ -86,7 +75,7 @@
             text: "内存使用率",
         },
         xAxis: {
-            name: '采集时间',
+            // name: '采集时间',
             type: 'category',
             data: memDataArr
         },
@@ -149,9 +138,9 @@
             data: legend
         },
         grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '3%',
+            // left: '3%',
+            // right: '4%',
+            // bottom: '3%',
             containLabel: true
         },
         xAxis: [
@@ -163,16 +152,12 @@
         ],
         yAxis: [
             {
-                type: 'value'
+                type: 'value',
+                max: 100
             }
         ],
         series: Object.values(legendDataArr)
     };
 
     cpuChart.setOption(echartCpuOption, true);
-
-    // setInterval(function () {
-    //     echartOption.series[0].data[0].value = (Math.random() * 100).toFixed(2) - 0;
-    //     memChart.setOption(echartOption, true);
-    // },2000);
 </script>

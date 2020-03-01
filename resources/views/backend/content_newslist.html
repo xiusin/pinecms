@@ -3,9 +3,9 @@
 <div id="content_newslist_datagrid_toolbar" style="padding:1px;height:auto">
     <form style="border-bottom:1px solid #ddd;margin-bottom:1px;padding:5px;">
         标题:
-        <input type="text" name="search[title]" style="width:100px;padding:2px"/>
-        时 间: <input name="search[begin]" class="easyui-datebox" style="width:100px">
-        至: <input name="search[end]" class="easyui-datebox" style="width:100px">
+        <input type="text" name="search[title]" class="easyui-textbox"/>
+        &nbsp;&nbsp;&nbsp;时 间: <input name="search[begin]" class="easyui-datebox">
+        至: <input name="search[end]" class="easyui-datebox">
 
         <a href="javascript:;" onclick="contentNewsListDatagridSearch(this)" class="easyui-linkbutton"
            iconCls="icons-map-magnifier">搜索</a>
@@ -19,6 +19,14 @@
            onclick="contentNewsListOrder()">排序</a>
     </div>
 </div>
+
+
+<div id="publish_content" class="easyui-dialog"
+     data-options="title:'内容编辑', modal:true, closed:true"
+     style="width: 100%; height: 100%; overflow: hidden">
+    <iframe id="publish_content_box" src="/b/content/public-welcome" style="width: 100%; height: 100%;border: none"></iframe>
+</div>
+
 
 <script type="text/javascript">
     var content_newslist_datagrid_id = 'category_categorylist_datagrid';
@@ -57,7 +65,11 @@
     //添加
     function contentNewsListAdd() {
         var url = "/b/content/add?catid={{.catid}}";
-        contentMainOpenUrl(url, true);
+        // contentMainOpenUrl(url, true);
+        ajaxLoading()
+        $("#publish_content").dialog({title: "添加内容"})
+        $("#publish_content_box").attr("src", url);
+        $("#publish_content").dialog("open");
     }
     //编辑
     function contentNewsListEdit(id) {
@@ -68,7 +80,16 @@
         var url = "/b/content/edit?catid={{.catid}}";
         url += '&id=' + id;
         ajaxLoading()
-        contentMainOpenUrl(url, true);
+        $("#publish_content_box").attr("src", url);
+        $("#publish_content").dialog({title: "编辑内容"})
+        $("#publish_content").dialog("open");
+    }
+
+    //中间内容区域打开
+    function contentMainOpenUrl(url, iframe){
+
+        var data = iframe ? {href: null, content: '<iframe src="'+ url +'" frameborder="0" fit="true" border="none" width="100%" height="100%"></iframe>'} : {href:url};
+        $('#content_index_center_panel').panel(data);
     }
 
     //删除

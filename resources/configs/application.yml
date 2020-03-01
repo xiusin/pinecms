@@ -2,7 +2,7 @@ port: 2019
 
 view:
   reload: true
-  fedirname: "./resources/views/backend"
+  fedirname: "./resources/views/frontend/"
   path: "./resources/views/"
 
 session:

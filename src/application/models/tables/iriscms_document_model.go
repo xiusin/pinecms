@@ -7,7 +7,6 @@ type IriscmsDocumentModel struct {
 	Name            string    `json:"name"`
 	Table           string    `json:"table"`
 	Enabled         int       `json:"enabled"`
-	IsSystem        int       `json:"is_system"`
 	ModelType       int       `json:"model_type"`
 	FeTplIndex      string    `json:"fe_tpl_index"`
 	FeTplList       string    `json:"fe_tpl_list"`

@@ -2,6 +2,7 @@ package storage
 
 import (
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -44,4 +45,38 @@ func (s *FileUploader) Upload(storageName string, LocalFile io.Reader) (string, 
 		return "", err
 	}
 	return filepath.Join(s.fixDir, originName), nil
+}
+
+func (s *FileUploader) List(dir string) ([]string, string, error) {
+	scandir := filepath.Join(s.baseDir, dir)
+	fs, err := ioutil.ReadDir(scandir)
+	if err != nil {
+		return nil, "", err
+	}
+	var list []string
+	for _, f := range fs {
+		list = append(list, filepath.Join(s.fixDir, dir, f.Name()))
+	}
+	return list, s.fixDir, nil
+}
+
+func (s *FileUploader) Exists(name string) (bool, error) {
+	fullname := filepath.Join(s.baseDir, name)
+	_, err := os.Stat(fullname)
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return false, err
+		} else {
+			return false, nil
+		}
+	}
+	return true, nil
+}
+
+func (s *FileUploader) GetFullUrl(name string) string {
+	return filepath.Join(s.fixDir, name)
+}
+
+func (s *FileUploader) Remove(name string) error {
+	return os.Remove(filepath.Join(s.baseDir, name))
 }

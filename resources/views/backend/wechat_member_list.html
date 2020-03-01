@@ -1,34 +1,8 @@
 {{ .dataGrid }}
-<style>
-    .dialogtable {
-        width: 100%;
-    }
-
-    .dialogtable td {
-        border-width: 0 1px 1px 0;
-        border-style: dotted;
-        border-color: #ccc;
-        padding: 5px;
-    }
-
-    .dialogtable input[type="text"] {
-        height: 20px;
-        width: 180px;
-    }
-
-</style>
 
 <!-- 查看详细信息 -->
 <div id="wechat_member_list_detail_dialog" class="easyui-dialog word-wrap" title="查看粉丝信息"
-     data-options="modal:true,closed:true,iconCls:'icons-other-information',buttons:[
-     {
-         text:'关闭',
-         iconCls:'icons-arrow-cross',
-         handler:function(){
-            $('#wechat_member_list_detail_dialog').dialog('close');
-         }
-     }
-     ]"
+     data-options="modal:true,closed:true,iconCls:'icons-other-information',buttons:[text:'关闭',iconCls:'icons-arrow-cross',handler:function(){$('#wechat_member_list_detail_dialog').dialog('close');}}]"
      style="width:700px;height:450px;padding:5px"></div>
 
 <script type="text/javascript">

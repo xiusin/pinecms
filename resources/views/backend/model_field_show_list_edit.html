@@ -1,14 +1,32 @@
+<script src="/assets/backend/ueditor/third-party/codemirror/codemirror.js"></script>
+<link rel="stylesheet" href="/assets/backend/ueditor/third-party/codemirror/codemirror.css">
+<link rel="stylesheet" href="/assets/backend/ueditor/third-party/codemirror/xq-light.css">
+
 <style>
     #model_showInList_form .textbox-label {
         width: 40px;
         margin-right: 20px;
     }
+
+    .CodeMirror {
+        border: 1px solid #eee;
+        height: {{.codeEditorHeight}}px;
+    }
+
+    .CodeMirror-scroll {
+        height: 100%;
+        overflow-y: hidden;
+        overflow-x: auto;
+    }
 </style>
+
+
 <form id="model_showInList_form" method="post">
     <table width="100%" class="mdoutable">
         <tr>
             <th width="100px">表单名称</th>
             <th width="120px">显示隐藏</th>
+            <th width="120px">搜索</th>
             <th width="150px">formatter函数名称</th>
             <th>formatter函数内容</th>
         </tr>
@@ -18,27 +36,34 @@
                 <td style="text-align: right">{{$ele.FormName}}：</td>
                 <td>
                     {{if eq $str1.Show true }}
-                    <input class="easyui-switchbutton" data-options="onText:'显示', offText:'隐藏'" checked name="show_{{$ele.TableField}}" style="width:100px;height:30px" />
+                        <input class="easyui-switchbutton" data-options="onText:'显示', offText:'隐藏'" checked
+                               name="show_{{$ele.TableField}}" style="width:100px;height:30px"/>
                     {{else}}
-                    <input class="easyui-switchbutton" data-options="onText:'显示', offText:'隐藏'" name="show_{{$ele.TableField}}" style="width:100px;height:30px"/>
+                        <input class="easyui-switchbutton" data-options="onText:'显示', offText:'隐藏'"
+                               name="show_{{$ele.TableField}}" style="width:100px;height:30px"/>
                     {{end}}
                 </td>
                 <td>
-{{/*                    (easyui字段格式化函数, 接受一个本字段的回调函数 内部可以直接使用变量ID 获取本记录的ID )*/}}
-{{/*                    如: */}}
+                    下拉框，用于选择模糊查询还是精确查询
+                </td>
+                <td>
+                    {{/*                    (easyui字段格式化函数, 接受一个本字段的回调函数 内部可以直接使用变量ID 获取本记录的ID )*/}}
+                    {{/*                    如: */}}
                     <label>
                         <input
                                 class="easyui-textbox"
                                 value="{{$str1.Formatter}}"
                                 name="formatter_{{$ele.TableField}}"
                                 data-options="prompt: '请填写函数名称或不填写'"
-                                style="width: 350px; " />
+                                style="width: 200px; "/>
                     </label>
                 </td>
                 {{if eq $index 0}}
-                <td rowspan="{{$.l}}">
-                    <input class="easyui-textbox" value="{{$.model.Formatters}}" data-options="multiline: true, prompt: '如: function fieldFormatter(fieldVal) { return \'fieldVal, 内部可以直接使用全局变量rowID获取每列数据的ID\'; }; fieldFormatter 就可以填写到`formatter函数名称`字段'" name="formatters" style="width:98%; height: 98%">
-                </td>
+                    <td rowspan="{{$.l}}">
+                        <textarea id="formatterCodeEditor"
+                                  placeholder="如: function fieldFormatter(fieldVal) { return \'fieldVal, 内部可以直接使用全局变量rowID获取每列数据的ID\'; }; fieldFormatter 就可以填写到`formatter函数名称`字段'"
+                                  name="formatters" style="width:98%; height: 98%">{{$.model.Formatters}}</textarea>
+                    </td>
                 {{end}}
             </tr>
         {{end}}
@@ -46,16 +71,27 @@
 </form>
 
 <script type="text/javascript">
+    $(".CodeMirror").remove();
+    var myCodeMirror = null;
+    setTimeout(function () {
+         myCodeMirror = CodeMirror.fromTextArea(document.getElementById("formatterCodeEditor"), {
+            mode: "javascript",
+            lineNumbers: true,
+            theme: "xq-light"
+        });
+        myCodeMirror.refresh()
+    }, 110)
+
     function modelFieldShowInListPageFormSubmit() {
         locker = true;
-        let data = $('#model_showInList_form').serializeObject();
+        $("#formatterCodeEditor").val(myCodeMirror.getValue());
+        data = $('#model_showInList_form').serializeObject();
         for (let i in data) {
             if (i.indexOf("field_") > -1 && typeof data[i] == "string") {
                 data[i] = [data[i]];
             }
         }
-
-        $.post("/b/model/list-field-show?mid={{.mid}}",data, function (res) {
+        $.post("/b/model/list-field-show?mid={{.mid}}", data, function (res) {
             if (res.errcode) {
                 $.messager.alert('提示信息', res.errmsg, 'error');
             } else {

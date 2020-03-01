@@ -3,6 +3,7 @@ package backend
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/xiusin/iriscms/src/common/storage"
 	"github.com/xiusin/pine/cache"
 	"math/rand"
 	"strconv"
@@ -209,4 +210,18 @@ func getEditor(field, val, attrs string, required bool, formName, defaultVal, Re
 	return `<textarea id="` + rid + `" ` + attrs + ` style="width:100%;height:360px" name="` + field + `">` + val + `</textarea>
 <div id='` + rid + `_tip' class='errtips'></div>
 <script>var ` + rid + ` = UE.getEditor('` + rid + `'); ` + requiredFunc + `</script>`
+}
+
+func getStorageEngine(settingData map[string]string) storage.Uploader {
+	uploadDir := settingData["UPLOAD_DIR"]
+	urlPrefixDir := settingData["UPLOAD_URL_PREFIX"]
+	engine := settingData["UPLOAD_ENGINE"]
+	var uploader storage.Uploader
+	switch engine {
+	case "OSS存储":
+		uploader = storage.NewOssUploader(settingData)
+	default :
+		uploader = storage.NewFileUploader(urlPrefixDir, uploadDir)
+	}
+	return uploader
 }
