@@ -15,9 +15,18 @@
             <tr>
                 <td>是否启用：</td>
                 <td colspan="2">
-                    <div style="margin-bottom:20px">
-                        <input class="easyui-switchbutton" checked name="enabled" label="Receive mail:" labelWidth="120"
-                               tabindex="1">
+                    <input class="easyui-switchbutton" checked name="enabled" tabindex="1">
+                </td>
+            </tr>
+
+            <tr>
+                <td>模型类型：</td>
+                <td colspan="2">
+                    <div style="display: inline-block; margin-right: 5px;">
+                        <input class="easyui-radiobox" name="type" value="0" checked label="独立模型">
+                    </div>
+                    <div style="display: inline-block; margin-right: 5px;">
+                        <input class="easyui-radiobox" name="type" value="1" label="系统模型">
                     </div>
                 </td>
             </tr>
@@ -32,7 +41,7 @@
                     </div>
 
                     <div id="tt" class="easyui-tabs" style="width:750px;height:576px;">
-                        <div title="未命名字段1"  data-options="closable:true">
+                        <div title="未命名字段1" data-options="closable:true">
                             <table cellpadding="5" style="width: 100%;">
                                 <tr>
                                     <td style="width: 150px;">表单名称:</td>
@@ -49,9 +58,9 @@
                                 <tr>
                                     <td>是否必填:</td>
                                     <td>
-                                        <select  class="easyui-combobox" name="field_required" style="width: 300px;">
+                                        <select class="easyui-combobox" name="field_required" style="width: 300px;">
                                             <option value="off" selected>非必填</option>
-                                            <option value="on" >必填</option>
+                                            <option value="on">必填</option>
                                         </select>
                                     </td>
                                 </tr>
@@ -151,8 +160,9 @@
 					]]"></td>
             </tr>
             <tr>
-                <td colspan="3"><a id="model_form_submit" class="easyui-linkbutton">提交</a> <a id="model_form_cancel"
-                                                                                              class="easyui-linkbutton">取消</a>
+                <td colspan="3">
+                    <a id="model_form_submit" class="easyui-linkbutton">提交</a>
+                    <a id="model_form_cancel" class="easyui-linkbutton">取消</a>
                 </td>
             </tr>
         </table>
@@ -175,9 +185,9 @@
         <tr>
             <td>是否必填:</td>
             <td>
-                <select  class="easyui-combobox" name="field_required" style="width: 300px;">
+                <select class="easyui-combobox" name="field_required" style="width: 300px;">
                     <option value="off" selected>非必填</option>
-                    <option value="on" >必填</option>
+                    <option value="on">必填</option>
                 </select>
             </td>
         </tr>
@@ -205,7 +215,8 @@
         <tr>
             <td>数据源:</td>
             <td><input class="easyui-textbox" name="field_datasource"
-                       data-options="multiline:true, prompt: '请填写如json/数组格式或者url接口地址, 如不能解析,导致页面无法渲染. json支持key为string格式. 其他格式可能无法达到预期'" style="height:150px; width: 500px;"/>
+                       data-options="multiline:true, prompt: '请填写如json/数组格式或者url接口地址, 如不能解析,导致页面无法渲染. json支持key为string格式. 其他格式可能无法达到预期'"
+                       style="height:150px; width: 500px;"/>
             </td>
         </tr>
 

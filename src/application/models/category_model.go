@@ -17,7 +17,7 @@ func NewCategoryModel(orm *xorm.Engine) *CategoryModel {
 }
 
 func (c CategoryModel) GetTree(categorys []tables.IriscmsCategory, parentid int64) []map[string]interface{} {
-	var res []map[string]interface{}
+	var res = []map[string]interface{}{}
 	if len(categorys) != 0 {
 		// 筛选
 		models ,_ := NewDocumentModel(c.orm).GetList(1, 1000)
@@ -47,9 +47,9 @@ func (c CategoryModel) GetTree(categorys []tables.IriscmsCategory, parentid int6
 }
 
 func (c CategoryModel) GetAll() []tables.IriscmsCategory {
-	categorys := new([]tables.IriscmsCategory)
-	c.orm.Where("`type`<>? and `ismenu`=?", 2, 1).Asc("listorder").Desc("catid").Find(categorys)
-	return *categorys
+	categorys := []tables.IriscmsCategory{}
+	c.orm.Asc("listorder").Desc("catid").Find(&categorys)
+	return categorys
 }
 
 func (c CategoryModel) GetNextCategory(parentid int64) []tables.IriscmsCategory {

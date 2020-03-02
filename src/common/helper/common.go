@@ -233,7 +233,7 @@ if (!flag) { $('#` + rid + `_tip').html("` + RequiredTips + `"); return false; }
 
 	str := box + `
 		<div class="imgbox" onclick="return createHtml(this,'` + field + `', ` + strconv.Itoa(maxImgNum) + `)" style="width: 95px; margin: 8px; ">
-			<img style="height: 95px;display: block;border: 1px dashed #888;padding: 30px;" src="/assets/backend/mdou/images/jiahao.png" />
+			<img style="height: 38px;display: block;border: 1px dashed #888;padding: 30px;" src="/assets/backend/mdou/images/jiahao.png" />
 		</div>`
 	return str + `<div id='` + rid + `_tip' class='errtips'></div>` + requiredFunc
 }

@@ -27,13 +27,14 @@ func (c *CategoryController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *CategoryController) CategoryList() {
+	orm := c.Ctx().Value("orm").(*xorm.Engine)
 	if c.Ctx().URLParam("grid") == "treegrid" {
-		c.Ctx().Render().JSON(models.NewCategoryModel(c.Ctx().Value("orm").(*xorm.Engine)).GetTree(models.NewCategoryModel(c.Ctx().Value("orm").(*xorm.Engine)).GetAll(), 0))
+		c.Ctx().Render().JSON(models.NewCategoryModel(orm).GetTree(models.NewCategoryModel(orm).GetAll(), 0))
 		return
 	}
 	menuid, _ := c.Ctx().URLParamInt64("menuid")
 	table := helper.Treegrid("category_categorylist_treegrid", "/b/category/list?grid=treegrid", helper.EasyuiOptions{
-		"title":     models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CurrentPos(menuid),
+		"title":     models.NewMenuModel(orm).CurrentPos(menuid),
 		"toolbar":   "category_categorylist_treegrid_toolbar",
 		"idField":   "catid",
 		"treeField": "catname",
@@ -101,7 +102,10 @@ func (c *CategoryController) CategoryAdd() {
 		parentid, err = strconv.Atoi(c.Ctx().FormValue("parentid"))
 		ModelID, err = strconv.Atoi(c.Ctx().FormValue("model_id"))
 		cattype, _ := strconv.Atoi(c.Ctx().FormValue("type"))
-		ismenu, _ := strconv.Atoi(c.Ctx().FormValue("ismenu"))
+		var ismenu int64
+		if c.Ctx().FormValue("ismenu") == "on" {
+			ismenu = 1
+		}
 		if err != nil {
 			helper.Ajax(err.Error(), 1, c.Ctx())
 			return
@@ -125,18 +129,11 @@ func (c *CategoryController) CategoryAdd() {
 			Thumb:       c.Ctx().FormValue("thumb"),
 			Url:         url,
 			Description: c.Ctx().FormValue("description"),
-			Ismenu:      int64(ismenu),
+			Ismenu:      ismenu,
 		}
 		if !models.NewCategoryModel(c.Ctx().Value("orm").(*xorm.Engine)).AddCategory(category) {
 			helper.Ajax("添加分类失败", 1, c.Ctx())
 		} else {
-			//cacheKey := fmt.Sprintf(controllers.CacheCategoryFormat, parentid)
-			//if c.cache.IsExist(cacheKey) {
-			//	if c.cache.Delete(cacheKey) != nil {
-			//		golog.Error("刷新列表缓存失败")
-			//	}
-			//}
-
 			helper.Ajax("添加分类成功", 0, c.Ctx())
 		}
 		return
@@ -177,7 +174,10 @@ func (c *CategoryController) CategoryEdit() {
 	}
 	if c.Ctx().IsPost() {
 		parentid, err := strconv.Atoi(c.Ctx().FormValue("parentid"))
-		ismenu, _ := strconv.Atoi(c.Ctx().FormValue("ismenu"))
+		var ismenu int64
+		if c.Ctx().FormValue("ismenu") == "on" {
+			ismenu = 1
+		}
 		if err != nil {
 			helper.Ajax(err.Error(), 1, c.Ctx())
 			return
@@ -192,7 +192,7 @@ func (c *CategoryController) CategoryEdit() {
 			return
 		}
 
-		category.Ismenu = int64(ismenu)
+		category.Ismenu = ismenu
 		category.Catname = c.Ctx().FormValue("catname")
 		category.Parentid = int64(parentid)
 		category.Thumb = c.Ctx().FormValue("thumb")

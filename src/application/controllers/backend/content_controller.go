@@ -86,6 +86,9 @@ func (c *ContentController) NewsList() {
 		if len(totals) > 0 {
 			total = totals[0]["total"]
 		}
+		if contents == nil {
+			contents  = []map[string]string{}
+		}
 		c.Ctx().Render().JSON(map[string]interface{}{"rows": contents, "total": total})
 		return
 	}
@@ -110,7 +113,7 @@ func (c *ContentController) NewsList() {
 	}
 	var index = 1
 	// 系统模型需要固定追加标题, 描述等字段
-	if relationDocumentModel.IsSystem == models.SYSTEM_TYPE {
+	if relationDocumentModel.ModelType == models.SYSTEM_TYPE {
 		fields["标题"] = map[string]string{"field": "title", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
 		index++
 	}
@@ -222,7 +225,7 @@ func (c *ContentController) AddContent() {
 		}
 		// 通用字段更新
 
-		if model.IsSystem == models.SYSTEM_TYPE {
+		if model.ModelType == models.SYSTEM_TYPE {
 
 		}
 		params := append([]interface{}{fmt.Sprintf("INSERT INTO `iriscms_%s` (%s) VALUES (%s)", model.Table, strings.Join(fields, ","), strings.TrimRight(strings.Repeat("?,", len(values)), ","))}, values...)
@@ -319,7 +322,7 @@ func (c *ContentController) EditContent() {
 			values = append(values, v)
 		}
 		// 通用字段更新
-		if relationDocumentModel.IsSystem == models.SYSTEM_TYPE {
+		if relationDocumentModel.ModelType == models.SYSTEM_TYPE {
 
 		}
 		values = append(values, id, catid)

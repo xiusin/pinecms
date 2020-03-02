@@ -2,6 +2,10 @@ package config
 
 import (
 	"fmt"
+	"net/http"
+	"path/filepath"
+	"strconv"
+
 	"github.com/gorilla/securecookie"
 	"github.com/xiusin/iriscms/src/application/controllers"
 	"github.com/xiusin/pine"
@@ -10,12 +14,10 @@ import (
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pine/middlewares/pprof"
 	request_log "github.com/xiusin/pine/middlewares/request-log"
+	"github.com/xiusin/pine/render/engine/jet"
 	"github.com/xiusin/pine/render/engine/template"
 	"github.com/xiusin/pine/sessions"
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
-	"net/http"
-	"path/filepath"
-	"strconv"
 	"xorm.io/core"
 
 	"github.com/xiusin/iriscms/src/config"
@@ -54,6 +56,19 @@ func initDatabase() {
 	_orm.ShowExecTime(o.ShowExecTime)
 	_orm.SetMaxOpenConns(int(o.MaxOpenConns))
 	_orm.SetMaxIdleConns(int(o.MaxIdleConns))
+
+
+	_orm.Prepare()
+	//_orm.SetDefaultCacher(cacher)
+	//configs := map[string]string{
+	//	"conn": Cfg.RedisAddr,
+	//	"key":  "default", // the collection name of redis for cache adapter.
+	//}
+	//ccStore := cachestore.NewRedisCache(configs)
+	//ccStore.Debug = true
+	//cacher := xorm.NewLRUCacher(ccStore, 99999999)
+	// Unknown colType BIGINT UNSIGNED
+
 	XOrmEngine = _orm
 	//syncTable()
 }
@@ -62,11 +77,14 @@ func initApp() {
 	//实例化服务器
 	app = pine.New()
 
+
 	app.Use(request_log.RequestRecorder())
-	// todo 使用中间件无法显示内容!!
-	//app.Use(debug.Recover(app))
 
 	diConfig()
+
+	// 数据库资源访问鉴权
+	app.Use(middleware.CheckDatabaseBackupDownload())
+
 	//配置前端缓存10秒
 	//app.Use(iris.Cache304(10 * time.Second))
 	//配置PPROF
@@ -109,7 +127,10 @@ func registerBackendRoutes() {
 		Handle(new(backend.SystemController)).
 		Handle(new(backend.MemberController)).
 		Handle(new(backend.DocumentController)).
-		Handle(new(backend.LinkController))
+		Handle(new(backend.LinkController)).
+		Handle(new(backend.DatabaseController)).
+		Handle(new(backend.AssetsManagerController)).
+		Handle(new(backend.AttachmentController))
 
 	app.Group("/public").Handle(new(backend.PublicController))
 }
@@ -141,6 +162,10 @@ func diConfig() {
 		return iCache, nil
 	}, true)
 
+	di.Set("pinecms.config", func(builder di.BuilderInf) (i interface{}, e error) {
+		return conf, nil
+	}, true)
+
 	di.Set(di.ServicePineSessions, func(builder di.BuilderInf) (i interface{}, err error) {
 		sess := sessions.New(cacheProvider.NewStore(iCache), &sessions.Config{
 			CookieName: conf.Session.Name,
@@ -149,11 +174,17 @@ func diConfig() {
 		return sess, nil
 	}, true)
 
-	di.Set(di.ServicePineRender, func(builder di.BuilderInf) (i interface{}, err error) {
-		view := template.New(conf.View.Path, conf.View.Reload)
-		view.AddFunc("GetInMap", controllers.GetInMap)
-		return view, nil
-	}, true)
+
+	htmlEngine := template.New(conf.View.Path,".html", conf.View.Reload)
+
+	htmlEngine.AddFunc("GetInMap", controllers.GetInMap)
+	pine.RegisterViewEngine(htmlEngine)
+
+
+	jetEngine := jet.New(conf.View.Path,".jet", conf.View.Reload)
+	jetEngine.AddGlobalFunc("flink", controllers.Flink)
+	pine.RegisterViewEngine( jetEngine)
+
 
 	di.Set(XOrmEngine, func(builder di.BuilderInf) (i interface{}, err error) {
 		return XOrmEngine, nil

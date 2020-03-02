@@ -24,6 +24,7 @@ type EasyuiOptions map[string]string
      })
 */
 
+
 func Datagrid(id, url string, tableoptions EasyuiOptions, field EasyuiGridfields, other ...string) string {
 	dataOptions := map[string]interface{}{
 		"border":       "false",
@@ -35,6 +36,12 @@ func Datagrid(id, url string, tableoptions EasyuiOptions, field EasyuiGridfields
 		"pageList":     [6]int{10, 20, 30, 50, 80, 100},
 		"pageSize":     "20",
 	}
+
+	if _, ok := field["pagination"]; ok {
+		dataOptions["pagination"] = field["pagination"]
+		delete(field, "pagination")
+	}
+
 	style := "width:100%;height:100%;"
 	var tabopt []string
 	if len(tableoptions) != 0 {
@@ -61,11 +68,11 @@ func Datagrid(id, url string, tableoptions EasyuiOptions, field EasyuiGridfields
 			if k1 == "index" {
 				index, err := strconv.Atoi(v1)
 				if err != nil {
-					return (err.Error())
+					return err.Error()
 				}
 				currentIndex = index
 				if currentIndex < 0 || currentIndex >= count_field {
-					return ("index字段值超出范围")
+					return "index字段值超出范围"
 				}
 			}
 			if k1 == "field" {

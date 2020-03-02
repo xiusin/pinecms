@@ -141,7 +141,7 @@ func (c *AdminController) Memberlist() {
 		"管理操作":   {"field": "Userid", "width": "15", "formatter": "adminMemberListOperateFormatter", "index": "5"},
 	})
 	c.Ctx().Render().ViewData("table", template.HTML(table))
-	c.Ctx().Render().HTML("backend/admin_memberlist.html")
+	c.Ctx().Render().HTML("backend/admin_member_list.html")
 }
 
 func (c *AdminController) PublicEditpwd() {
@@ -257,7 +257,7 @@ func (c *AdminController) MemberAdd() {
 	}
 	roles := models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).GetRoleList("1", 1, 1000)
 	c.Ctx().Render().ViewData("Roles", roles)
-	c.Ctx().Render().HTML("backend/member_add.html")
+	c.Ctx().Render().HTML("backend/admin_member_add.html")
 }
 func (c *AdminController) MemberEdit() {
 	adminid, err := c.Ctx().GetInt64("id")
@@ -309,7 +309,7 @@ func (c *AdminController) MemberEdit() {
 	roles := models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).GetRoleList("1", 1, 1000)
 	c.Ctx().Render().ViewData("Roles", roles)
 	c.Ctx().Render().ViewData("Info", info)
-	c.Ctx().Render().HTML("backend/member_edit.html")
+	c.Ctx().Render().HTML("backend/admin_member_edit.html")
 }
 func (c *AdminController) MemberDelete() {
 	id, err := strconv.Atoi(c.Ctx().FormValue("id"))
@@ -358,7 +358,7 @@ func (c *AdminController) RoleList() {
 		"管理操作": {"field": "Roleid", "formatter": "adminRoleListOperateFormatter", "index": "2"},
 	})
 	c.Ctx().Render().ViewData("datagrid", template.HTML(datagrid))
-	c.Ctx().Render().HTML("backend/member_rolelist.html")
+	c.Ctx().Render().HTML("backend/member_role_list.html")
 }
 
 func (c *AdminController) RoleAdd() {
@@ -379,7 +379,7 @@ func (c *AdminController) RoleAdd() {
 		}
 		return
 	}
-	c.Ctx().Render().HTML("backend/member_roleadd.html")
+	c.Ctx().Render().HTML("backend/member_role_add.html")
 }
 func (c *AdminController) RoleEdit(icache cache.ICache) {
 	id, err := c.Ctx().URLParamInt64("id")
@@ -415,7 +415,7 @@ func (c *AdminController) RoleEdit(icache cache.ICache) {
 		return
 	}
 	c.Ctx().Render().ViewData("info", role)
-	c.Ctx().Render().HTML("backend/member_roleedit.html")
+	c.Ctx().Render().HTML("backend/member_role_edit.html")
 }
 
 func (c *AdminController) RoleDelete(icache cache.ICache) {
@@ -503,5 +503,5 @@ func (c *AdminController) RolePermission(icache cache.ICache) {
 		return
 	}
 	c.Ctx().Render().ViewData("roleid", roleid)
-	c.Ctx().Render().HTML("backend/role_permission.html")
+	c.Ctx().Render().HTML("backend/member_role_permission.html")
 }

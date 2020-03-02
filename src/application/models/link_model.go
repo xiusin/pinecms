@@ -17,7 +17,7 @@ func NewLinkModel(orm *xorm.Engine) *LinkModel {
 
 func (l *LinkModel) GetList(page, limit int64) ([]tables.IriscmsLink, int64) {
 	offset := (page - 1) * limit
-	var list []tables.IriscmsLink
+	var list = []tables.IriscmsLink{}
 	var total int64
 	var err error
 	if total, err = l.orm.Desc("listorder").Limit(int(limit), int(offset)).FindAndCount(&list); err != nil {

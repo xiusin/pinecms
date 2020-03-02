@@ -25,15 +25,14 @@ type IndexController struct {
 	pine.Controller
 }
 
-
 type MemPos struct {
 	TimePos string `json:"time_pos"`
-	Percent int `json:"percent"`
+	Percent int    `json:"percent"`
 }
 
 type CpuPos struct {
-	TimePos string `json:"time_pos"`
-	Value []float64 `json:"percent"`
+	TimePos string    `json:"time_pos"`
+	Value   []float64 `json:"percent"`
 }
 
 func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
@@ -42,36 +41,35 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/index/main", "Main")
 	b.ANY("/index/sessionlife", "Sessionlife")
 
-
 	// mem cpu collect
-		go func() {
+	go func() {
 
-			// 每10秒采集一次服务器信息
-			for range time.Tick(10 * time.Second) {
-				vm, err := mem.VirtualMemory()
-				if err != nil {
-					pine.Logger().Error("读取服务器内存信息错误:", err)
-				} else {
-					mems := getMems()
-					mems = append(mems, MemPos{TimePos: time.Now().In(helper.GetLocation()).Format("15:04:05"), Percent: int(vm.UsedPercent)})
-					memsSaveData, _ := json.Marshal(mems)
-					pine.Make("cache.ICache").(cache.ICache).Set("memCollect", memsSaveData)
-				}
-				cpuInfos, err := cpu.Percent(0, true)
-				if err != nil {
-					pine.Logger().Error("读取服务器CPU信息错误:", err)
-				} else {
-					cpus := getCpus()
-					cpus = append(cpus, CpuPos{TimePos: time.Now().In(helper.GetLocation()).Format("15:04:05"), Value: cpuInfos})
-					memsSaveData, _ := json.Marshal(cpus)
-					pine.Make("cache.ICache").(cache.ICache).Set("cpuCollect", memsSaveData)
-				}
+		// 每10秒采集一次服务器信息
+		for range time.Tick(10 * time.Second) {
+			vm, err := mem.VirtualMemory()
+			if err != nil {
+				pine.Logger().Error("读取服务器内存信息错误:", err)
+			} else {
+				mems := getMems()
+				mems = append(mems, MemPos{TimePos: time.Now().In(helper.GetLocation()).Format("15:04:05"), Percent: int(vm.UsedPercent)})
+				memsSaveData, _ := json.Marshal(mems)
+				pine.Make("cache.ICache").(cache.ICache).Set("memCollect", memsSaveData)
 			}
-		}()
+			cpuInfos, err := cpu.Percent(0, false)
+			if err != nil {
+				pine.Logger().Error("读取服务器CPU信息错误:", err)
+			} else {
+				cpus := getCpus()
+				cpus = append(cpus, CpuPos{TimePos: time.Now().In(helper.GetLocation()).Format("15:04:05"), Value: cpuInfos})
+				memsSaveData, _ := json.Marshal(cpus)
+				pine.Make("cache.ICache").(cache.ICache).Set("cpuCollect", memsSaveData)
+			}
+		}
+	}()
 
 }
 
-func getMems() []MemPos{
+func getMems() []MemPos {
 	var mems []MemPos
 	c := pine.Make("cache.ICache").(cache.ICache)
 	memCollect, _ := c.Get("memCollect")
@@ -85,7 +83,7 @@ func getMems() []MemPos{
 	return mems
 }
 
-func getCpus() []CpuPos{
+func getCpus() []CpuPos {
 	var cpus []CpuPos
 	c := pine.Make("cache.ICache").(cache.ICache)
 	memCollect, _ := c.Get("cpuCollect")
@@ -99,7 +97,6 @@ func getCpus() []CpuPos{
 	return cpus
 }
 
-
 func (c *IndexController) Index() {
 	roleid := c.Ctx().Value("roleid")
 	if roleid == nil {
@@ -112,9 +109,7 @@ func (c *IndexController) Index() {
 	c.Ctx().Render().HTML("backend/index_index.html")
 }
 
-
 var us, _ = disk.Usage(helper.GetRootPath())
-
 
 func (c *IndexController) Main() {
 
@@ -147,7 +142,6 @@ func (c *IndexController) Main() {
 
 	c.Ctx().Render().ViewData("Mem", "未获得内存情况")
 
-
 	c.Ctx().Render().ViewData("cpus", getCpus())
 	c.Ctx().Render().ViewData("mems", getMems())
 
@@ -164,12 +158,12 @@ func (c *IndexController) Menu(iCache cache.ICache) {
 	cacheKey := fmt.Sprintf(controllers.CacheAdminMenuByRoleIdAndMenuId, roleid, meid)
 	var menujs []map[string]interface{} //要返回json的对象
 	var data string
-	if meid > 0 {
-		dataBytes, _ := iCache.Get(cacheKey)
-		data = string(dataBytes)
-	} else {
-		data = ""
-	}
+	//if meid > 0 {
+	//	dataBytes, _ := iCache.Get(cacheKey)
+	//	data = string(dataBytes)
+	//} else {
+	data = ""
+	//}
 	if data == "" || json.Unmarshal([]byte(data), &menujs) != nil {
 		for _, v := range menus {
 			menu := models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).GetMenu(v.Id, roleid.(int64))

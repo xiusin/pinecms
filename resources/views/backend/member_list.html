@@ -1,22 +1,4 @@
 {{ .dataGrid }}
-<style>
-    .dialogtable {
-        width: 100%;
-    }
-
-    .dialogtable td {
-        border-width: 0 1px 1px 0;
-        border-style: dotted;
-        border-color: #ccc;
-        padding: 5px;
-    }
-
-    .dialogtable input[type="text"] {
-        height: 20px;
-        width: 180px;
-    }
-
-</style>
 
 <!-- 查看详细信息 -->
 <div id="member_list_detail_dialog" class="easyui-dialog word-wrap" title="编辑用户信息"
@@ -32,6 +14,12 @@
      style="width:700px;height:450px;padding:5px"></div>
 
 <script type="text/javascript">
+
+    var member_list_datagrid_toolbar = [
+        {text: '添加会员', iconCls: 'icons-arrow-add', handler: memberListAdd},
+        {text: '刷新', iconCls: 'icons-arrow-arrow_refresh', handler: memberListRefresh}
+    ];
+
     const member_list =  $('#member_list_datagrid');
 
     //搜索
@@ -59,7 +47,7 @@
 
     //参数格式化
     function optFormatter(val) {
-        return '<a href="javascript:;" onclick="editMemberInfo(' + val + ');">编辑信息</a>';
+        return '<a href="javascript:;" onclick="editMemberInfo(' + val + ');">编辑</a>';
     }
 
     function enabledFormatter(val) {
@@ -68,6 +56,10 @@
 
     function verifyTokenFormatter(val) {
         return val == "" ? '已验证' : '未验证'
+    }
+
+    function memberListAdd() {
+
     }
 
     //查看详细信息
@@ -159,5 +151,9 @@
             });
             $('#' + id).dialog('open');
         })
+    }
+
+    function memberListRefresh() {
+        member_list.datagrid('reload');
     }
 </script>

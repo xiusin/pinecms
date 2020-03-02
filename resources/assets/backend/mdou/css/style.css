@@ -291,8 +291,8 @@ body.login {
 
 .header_logo {
     width: 345px;
-    height: 56px;
-    background: url(../images/logo.png) no-repeat 0 0;
+    height: 20px;
+    /*background: url(../images/logo.png) no-repeat 0 0;*/
     margin: -8px 0 0 24px;
 }
 
@@ -1236,4 +1236,3 @@ body.login {
     color: #4c4c4c;
     font: 12px/28px \5b8b\4f53
 }
-	

@@ -1,0 +1,32 @@
+{{ import "frontend/common/_link.jet" }} {** 妈蛋 必须在前面 **}
+
+{** 直接传递一个函数到模板 **}
+{{ link("xiusin") }}
+<br/>
+{{ link_slice("xiusin") }}
+<br/>
+{{ link_map("xiusin") }}
+<br/>
+{{ link_map_struct("xiusin") }}
+<br/>
+{** 迭代模板传入变量函数数据 **}
+{{ range v := link_slice("xiusin") }}
+    <div>{{v}}</div>
+{{end}}
+
+{{ range k,v := link_map("xiusin") }}
+<div>{{k}} => {{v}}</div>
+{{end}}
+
+
+{{ range k,v := link_map_struct("xiusin") }}
+<div>{{k}} => {{v.FirstName}} ==> {{v.LastName}}</div>
+{{end}}
+
+{* 给模板block 传递函数返回值 *}
+{{yield clink() link_slice("xiusin")}}
+
+
+{** 设置模板函数 **}
+{{flink("1", "2")}}
+

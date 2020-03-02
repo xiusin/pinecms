@@ -35,7 +35,7 @@ func (c *MemberController) List() {
 	menuid, _ := c.Ctx().URLParamInt64("menuid")
 	table := helper.Datagrid("member_list_datagrid", "/b/user/list", helper.EasyuiOptions{
 		"title":   models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CurrentPos(menuid),
-		//"toolbar": "member_list_datagrid_toolbar",
+		"toolbar": "member_list_datagrid_toolbar",
 	}, helper.EasyuiGridfields{
 		"昵称": {"field": "nickname", "width": "30", "index": "0"},
 		"账户": {"field": "account", "width": "30", "index": "1"},

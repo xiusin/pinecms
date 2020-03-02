@@ -6,9 +6,8 @@ import (
 	"github.com/xiusin/iriscms/src/application/models/tables"
 )
 
-
 const (
-	IMG_TYPE = "img"
+	IMG_TYPE  = "img"
 	FILE_TYPE = "file"
 )
 
@@ -28,4 +27,9 @@ func (a *AttachmentsModel) GetList(page, limit int64) (list []tables.IriscmsAtta
 		golog.Error(err)
 	}
 	return list, total
+}
+
+func (a *AttachmentsModel) Delete(id int64) bool {
+	res, _ := a.Orm.ID(id).Delete(&tables.IriscmsAttachments{})
+	return res > 0
 }

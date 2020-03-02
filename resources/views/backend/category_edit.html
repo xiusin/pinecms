@@ -1,69 +1,15 @@
 <!--suppress ALL -->
 <script src="/assets/backend/static/jquery.upload.js"></script>
-<script type="text/javascript">
-    $(function () {
-        $('#category_category_edit_dialog_form_parentid').combotree({url: "/b/category/category-select"});
-        $.formValidator.initConfig({
-            formID: "category_category_edit_dialog_form",
-            onError: function (msg) {/*$.messager.alert('错误提示', msg, 'error');*/
-            },
-            onSuccess: categoryCategoryAddDialogFormSubmit,
-            submitAfterAjaxPrompt: '有数据正在异步验证，请稍等...',
-            inIframe: true
-        });
-        $("#category_category_edit_dialog_form_parentid").formValidator({
-            onShow: "请选择上级栏目",
-            onFocus: "上级栏目不能为空"
-        }).inputValidator({min: 0, type: 'value', onError: "上级栏目不能为空"}).defaultPassed();
-        $("#category_category_edit_dialog_form_catname").formValidator({
-            onShow: "请输入栏目名称",
-            onFocus: "栏目名称不能为空",
-            onCorrect: "输入正确"
-        }).inputValidator({
-            min: 1,
-            empty: {leftEmpty: false, rightEmpty: false, emptyError: '栏目名称不能有空格'},
-            onError: "栏目名称不能为空"
-        });
-    })
-    function categoryCategoryAddDialogFormSubmit() {
-        $.post("/b/category/category-edit?id={{ .category.Catid }}", $("#category_category_edit_dialog_form").serialize(), function (res) {
-            if (res.errcode) {
-                $.messager.alert('提示信息', res.errmsg, 'error');
-            } else {
-                $.messager.alert('提示信息', res.errmsg, 'info');
-                $('#category_category_edit_dialog').dialog('close');
-                categoryCategoryListRefresh();
-            }
-        })
-        return false;
-    }
-    function categoryCategoryEditDialogFormTypeChange(val) {
-        var category_category_edit_dialog_form_url = $('#category_category_edit_dialog_form_url');
-        if (val === parseInt('2')) {
-            category_category_edit_dialog_form_url.show();
-        } else {
-            category_category_edit_dialog_form_url.val('');
-            category_category_edit_dialog_form_url.hide();
-        }
-    }
-</script>
-<form id="category_category_edit_dialog_form">
+
+<form id="category_category_edit_dialog_form" method="post">
     <table width="100%" class="mdoutable">
         <tr>
             <td width="80">上级栏目：</td>
-            <td><input id="category_category_edit_dialog_form_parentid" name="parentid" class="easyui-combotree"
-                       value="{{ .category.Parentid }}" style="width:180px;height:26px"/></td>
-            <td>
-                <div id="category_category_edit_dialog_form_parentidTip"></div>
-            </td>
+            <td><input id="category_category_edit_dialog_form_parentid" name="parentid" class="easyui-combotree" value="{{ .category.Parentid }}" /></td>
         </tr>
         <tr>
             <td>栏目名称：</td>
-            <td><input id="category_category_edit_dialog_form_catname" name="catname" value="{{.category.Catname}}"
-                       type="text" style="width:178px;height:22px"/></td>
-            <td>
-                <div id="category_category_edit_dialog_form_catnameTip"></div>
-            </td>
+            <td><input name="catname" value="{{.category.Catname}}" type="text" class="easyui-textbox" data-options="required: true" /></td>
         </tr>
         <tr>
             <td>栏目类型：</td>
@@ -82,9 +28,6 @@
                 </select>
                 <span style="color:gray;padding-left:15px">设置后不可修改</span>
             </td>
-            <td>
-                <div id="category_category_edit_dialog_form_typeTip"></div>
-            </td>
         </tr>
         {{ if gt .category.ModelId 0}}
         <tr id="model_select">
@@ -102,8 +45,6 @@
                 </select>
                 <span style="color:gray;padding-left:15px">设置后不可修改</span>
             </td>
-            <td>
-            </td>
         </tr>
         {{end}}
         <tr>
@@ -113,35 +54,59 @@
                        style="height:100px;display:block;border:1px solid #ddd;padding:2px"/>
                 <input type="hidden" name="thumb" value="{{.category.Thumb}}"/>
             </td>
-            <td></td>
         </tr>
         <tr id="category_category_edit_dialog_form_url" {{if ne .category.Type 2}}style="display:none" {{end}}>
             <td>链接：</td>
             <td><input name="url" value="{{.category.Url}}" type="text" style="width:80%;height:22px"/></td>
-            <td></td>
+            <td>
         </tr>
         <tr>
             <td>描述：</td>
             <td ><textarea name="description"
                                       style="width:100%;height:60px">{{.category.Description}}</textarea></td>
-            <td></td>
         </tr>
         <tr>
             <td>是否启用：</td>
-            <td colspan="2">
-                {{if eq .category.Ismenu 1}}
-                <label><input name="ismenu" value="1" type="radio" checked/>是</label>
-                <label><input name="ismenu" value="0" type="radio"/>否</label>
-                {{else}}
-                <label><input name="ismenu" value="1" type="radio"/>是</label>
-                <label><input name="ismenu" value="0" type="radio" checked/>否</label>
-                {{end}}
+            <td >
+                <input name="ismenu" class="easyui-switchbutton" {{if eq .category.Ismenu 1}}checked{{end}} data-options="onText:'是',offText:'否'">
             </td>
         </tr>
     </table>
 </form>
 
-<script>
+
+<script type="text/javascript">
+    $('#category_category_edit_dialog_form_parentid').combotree({url: "/b/category/category-select"});
+    function categoryCategoryAddDialogFormSubmit() {
+        var f = $("#category_category_edit_dialog_form");
+        f.form({
+            method: "post",
+            url: "/b/category/category-edit?id={{ .category.Catid }}",
+            onSubmit: function(){
+                return $(this).form('validate');
+            },
+            success: function(res){
+                res = JSON.parse(res)
+                if (res.errcode) {
+                    $.messager.alert('提示信息', res.errmsg, 'error');
+                } else {
+                    $.messager.alert('提示信息', res.errmsg, 'info');
+                    $('#category_category_edit_dialog').dialog('close');
+                    categoryCategoryListRefresh();
+                }
+            }
+        });
+        f.submit();
+    }
+    function categoryCategoryEditDialogFormTypeChange(val) {
+        var category_category_edit_dialog_form_url = $('#category_category_edit_dialog_form_url');
+        if (val === parseInt('2')) {
+            category_category_edit_dialog_form_url.show();
+        } else {
+            category_category_edit_dialog_form_url.val('');
+            category_category_edit_dialog_form_url.hide();
+        }
+    }
     $('#content_edit_news_form_thumb_input').click(function (e) {
         e.preventDefault();
         $.upload({
@@ -154,8 +119,8 @@
             },
             onComplate: function (data) {
                 if (0 === Number(data.errcode)) {
-                    $('#content_edit_news_form_thumb_input').attr('src', data.errmsg);
-                    $('#content_edit_news_form_thumb_input').next('input:hidden').val(data.errmsg);
+                    $('#content_edit_news_form_thumb_input').attr('src', data.url);
+                    $('#content_edit_news_form_thumb_input').next('input:hidden').val(data.url);
                 } else {
                     $.messager.alert('提示信息', data.errmsg, 'error');
                 }

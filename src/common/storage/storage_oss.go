@@ -16,6 +16,18 @@ type OssUploader struct {
 	urlPrefix string
 }
 
+func (s *OssUploader) Remove(name string) error {
+	panic("implement me")
+}
+
+func (s *OssUploader) GetFullUrl(name string) string {
+	panic("implement me")
+}
+
+func (s *OssUploader) Exists(name string) (bool, error) {
+	panic("implement me")
+}
+
 func NewOssUploader(config map[string]string) *OssUploader {
 	client, err := oss.New(config["OSS_ENDPOINT"], config["OSS_KEYID"], config["OSS_KEYSECRET"])
 	if err != nil {
@@ -45,4 +57,8 @@ func (s *OssUploader) Upload(storageName string, LocalFile io.Reader) (string, e
 		return "", err
 	}
 	return s.host + "/" + strings.TrimLeft(storageName, "/"), nil
+}
+
+func (s *OssUploader) List(dir string) ([]string, string, error) {
+	panic("implement me")
 }

@@ -28,13 +28,7 @@
         <tr>
             <td>是否启用：</td>
             <td>
-                {{if eq .link.Passed 1}}
-                    <label><input name="passed" value="1" type="radio" checked/>是</label>
-                    <label><input name="passed" value="0" type="radio"/>否</label>
-                {{else}}
-                    <label><input name="passed" value="1" type="radio" />是</label>
-                    <label><input name="passed" value="0" type="radio" checked/>否</label>
-                {{end}}
+                <input class="easyui-switchbutton" name="passed" {{if eq .link.Passed 1}}checked{{end}} data-options="onText:'是',offText:'否'">
             </td>
         </tr>
     </table>
@@ -49,7 +43,7 @@
                     $.messager.alert('提示信息', res.errmsg, 'error');
                 } else {
                     $.messager.alert('提示信息', res.errmsg, 'info');
-                    $('#category_category_add_dialog').dialog('close');
+                    $('#link_list_edit_dialog').dialog('close');
                     linkListRefresh();
                 }
             }

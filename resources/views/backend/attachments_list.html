@@ -1,0 +1,69 @@
+{{ .dataGrid }}
+
+<div id="attachment_preview" class="easyui-dialog" title="大图预览" data-options="modal:true, closed:true"
+     style="width:50%; height: 50%">
+    <img id="attachment_preview_img" src="" style="width: 100%;"/>
+</div>
+
+<script type="text/javascript">
+    var attachments_list_datagrid_toolbar = [];
+
+    function attachmentsListUrlFormatter(url) {
+        return "<img src='" + url + "' style='height: 30px;' />"
+    }
+
+    function attachmentsListSizeFormatter(size) {
+        if (size < 1024) {
+            return size + "B"
+        } else if (size / 1024 < 1024) {
+            return (size / 1024).toFixed(2) + "K"
+        } else {
+            return (size / (1024 ** 2)).toFixed(2) + "M"
+        }
+    }
+
+    function attachmentsListSizeOptFormatter(id, obj) {
+        var btn = [];
+        if (obj.type === "img") {
+            btn.push("<a href=\"javascript:;\" onclick=\"attachmentListPreview('" + obj.url + "')\">查看</a>");
+        }
+        btn.push("<a href=\"javascript:;\" onclick=\"downloadAttachments('" + obj.url + "')\" >下载</a>");
+        btn.push("<a href=\"javascript:;\" onclick=\"deleteAttachments(" + id + ")\">删除</a>");
+        return btn.join(' | ');
+    }
+
+
+    function attachmentListPreview(url) {
+        $("#attachment_preview_img").attr("src", url);
+        $('#attachment_preview').dialog('open')
+    }
+
+
+    function downloadAttachments(url) {
+        $.messager.confirm("下载成功", "确定要下载该附件吗？", function (result) {
+            if (!result) return false;
+            var a = document.createElement('a');
+            a.href = url;
+            a.target = '_blank';
+            a.id = 'download_attachments';
+            document.body.appendChild(a);
+            var alink = document.getElementById('download_attachments');
+            alink.click();
+            alink.parentNode.removeChild(a);
+        });
+    }
+
+    function deleteAttachments(id) {
+        $.messager.confirm("删除提醒", "确定要删除该附件吗？如果有在使用将会无法找到该资源！", function (result) {
+            if (!result) return false;
+            $.post("/b/attachments/delete", {id: id}, function (res) {
+                if (res.errcode) {
+                    $.messager.alert('提示信息', res.errmsg, 'error');
+                } else {
+                    $.messager.alert('提示信息', res.errmsg, 'info');
+                    $('#attachments_list_datagrid').datagrid('reload');
+                }
+            });
+        })
+    }
+</script>
