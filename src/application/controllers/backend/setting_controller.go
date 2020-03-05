@@ -75,7 +75,7 @@ func (c *SettingController) Site(iCache cache.ICache) {
 	if err != nil {
 		menuid = 0
 	}
-	currentpos := models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CurrentPos(menuid)
+	currentpos := models.NewMenuModel().CurrentPos(menuid)
 	grid := helper.Propertygrid("setting_site_propertygrid", helper.EasyuiOptions{
 		"title":   currentpos,
 		"url":     "/b/setting/site?grid=propertygrid",

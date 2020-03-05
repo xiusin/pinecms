@@ -93,13 +93,14 @@
     }
 
     //参数格式化
-    function optFormatter(val) {
+    function optFormatter(val,obj) {
+        val = obj.id;
         var link = '<a href="javascript:;" onclick="getEditModelSQL(' + val + ');">查看SQL</a> | ';
 
         link += '<a href="javascript:;" onclick="editModelFieldShowInList(' + val + ');">列表显示字段</a> | ';
         link += '<a href="javascript:;" onclick="editModelPreviewPage(' + val + ');">预览页面</a> | ';
-        if (curIsSystemModel) {
-             link +=  '<a href="javascript:;" onclick="editModel(' + val + ');" title="系统模型不可删除不可修改">查看</a> | <a href="javascript:;" disabled="disabled" style="color: #ccc;">删除</a>';
+        if (obj.model_type) {
+             link +=  '<a href="javascript:;" onclick="editModel(' + val + ');" title="系统模型不可删除不可修改">查看</a>';
         } else {
              link += '<a href="javascript:;" onclick="editModel(' + val + ');">编辑</a> | <a href="javascript:;" onclick="delModel(' + val + ');">删除</a>';
         }

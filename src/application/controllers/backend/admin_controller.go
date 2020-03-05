@@ -73,8 +73,8 @@ func (c *AdminController) PublicEditInfo() {
 		return
 	}
 	menuid, _ := c.Ctx().GetInt64("menuid")
-	currentPos := models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CurrentPos(menuid)
-	info, err := models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).GetUserInfo(aid)
+	currentPos := models.NewMenuModel().CurrentPos(menuid)
+	info, err := models.NewAdminModel().GetUserInfo(aid)
 	if err != nil {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
@@ -100,7 +100,7 @@ func (c *AdminController) Memberlist() {
 		if err != nil {
 			page = 1
 		}
-		data := models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).GetList("1", page, 10, orderField, orderType)
+		data := models.NewAdminModel().GetList("1", page, 10, orderField, orderType)
 		var retData []memberlist
 		//将数据以map的方式返回吧.
 		for _, v := range data {
@@ -113,7 +113,7 @@ func (c *AdminController) Memberlist() {
 				Userid:        v.Userid,
 				Username:      v.Username,
 			}
-			roleInfo, err := models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).GetRoleById(int64(v.Roleid))
+			roleInfo, err := models.NewAdminModel().GetRoleById(int64(v.Roleid))
 			if err != nil {
 				roleInfo.Rolename = ""
 			}
@@ -129,7 +129,7 @@ func (c *AdminController) Memberlist() {
 	}
 	menuid, _ := c.Ctx().GetInt64("menuid")
 	table := helper.Datagrid("admin_member_list_datagrid", "/b/admin/memberlist?grid=datagrid", helper.EasyuiOptions{
-		"title":   models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CurrentPos(menuid),
+		"title":   models.NewMenuModel().CurrentPos(menuid),
 		"toolbar": "admin_memberlist_datagrid_toolbar",
 	}, helper.EasyuiGridfields{
 		"用户名":  {"field": "Username", "width": "15", "index": "0"},
@@ -167,7 +167,7 @@ func (c *AdminController) PublicEditpwd() {
 		}
 		return
 	}
-	c.Ctx().Render().ViewData("currentpos", models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CurrentPos(menuid))
+	c.Ctx().Render().ViewData("currentpos", models.NewMenuModel().CurrentPos(menuid))
 	c.Ctx().Render().ViewData("admin", info)
 	c.Ctx().Render().HTML("backend/admin_editpwd.html")
 }
@@ -184,7 +184,7 @@ func (c *AdminController) PublicCheckEmail() {
 func (c *AdminController) PublicCheckPassword() {
 	aid, _ := c.Ctx().Value("adminid").(int64)
 	password := c.Ctx().FormValue("password")
-	admin, err := models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).GetUserInfo(aid)
+	admin, err := models.NewAdminModel().GetUserInfo(aid)
 	if err != nil {
 		helper.Ajax("无法查找到相关信息", 1, c.Ctx())
 		return
@@ -217,7 +217,7 @@ func (c *AdminController) PublicCheckRoleName() {
 		helper.Ajax("角色已存在", 1, c.Ctx())
 		return
 	}
-	if models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).CheckRoleName(rolename) {
+	if models.NewAdminModel().CheckRoleName(rolename) {
 		helper.Ajax("角色已存在", 1, c.Ctx())
 		return
 	}
@@ -255,7 +255,7 @@ func (c *AdminController) MemberAdd() {
 		helper.Ajax("添加管理员失败", 1, c.Ctx())
 		return
 	}
-	roles := models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).GetRoleList("1", 1, 1000)
+	roles := models.NewAdminModel().GetRoleList("1", 1, 1000)
 	c.Ctx().Render().ViewData("Roles", roles)
 	c.Ctx().Render().HTML("backend/admin_member_add.html")
 }
@@ -265,7 +265,7 @@ func (c *AdminController) MemberEdit() {
 		c.Ctx().WriteString("参数错误 : " + err.Error())
 		return
 	}
-	info, err := models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).GetUserInfo(adminid)
+	info, err := models.NewAdminModel().GetUserInfo(adminid)
 	if err != nil {
 		c.Ctx().WriteString("没有该管理员信息")
 		return
@@ -306,7 +306,7 @@ func (c *AdminController) MemberEdit() {
 		return
 	}
 
-	roles := models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).GetRoleList("1", 1, 1000)
+	roles := models.NewAdminModel().GetRoleList("1", 1, 1000)
 	c.Ctx().Render().ViewData("Roles", roles)
 	c.Ctx().Render().ViewData("Info", info)
 	c.Ctx().Render().HTML("backend/admin_member_edit.html")
@@ -341,7 +341,7 @@ func (c *AdminController) RoleList() {
 		if err != nil {
 			page = 1
 		}
-		data := models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).GetRoleList("1", page, 1000)
+		data := models.NewAdminModel().GetRoleList("1", page, 1000)
 		c.Ctx().Render().JSON(map[string]interface{}{
 			"total": len(data),
 			"rows":  data,
@@ -350,7 +350,7 @@ func (c *AdminController) RoleList() {
 	}
 
 	datagrid := helper.Datagrid("admin_rolelist_list_datagrid", "/b/admin/rolelist?grid=datagrid", helper.EasyuiOptions{
-		"title":   models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CurrentPos(menuid),
+		"title":   models.NewMenuModel().CurrentPos(menuid),
 		"toolbar": "admin_rolelist_datagrid_toolbar",
 	}, helper.EasyuiGridfields{
 		"角色名称": {"field": "Rolename", "width": "15", "index": "0"},
@@ -371,7 +371,7 @@ func (c *AdminController) RoleAdd() {
 		if hasErr {
 			helper.Ajax("表单数据错误", 1, c.Ctx())
 		} else {
-			if !models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).AddRole(rolename, description, int64(disabled), int64(listorder)) {
+			if !models.NewAdminModel().AddRole(rolename, description, int64(disabled), int64(listorder)) {
 				helper.Ajax("添加角色失败", 1, c.Ctx())
 			} else {
 				helper.Ajax("添加角色成功", 0, c.Ctx())
@@ -387,7 +387,7 @@ func (c *AdminController) RoleEdit(icache cache.ICache) {
 		c.Ctx().WriteString(err.Error())
 		return
 	}
-	role, err := models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).GetRoleById(id)
+	role, err := models.NewAdminModel().GetRoleById(id)
 	if err != nil {
 		c.Ctx().WriteString(err.Error())
 		return
@@ -405,7 +405,7 @@ func (c *AdminController) RoleEdit(icache cache.ICache) {
 			role.Description = description
 			role.Disabled = int64(disabled)
 			role.Listorder = int64(listorder)
-			if !models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).UpdateRole(role) {
+			if !models.NewAdminModel().UpdateRole(role) {
 				helper.Ajax("修改角色失败", 1, c.Ctx())
 			} else {
 				clearMenuCache(icache, c.Ctx().Value("orm").(*xorm.Engine))
@@ -428,7 +428,7 @@ func (c *AdminController) RoleDelete(icache cache.ICache) {
 		helper.Ajax("不能删除ROLEID为1的角色", 1, c.Ctx())
 		return
 	}
-	role, err := models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).GetRoleById(int64(roleid))
+	role, err := models.NewAdminModel().GetRoleById(int64(roleid))
 	if err != nil {
 		c.Ctx().WriteString(err.Error())
 		return
@@ -437,11 +437,11 @@ func (c *AdminController) RoleDelete(icache cache.ICache) {
 		helper.Ajax("没有找到对应的角色信息", 1, c.Ctx())
 		return
 	}
-	if models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).HasAdminByRoleId(int64(roleid)) {
+	if models.NewAdminModel().HasAdminByRoleId(int64(roleid)) {
 		helper.Ajax("该角色下有对应的管理员,无法删除", 1, c.Ctx())
 		return
 	}
-	if models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).DeleteRole(role) {
+	if models.NewAdminModel().DeleteRole(role) {
 		clearMenuCache(icache, c.Ctx().Value("orm").(*xorm.Engine))
 		helper.Ajax("删除角色成功", 0, c.Ctx())
 	} else {
@@ -498,7 +498,7 @@ func (c *AdminController) RolePermission(icache cache.ICache) {
 			helper.Ajax("更新权限成功", 0, c.Ctx())
 			return
 		}
-		roleTree := models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).GetRoleTree(0, roleid)
+		roleTree := models.NewMenuModel().GetRoleTree(0, roleid)
 		c.Ctx().Render().JSON(roleTree)
 		return
 	}

@@ -1,0 +1,5 @@
+{{block channelartlist(typeid,channelInfo="")  }}
+    {{ range _,channelInfo := channelartlist(typeid) }}
+    {{yield content}}
+    {{end}}
+{{end}}

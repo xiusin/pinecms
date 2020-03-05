@@ -1,14 +1,20 @@
 {{.DataGrid}}
 
-<div id="content_newslist_datagrid_toolbar" style="padding:1px;height:auto">
-    <form style="border-bottom:1px solid #ddd;margin-bottom:1px;padding:5px;">
-        标题:
-        <input type="text" name="search[title]" class="easyui-textbox"/>
-        &nbsp;&nbsp;&nbsp;时 间: <input name="search[begin]" class="easyui-datebox">
-        至: <input name="search[end]" class="easyui-datebox">
+<style>
+    .search-div {
+        display: inline-block; padding: 2px 7px;
+    }
+</style>
 
-        <a href="javascript:;" onclick="contentNewsListDatagridSearch(this)" class="easyui-linkbutton"
-           iconCls="icons-map-magnifier">搜索</a>
+<div id="content_newslist_datagrid_toolbar" style="padding:1px;height:auto">
+    <form style="border-bottom:1px solid #ddd;margin-bottom:1px;padding:5px;" id="newslist_content_search_form">
+        {{ .searchComps }}
+        <div class="search-div">时 间:<input name="search_begin" class="easyui-datebox">
+            -
+            <input name="search_end" class="easyui-datebox">
+
+            <a href="javascript:;" onclick="contentNewsListDatagridSearch(this)" class="easyui-linkbutton"
+               iconCls="icons-map-magnifier">搜索</a></div>
     </form>
 
     <div>
@@ -17,6 +23,9 @@
 
         <a href="javascript:;" class="easyui-linkbutton" data-options="plain:true,iconCls:'icons-arrow-arrow_down'"
            onclick="contentNewsListOrder()">排序</a>
+
+        <a href="javascript:;" class="easyui-linkbutton" data-options="plain:true,iconCls:'icons-arrow-arrow_refresh'"
+           onclick="contentNewListReload()">刷新</a>
     </div>
 </div>
 
@@ -24,18 +33,21 @@
 <div id="publish_content" class="easyui-dialog"
      data-options="title:'内容编辑', modal:true, closed:true"
      style="width: 100%; height: 100%; overflow: hidden">
-    <iframe id="publish_content_box" src="/b/content/public-welcome" style="width: 100%; height: 100%;border: none"></iframe>
+    <iframe id="publish_content_box" src="/b/content/public-welcome"
+            style="width: 100%; height: 100%;border: none"></iframe>
 </div>
 
 
 <script type="text/javascript">
     var content_newslist_datagrid_id = 'category_categorylist_datagrid';
-    var rowID = 0 ;
+    var rowID = 0;
+
     //排序格式化
     function contentNewsListOrderFormatter(val, arr) {
         rowID = val;
         return '<input class="content_gridlist_order_input" type="text" name="order[' + arr['id'] + ']" value="' + val + '" size="4" style="text-align:center">';
     }
+
     //时间格式化
     function contentNewsListTimeFormatter(val, arr) {
         return val === '1970-01-01 08:00:00' ? arr['inputtime'] : val;
@@ -49,19 +61,21 @@
         return btn.join(' | ');
     }
 
-    function getPwdTypeFormatter(type) {
-        return type == 2 ? "直接获取" : '公众号获取';
+    function contentNewListReload() {
+        $('#' + content_newslist_datagrid_id).datagrid('reload')
     }
 
     //搜索
     function contentNewsListDatagridSearch(that) {
         var content_datagrid = $('#' + content_newslist_datagrid_id);
         var queryParams = content_datagrid.datagrid('options').queryParams;
-        $.each($(that).parent('form').serializeArray(), function () {
+        $.each($("#newslist_content_search_form").serializeArray(), function () {
             queryParams[this['name']] = this['value'];
         });
+        content_datagrid.datagrid({queryParams: queryParams})
         content_datagrid.datagrid('reload');
     }
+
     //添加
     function contentNewsListAdd() {
         var url = "/b/content/add?catid={{.catid}}";
@@ -71,9 +85,10 @@
         $("#publish_content_box").attr("src", url);
         $("#publish_content").dialog("open");
     }
+
     //编辑
     function contentNewsListEdit(id) {
-        if (typeof(id) !== 'number') {
+        if (typeof (id) !== 'number') {
             $.messager.alert('提示信息', '未选择数据', 'error');
             return false;
         }
@@ -86,9 +101,12 @@
     }
 
     //中间内容区域打开
-    function contentMainOpenUrl(url, iframe){
+    function contentMainOpenUrl(url, iframe) {
 
-        var data = iframe ? {href: null, content: '<iframe src="'+ url +'" frameborder="0" fit="true" border="none" width="100%" height="100%"></iframe>'} : {href:url};
+        var data = iframe ? {
+            href: null,
+            content: '<iframe src="' + url + '" frameborder="0" fit="true" border="none" width="100%" height="100%"></iframe>'
+        } : {href: url};
         $('#content_index_center_panel').panel(data);
     }
 
@@ -99,7 +117,7 @@
             var obj = $('#' + content_newslist_datagrid_id).datagrid('getSelections');
             if (obj) for (var i = 0; i < obj.length; i++) ids.push(obj[i].id);
         } else {
-            if (typeof(id) === 'number') ids.push(id);
+            if (typeof (id) === 'number') ids.push(id);
         }
         if (ids.length === 0) {
             $.messager.alert('提示信息', '未选择数据', 'error');
@@ -117,6 +135,7 @@
             }, 'json');
         });
     }
+
     //排序
     function contentNewsListOrder() {
         $.post("/b/content/order?catid={{.catid}}", $('.content_gridlist_order_input').serialize(), function (res) {

@@ -31,7 +31,7 @@ type ModelForm struct {
 	ID                string `form:"id" json:"id"`
 	intID             int64
 	Enabled           string   `form:"enabled" json:"enabled"`
-	ModelType         int      `form:"model_type" json:"model_type"`
+	ModelType         int      `form:"type" json:"type"`
 	Name              string   `form:"name" json:"name"`
 	Table             string   `form:"table" json:"table"`
 	FeTplIndex        string   `form:"tpl_index" json:"tpl_index"`
@@ -149,17 +149,26 @@ func (c *DocumentController) ModelFieldShowInListPage() {
 	if mid < 1 {
 		return
 	}
-	model := models.NewDocumentModel(c.Ctx().Value("orm").(*xorm.Engine)).GetByID(mid)
+	model := models.NewDocumentModel().GetByID(mid)
 	if model == nil || model.Id < 1 {
 		return
 	}
-	fields := models.NewDocumentFieldDslModel(c.Ctx().Value("orm").(*xorm.Engine)).GetList(mid)
+	fields := models.NewDocumentFieldDslModel().GetList(mid)
 	var showInPage = map[string]controllers.FieldShowInPageList{}
 	if c.Ctx().IsPost() {
 		postDatas := c.Ctx().PostData()
 		for _, field := range fields {
 			_, ok := postDatas["show_"+field.TableField]
-			showInPage[field.TableField] = controllers.FieldShowInPageList{Show: ok, Formatter: postDatas["formatter_"+field.TableField][0]}
+			search := 0
+			if _, exists := postDatas["search_"+field.TableField]; exists {
+				ssearch := postDatas["search_"+field.TableField][0]
+				search, _ = strconv.Atoi(ssearch)
+			}
+			showInPage[field.TableField] = controllers.FieldShowInPageList{
+				Show:      ok,
+				Search:    search,
+				Formatter: postDatas["formatter_"+field.TableField][0],
+			}
 		}
 		strs, _ := json.Marshal(showInPage)
 		model.FieldShowInList = string(strs)
@@ -188,28 +197,29 @@ func (c *DocumentController) ModelList() {
 	page, _ := c.Ctx().URLParamInt64("page")
 	rows, _ := c.Ctx().URLParamInt64("rows")
 	if page > 0 {
-		list, total := models.NewDocumentModel(c.Ctx().Value("orm").(*xorm.Engine)).GetList(page, rows)
+		list, total := models.NewDocumentModel().GetList(page, rows)
 		c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": total})
 		return
 	}
 
 	menuid, _ := c.Ctx().URLParamInt64("menuid")
 	table := helper.Datagrid("model_list_datagrid", "/b/model/list", helper.EasyuiOptions{
-		"title":   models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CurrentPos(menuid),
+		"title":   models.NewMenuModel().CurrentPos(menuid),
 		"toolbar": "model_list_datagrid_toolbar",
 	}, helper.EasyuiGridfields{
-		"模型名称":  {"field": "name", "width": "30", "index": "0"},
-		"数据表名称": {"field": "table", "width": "30", "index": "1"},
-		"启用":    {"field": "enabled", "width": "20", "index": "2", "formatter": "enabledFormatter"},
-		"系统模型":  {"field": "is_system", "width": "20", "index": "3", "formatter": "systemFormatter"},
-		"操作":    {"field": "id", "index": "4", "formatter": "optFormatter"},
+		"模型ID":  {"field": "id", "width": "10", "index": "0"},
+		"模型名称":  {"field": "name", "width": "30", "index": "1"},
+		"数据表名称": {"field": "table", "width": "20", "index": "2"},
+		"启用":    {"field": "enabled", "width": "20", "index": "3", "formatter": "enabledFormatter"},
+		"系统模型":  {"field": "model_type", "width": "20", "index": "4", "formatter": "systemFormatter"},
+		"操作":    {"field": "o", "index": "5", "formatter": "optFormatter"},
 	})
 	c.Ctx().Render().ViewData("dataGrid", template.HTML(table))
 	c.Ctx().Render().HTML("backend/model_list.html")
 }
 
 func (c *DocumentController) ModelAdd() {
-	list, _ := models.NewDocumentModelFieldModel(c.Ctx().Value("orm").(*xorm.Engine)).GetList(1, 1000)
+	list, _ := models.NewDocumentModelFieldModel().GetList(1, 1000)
 	if c.Ctx().IsPost() {
 		var data ModelForm
 		if err := c.Ctx().BindJSON(&data); err != nil {
@@ -254,7 +264,7 @@ func (c *DocumentController) ModelAdd() {
 			enabled = 1
 		}
 		_, err = c.Ctx().Value("orm").(*xorm.Engine).Transaction(func(session *xorm.Session) (i interface{}, err error) {
-			documentModel := &tables.IriscmsDocumentModel{
+			dm := &tables.IriscmsDocumentModel{
 				Name:        data.Name,
 				Table:       data.Table,
 				Enabled:     enabled,
@@ -263,7 +273,7 @@ func (c *DocumentController) ModelAdd() {
 				FeTplList:   helper.EasyUiIDToFilePath(data.FeTplList),
 				FeTplDetail: helper.EasyUiIDToFilePath(data.FeTplDetail),
 			}
-			affected, err := session.Insert(documentModel)
+			affected, err := session.Insert(dm)
 			if affected < 1 {
 				if err == nil {
 					err = errors.New("保存模型数据失败")
@@ -280,7 +290,7 @@ func (c *DocumentController) ModelAdd() {
 			var fields []tables.IriscmsDocumentModelDsl
 			for k, name := range data.FieldName {
 				f := tables.IriscmsDocumentModelDsl{
-					Mid:          documentModel.Id,
+					Mid:          dm.Id,
 					FormName:     name,
 					TableField:   data.FieldField[k],
 					FieldType:    data.fieldType[k],
@@ -318,7 +328,7 @@ func (c *DocumentController) ModelAdd() {
 		helper.Ajax("添加模型成功", 0, c.Ctx())
 		return
 	}
-	currentPos := models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CurrentPos(64)
+	currentPos := models.NewMenuModel().CurrentPos(64)
 
 	c.Ctx().Render().ViewData("list", list)
 	c.Ctx().Render().ViewData("title", currentPos)
@@ -328,7 +338,7 @@ func (c *DocumentController) ModelAdd() {
 }
 
 func (c *DocumentController) ModelEdit() {
-	list, _ := models.NewDocumentModelFieldModel(c.Ctx().Value("orm").(*xorm.Engine)).GetList(1, 1000)
+	list, _ := models.NewDocumentModelFieldModel().GetList(1, 1000)
 	if c.Ctx().IsPost() {
 		var data ModelForm
 		if err := c.Ctx().BindJSON(&data); err != nil {
@@ -341,9 +351,8 @@ func (c *DocumentController) ModelEdit() {
 			ty, _ := strconv.ParseInt(v, 10, 64)
 			data.fieldType = append(data.fieldType, ty)
 		}
-
 		// 先看模型
-		document := models.NewDocumentModel(c.Ctx().Value("orm").(*xorm.Engine)).GetByID(data.intID)
+		document := models.NewDocumentModel().GetByID(data.intID)
 		if document == nil || document.Id < 1 {
 			helper.Ajax("模型不存在", 1, c.Ctx())
 			return
@@ -394,7 +403,7 @@ func (c *DocumentController) ModelEdit() {
 				return nil, err
 			}
 			// 先删除所有字段
-			if models.NewDocumentFieldDslModel(c.Ctx().Value("orm").(*xorm.Engine)).DeleteByMID(document.Id) == false {
+			if models.NewDocumentFieldDslModel().DeleteByMID(document.Id) == false {
 				return nil, errors.New("删除表字段失败")
 			}
 			var fieldHtmlsMap = map[int64]*tables.IriscmsDocumentModelField{}
@@ -448,14 +457,14 @@ func (c *DocumentController) ModelEdit() {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	currentPos := models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CurrentPos(64)
+	currentPos := models.NewMenuModel().CurrentPos(64)
 	// 查找模型信息
-	document := models.NewDocumentModel(c.Ctx().Value("orm").(*xorm.Engine)).GetByID(mid)
+	document := models.NewDocumentModel().GetByID(mid)
 	if document == nil || document.Id < 1 {
 		helper.Ajax("模型不存在或已删除", 1, c.Ctx())
 		return
 	}
-	fields := models.NewDocumentFieldDslModel(c.Ctx().Value("orm").(*xorm.Engine)).GetList(mid)
+	fields := models.NewDocumentFieldDslModel().GetList(mid)
 	c.Ctx().Render().ViewData("fields", fields)
 	c.Ctx().Render().ViewData("fieldslen", len(fields))
 	c.Ctx().Render().ViewData("document", document)
@@ -474,7 +483,7 @@ func (c *DocumentController) ModelDelete() {
 		helper.Ajax("模型参数错误", 1, c.Ctx())
 		return
 	}
-	model := models.NewDocumentModel(c.Ctx().Value("orm").(*xorm.Engine))
+	model := models.NewDocumentModel()
 	dm := model.GetByID(modelID)
 	if dm == nil {
 		helper.Ajax("模型不存在", 1, c.Ctx())
@@ -493,37 +502,39 @@ var sqlFieldTypeMap = map[string]string{
 }
 
 // 生成SQL 传入模型ID
-func (c *DocumentController) GenSQL() {
+func (c *DocumentController) GenSQL(orm *xorm.Engine) {
 	modelID, _ := c.Ctx().URLParamInt64("mid")
 	if modelID < 1 {
 		helper.Ajax("模型参数错误", 1, c.Ctx())
 		return
 	}
-	model := models.NewDocumentModel(c.Ctx().Value("orm").(*xorm.Engine))
+	model := models.NewDocumentModel()
 	dm := model.GetByID(modelID)
 	if dm == nil {
 		helper.Ajax("模型不存在", 1, c.Ctx())
 		return
 	}
 
+	// 如果已经执行过SQL 直接返回一个错误
 	if dm.Execed == 1 {
 		helper.Ajax("没有任何改动可以执行", 1, c.Ctx())
 		return
 	}
+	//由于执行与SQL显示在同一个控制器内, 所以通过exec区分一下
 	exec, _ := c.Ctx().GetBool("exec")
 	// 模型字段
-	fields := models.NewDocumentFieldDslModel(c.Ctx().Value("orm").(*xorm.Engine)).GetList(modelID)
+	fields := models.NewDocumentFieldDslModel().GetList(modelID)
 	// 关联数据
-	fieldTypes := models.NewDocumentModelFieldModel(c.Ctx().Value("orm").(*xorm.Engine)).GetMap()
+	fieldTypes := models.NewDocumentModelFieldModel().GetMap()
 	preg, _ := regexp.Compile("/(.+?)\\?")
-	tableSchema := strings.TrimLeft(preg.FindString(c.Ctx().Value("orm").(*xorm.Engine).DataSourceName()), "/")
+	tableSchema := strings.TrimLeft(preg.FindString(orm.DataSourceName()), "/")
 	tableSchema = strings.TrimRight(tableSchema, "?")
 
 	var existsFields []map[string]string
 	var fieldStrs []string
 	querySQL := ""
 	tableName := "iriscms_" + dm.Table
-	if ok, _ := c.Ctx().Value("orm").(*xorm.Engine).IsTableExist(tableName); ok {
+	if ok, _ := orm.IsTableExist(tableName); ok {
 		querySQL = "ALTER TABLE `" + tableName + "` "
 		existsFields, _ = c.Ctx().Value("orm").(*xorm.Engine).QueryString("select * from information_schema.columns where TABLE_NAME='" + tableName + "' and  table_schema = '" + tableSchema + "'")
 		for _, field := range fields {
@@ -549,30 +560,31 @@ func (c *DocumentController) GenSQL() {
 		}
 	} else {
 		existsFields = append(existsFields, extraFields...)
-		if dm.ModelType != models.SYSTEM_TYPE {
-			querySQL += "CREATE TABLE `" + tableName + "` ( \n"
-			for _, f := range existsFields {
-				var notNull = ""
-				if f["IS_NULLABLE"] == "NO" {
-					notNull = "NOT NULL"
-				}
-				var defaultVal = ""
-				if f["COLUMN_DEFAULT"] != "" {
-					defaultVal = "DEFAULT '" + f["COLUMN_DEFAULT"] + "'"
-				}
-				querySQL += fmt.Sprintf("\t`%s` %s %s %s %s %s,\n", f["COLUMN_NAME"], f["COLUMN_TYPE"], notNull, defaultVal, f["EXTRA"], `COMMENT "`+f["COLUMN_COMMENT"]+`"`)
-				if f["COLUMN_NAME"] == "id" {
-					for _, field := range fields {
-						colType, ok := sqlFieldTypeMap[fieldTypes[field.FieldType].Type]
-						if !ok {
-							colType = fieldTypes[field.FieldType].Type
-						}
-						querySQL += fmt.Sprintf("\t`%s` %s %s %s %s %s,\n", field.TableField, colType, "", "", "", `COMMENT "`+field.FormName+`"`)
+		//if dm.ModelType != models.SYSTEM_TYPE {
+		// 无论什么模型, 都要创建数据表.
+		querySQL += "CREATE TABLE `" + tableName + "` ( \n"
+		for _, f := range existsFields {
+			var notNull = ""
+			if f["IS_NULLABLE"] == "NO" {
+				notNull = "NOT NULL"
+			}
+			var defaultVal = ""
+			if f["COLUMN_DEFAULT"] != "" {
+				defaultVal = "DEFAULT '" + f["COLUMN_DEFAULT"] + "'"
+			}
+			querySQL += fmt.Sprintf("\t`%s` %s %s %s %s %s,\n", f["COLUMN_NAME"], f["COLUMN_TYPE"], notNull, defaultVal, f["EXTRA"], `COMMENT "`+f["COLUMN_COMMENT"]+`"`)
+			if f["COLUMN_NAME"] == "id" {
+				for _, field := range fields {
+					colType, ok := sqlFieldTypeMap[fieldTypes[field.FieldType].Type]
+					if !ok {
+						colType = fieldTypes[field.FieldType].Type
 					}
+					querySQL += fmt.Sprintf("\t`%s` %s %s %s %s %s,\n", field.TableField, colType, "", "", "", `COMMENT "`+field.FormName+`"`)
 				}
 			}
-			querySQL += "\tPRIMARY KEY (`id`) USING BTREE\n, KEY `refid` (`refid`)  USING BTREE) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 		}
+		querySQL += "\tPRIMARY KEY (`id`) USING BTREE\n, KEY `refid` (`refid`)  USING BTREE) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+		//}
 	}
 	querySQL = regexp.MustCompile(" +").ReplaceAllString(querySQL, " ")
 	if exec && querySQL != "" {
@@ -593,12 +605,13 @@ func (c *DocumentController) GenSQL() {
 
 }
 
+// 预览模型表单界面
 func (c *DocumentController) PreviewPage() {
 	modelID, _ := c.Ctx().URLParamInt64("mid")
 	if modelID < 1 {
 		helper.Ajax("模型参数错误", 1, c.Ctx())
 		return
 	}
-	c.Ctx().Render().ViewData("form", template.HTML(buildModelForm(c.Ctx().Value("orm").(*xorm.Engine), modelID, nil)))
+	c.Ctx().Render().ViewData("form", template.HTML(buildModelForm(modelID, nil)))
 	c.Ctx().Render().HTML("backend/model_publish.html")
 }

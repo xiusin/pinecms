@@ -10,8 +10,10 @@ import (
 
 type FieldShowInPageList struct {
 	Show      bool   `json:"show"`
+	Search    int    `json:"search"`
 	Formatter string `json:"formatter"`
 }
+
 func GetSetting(xorm *xorm.Engine, cache cache.ICache) (map[string]string, error) {
 	var settingData = map[string]string{}
 	res, err := cache.Get(CacheSetting)
@@ -40,7 +42,7 @@ func GetSetting(xorm *xorm.Engine, cache cache.ICache) (map[string]string, error
 	return settingData, nil
 }
 
-func GetInMap(data map[string]FieldShowInPageList,key string) FieldShowInPageList {
+func GetInMap(data map[string]FieldShowInPageList, key string) FieldShowInPageList {
 	s, o := data[key]
 	if o {
 		return s
@@ -48,4 +50,3 @@ func GetInMap(data map[string]FieldShowInPageList,key string) FieldShowInPageLis
 		return FieldShowInPageList{}
 	}
 }
-

@@ -31,14 +31,14 @@ func (c *LinkController) List() {
 	rows, _ := c.Ctx().URLParamInt64("rows")
 
 	if page > 0 {
-		list, total := models.NewLinkModel(c.Ctx().Value("orm").(*xorm.Engine)).GetList(page, rows)
+		list, total := models.NewLinkModel().GetList(page, rows)
 		c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": total})
 		return
 	}
 
 	menuid, _ := c.Ctx().URLParamInt64("menuid")
 	table := helper.Datagrid("link_list_datagrid", "/b/link/list", helper.EasyuiOptions{
-		"title":   models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CurrentPos(menuid),
+		"title":   models.NewMenuModel().CurrentPos(menuid),
 		"toolbar": "link_list_datagrid_toolbar",
 	}, helper.EasyuiGridfields{
 		"排序":   {"field": "listorder", "width": "20", "index": "0", "formatter": "linkListOrderFormatter"},
@@ -64,7 +64,7 @@ func (c *LinkController) Add() {
 			return
 		}
 		d.Addtime = time.Now().In(helper.GetLocation())
-		if models.NewLinkModel(c.Ctx().Value("orm").(*xorm.Engine)).Add(&d) > 0 {
+		if models.NewLinkModel().Add(&d) > 0 {
 			helper.Ajax("添加友链成功", 0, c.Ctx())
 		} else {
 			helper.Ajax("添加友链失败", 1, c.Ctx())
@@ -85,7 +85,7 @@ func (c *LinkController) Edit() {
 			return
 		}
 		d.Addtime = time.Now().In(helper.GetLocation())
-		if models.NewLinkModel(c.Ctx().Value("orm").(*xorm.Engine)).Update(&d) {
+		if models.NewLinkModel().Update(&d) {
 			helper.Ajax("修改友链成功", 0, c.Ctx())
 		} else {
 			helper.Ajax("修改友链失败", 1, c.Ctx())
@@ -97,7 +97,7 @@ func (c *LinkController) Edit() {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	link := models.NewLinkModel(c.Ctx().Value("orm").(*xorm.Engine)).Get(linkId)
+	link := models.NewLinkModel().Get(linkId)
 	if link == nil {
 		helper.Ajax("链接不存在", 1, c.Ctx())
 		return
@@ -112,7 +112,7 @@ func (c *LinkController) Delete() {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	if models.NewLinkModel(c.Ctx().Value("orm").(*xorm.Engine)).Delete(linkId) {
+	if models.NewLinkModel().Delete(linkId) {
 		helper.Ajax("删除链接成功", 0, c.Ctx())
 	} else {
 		helper.Ajax("删除链接失败", 1, c.Ctx())

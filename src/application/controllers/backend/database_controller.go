@@ -97,7 +97,7 @@ func (c *DatabaseController) Manager(orm *xorm.Engine) {
 	}
 	menuid, _ := c.Ctx().URLParamInt64("menuid")
 	table := helper.Datagrid("database_list_datagrid", "/b/database/manager?datagrid=true", helper.EasyuiOptions{
-		"title":        models.NewMenuModel(orm).CurrentPos(menuid),
+		"title":        models.NewMenuModel().CurrentPos(menuid),
 		"toolbar":      "database_list_datagrid_toolbar",
 		"singleSelect": "false",
 		"pagination":   "false",
@@ -150,13 +150,13 @@ func (c *DatabaseController) Optimize(orm *xorm.Engine) {
 	helper.Ajax("表 "+c.Ctx().FormValue("tables")+" 优化成功", 0, c.Ctx())
 }
 
-func (c *DatabaseController) Backup(orm *xorm.Engine) {
+func (c *DatabaseController) Backup() {
 	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
 	msg, code := c.backup(settingData, false)
 	helper.Ajax(msg, int64(code), c.Ctx())
 }
 
-func (c *DatabaseController) BackupList(orm *xorm.Engine) {
+func (c *DatabaseController) BackupList() {
 	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
 	if c.Ctx().URLParam("datagrid") == "true" {
 		uploader := getStorageEngine(settingData)
@@ -180,7 +180,7 @@ func (c *DatabaseController) BackupList(orm *xorm.Engine) {
 
 	menuid, _ := c.Ctx().URLParamInt64("menuid")
 	table := helper.Datagrid("database_backup_list_datagrid", "/b/database/backup-list?datagrid=true", helper.EasyuiOptions{
-		"title":      models.NewMenuModel(orm).CurrentPos(menuid),
+		"title":      models.NewMenuModel().CurrentPos(menuid),
 		"toolbar":    "database_backup_list_datagrid_toolbar",
 		"pagination": "false",
 	}, helper.EasyuiGridfields{
@@ -191,7 +191,7 @@ func (c *DatabaseController) BackupList(orm *xorm.Engine) {
 	c.Ctx().Render().HTML("backend/database_backup_list.html")
 }
 
-func (c *DatabaseController) BackupDownload(orm *xorm.Engine) {
+func (c *DatabaseController) BackupDownload() {
 	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
 	name := c.Ctx().FormValue("name")
 	if name == "" {

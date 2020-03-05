@@ -1,7 +1,6 @@
 package backend
 
 import (
-	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris/v12"
 	"github.com/xiusin/iriscms/src/application/models"
 	"github.com/xiusin/iriscms/src/common/helper"
@@ -36,7 +35,7 @@ func (c *LoginController) Index() {
 		//	helper.Ajax("验证码错误", 1, this.Ctx)
 		//	return
 		//}
-		admin, err := models.NewAdminModel(c.Ctx().Value("orm").(*xorm.Engine)).Login(username, password, c.Ctx().ClientIP())
+		admin, err := models.NewAdminModel().Login(username, password, c.Ctx().ClientIP())
 		if err != nil {
 			helper.Ajax(err.Error(), 1, c.Ctx())
 		} else {

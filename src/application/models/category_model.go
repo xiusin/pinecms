@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/xiusin/pine/di"
 	"log"
 
 	tables "github.com/xiusin/iriscms/src/application/models/tables"
@@ -12,31 +13,36 @@ type CategoryModel struct {
 	orm *xorm.Engine
 }
 
-func NewCategoryModel(orm *xorm.Engine) *CategoryModel {
-	return &CategoryModel{orm: orm}
+func NewCategoryModel() *CategoryModel {
+	return &CategoryModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
 }
 
 func (c CategoryModel) GetTree(categorys []tables.IriscmsCategory, parentid int64) []map[string]interface{} {
 	var res = []map[string]interface{}{}
 	if len(categorys) != 0 {
 		// 筛选
-		models ,_ := NewDocumentModel(c.orm).GetList(1, 1000)
-		var m = map[int64]string {}
+		models, _ := NewDocumentModel().GetList(1, 1000)
+		var m = map[int64]string{}
+		m[0] = "自定义模型"
 		for _, model := range models {
 			m[model.Id] = model.Name
 		}
-
 		for _, category := range categorys {
 			if category.Parentid == parentid {
+				modelName := m[category.ModelId]
+				if category.Type > 1 {
+					modelName = ""
+				}
 				son := map[string]interface{}{
 					"catid":       category.Catid,
 					"catname":     category.Catname,
-					"model_id":    m[category.ModelId],
+					"model_id":    modelName,
 					"type":        category.Type,
 					"description": category.Description,
 					"ismenu":      category.Ismenu,
 					"listorder":   category.Listorder,
 					"operateid":   category.Catid,
+					"router":      category.ManagerContentRouter,
 				}
 				son["children"] = c.GetTree(categorys, category.Catid)
 				res = append(res, son)
@@ -114,10 +120,12 @@ func (c CategoryModel) GetCategory(id int64) (tables.IriscmsCategory, error) {
 }
 
 func (c CategoryModel) AddCategory(category tables.IriscmsCategory) bool {
-	res, err := c.orm.Insert(&category)
-	if err != nil || res == 0 {
+	_, err := c.orm.Insert(&category)
+	if err != nil {
+		log.Println("AddCategoryError", err)
 		return false
 	}
+
 	return true
 }
 

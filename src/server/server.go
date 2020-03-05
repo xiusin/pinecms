@@ -2,7 +2,13 @@ package config
 
 import (
 	"fmt"
+	"github.com/natefinch/lumberjack"
+	"github.com/xiusin/debug"
+	"github.com/xiusin/logger"
+	request_log "github.com/xiusin/pine/middlewares/request-log"
+	"io"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 
@@ -13,7 +19,6 @@ import (
 	"github.com/xiusin/pine/cache/providers/badger"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pine/middlewares/pprof"
-	request_log "github.com/xiusin/pine/middlewares/request-log"
 	"github.com/xiusin/pine/render/engine/jet"
 	"github.com/xiusin/pine/render/engine/template"
 	"github.com/xiusin/pine/sessions"
@@ -28,7 +33,7 @@ import (
 	"github.com/xiusin/iriscms/src/application/controllers/backend"
 	"github.com/xiusin/iriscms/src/application/controllers/middleware"
 	"github.com/xiusin/iriscms/src/common/helper"
-	"github.com/xiusin/iriscms/src/common/logger"
+	ormlogger "github.com/xiusin/iriscms/src/common/logger"
 )
 
 var (
@@ -47,7 +52,7 @@ func initDatabase() {
 	if err != nil {
 		panic(err.Error())
 	}
-	_orm.SetLogger(logger.NewIrisCmsXormLogger(helper.NewOrmLogFile(conf.LogPath), core.LOG_INFO))
+	_orm.SetLogger(ormlogger.NewIrisCmsXormLogger(helper.NewOrmLogFile(conf.LogPath), core.LOG_INFO))
 	err = _orm.Ping() //检测是否联通数据库
 	if err != nil {
 		panic(err.Error())
@@ -56,9 +61,6 @@ func initDatabase() {
 	_orm.ShowExecTime(o.ShowExecTime)
 	_orm.SetMaxOpenConns(int(o.MaxOpenConns))
 	_orm.SetMaxIdleConns(int(o.MaxIdleConns))
-
-
-	_orm.Prepare()
 	//_orm.SetDefaultCacher(cacher)
 	//configs := map[string]string{
 	//	"conn": Cfg.RedisAddr,
@@ -67,27 +69,26 @@ func initDatabase() {
 	//ccStore := cachestore.NewRedisCache(configs)
 	//ccStore.Debug = true
 	//cacher := xorm.NewLRUCacher(ccStore, 99999999)
-	// Unknown colType BIGINT UNSIGNED
+
+
 
 	XOrmEngine = _orm
-	//syncTable()
 }
 
 func initApp() {
 	//实例化服务器
 	app = pine.New()
 
-
 	app.Use(request_log.RequestRecorder())
+
+	app.SetRecoverHandler(debug.Recover(app))
 
 	diConfig()
 
-	// 数据库资源访问鉴权
 	app.Use(middleware.CheckDatabaseBackupDownload())
 
 	//配置前端缓存10秒
 	//app.Use(iris.Cache304(10 * time.Second))
-	//配置PPROF
 	if conf.Pprof.Open {
 		p := pprof.New()
 		app.GET(conf.Pprof.Route, p)
@@ -105,14 +106,13 @@ func Server() {
 }
 
 func registerStatic() {
-	app.Static(conf.Favicon, "favicon.ico")
+	//app.Static(conf.Favicon, "favicon.ico")
 	for _, static := range conf.Statics {
 		app.Static(static.Route, filepath.FromSlash(static.Path))
 	}
 
 }
 
-//利用中间件执行控制器前置操作
 func registerBackendRoutes() {
 	app.Use(middleware.SetGlobalConfigData(XOrmEngine, iCache))
 	app.Group(
@@ -145,6 +145,7 @@ func runServe() {
 			}
 		}()
 	}
+
 	app.Run(
 		pine.Addr(fmt.Sprintf(":%d", conf.Port)),
 		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))),
@@ -155,7 +156,6 @@ func runServe() {
 	)
 }
 
-// 获取mvc配置, 分离相关session
 func diConfig() {
 	iCache = badger.New(badger.Option{TTL: int(conf.Session.Expires), Path: conf.CacheDb})
 	di.Set("cache.ICache", func(builder di.BuilderInf) (i interface{}, err error) {
@@ -166,6 +166,19 @@ func diConfig() {
 		return conf, nil
 	}, true)
 
+	di.Set(di.ServicePineLogger, func(builder di.BuilderInf) (i interface{}, err error) {
+		loggers := logger.New()
+		loggers.SetReportCaller(true, 3)
+		loggers.SetLogLevel(logger.DebugLevel)
+		loggers.SetOutput(io.MultiWriter(os.Stdout, &lumberjack.Logger{
+			Filename:   filepath.Join(conf.LogPath, "pinecms.log"),
+			MaxSize:    500,
+			Compress:   true,
+		}))
+		return loggers, nil
+	}, false)
+
+
 	di.Set(di.ServicePineSessions, func(builder di.BuilderInf) (i interface{}, err error) {
 		sess := sessions.New(cacheProvider.NewStore(iCache), &sessions.Config{
 			CookieName: conf.Session.Name,
@@ -174,25 +187,31 @@ func diConfig() {
 		return sess, nil
 	}, true)
 
-
-	htmlEngine := template.New(conf.View.Path,".html", conf.View.Reload)
+	htmlEngine := template.New(conf.View.Path, ".html", conf.View.Reload)
 
 	htmlEngine.AddFunc("GetInMap", controllers.GetInMap)
 	pine.RegisterViewEngine(htmlEngine)
 
-
-	jetEngine := jet.New(conf.View.Path,".jet", conf.View.Reload)
+	jetEngine := jet.New(conf.View.Path, ".jet", conf.View.Reload)
 	jetEngine.AddGlobalFunc("flink", controllers.Flink)
-	pine.RegisterViewEngine( jetEngine)
+	jetEngine.AddGlobalFunc("type", controllers.Type)
+	jetEngine.AddGlobalFunc("channel", controllers.Channel)
+	jetEngine.AddGlobalFunc("channelartlist", controllers.ChannelArtList)
+	pine.RegisterViewEngine(jetEngine)
 
+	di.Set("pinecms.jet", func(builder di.BuilderInf) (i interface{}, err error) {
+		return jetEngine, nil
+	}, true)
 
 	di.Set(XOrmEngine, func(builder di.BuilderInf) (i interface{}, err error) {
 		return XOrmEngine, nil
 	}, true)
+
 
 	app.Use(func(ctx *pine.Context) {
 		ctx.Set("cache", iCache)
 		ctx.Set("orm", XOrmEngine)
 		ctx.Next()
 	})
+
 }

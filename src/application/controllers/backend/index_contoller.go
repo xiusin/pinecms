@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-xorm/xorm"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
@@ -103,7 +102,7 @@ func (c *IndexController) Index() {
 		c.Ctx().Redirect("/b/login/index")
 		return
 	}
-	menus := models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).GetMenu(0, roleid.(int64)) //读取一级菜单
+	menus := models.NewMenuModel().GetMenu(0, roleid.(int64)) //读取一级菜单
 	c.Ctx().Render().ViewData("menus", menus)
 	c.Ctx().Render().ViewData("username", c.Session().Get("username"))
 	c.Ctx().Render().HTML("backend/index_index.html")
@@ -154,7 +153,7 @@ func (c *IndexController) Menu(iCache cache.ICache) {
 	if roleid == nil {
 		roleid = interface{}(int64(0))
 	}
-	menus := models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).GetMenu(meid, roleid.(int64)) //获取menuid内容
+	menus := models.NewMenuModel().GetMenu(meid, roleid.(int64)) //获取menuid内容
 	cacheKey := fmt.Sprintf(controllers.CacheAdminMenuByRoleIdAndMenuId, roleid, meid)
 	var menujs []map[string]interface{} //要返回json的对象
 	var data string
@@ -166,7 +165,7 @@ func (c *IndexController) Menu(iCache cache.ICache) {
 	//}
 	if data == "" || json.Unmarshal([]byte(data), &menujs) != nil {
 		for _, v := range menus {
-			menu := models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).GetMenu(v.Id, roleid.(int64))
+			menu := models.NewMenuModel().GetMenu(v.Id, roleid.(int64))
 			if len(menu) == 0 {
 				continue
 			}

@@ -24,14 +24,14 @@ func (c *AttachmentController) List(orm *xorm.Engine) {
 	rows, _ := c.Ctx().URLParamInt64("rows")
 
 	if page > 0 {
-		list, total := models.NewAttachmentsModel(orm).GetList(page, rows)
+		list, total := models.NewAttachmentsModel().GetList(page, rows)
 		c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": total})
 		return
 	}
 
 	menuid, _ := c.Ctx().URLParamInt64("menuid")
 	table := helper.Datagrid("attachments_list_datagrid", "/b/attachments/list", helper.EasyuiOptions{
-		"title":   models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CurrentPos(menuid),
+		"title":   models.NewMenuModel().CurrentPos(menuid),
 		"toolbar": "attachments_list_datagrid_toolbar",
 	}, helper.EasyuiGridfields{
 		"名称":   {"field": "origin_name", "width": "20", "index": "0"},
@@ -51,7 +51,7 @@ func (c *AttachmentController) Delete(orm *xorm.Engine) {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	if models.NewAttachmentsModel(orm).Delete(id) {
+	if models.NewAttachmentsModel().Delete(id) {
 		helper.Ajax("删除附件成功", 0, c.Ctx())
 	} else {
 		helper.Ajax("删除附件失败", 1, c.Ctx())

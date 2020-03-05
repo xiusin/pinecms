@@ -42,7 +42,7 @@ func Datagrid(id, url string, tableoptions EasyuiOptions, field EasyuiGridfields
 		delete(field, "pagination")
 	}
 
-	style := "width:100%;height:100%;"
+	style := "width:100%; height:100%;"
 	var tabopt []string
 	if len(tableoptions) != 0 {
 		for tabk, tabv := range tableoptions {
@@ -91,12 +91,14 @@ func Datagrid(id, url string, tableoptions EasyuiOptions, field EasyuiGridfields
            singleSelect:` + dataOptions["singleSelect"].(string) + `,
            url:'` + url + `',
            method:'get',
-           border:` + dataOptions["pageSize"].(string) + `,
-           fit:` + dataOptions["fit"].(string) + `,
+           border:` + dataOptions["border"].(string) + `,
+           fit: false,
            fitColumns:` + dataOptions["fitColumns"].(string) + `,
            pageSize:` + dataOptions["pageSize"].(string) + `,
            rownumbers:` + dataOptions["rownumbers"].(string) + `,
            autoRowHeight:false,
+ 		   striped: true,
+		   nowrap: true,
            singleSelect:` + dataOptions["singleSelect"].(string) + `,
            pagination:` + dataOptions["pagination"].(string) + taboptstr + `
            ">

@@ -22,8 +22,9 @@
 </div>
 <script type="text/javascript">
     parent.ajaxLoadEnd()
+
     function contentPageFormSubmit() {
-        $.post('{{.submitURL}}?catid={{.category.Catid}}'.replace("\\/","/"), $("#content_page_form").serialize(), function (res) {
+        $.post('{{.submitURL}}?catid={{.category.Catid}}'.replace("\\/", "/"), $("#content_page_form").serialize(), function (res) {
             if (res.errcode) {
                 parent.$.messager.alert('提示信息', res.errmsg, 'error');
             } else {
@@ -48,22 +49,22 @@
                 if (data.errcode == 1) {
                     $.messager.alert("错误提醒", data.errmsg, "error")
                 } else {
-                    $(obj).next().val(data.errmsg);
-                    $(obj).attr('src', data.errmsg);
+                    $(obj).next().val(data.url);
+                    $(obj).attr('src', data.url);
                 }
             }
         });
         return false;
     }
 
-    function createHtml(obj,field, maxNumInt) {
+    function createHtml(obj, field, maxNumInt) {
         if (maxNumInt > 0 && $(obj).parent().find(".imgbox").size() >= maxNumInt + 1) {
             $.messager.alert("提醒", "图片限制数量已达上限" + maxNumInt + ",无法添加", "info");
             return false;
         }
         var str = "<div class='imgbox'>\
                   <input class='imgbox_inputBtn' type='image' onclick='return doUpload(this)' src='/assets/backend/mdou/images/uploadholder.png' alt='点击上传'/>\
-                  <input type='hidden' name='"+field+"' />\
+                  <input type='hidden' name='" + field + "' />\
                   <span title=\"删除图片框\" style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer;    position: absolute;left: 92px;top: 10px;'  onclick='delImgBox(this)'>×</span>\
         </div>";
         $(obj).before(str);
@@ -71,25 +72,25 @@
     }
 
     function DelImg(obj) {
-        $.messager.confirm('清空提醒', '要清空此图片吗？', function(r){
+        $.messager.confirm('清空提醒', '要清空此图片吗？', function (r) {
             if (r) {
                 $(obj).prev().val("");
-                $(obj).prev().prev().attr('src',"/assets/backend/mdou/images/uploadholder.png");
+                $(obj).prev().prev().attr('src', "/assets/backend/mdou/images/uploadholder.png");
             }
         });
     }
 
     function delImgBox(obj) {
-        $.messager.confirm('删除提醒', '要删除此图片吗？', function(r){
+        $.messager.confirm('删除提醒', '要删除此图片吗？', function (r) {
             if (r) {
                 $(obj).parents(".imgbox").remove();
             }
         });
     }
 
-    function submitForm(){
+    function submitForm() {
         $('#content_page_form').form('submit', {
-            onSubmit:function(){
+            onSubmit: function () {
                 for (let i in siginUploader) {
                     if (!siginUploader[i]()) return false;
                 }
@@ -104,16 +105,16 @@
                 }
                 return $(this).form('enableValidation').form('validate');
             },
-            success:function(data){
+            success: function (data) {
                 if (typeof data === "string") {
                     data = JSON.parse(data)
                 }
                 if (!data.errcode) {
-                    if ('{{.submitURL}}'.indexOf("edit")) {
-                        $.messager.alert("提醒", "修改文档成功", "info");
-                    } else {
-                        $.messager.alert("提醒", "添加文档成功", "info");
-                    }
+                    {{/*if ('{{.submitURL}}'.indexOf("edit")) {*/}}
+                    $.messager.alert("提醒", data.errmsg, "info");
+                    // } else {
+                    //     $.messager.alert("提醒",data.errmsg, "info");
+                    // }
                 } else {
                     $.messager.alert("提醒", data.errmsg, "error");
                 }

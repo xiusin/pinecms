@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/xiusin/pine/di"
 	"log"
 	"strconv"
 	"strings"
@@ -10,24 +11,24 @@ import (
 )
 
 type MenuModel struct {
-	Orm *xorm.Engine
+	orm *xorm.Engine
 }
 
-func NewMenuModel(orm *xorm.Engine) *MenuModel {
-	return &MenuModel{Orm: orm}
+func NewMenuModel() *MenuModel {
+	return &MenuModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
 }
 
 //根据父级ID获取菜单列表 不递归
 func (m *MenuModel) GetMenu(parentid, roleid int64) []tables.IriscmsMenu {
 	menus := new([]tables.IriscmsMenu)
-	m.Orm.Where("parentid = ? and display= ?", parentid, 1).Asc("listorder").Find(menus)
+	m.orm.Where("parentid = ? and display= ?", parentid, 1).Asc("listorder").Find(menus)
 	if roleid == 1 {
 		return *menus
 	}
 	retmenus := []tables.IriscmsMenu{}
 	//结合角色权限进行菜单返回
 	for _, menu := range *menus {
-		total, _ := m.Orm.Where("c=? and a=? and roleid=?", menu.C, menu.A, roleid).Count(&tables.IriscmsAdminRolePriv{})
+		total, _ := m.orm.Where("c=? and a=? and roleid=?", menu.C, menu.A, roleid).Count(&tables.IriscmsAdminRolePriv{})
 		//public的操作也要全部暴露
 		if total > 0 || strings.Contains(menu.A, "public-") {
 			retmenus = append(retmenus, menu)
@@ -39,7 +40,7 @@ func (m *MenuModel) GetMenu(parentid, roleid int64) []tables.IriscmsMenu {
 //当前位置
 func (m MenuModel) CurrentPos(id int64) string {
 	menu := tables.IriscmsMenu{Id: id}
-	has, _ := m.Orm.Get(&menu)
+	has, _ := m.orm.Get(&menu)
 	str := ""
 	if !has {
 		return ""
@@ -72,14 +73,14 @@ func (m MenuModel) GetTree(menus []tables.IriscmsMenu, parentid int64) []map[str
 
 func (m MenuModel) GetAll() []tables.IriscmsMenu {
 	menus := new([]tables.IriscmsMenu)
-	m.Orm.Asc("listorder").Desc("id").Find(menus)
+	m.orm.Asc("listorder").Desc("id").Find(menus)
 	return *menus
 }
 
 func (m MenuModel) GetRoleTree(parentid int64, roleid int64) []map[string]interface{} {
 	menus := new([]tables.IriscmsMenu)
 	//过滤我的面板
-	err := m.Orm.Where("`parentid`=? AND `id`<>?", parentid, 1).Asc("listorder").Desc("id").Find(menus)
+	err := m.orm.Where("`parentid`=? AND `id`<>?", parentid, 1).Asc("listorder").Desc("id").Find(menus)
 	if err != nil {
 		log.Println(err.Error())
 		return nil
@@ -100,7 +101,7 @@ func (m MenuModel) GetRoleTree(parentid int64, roleid int64) []map[string]interf
 			} else {
 				//勾选默认菜单
 				rolePriv := new([]tables.IriscmsAdminRolePriv)
-				m.Orm.Where("c=? and a=? and roleid=?", v.C, v.A, roleid).Find(rolePriv)
+				m.orm.Where("c=? and a=? and roleid=?", v.C, v.A, roleid).Find(rolePriv)
 				if len(*rolePriv) > 0 {
 					menu["checked"] = true
 				}
@@ -114,7 +115,7 @@ func (m MenuModel) GetRoleTree(parentid int64, roleid int64) []map[string]interf
 //获取菜单父级id
 func (m MenuModel) GetParentIds(id int64, result string) string {
 	menu := tables.IriscmsMenu{Id: id}
-	has, _ := m.Orm.Get(&menu)
+	has, _ := m.orm.Get(&menu)
 	var parentid int64 = 0
 	if has {
 		parentid = menu.Parentid
@@ -133,14 +134,14 @@ func (m MenuModel) GetParentIds(id int64, result string) string {
 
 //检查菜单名称是否存在
 func (m MenuModel) CheckName(name string) bool {
-	has, _ := m.Orm.Get(&tables.IriscmsMenu{Name: name})
+	has, _ := m.orm.Get(&tables.IriscmsMenu{Name: name})
 	return has
 }
 
 //
 func (m MenuModel) GetInfo(id int64) (*tables.IriscmsMenu, bool) {
 	im := &tables.IriscmsMenu{Id: id}
-	has, _ := m.Orm.Get(im)
+	has, _ := m.orm.Get(im)
 	return im, has
 }
 

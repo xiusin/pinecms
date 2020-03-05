@@ -5,11 +5,13 @@
     <table width="100%" class="mdoutable">
         <tr>
             <td width="80">上级栏目：</td>
-            <td><input id="category_category_edit_dialog_form_parentid" name="parentid" class="easyui-combotree" value="{{ .category.Parentid }}" /></td>
+            <td><input id="category_category_edit_dialog_form_parentid" name="parentid" class="easyui-combotree"
+                       value="{{ .category.Parentid }}"/></td>
         </tr>
         <tr>
             <td>栏目名称：</td>
-            <td><input name="catname" value="{{.category.Catname}}" type="text" class="easyui-textbox" data-options="required: true" /></td>
+            <td><input name="catname" value="{{.category.Catname}}" type="text" class="easyui-textbox"
+                       data-options="required: true"/></td>
         </tr>
         <tr>
             <td>栏目类型：</td>
@@ -21,15 +23,14 @@
                         style="width:80px"
                         disabled>
                     {{range $i,$v := .typelist}}{{if eq $.category.Type $i}}
-                    <option value="{{$i}}" selected>{{$v}}</option>
+                        <option value="{{$i}}" selected>{{$v}}</option>
                     {{else}}
-                    <option value="{{$i}}">{{$v}}</option>
+                        <option value="{{$i}}">{{$v}}</option>
                     {{end}}{{end}}
                 </select>
                 <span style="color:gray;padding-left:15px">设置后不可修改</span>
             </td>
         </tr>
-        {{ if gt .category.ModelId 0}}
         <tr id="model_select">
             <td>文档模型：</td>
             <td>
@@ -37,20 +38,42 @@
                         data-options="editable:false,panelHeight:'auto'"
                         style="width:280px"
                         disabled>
-                    {{range $v := .models}}
-                        {{if eq $v.Id $.model_id}}
-                            <option value="{{$v.Id}}">{{$v.Name}}</option>
+                    {{if eq $.model_id 0}}
+                        <option value="0">自定义(需要设置路由)</option>
+                    {{else}}
+                        {{range $v := .models}}
+                            {{if eq $v.Id $.model_id}}
+                                <option value="{{$v.Id}}">{{$v.Name}}</option>
+                            {{end}}
                         {{end}}
                     {{end}}
                 </select>
                 <span style="color:gray;padding-left:15px">设置后不可修改</span>
             </td>
         </tr>
+
+        {{if eq $.model_id 0}}
+        <tr class="custom_manager">
+            <td>列表管理路由：</td>
+            <td><input name="manager_content_router" value="{{.category.ManagerContentRouter}}" type="text" class="easyui-textbox" data-options="required: true"/></td>
+        </tr>
+
+        <tr class="custom_manager">
+            <td>添加内容路由：</td>
+            <td><input name="add_content_router"  value="{{.category.AddContentRouter}}" type="text" class="easyui-textbox"  data-options="required: true"/></td>
+        </tr>
+
+        <tr class="custom_manager">
+            <td>修改内容路由：</td>
+            <td><input name="edit_content_router"  value="{{.category.EditContentRouter}}" type="text" class="easyui-textbox"  data-options="required: true"/></td>
+        </tr>
         {{end}}
+
         <tr>
             <td>缩略图：</td>
             <td>
-                <input id="content_edit_news_form_thumb_input" type="image" src="{{.category.Thumb}}" onerror="this.src='/assets/backend/static/nopic.jpg'" alt="点击上传缩略图"
+                <input id="content_edit_news_form_thumb_input" type="image" src="{{.category.Thumb}}"
+                       onerror="this.src='/assets/backend/static/nopic.jpg'" alt="点击上传缩略图"
                        style="height:100px;display:block;border:1px solid #ddd;padding:2px"/>
                 <input type="hidden" name="thumb" value="{{.category.Thumb}}"/>
             </td>
@@ -62,13 +85,14 @@
         </tr>
         <tr>
             <td>描述：</td>
-            <td ><textarea name="description"
-                                      style="width:100%;height:60px">{{.category.Description}}</textarea></td>
+            <td><textarea name="description"
+                          style="width:100%;height:60px">{{.category.Description}}</textarea></td>
         </tr>
         <tr>
             <td>是否启用：</td>
-            <td >
-                <input name="ismenu" class="easyui-switchbutton" {{if eq .category.Ismenu 1}}checked{{end}} data-options="onText:'是',offText:'否'">
+            <td>
+                <input name="ismenu" class="easyui-switchbutton" {{if eq .category.Ismenu 1}}checked{{end}}
+                       data-options="onText:'是',offText:'否'">
             </td>
         </tr>
     </table>
@@ -77,15 +101,16 @@
 
 <script type="text/javascript">
     $('#category_category_edit_dialog_form_parentid').combotree({url: "/b/category/category-select"});
+
     function categoryCategoryAddDialogFormSubmit() {
         var f = $("#category_category_edit_dialog_form");
         f.form({
             method: "post",
             url: "/b/category/category-edit?id={{ .category.Catid }}",
-            onSubmit: function(){
+            onSubmit: function () {
                 return $(this).form('validate');
             },
-            success: function(res){
+            success: function (res) {
                 res = JSON.parse(res)
                 if (res.errcode) {
                     $.messager.alert('提示信息', res.errmsg, 'error');
@@ -98,6 +123,7 @@
         });
         f.submit();
     }
+
     function categoryCategoryEditDialogFormTypeChange(val) {
         var category_category_edit_dialog_form_url = $('#category_category_edit_dialog_form_url');
         if (val === parseInt('2')) {
@@ -107,6 +133,7 @@
             category_category_edit_dialog_form_url.hide();
         }
     }
+
     $('#content_edit_news_form_thumb_input').click(function (e) {
         e.preventDefault();
         $.upload({

@@ -6,6 +6,7 @@
 </div>
 
 <script type="text/javascript">
+
     var attachments_list_datagrid_toolbar = [];
 
     function attachmentsListUrlFormatter(url) {
@@ -26,6 +27,8 @@
         var btn = [];
         if (obj.type === "img") {
             btn.push("<a href=\"javascript:;\" onclick=\"attachmentListPreview('" + obj.url + "')\">查看</a>");
+            btn.push("<a href=\"javascript:;\" onclick=\"replaceAttachments('" + obj.url + "')\" >替换</a>");
+
         }
         btn.push("<a href=\"javascript:;\" onclick=\"downloadAttachments('" + obj.url + "')\" >下载</a>");
         btn.push("<a href=\"javascript:;\" onclick=\"deleteAttachments(" + id + ")\">删除</a>");
@@ -51,6 +54,10 @@
             alink.click();
             alink.parentNode.removeChild(a);
         });
+    }
+
+    function replaceAttachments() {
+        $.messager.alert("替换提醒", "替换附件内容, 比如资源失效什么的可以再次生成连接", "info");
     }
 
     function deleteAttachments(id) {

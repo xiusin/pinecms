@@ -1,15 +1,10 @@
-/vendor
-iriscms
-iriscms.exe
-iriscms.exe~
-iriscms-*
-main
+t  ./vendor
 *.log
 runtime
 resources/configs/database.yml
 .idea
+pinecms-dev-build
 node_modules/
 tmp/runner-build
 *.js___jb_tmp___
-sunny
 go.sum

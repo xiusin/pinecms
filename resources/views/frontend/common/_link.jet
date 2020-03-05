@@ -1,9 +1,5 @@
-{{block clink() }}
-
-
-    {{flink("1", "2", "3")}}
-
-  <ul>
-    {{. | raw}}
-  </ul>
+{{block link(row=10, ids="", sort="", item="")  }}
+    {{ range item = flink(row, ids, sort) }}
+        {{yield content }}
+    {{end}}
 {{end}}

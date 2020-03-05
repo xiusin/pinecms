@@ -2,41 +2,47 @@ package backend
 
 import (
 	"github.com/go-xorm/xorm"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
-	"html/template"
-	"strconv"
-	"strings"
-
+	"github.com/gorilla/websocket"
+	"github.com/hpcloud/tail"
 	"github.com/xiusin/iriscms/src/application/models"
 	"github.com/xiusin/iriscms/src/application/models/tables"
 	"github.com/xiusin/iriscms/src/common/helper"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/cache"
+	"html/template"
+	"os"
+	"strconv"
+	"strings"
 )
 
 type SystemController struct {
 	pine.Controller
 }
 
+var upgrader = websocket.Upgrader{}
+
 func (c *SystemController) RegisterRoute(b pine.IRouterWrapper) {
-	b.ANY( "/system/menulist", "MenuList")
-	b.ANY( "/system/menu-edit", "MenuEdit")
-	b.ANY( "/system/menu-add", "MenuAdd")
-	b.POST( "/system/menu-delete", "MenuDelete")
-	b.POST( "/system/menu-order", "MenuOrder")
-	b.ANY( "/system/menu-tree", "MenuSelectTree")
-	b.POST( "/system/menu-check", "MenuCheck")
-	b.ANY( "/system/loglist", "LogList")
-	b.ANY( "/system/log-delete", "LogDelete")
+	b.ANY("/system/menulist", "MenuList")
+	b.ANY("/system/menu-edit", "MenuEdit")
+	b.ANY("/system/menu-add", "MenuAdd")
+	b.POST("/system/menu-delete", "MenuDelete")
+	b.POST("/system/menu-order", "MenuOrder")
+	b.ANY("/system/menu-tree", "MenuSelectTree")
+	b.POST("/system/menu-check", "MenuCheck")
+	b.ANY("/system/loglist", "LogList")
+	b.ANY("/system/tail", "TailList")
+	b.ANY("/system/log-delete", "LogDelete")
+	b.ANY("/system/ws-connection", "WsConnection")
 }
 
 func (c *SystemController) MenuList() {
 	if c.Ctx().URLParam("grid") == "treegrid" {
-		c.Ctx().Render().JSON(models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).GetTree(models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).GetAll(), 0))
+		c.Ctx().Render().JSON(models.NewMenuModel().GetTree(models.NewMenuModel().GetAll(), 0))
 		return
 	}
 	menuid, _ := c.Ctx().URLParamInt64("menuid")
 	table := helper.Treegrid("system_menu_list", "/b/system/menulist?grid=treegrid", helper.EasyuiOptions{
-		"title":     models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CurrentPos(menuid),
+		"title":     models.NewMenuModel().CurrentPos(menuid),
 		"toolbar":   "system_menulist_treegrid_toolbar",
 		"idField":   "operateid",
 		"treeField": "name",
@@ -51,12 +57,12 @@ func (c *SystemController) MenuList() {
 
 func (c *SystemController) MenuAdd(iCache cache.ICache) {
 	if c.Ctx().IsPost() {
-		parentid,_:= c.Ctx().PostInt64("parentid", 0)
+		parentid, _ := c.Ctx().PostInt64("parentid", 0)
 		name := c.Ctx().PostString("name", "")
 		ctrl := c.Ctx().PostString("c", "")
-		a:= c.Ctx().PostString("a", "")
+		a := c.Ctx().PostString("a", "")
 		data := c.Ctx().PostString("data", "")
-		display,_ := c.Ctx().PostInt64("display", 1)
+		display, _ := c.Ctx().PostInt64("display", 1)
 
 		menu := &tables.IriscmsMenu{
 			Parentid: parentid,
@@ -79,7 +85,7 @@ func (c *SystemController) MenuAdd(iCache cache.ICache) {
 }
 
 func (c *SystemController) MenuDelete(iCache cache.ICache) {
-	id,_ := c.Ctx().PostInt64("id", 0)
+	id, _ := c.Ctx().PostInt64("id", 0)
 	if id < 1 {
 		helper.Ajax("参数失败", 1, c.Ctx())
 		return
@@ -142,18 +148,18 @@ func (c *SystemController) MenuEdit(iCache cache.ICache) {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	menu, has := models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).GetInfo(id)
+	menu, has := models.NewMenuModel().GetInfo(id)
 	if !has {
 		helper.Ajax("没有此菜单", 1, c.Ctx())
 		return
 	}
 	if c.Ctx().IsPost() {
-		parentid,_:= c.Ctx().PostInt64("parentid", 0)
+		parentid, _ := c.Ctx().PostInt64("parentid", 0)
 		name := c.Ctx().PostString("name", "")
 		ctrl := c.Ctx().PostString("c", "")
-		a:= c.Ctx().PostString("a", "")
+		a := c.Ctx().PostString("a", "")
 		data := c.Ctx().PostString("data", "")
-		display,_ := c.Ctx().PostInt64("display", 1)
+		display, _ := c.Ctx().PostInt64("display", 1)
 
 		menu := &tables.IriscmsMenu{
 			Parentid: parentid,
@@ -182,7 +188,7 @@ func (c *SystemController) MenuSelectTree() {
 	tree = append(tree, map[string]interface{}{
 		"id":       0,
 		"text":     "作为一级菜单",
-		"children": models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).GetSelectTree(models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).GetAll(), 0),
+		"children": models.NewMenuModel().GetSelectTree(models.NewMenuModel().GetAll(), 0),
 	})
 	c.Ctx().Render().JSON(tree)
 }
@@ -193,7 +199,7 @@ func (c *SystemController) MenuCheck() {
 		helper.Ajax("用户名为空", 1, c.Ctx())
 		return
 	}
-	if models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CheckName(name) {
+	if models.NewMenuModel().CheckName(name) {
 		helper.Ajax("用户名已存在", 1, c.Ctx())
 		return
 	}
@@ -201,19 +207,57 @@ func (c *SystemController) MenuCheck() {
 	helper.Ajax("正常", 0, c.Ctx())
 }
 
+func (c *SystemController) WsConnection() {
+	if conn, err := upgrader.Upgrade(c.Ctx().Writer(), c.Ctx().Request(), nil); err != nil {
+		//报错了，直接返回底层的websocket链接就会终断掉
+		pine.Logger().Print("连接ws错误", err)
+		return
+	} else {
+		fileInfo,_ := os.Stat("./runtime/logs/pinecms.log")
+		size := fileInfo.Size()
+		ta, err := tail.TailFile("./runtime/logs/pinecms.log", tail.Config{
+			ReOpen:      true,
+			MustExist:   true,
+			Poll:        false,
+			Follow:      true,
+			MaxLineSize: 0,
+		})
+		if err != nil {
+			return
+		}
+		for text := range ta.Lines {
+			size -= int64(len(text.Text) + 1)	// 添加一个换行符字节
+			if size <= 2048 {
+				if err = conn.WriteMessage(websocket.TextMessage, []byte(text.Text)); err != nil {
+					pine.Logger().Print("客户端断开连接", err)
+					_ = ta.Stop()
+					ta.Cleanup()
+					ta = nil
+					return
+				}
+			}
+		}
+	}
+}
+
+func (c *SystemController) TailList() {
+	// 扫描日志文件可选日志内容 设置最大行号
+	c.Ctx().Render().HTML("backend/system_tail.html")
+}
+
 func (c *SystemController) LogList() {
 	page, _ := c.Ctx().URLParamInt64("page")
 	rows, _ := c.Ctx().URLParamInt64("rows")
 
 	if page > 0 {
-		list, total := models.NewLogModel(c.Ctx().Value("orm").(*xorm.Engine)).GetList(page, rows)
+		list, total := models.NewLogModel().GetList(page, rows)
 		c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": total})
 		return
 	}
 
 	menuid, _ := c.Ctx().URLParamInt64("menuid")
 	table := helper.Datagrid("system_menu_logList", "/b/system/loglist", helper.EasyuiOptions{
-		"title":   models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CurrentPos(menuid),
+		"title":   models.NewMenuModel().CurrentPos(menuid),
 		"toolbar": "system_loglist_datagrid_toolbar",
 	}, helper.EasyuiGridfields{
 		"用户名": {"field": "Username", "width": "20", "index": "0"},
@@ -229,7 +273,7 @@ func (c *SystemController) LogList() {
 }
 
 func (c *SystemController) LogDelete() {
-	if models.NewLogModel(c.Ctx().Value("orm").(*xorm.Engine)).DeleteAll() {
+	if models.NewLogModel().DeleteAll() {
 		helper.Ajax("清空日志成功", 0, c.Ctx())
 	} else {
 		helper.Ajax("清空日志失败", 1, c.Ctx())

@@ -9,9 +9,9 @@
             margin: 0;
             color: #fff;
             text-shadow: none;
-            background-color: rgb(73, 137, 205);
+            background-color: #1B9AF7;
             border-radius: 0;
-            padding: 3px 10px;
+            padding: 10px;
         }
 
         #topmenu .nav li a:hover {
@@ -22,12 +22,8 @@
             text-align: center;
             padding: 0px;
             width: 94px;
-            height: 30px;
+            height: 40px;
             margin-right: 6px;
-        }
-
-        #topmenu .nav {
-
         }
 
         .position {
@@ -97,7 +93,7 @@
         }
 
         #toparea .panel {
-            height: 36px;
+            height: 40px;
         }
 
         .tree-node-selected {
@@ -174,8 +170,9 @@
 <!-- 头部 -->
 <div id="toparea" data-options="region:'north',border:false,height:70">
     <div id="topmenu" class="easyui-panel" data-options="fit:true,border:false">
-        <div class="header_logo"></div>
+{{/*        <div class="header_logo"></div>*/}}
         <ul class="nav">
+
             {{range $index,$ele := .menus}}
                 <li><a
                             {{if eq $index 0}} class="focus" {{end}}

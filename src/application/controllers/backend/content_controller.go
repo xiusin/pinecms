@@ -21,22 +21,21 @@ type ContentController struct {
 	pine.Controller
 }
 
-
 func (c *ContentController) RegisterRoute(b pine.IRouterWrapper) {
-	b.ANY( "/content/index", "Index")
-	b.ANY( "/content/right", "Right")
-	b.ANY( "/content/public-welcome", "Welcome")
-	b.ANY( "/content/news-list", "NewsList")
-	b.ANY( "/content/page", "Page")
-	b.ANY( "/content/add", "AddContent")
-	b.ANY( "/content/edit", "EditContent")
-	b.ANY( "/content/delete", "DeleteContent")
-	b.ANY( "/content/order", "OrderContent")
+	b.ANY("/content/index", "Index")
+	b.ANY("/content/right", "Right")
+	b.ANY("/content/public-welcome", "Welcome")
+	b.ANY("/content/news-list", "NewsList")
+	b.ANY("/content/page", "Page")
+	b.ANY("/content/add", "AddContent")
+	b.ANY("/content/edit", "EditContent")
+	b.ANY("/content/delete", "DeleteContent")
+	b.ANY("/content/order", "OrderContent")
 }
 
 func (c *ContentController) Index() {
 	menuid, _ := c.Ctx().URLParamInt64("menuid")
-	c.Ctx().Render().ViewData("currentPos", models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CurrentPos(menuid))
+	c.Ctx().Render().ViewData("currentPos", models.NewMenuModel().CurrentPos(menuid))
 	c.Ctx().Render().HTML("backend/content_index.html")
 }
 
@@ -46,18 +45,18 @@ func (c *ContentController) Welcome() {
 
 func (c *ContentController) Right() {
 	if c.Ctx().IsPost() {
-		cats := models.NewCategoryModel(c.Ctx().Value("orm").(*xorm.Engine)).GetContentRightCategoryTree(models.NewCategoryModel(c.Ctx().Value("orm").(*xorm.Engine)).GetAll(), 0)
+		cats := models.NewCategoryModel().GetContentRightCategoryTree(models.NewCategoryModel().GetAll(), 0)
 		c.Ctx().Render().JSON(cats)
 		return
 	}
 	c.Ctx().Render().HTML("backend/content_right.html")
 }
 
-func (c *ContentController) NewsList() {
+func (c *ContentController) NewsList(orm *xorm.Engine) {
 	catid, _ := c.Ctx().URLParamInt64("catid")
 	page, _ := c.Ctx().URLParamInt64("page")
 	rows, _ := c.Ctx().URLParamInt64("rows")
-	catogoryModel, err := models.NewCategoryModel(c.Ctx().Value("orm").(*xorm.Engine)).GetCategory(catid)
+	catogoryModel, err := models.NewCategoryModel().GetCategory(catid)
 	if err != nil {
 		panic(err)
 	}
@@ -65,29 +64,82 @@ func (c *ContentController) NewsList() {
 		helper.Ajax("找不到关联模型", 1, c.Ctx())
 		return
 	}
-	relationDocumentModel := models.NewDocumentModel(c.Ctx().Value("orm").(*xorm.Engine)).GetByID(catogoryModel.ModelId)
+	relationDocumentModel := models.NewDocumentModel().GetByID(catogoryModel.ModelId)
 	if relationDocumentModel.Id == 0 {
 		helper.Ajax("找不到关联模型", 1, c.Ctx())
 		return
 	}
+
+	// 获取所有字段
+	dslFields := models.NewDocumentFieldDslModel().GetList(catogoryModel.ModelId)
+	var tMapF = map[string]string{}
+	var ff []string
+	for _, dsl := range dslFields {
+		tMapF[dsl.TableField] = dsl.FormName
+		ff = append(ff, dsl.TableField)
+	}
+
+	var showInPage = map[string]controllers.FieldShowInPageList{}
+	_ = json.Unmarshal([]byte(relationDocumentModel.FieldShowInList), &showInPage)
+
+	var flag bool
+	for _, fieldInfo := range showInPage {
+		if fieldInfo.Show {
+			flag = true
+			break
+		}
+	}
+	if !flag {
+		helper.Dialog("请配置模型字段显隐属性", c.Ctx())
+		return
+	}
+
 	if page > 0 {
+		querySqlWhere := []string{"catid=?", "deleted_time IS NULL"}
+		var whereHolder = []interface{}{catid}
+		getData := c.Ctx().GetData()
+
+		for param, values := range getData {
+			if (!strings.HasPrefix(param, "search_")) || len(values) == 0 || len(values[0]) == 0 {
+				continue
+			}
+			field := strings.TrimLeft(param, "search_")
+			conf, ok := showInPage[field]
+			if !ok {
+				continue
+			}
+			if conf.Search == 1 {
+				querySqlWhere = append(querySqlWhere, field+"=?")
+				whereHolder = append(whereHolder, values[0])
+			} else {
+				querySqlWhere = append(querySqlWhere, field+" LIKE ?")
+				whereHolder = append(whereHolder, "%"+values[0]+"%")
+			}
+		}
+
 		offset := (page - 1) * rows
-		sql := []interface{}{fmt.Sprintf("SELECT * FROM `iriscms_%s` WHERE catid=? and deleted_time IS NULL ORDER BY listorder DESC, id DESC LIMIT %d,%d", relationDocumentModel.Table, offset, rows), catid}
-		contents, err := c.Ctx().Value("orm").(*xorm.Engine).QueryString(sql...)
+		querySql := "SELECT * FROM `iriscms_%s` WHERE " + strings.Join(querySqlWhere, " AND ") + " ORDER BY listorder DESC, id DESC LIMIT %d,%d"
+		sql := []interface{}{fmt.Sprintf(querySql, relationDocumentModel.Table, offset, rows)}
+		sql = append(sql, whereHolder...)
+
+		contents, err := orm.QueryString(sql...)
 		if err != nil {
-			glog.Error(helper.GetCallerFuncName(), err.Error())
+			pine.Logger().Error("请求列表错误", err)
 			helper.Ajax("获取文档列表错误", 1, c.Ctx())
 			return
 		}
 
-		sql = []interface{}{fmt.Sprintf("SELECT COUNT(*) total FROM `iriscms_%s` WHERE catid=? and deleted_time IS NULL", relationDocumentModel.Table), catid}
-		totals, _ := c.Ctx().Value("orm").(*xorm.Engine).QueryString(sql...)
+		countSql := "SELECT COUNT(*) total FROM `iriscms_%s` WHERE " + strings.Join(querySqlWhere, " AND ")
+		sql = []interface{}{fmt.Sprintf(countSql, relationDocumentModel.Table)}
+		sql = append(sql, whereHolder)
+
+		totals, _ := orm.QueryString(sql...)
 		var total = "0"
 		if len(totals) > 0 {
 			total = totals[0]["total"]
 		}
 		if contents == nil {
-			contents  = []map[string]string{}
+			contents = []map[string]string{}
 		}
 		c.Ctx().Render().JSON(map[string]interface{}{"rows": contents, "total": total})
 		return
@@ -97,26 +149,15 @@ func (c *ContentController) NewsList() {
 		"排序": {"field": "listorder", "formatter": "contentNewsListOrderFormatter", "index": "0"},
 	}
 
-	// 获取所有字段
-	dslFields := models.NewDocumentFieldDslModel(c.Ctx().Value("orm").(*xorm.Engine)).GetList(catogoryModel.ModelId)
-	var tMapF = map[string]string{}
-	var ff []string
-	for _, dsl := range dslFields {
-		tMapF[dsl.TableField] = dsl.FormName
-		ff = append(ff, dsl.TableField)
-	}
-	var showInPage = map[string]controllers.FieldShowInPageList{}
-	_ = json.Unmarshal([]byte(relationDocumentModel.FieldShowInList), &showInPage)
-	if len(showInPage) == 0 {
-		helper.Ajax("请配置模型字段显隐属性", 1, c.Ctx())
-		return
-	}
 	var index = 1
 	// 系统模型需要固定追加标题, 描述等字段
-	if relationDocumentModel.ModelType == models.SYSTEM_TYPE {
-		fields["标题"] = map[string]string{"field": "title", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
-		index++
-	}
+	//if relationDocumentModel.ModelType == models.SYSTEM_TYPE {
+	//	fields["标题"] = map[string]string{"field": "title", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
+	//	index++
+	//}
+
+	var searchComps []string
+
 	for _, field := range ff {
 		conf := showInPage[field]
 		if conf.Show {
@@ -127,6 +168,10 @@ func (c *ContentController) NewsList() {
 			fields[tMapF[field]] = f
 			index++
 		}
+		// 需要显示搜索组件
+		if conf.Search > 0 {
+			searchComps = append(searchComps, "<div class='search-div'>"+tMapF[field]+`: <input type="text" name="search_`+field+`" class="easyui-textbox"/></div>`)
+		}
 	}
 	fields["管理操作"] = map[string]string{"field": "id", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
 	table := helper.Datagrid("category_categorylist_datagrid", "/b/content/news-list?grid=datagrid&catid="+strconv.Itoa(int(catid)), helper.EasyuiOptions{
@@ -134,6 +179,7 @@ func (c *ContentController) NewsList() {
 		"singleSelect": "true",
 	}, fields)
 
+	c.Ctx().Render().ViewData("searchComps", template.HTML(strings.Join(searchComps, "")))
 	c.Ctx().Render().ViewData("DataGrid", template.HTML(table))
 	c.Ctx().Render().ViewData("catid", catid)
 	c.Ctx().Render().ViewData("formatters", template.JS(relationDocumentModel.Formatters))
@@ -146,7 +192,7 @@ func (c *ContentController) Page() {
 		helper.Ajax("页面错误", 1, c.Ctx())
 		return
 	}
-	pageModel := models.NewPageModel(c.Ctx().Value("orm").(*xorm.Engine))
+	pageModel := models.NewPageModel()
 	page := pageModel.GetPage(catid)
 	var hasPage bool = false
 	if page.Title != "" {
@@ -207,13 +253,14 @@ func (c *ContentController) AddContent() {
 		for formName, values := range postData {
 			data[formName] = values[0] //	todo 多项值根据字段类型合并 strings.Join(values, ",")
 		}
+		data["catid"] = c.Ctx().GetString("catid")
 		if !data.MustCheck() {
 			helper.Ajax("缺少必要参数", 1, c.Ctx())
 			return
 		}
 		data["status"] = "0"
 		data["created_time"] = time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)
-		model := models.NewDocumentModel(c.Ctx().Value("orm").(*xorm.Engine)).GetByID(int64(mid))
+		model := models.NewDocumentModel().GetByID(int64(mid))
 		var fields []string
 		var values []interface{}
 		for k, v := range data {
@@ -250,7 +297,7 @@ func (c *ContentController) AddContent() {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	cat, err := models.NewCategoryModel(c.Ctx().Value("orm").(*xorm.Engine)).GetCategory(catid)
+	cat, err := models.NewCategoryModel().GetCategory(catid)
 	if err != nil {
 		helper.Ajax("读取数据错误:"+err.Error(), 1, c.Ctx())
 		return
@@ -260,7 +307,7 @@ func (c *ContentController) AddContent() {
 		return
 	}
 	c.Ctx().Render().ViewData("category", cat)
-	c.Ctx().Render().ViewData("form", template.HTML(buildModelForm(c.Ctx().Value("orm").(*xorm.Engine), cat.ModelId, nil)))
+	c.Ctx().Render().ViewData("form", template.HTML(buildModelForm(cat.ModelId, nil)))
 	c.Ctx().Render().ViewData("submitURL", template.HTML("/b/content/add"))
 	c.Ctx().Render().HTML("backend/model_publish.html")
 }
@@ -274,7 +321,7 @@ func (c *ContentController) EditContent() {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	catogoryModel, err := models.NewCategoryModel(c.Ctx().Value("orm").(*xorm.Engine)).GetCategory(catid)
+	catogoryModel, err := models.NewCategoryModel().GetCategory(catid)
 	if err != nil {
 		panic(err)
 	}
@@ -282,7 +329,7 @@ func (c *ContentController) EditContent() {
 		helper.Ajax("找不到关联模型", 1, c.Ctx())
 		return
 	}
-	relationDocumentModel := models.NewDocumentModel(c.Ctx().Value("orm").(*xorm.Engine)).GetByID(catogoryModel.ModelId)
+	relationDocumentModel := models.NewDocumentModel().GetByID(catogoryModel.ModelId)
 	if relationDocumentModel.Id == 0 {
 		helper.Ajax("找不到关联模型", 1, c.Ctx())
 		return
@@ -303,8 +350,9 @@ func (c *ContentController) EditContent() {
 		var data = customForm{}
 		postData := c.Ctx().PostData()
 		for formName, values := range postData {
-			data[formName] = values[0] //	todo 多项值根据字段类型合并 strings.Join(values, ",")
+			data[formName] = values[0]
 		}
+		data["catid"] = c.Ctx().GetString("catid")
 		if !data.MustCheck() {
 			helper.Ajax("缺少必要参数", 1, c.Ctx())
 			return
@@ -341,7 +389,7 @@ func (c *ContentController) EditContent() {
 		}
 		return
 	}
-	c.Ctx().Render().ViewData("form", template.HTML(buildModelForm(c.Ctx().Value("orm").(*xorm.Engine), catogoryModel.ModelId, contents[0])))
+	c.Ctx().Render().ViewData("form", template.HTML(buildModelForm(catogoryModel.ModelId, contents[0])))
 	c.Ctx().Render().ViewData("category", catogoryModel)
 	c.Ctx().Render().ViewData("submitURL", template.HTML("/b/content/edit"))
 	c.Ctx().Render().HTML("backend/model_publish.html")
@@ -355,7 +403,7 @@ func (c *ContentController) DeleteContent() {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	catogoryModel, err := models.NewCategoryModel(c.Ctx().Value("orm").(*xorm.Engine)).GetCategory(catid)
+	catogoryModel, err := models.NewCategoryModel().GetCategory(catid)
 	if err != nil {
 		panic(err)
 	}
@@ -363,7 +411,7 @@ func (c *ContentController) DeleteContent() {
 		helper.Ajax("找不到关联模型", 1, c.Ctx())
 		return
 	}
-	relationDocumentModel := models.NewDocumentModel(c.Ctx().Value("orm").(*xorm.Engine)).GetByID(catogoryModel.ModelId)
+	relationDocumentModel := models.NewDocumentModel().GetByID(catogoryModel.ModelId)
 	if relationDocumentModel.Id == 0 {
 		helper.Ajax("找不到关联模型", 1, c.Ctx())
 		return
@@ -394,7 +442,7 @@ func (c *ContentController) OrderContent() {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	catogoryModel, err := models.NewCategoryModel(c.Ctx().Value("orm").(*xorm.Engine)).GetCategory(id)
+	catogoryModel, err := models.NewCategoryModel().GetCategory(id)
 	if err != nil {
 		panic(err)
 	}
@@ -402,7 +450,7 @@ func (c *ContentController) OrderContent() {
 		helper.Ajax("找不到关联模型", 1, c.Ctx())
 		return
 	}
-	relationDocumentModel := models.NewDocumentModel(c.Ctx().Value("orm").(*xorm.Engine)).GetByID(catogoryModel.ModelId)
+	relationDocumentModel := models.NewDocumentModel().GetByID(catogoryModel.ModelId)
 	if relationDocumentModel.Id == 0 {
 		helper.Ajax("找不到关联模型", 1, c.Ctx())
 		return

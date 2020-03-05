@@ -43,7 +43,11 @@
         var btn = [];
         btn.push('<a href="javascript:;" onclick="categoryCategoryListAdd(' + id + ')">预览</a>');
         if (obj.type !== 2) {
-            btn.push('<a href="javascript:;" onclick="categoryOpenContentList(' + obj.type + ',' + id + ')">内容管理</a>');
+            if (obj.router !== "") {
+                btn.push('<a href="javascript:;" onclick="categoryOpenCustomerContentList(\''+obj.router+'\', '+id+')">内容管理</a>');
+            } else {
+                btn.push('<a href="javascript:;" onclick="categoryOpenContentList(' + obj.type + ',' + id + ')">内容管理</a>');
+            }
             btn.push('<a href="javascript:;" onclick="categoryCategoryListAdd(' + id + ')">添加子栏目</a>');
         }
         btn.push('<a href="javascript:;" onclick="categoryCategoryListEdit(' + id + ')">修改</a>');
@@ -112,6 +116,10 @@
         }, 'json');
     }
 
+    function categoryOpenCustomerContentList(router, id) {
+        router += router.indexOf('?') !== -1 ? '&catid=' + id : '?catid=' + id;
+        openUrl(router, "内容管理");
+    }
 
     function categoryOpenContentList(type, id) {
         switch (type) {

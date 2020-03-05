@@ -1,0 +1,3 @@
+{{block channel(id,type,row=8)  }}
+    {{ tmp := channel(id, type,row) }}
+{{end}}

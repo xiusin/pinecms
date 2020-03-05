@@ -80,7 +80,7 @@
             data: memDataArr
         },
         yAxis: {
-            name: "使用率(%)",
+            // name: "使用率(%)",
             type: 'value',
             max: 100
         },
@@ -102,7 +102,6 @@
     var cpuDataArr = [];
     var cpuPercentArr = [];
 
-    // x date time
     var legend = [];
 
     var legendDataArr = {};
@@ -122,7 +121,6 @@
                 legendDataArr[cpuCoreName] = {
                     name: cpuCoreName,
                     type: 'line',
-                    // stack: '总量',
                     areaStyle: {},
                     data: []
                 };
@@ -132,17 +130,7 @@
 
     }
 
-
     var echartCpuOption = {
-        legend: {
-            data: legend
-        },
-        grid: {
-            // left: '3%',
-            // right: '4%',
-            // bottom: '3%',
-            containLabel: true
-        },
         xAxis: [
             {
                 type: 'category',

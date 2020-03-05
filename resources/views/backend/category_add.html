@@ -4,7 +4,7 @@
 <form id="category_category_add_dialog_form" method="post">
     <table width="100%" class="mdoutable">
         <tr>
-            <td width="80">上级栏目：</td>
+            <td width="100">上级栏目：</td>
             <td><input id="category_category_add_dialog_form_parentid" name="parentid" class="easyui-combotree" value="{{ .parentid }}"/></td>
         </tr>
         <tr>
@@ -23,19 +23,38 @@
                 <span style="color:gray;padding-left:15px">设置后不可修改</span>
             </td>
         </tr>
+        <div>
 
+        </div>
         <tr id="model_select">
             <td>文档模型：</td>
             <td>
                 <select name="model_id" class="easyui-combobox"
-                        data-options="editable:false,panelHeight:'auto'"
+                        data-options="editable:false,panelHeight:'auto', onSelect: modelSelectValEvent"
                         style="width:280px">
+                    <option value="0">自定义(需要设置路由)</option>
                     {{range $v := .models}}
                         <option value="{{$v.Id}}">{{$v.Name}}</option>
                     {{end}}
                 </select>
                 <span style="color:gray;padding-left:15px">设置后不可修改</span>
             </td>
+        </tr>
+
+
+        <tr class="custom_manager">
+            <td>列表管理路由：</td>
+            <td><input name="manager_content_router" type="text" class="easyui-textbox"/></td>
+        </tr>
+
+        <tr class="custom_manager">
+            <td>添加内容路由：</td>
+            <td><input name="add_content_router" type="text" class="easyui-textbox"/></td>
+        </tr>
+
+        <tr class="custom_manager">
+            <td>修改内容路由：</td>
+            <td><input name="edit_content_router" type="text" class="easyui-textbox"/></td>
         </tr>
 
 
@@ -94,16 +113,31 @@
         switch (parseInt(val)) {
             case 0:
                 model_select.show()
+                if (parseInt($("[name='model_id']").val()) == 0) {
+                    $(".custom_manager").show()
+                } else {
+                    $(".custom_manager").hide()
+                }
                 category_category_add_dialog_form_url.hide()
                 break;
             case 1:
                 model_select.hide()
+                $(".custom_manager").hide()
                 category_category_add_dialog_form_url.hide()
                 break;
             case 2:
                 model_select.hide()
+                $(".custom_manager").hide()
                 category_category_add_dialog_form_url.show()
                 break;
+        }
+    }
+
+    function modelSelectValEvent (rec) {
+        if (parseInt(rec.value) == 0) {
+            $(".custom_manager").show()
+        } else {
+            $(".custom_manager").hide()
         }
     }
 

@@ -52,7 +52,7 @@ func (c *AssetsManagerController) Manager(orm *xorm.Engine) {
 	}
 	menuid, _ := c.Ctx().URLParamInt64("menuid")
 	table := helper.Datagrid("assets_list_datagrid", "/b/assets-manager/list?datagrid=true", helper.EasyuiOptions{
-		"title":      models.NewMenuModel(orm).CurrentPos(menuid),
+		"title":      models.NewMenuModel().CurrentPos(menuid),
 		"toolbar":    "assets_list_datagrid_toolbar",
 		"pagination": "false",
 	}, helper.EasyuiGridfields{

@@ -44,7 +44,11 @@
                     {{end}}
                 </td>
                 <td>
-                    下拉框，用于选择模糊查询还是精确查询
+                    <select name="search_{{$ele.TableField}}" class="easyui-combobox" style="width: 120px;">
+                        <option value="0" >隐藏</option>
+                        <option value="1" {{if eq $str1.Search 1}}selected{{end}}>精确查询</option>
+                        <option value="2" {{if eq $str1.Search 2}}selected{{end}}>模糊查询</option>
+                    </select>
                 </td>
                 <td>
                     {{/*                    (easyui字段格式化函数, 接受一个本字段的回调函数 内部可以直接使用变量ID 获取本记录的ID )*/}}
@@ -54,7 +58,6 @@
                                 class="easyui-textbox"
                                 value="{{$str1.Formatter}}"
                                 name="formatter_{{$ele.TableField}}"
-                                data-options="prompt: '请填写函数名称或不填写'"
                                 style="width: 200px; "/>
                     </label>
                 </td>

@@ -118,6 +118,11 @@ func Ajax(errmsg interface{}, errcode int64, this *pine.Context) {
 	this.Render().JSON(pine.H{"errcode": errcode, "errmsg": errmsg})
 }
 
+func Dialog(errmsg interface{}, this *pine.Context)  {
+	this.Render().Text(fmt.Sprintf(`<div class="easyui-dialog" title="错误提醒" style="width:400px;height:200px;"
+    data-options="iconCls:'icon-error',resizable:true">%s</div>`, errmsg))
+}
+
 //GetTimeStamp 获取时间戳
 func GetTimeStamp() int {
 	timestamp := time.Now().In(location).Unix()

@@ -1,0 +1,8 @@
+{{block type(typeid = 0,typename="", typelink="")  }}
+   {{ tmp := type(typeid) }}
+   {{ typename = tmp.Catname }}
+   {{ typelink = tmp.Url }}
+   {{if typename }}
+        {{yield content}}
+   {{end}}
+{{end}}

@@ -31,8 +31,8 @@ func clearMenuCache(cache cache.ICache, xorm *xorm.Engine) {
 }
 
 // 构建模型表单
-func buildModelForm(orm *xorm.Engine, mid int64, data map[string]string) string {
-	model := models.NewDocumentModel(orm)
+func buildModelForm( mid int64, data map[string]string) string {
+	model := models.NewDocumentModel()
 	documentModel := model.GetByID(mid)
 	if documentModel == nil || documentModel.Id < 1 {
 		panic("模型不存在")
@@ -43,7 +43,7 @@ func buildModelForm(orm *xorm.Engine, mid int64, data map[string]string) string 
 		idInput = "<input type='hidden' name='id' value='" + id + "'>"
 		buttonTxt = "更新"
 	}
-	fields := models.NewDocumentFieldDslModel(orm).GetList(mid)
+	fields := models.NewDocumentFieldDslModel().GetList(mid)
 	h := "<form method='POST' id='content_page_form' enctype='multipart/form-data'>" +
 		"<input type='hidden' name='table_name' value='" + documentModel.Table + "'>" +
 		"<input type='hidden' name='mid' value='" + strconv.Itoa(int(mid)) + "'>" +

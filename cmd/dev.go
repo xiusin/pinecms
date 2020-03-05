@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/xiusin/iriscms/cmd/util"
-	"log"
+	"github.com/xiusin/logger"
 	"os"
 	"os/exec"
 	"runtime"
@@ -12,7 +12,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/fatih/color"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
 )
@@ -26,7 +25,7 @@ var (
 	rebuildNotifier   = make(chan struct{})
 	types, ignoreDirs []string
 	rootDir           string
-	buildName         = "iriscms-dev-build"
+	buildName         = "pinecms-dev-build"
 	delay, limit      int32
 	watcher           *fsnotify.Watcher
 	counter           int32
@@ -79,11 +78,11 @@ func serve() {
 			nextLoop <- struct{}{}
 		}()
 		if err := cmd.Start(); err != nil {
-			log.Println(fmt.Sprintf("%s %s", color.RedString("[ERRO]"), err.Error()))
+			logger.Error(err)
 		}
-		log.Println(fmt.Sprintf("%s %s", color.GreenString("[INFO]"), "构建执行文件, 并且启动服务成功"))
+		logger.Print("构建执行文件, 并且启动服务成功, 调整: 使用发送信号的方式重载")
 		if err := cmd.Wait(); err != nil && err.Error() != "signal: killed" {
-			log.Println(fmt.Sprintf("%s %s", color.RedString("[ERRO]"), err.Error()))
+			logger.Error(err)
 		}
 		<-nextLoop
 	}
@@ -97,7 +96,8 @@ func build() error {
 	if err := cmd.Run(); err != nil {
 		return err
 	}
-	log.Println(fmt.Sprintf("%s 构建耗时: %s", color.GreenString("[INFO]"), time.Now().Sub(start).String()))
+	logger.Printf("构建耗时: %s", time.Now().Sub(start).String())
+
 	return nil
 }
 
@@ -106,10 +106,9 @@ func registerFileToWatcher() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("types", types)
 	for _, file := range files {
 		if counter > limit {
-			log.Println(fmt.Sprintf("%s %s", color.RedString("[ERRO]"), "监听文件已达上限"))
+			logger.Error("监听文件已达上限")
 			break
 		}
 		if len(types) > 0 && !util.InSlice(".*", types) && !file.IsDir {
@@ -127,7 +126,7 @@ func registerFileToWatcher() error {
 		} else {
 			if !file.IsDir {
 				atomic.AddInt32(&counter, 1)
-				log.Println(fmt.Sprintf("%s %s", color.YellowString("[WATC]"), strings.Replace(file.Path, util.AppPath(), "", 1)))
+				logger.Print(strings.Replace(file.Path, util.AppPath(), "", 1))
 			}
 		}
 	}
@@ -160,10 +159,10 @@ func eventNotify() {
 				} else if event.Op&fsnotify.Remove == fsnotify.Remove {
 					_ = watcher.Remove(event.Name)
 				}
-				log.Println(fmt.Sprintf("%s %s event %s", color.YellowString("[EVEN]"), name, strings.ToLower(event.Op.String())))
+				logger.Warningf("%s event %s", name, strings.ToLower(event.Op.String()))
 				go func() {
 					if err := build(); err != nil {
-						log.Println(fmt.Sprintf("\n%s build err", color.RedString("[ERRO]")))
+						logger.Error("构建错误", err)
 						building = false
 					}
 					rebuildNotifier <- struct{}{}
@@ -174,7 +173,7 @@ func eventNotify() {
 			if !ok {
 				return
 			}
-			log.Println(fmt.Sprintf("%s watcher error: %s", color.RedString("[ERRO]"), err.Error()))
+			logger.Error("watcher error: %s", err)
 		}
 	}
 }

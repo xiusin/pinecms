@@ -1,7 +1,6 @@
 package backend
 
 import (
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"html/template"
 
@@ -27,14 +26,14 @@ func (c *MemberController) List() {
 	rows, _ := c.Ctx().URLParamInt64("rows")
 
 	if page > 0 {
-		list, total := models.NewMemberModel(c.Ctx().Value("orm").(*xorm.Engine)).GetList(page, rows)
+		list, total := models.NewMemberModel().GetList(page, rows)
 		c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": total})
 		return
 	}
 
 	menuid, _ := c.Ctx().URLParamInt64("menuid")
 	table := helper.Datagrid("member_list_datagrid", "/b/user/list", helper.EasyuiOptions{
-		"title":   models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CurrentPos(menuid),
+		"title":   models.NewMenuModel().CurrentPos(menuid),
 		"toolbar": "member_list_datagrid_toolbar",
 	}, helper.EasyuiGridfields{
 		"昵称": {"field": "nickname", "width": "30", "index": "0"},
@@ -56,7 +55,7 @@ func (c *MemberController) Info() {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	member := models.NewMemberModel(c.Ctx().Value("orm").(*xorm.Engine)).GetInfo(id)
+	member := models.NewMemberModel().GetInfo(id)
 	if member.Id != id {
 		helper.Ajax("用户信息获取失败", 1, c.Ctx())
 		return
@@ -71,7 +70,7 @@ func (c *MemberController) Edit() {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	m := models.NewMemberModel(c.Ctx().Value("orm").(*xorm.Engine))
+	m := models.NewMemberModel()
 	if m.Edit(d.Id, &d) {
 		helper.Ajax("更新用户信息成功", 0, c.Ctx())
 	} else {
@@ -84,13 +83,13 @@ func (c *MemberController) WechatMemberList() {
 	page, _ := c.Ctx().URLParamInt64("page")
 	rows, _ := c.Ctx().URLParamInt64("rows")
 	if page > 0 {
-		list, total := models.NewWechatMemberModel(c.Ctx().Value("orm").(*xorm.Engine)).GetList(page, rows)
+		list, total := models.NewWechatMemberModel().GetList(page, rows)
 		c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": total})
 		return
 	}
 	menuid, _ := c.Ctx().URLParamInt64("menuid")
 	table := helper.Datagrid("wechat_member_list_datagrid", "/b/wechat/userlist", helper.EasyuiOptions{
-		"title":   models.NewMenuModel(c.Ctx().Value("orm").(*xorm.Engine)).CurrentPos(menuid),
+		"title":   models.NewMenuModel().CurrentPos(menuid),
 	}, helper.EasyuiGridfields{
 		"昵称": {"field": "nickname", "width": "30", "index": "0"},
 		"账户": {"field": "account", "width": "30", "index": "1"},
@@ -112,7 +111,7 @@ func (c *MemberController) WechatMemberInfo() {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	member := models.NewWechatMemberModel(c.Ctx().Value("orm").(*xorm.Engine)).GetInfo(id)
+	member := models.NewWechatMemberModel().GetInfo(id)
 	if member.Id != id {
 		helper.Ajax("用户信息获取失败", 1, c.Ctx())
 		return

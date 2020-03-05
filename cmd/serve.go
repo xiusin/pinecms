@@ -6,7 +6,7 @@ import (
 
 var serveCmd = &cobra.Command{
 	Use:   "serve",
-	Short: "启动iriscms服务器",
+	Short: "启动pinecms服务器",
 }
 
 func init() {

@@ -5,14 +5,15 @@ import (
 	"github.com/kataras/golog"
 	"github.com/xiusin/iriscms/src/application/models/tables"
 	"github.com/xiusin/iriscms/src/common/helper"
+	"github.com/xiusin/pine/di"
 )
 
 type LinkModel struct {
 	orm *xorm.Engine
 }
 
-func NewLinkModel(orm *xorm.Engine) *LinkModel {
-	return &LinkModel{orm: orm}
+func NewLinkModel() *LinkModel {
+	return &LinkModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
 }
 
 func (l *LinkModel) GetList(page, limit int64) ([]tables.IriscmsLink, int64) {

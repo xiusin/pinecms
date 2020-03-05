@@ -11,15 +11,17 @@ import (
 
 var cfgFile string
 
-// http://www.network-science.de/ascii/
+// http://www.network-science.de/ascii/ Font: stop
 var rootCmd = &cobra.Command{
-	Use: "iriscms",
-	Long: ` _         _                           
-(_)       (_)                          
- _   ____  _   ___   ____  ____    ___ 
-| | / ___)| | /___) / ___)|    \  /___)
-| || |    | ||___ |( (___ | | | ||___ |
-|_||_|    |_|(___/  \____)|_|_|_|(___/     version: ` + Version,
+	Use: "pine",
+	Long: `
+       _                             
+      (_)                            
+ ____  _ ____   ____ ____ ____   ___ 
+|  _ \| |  _ \ / _  ) ___)    \ /___)
+| | | | | | | ( (/ ( (___| | | |___ |
+| ||_/|_|_| |_|\____)____)_|_|_(___/ 
+|_|     		      version: ` + Version,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -38,7 +40,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.iriscms.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.pinecms.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -60,7 +62,7 @@ func initConfig() {
 
 		// Search config in home directory with name ".iriscms" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".iriscms")
+		viper.SetConfigName(".pinecms")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
