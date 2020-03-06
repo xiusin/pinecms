@@ -8,10 +8,10 @@ import (
 	"html/template"
 	"strings"
 
-	"github.com/xiusin/iriscms/src/application/controllers"
-	"github.com/xiusin/iriscms/src/application/models"
-	"github.com/xiusin/iriscms/src/application/models/tables"
-	"github.com/xiusin/iriscms/src/common/helper"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/models"
+	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 type ConfigItem map[string]interface{}

@@ -4,7 +4,7 @@ import (
 	"github.com/xiusin/pine/di"
 	"log"
 
-	tables "github.com/xiusin/iriscms/src/application/models/tables"
+	tables "github.com/xiusin/pinecms/src/application/models/tables"
 
 	"github.com/go-xorm/xorm"
 )

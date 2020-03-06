@@ -1,4 +1,4 @@
-module github.com/xiusin/iriscms
+module github.com/xiusin/pinecms
 
 go 1.13
 

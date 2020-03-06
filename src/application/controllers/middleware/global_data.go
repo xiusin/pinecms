@@ -5,7 +5,7 @@ import (
 	"github.com/xiusin/pine/cache"
 
 	"github.com/go-xorm/xorm"
-	"github.com/xiusin/iriscms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/controllers"
 )
 
 func SetGlobalConfigData(xorm *xorm.Engine, iCache cache.ICache) pine.Handler {

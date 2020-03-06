@@ -13,7 +13,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/securecookie"
-	"github.com/xiusin/iriscms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/cache/providers/badger"
@@ -25,15 +25,15 @@ import (
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
 	"xorm.io/core"
 
-	"github.com/xiusin/iriscms/src/config"
-	"github.com/xiusin/iriscms/src/router"
+	"github.com/xiusin/pinecms/src/config"
+	"github.com/xiusin/pinecms/src/router"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
-	"github.com/xiusin/iriscms/src/application/controllers/backend"
-	"github.com/xiusin/iriscms/src/application/controllers/middleware"
-	"github.com/xiusin/iriscms/src/common/helper"
-	ormlogger "github.com/xiusin/iriscms/src/common/logger"
+	"github.com/xiusin/pinecms/src/application/controllers/backend"
+	"github.com/xiusin/pinecms/src/application/controllers/middleware"
+	"github.com/xiusin/pinecms/src/common/helper"
+	ormlogger "github.com/xiusin/pinecms/src/common/logger"
 )
 
 var (

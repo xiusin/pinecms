@@ -3,17 +3,17 @@ package backend
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/xiusin/iriscms/src/common/storage"
+	"github.com/xiusin/pinecms/src/common/storage"
 	"github.com/xiusin/pine/cache"
 	"math/rand"
 	"strconv"
 	"strings"
 
 	"github.com/go-xorm/xorm"
-	"github.com/xiusin/iriscms/src/application/controllers"
-	"github.com/xiusin/iriscms/src/application/models"
-	"github.com/xiusin/iriscms/src/application/models/tables"
-	"github.com/xiusin/iriscms/src/common/helper"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/models"
+	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 //todo 清理缓存， 结合最终

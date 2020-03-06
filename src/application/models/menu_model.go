@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/go-xorm/xorm"
-	tables "github.com/xiusin/iriscms/src/application/models/tables"
+	tables "github.com/xiusin/pinecms/src/application/models/tables"
 )
 
 type MenuModel struct {

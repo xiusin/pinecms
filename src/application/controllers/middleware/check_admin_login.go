@@ -3,15 +3,15 @@ package middleware
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/xiusin/iriscms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"strconv"
 	"strings"
 
 	"github.com/go-xorm/xorm"
-	"github.com/xiusin/iriscms/src/application/models/tables"
-	"github.com/xiusin/iriscms/src/common/helper"
+	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 func CheckAdminLoginAndAccess(xorm *xorm.Engine, iCache cache.ICache) pine.Handler {

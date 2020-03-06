@@ -3,7 +3,7 @@ package models
 import (
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/golog"
-	"github.com/xiusin/iriscms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pine/di"
 )
 

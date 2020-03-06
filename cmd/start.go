@@ -3,7 +3,7 @@ package cmd
 import (
 	"github.com/landoop/tableprinter"
 	"github.com/spf13/cobra"
-	"github.com/xiusin/iriscms/src/server"
+	"github.com/xiusin/pinecms/src/server"
 	"github.com/xiusin/pine"
 	"os"
 	"runtime"

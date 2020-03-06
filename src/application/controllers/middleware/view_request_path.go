@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
-	"github.com/xiusin/iriscms/src/common/helper"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 func ViewRequestPath(app *iris.Application, path string) func(ctx context.Context) {

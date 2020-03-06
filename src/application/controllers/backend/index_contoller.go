@@ -12,12 +12,12 @@ import (
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 
-	"github.com/xiusin/iriscms/src/application/controllers"
-	"github.com/xiusin/iriscms/src/application/models"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/models"
 
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
-	"github.com/xiusin/iriscms/src/common/helper"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 type IndexController struct {

@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/xiusin/iriscms/cmd/util"
+	"github.com/xiusin/pinecms/cmd/util"
 	"github.com/xiusin/logger"
 	"os"
 	"os/exec"

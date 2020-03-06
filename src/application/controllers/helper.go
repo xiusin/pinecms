@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/go-xorm/xorm"
-	"github.com/xiusin/iriscms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pine/cache"
 )
 
