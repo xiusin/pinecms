@@ -1,3 +1,6 @@
+<link rel="stylesheet" type="text/css" href="/assets/backend/ueditor/third-party/webuploader/webuploader.css">
+<link rel="stylesheet" type="text/css" href="/assets/backend/assets/css/attachment_uploader.css">
+<script type="text/javascript" src="/assets/backend/ueditor/third-party/webuploader/webuploader.js"></script>
 {{ .dataGrid }}
 
 <div id="attachment_preview" class="easyui-dialog" title="大图预览" data-options="modal:true, closed:true"
@@ -5,9 +8,34 @@
     <img id="attachment_preview_img" src="" style="width: 100%;"/>
 </div>
 
+
+<div id="attachment_image_uploader" class="easyui-dialog" title="图片上传" data-options="modal:true, closed:true"
+     style="width:70%; height: 580px;overflow: auto;">
+    <div id="uploader" class="wu-example">
+        <div class="queueList">
+            <div id="dndArea" class="placeholder">
+                <div id="filePicker"></div>
+                <p>或将照片拖到这里，单次最多可选300张</p>
+            </div>
+        </div>
+        <div class="statusBar" style="display:none;">
+            <div class="progress">
+                <span class="text">0%</span>
+                <span class="percentage"></span>
+            </div><div class="info"></div>
+            <div class="btns">
+                <div id="filePicker2"></div><div class="uploadBtn">开始上传</div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript">
 
-    var attachments_list_datagrid_toolbar = [];
+    var attachments_list_datagrid_toolbar = [
+        {text: '上传图片', iconCls: 'icons-arrow-add', handler: uploadAttachmentsImage},
+        {text: '上传文件', iconCls: 'icons-arrow-add', handler: uploadAttachmentsFiles},
+    ];
 
     function attachmentsListUrlFormatter(url) {
         return "<img src='" + url + "' style='height: 30px;' />"
@@ -41,6 +69,12 @@
         $('#attachment_preview').dialog('open')
     }
 
+    function uploadAttachmentsImage() {
+        var uploader = webuploader();
+        $("#attachment_image_uploader").dialog("open");
+    }
+    function uploadAttachmentsFiles() {
+    }
 
     function downloadAttachments(url) {
         $.messager.confirm("下载成功", "确定要下载该附件吗？", function (result) {
@@ -74,3 +108,6 @@
         })
     }
 </script>
+
+<script type="text/javascript" src="/assets/backend/assets/js/attachment_uploader.js"></script>
+

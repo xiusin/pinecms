@@ -1,6 +1,6 @@
 {{extends "frontend/layouts/layout.jet"}}
-{{ import "frontend/common/_link.jet" }}
-{{ import "frontend/common/_channelartlist.jet" }}
+{*{{ import "frontend/common/_link.jet" }}*}
+{*{{ import "frontend/common/_channelartlist.jet" }}*}
 {{block body()}}
   <div class="left">
         <!--首页最新模板部分-->

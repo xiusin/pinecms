@@ -23,7 +23,7 @@ func NewAttachmentsModel() *AttachmentsModel {
 func (a *AttachmentsModel) GetList(page, limit int64) (list []tables.IriscmsAttachments, total int64) {
 	offset := (page - 1) * limit
 	var err error
-	total, err = a.orm.Limit(int(limit), int(offset)).FindAndCount(&list)
+	total, err = a.orm.Limit(int(limit), int(offset)).Desc("id").FindAndCount(&list)
 	if err != nil {
 		golog.Error(err)
 	}

@@ -2,19 +2,18 @@ package config
 
 import (
 	"fmt"
-	"github.com/natefinch/lumberjack"
-	"github.com/xiusin/debug"
-	"github.com/xiusin/logger"
-	request_log "github.com/xiusin/pine/middlewares/request-log"
-	"github.com/xiusin/pinecms/src/application/controllers/taglibs"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
 
+	"github.com/natefinch/lumberjack"
+	"github.com/xiusin/logger"
+	request_log "github.com/xiusin/pine/middlewares/request-log"
+	"github.com/xiusin/pinecms/src/application/controllers/taglibs"
+
 	"github.com/gorilla/securecookie"
-	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/cache/providers/badger"
@@ -24,6 +23,7 @@ import (
 	"github.com/xiusin/pine/render/engine/template"
 	"github.com/xiusin/pine/sessions"
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"xorm.io/core"
 
 	"github.com/xiusin/pinecms/src/config"
@@ -82,7 +82,7 @@ func initApp() {
 
 	app.Use(request_log.RequestRecorder())
 
-	app.SetRecoverHandler(debug.Recover(app))
+	//app.SetRecoverHandler(debug.Recover(app))
 
 	diConfig()
 

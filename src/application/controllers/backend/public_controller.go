@@ -45,6 +45,7 @@ func (c *PublicController) Upload() {
 	isEditor := true
 	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
 	mid := c.Ctx().GetString("mid")
+	// mid 用户ID
 	if mid == "" {
 		mid = "public"
 	}

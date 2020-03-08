@@ -120,6 +120,8 @@
                 if (!data.errcode) {
                     $.messager.alert("提醒", data.errmsg, "info");
                     parent.$("#category_newslist_datagrid").datagrid("reload");
+                    // 关闭
+                    parent.$("#publish_content").dialog("close");
                 } else {
                     $.messager.alert("提醒", data.errmsg, "error");
                 }

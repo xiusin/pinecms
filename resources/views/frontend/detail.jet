@@ -1,4 +1,7 @@
 {{extends "frontend/layouts/layout.jet"}}
+{{ block seotitle() }}  {{field["title"]}} - {{field["keywords"]}} - {{field["description"]}} {{end}}
+{{ block seokeywords() }} {{field["keywords"]}}  {{end}}
+{{ block seodescription() }} {{field["description"]}} {{end}}
 {{block body()}}
    <div class="left">
 

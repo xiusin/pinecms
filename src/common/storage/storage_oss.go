@@ -29,6 +29,9 @@ func (s *OssUploader) Exists(name string) (bool, error) {
 }
 
 func NewOssUploader(config map[string]string) *OssUploader {
+	if config["OSS_ENDPOINT"] == "" || config["OSS_KEYID"] == "" || config["OSS_KEYSECRET"]  == "" || config["OSS_BUCKETNAME"] == "" {
+		panic("请配置OSS信息")
+	}
 	client, err := oss.New(config["OSS_ENDPOINT"], config["OSS_KEYID"], config["OSS_KEYSECRET"])
 	if err != nil {
 		panic(err)

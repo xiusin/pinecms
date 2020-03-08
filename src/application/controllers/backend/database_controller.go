@@ -76,8 +76,11 @@ func (c *DatabaseController) RegisterRoute(b pine.IRouterWrapper) {
 
 func (c *DatabaseController) Manager(orm *xorm.Engine) {
 	if c.Ctx().URLParam("datagrid") != "" {
-		mataDatas, _ := orm.DBMetas()
-
+		mataDatas, err := orm.DBMetas()
+		if err != nil {
+			panic(err)
+			pine.Logger().Error("读取数据库元信息失败", err)
+		}
 		var data = []map[string]interface{}{}
 		for _, mataData := range mataDatas {
 			total, _ := orm.Table(mataData.Name).Count()

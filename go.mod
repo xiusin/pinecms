@@ -3,7 +3,6 @@ module github.com/xiusin/pinecms
 go 1.13
 
 require (
-	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
 	github.com/afocus/captcha v0.0.0-20191010092841-4bd1f21c8868
 	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0
@@ -23,7 +22,6 @@ require (
 	github.com/kataras/iris/v12 v12.1.2
 	github.com/kataras/tablewriter v0.0.0-20180708051242-e063d29b7c23 // indirect
 	github.com/landoop/tableprinter v0.0.0-20180806200924-8bd8c2576d27
-	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mattn/go-runewidth v0.0.8 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/mitchellh/go-homedir v1.1.0

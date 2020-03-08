@@ -9,9 +9,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"  />
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta name="renderer" content="webkit" />
-    <title>{{global["site_title"]}} - {{global["site_keywords"]}} - {{global["site_description"]}}</title>
-    <meta name="keywords" content="{{global["site_keywords"]}}">
-    <meta name="description" content="{{global["site_description"]}}">
+    <title>
+    {{ block seotitle() }}{{global["site_title"]}} - {{global["site_keywords"]}} - {{global["site_description"]}} {{end}}
+    </title>
+    <meta name="keywords" content="{{ block seokeywords() }}{{global["site_keywords"]}}{{end}}">
+    <meta name="description" content="{{ block seodescription() }}{{global["site_description"]}}{{end}}">
     <link href="/assets/frontend/css/base.css" rel="stylesheet" type="text/css">
     <script src="/assets/frontend/js/jquery-1.8.3.min.js" type="text/javascript"></script>
     <script src="/assets/frontend/js/base.js" type="text/javascript"></script>
@@ -79,7 +81,7 @@
                 <h3>最新文章</h3>
                 <div>
                     <ul>
-                    {{yield artlist() content}}
+                    {{yield artlist(typeid=0) content}}
                         <li><a href="/detail?aid={{field["id"]}}">{{field["title"]}}</a></li>
                      {{end}}
                     </ul>
@@ -90,7 +92,7 @@
                 <h3>点击排行</h3>
                 <div>
                     <ul>
-                          {{yield artlist(orderby="visit_count desc") content}}
+                          {{yield artlist(orderby="visit_count desc", typeid=0) content}}
                               <li><a href="/detail?aid={{field["id"]}}">{{field["title"]}}</a></li>
                           {{end}}
                     </ul>

@@ -1,4 +1,7 @@
 {{extends "frontend/layouts/layout.jet"}}
+{{ block seotitle() }}  {{field.Title}} - {{field.Keywords}} - {{field.Description}} {{end}}
+{{ block seokeywords() }} {{field.Keywords}}  {{end}}
+{{ block seodescription() }} {{field.Description}} {{end}}
 {{block body()}}
    <div class="left">
             <div class="article_content_box clearfix">
