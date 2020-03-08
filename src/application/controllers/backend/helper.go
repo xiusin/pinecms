@@ -59,6 +59,11 @@ func buildModelForm( mid int64, data map[string]string) string {
 		}
 		h += "</td></tr>"
 	}
+	if data["status"] == "1" {
+		h += "<tr><td style='text-align:right;'>状态：</td><td> <input class='easyui-switchbutton' checked name='status'></td></tr>"
+	} else {
+		h += "<tr><td style='text-align:right;'>状态：</td><td> <input class='easyui-switchbutton' name='status'></td></tr>"
+	}
 	h += `<tr><td colspan=2><a href="javascript:void(0);" onclick="submitForm()" class="easyui-linkbutton">`+buttonTxt+`</a></td></tr></table></form>`
 	return h
 }

@@ -128,14 +128,12 @@
                 var url = '/b/content/news-list';
                 url += url.indexOf('?') !== -1 ? '&catid=' + id : '?catid=' + id;
                 openUrl(url, "内容管理");
-                // contentMainOpenUrl(url, false);
                 break;
             //页面
             case 1:
                 var url = '/b/content/page';
                 url += url.indexOf('?') !== -1 ? '&catid=' + id : '?catid=' + id;
-                openUrl(url, "内容管理");
-                // contentMainOpenUrl(url, true);
+                openUrl(url, "页面管理", true);
                 break;
             //链接
             case 2:

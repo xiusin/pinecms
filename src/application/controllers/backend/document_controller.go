@@ -31,7 +31,7 @@ type ModelForm struct {
 	ID                string `form:"id" json:"id"`
 	intID             int64
 	Enabled           string   `form:"enabled" json:"enabled"`
-	ModelType         int      `form:"type" json:"type"`
+	ModelType         string   `form:"type" json:"type"`
 	Name              string   `form:"name" json:"name"`
 	Table             string   `form:"table" json:"table"`
 	FeTplIndex        string   `form:"tpl_index" json:"tpl_index"`
@@ -235,7 +235,7 @@ func (c *DocumentController) ModelAdd() {
 		//查找重复记录
 		exists, err := c.Ctx().Value("orm").(*xorm.Engine).Where("`name`=? or `table`=?", data.Name, data.Table).Exist(&tables.IriscmsDocumentModel{})
 		if exists {
-			helper.Ajax("模型名称换货数据表已经存在", 1, c.Ctx())
+			helper.Ajax("模型名称或者数据表已经存在", 1, c.Ctx())
 			return
 		}
 
@@ -263,12 +263,13 @@ func (c *DocumentController) ModelAdd() {
 		if data.Enabled == "on" {
 			enabled = 1
 		}
+		mt,_:= strconv.Atoi(data.ModelType)
 		_, err = c.Ctx().Value("orm").(*xorm.Engine).Transaction(func(session *xorm.Session) (i interface{}, err error) {
 			dm := &tables.IriscmsDocumentModel{
 				Name:        data.Name,
 				Table:       data.Table,
 				Enabled:     enabled,
-				ModelType:   data.ModelType,
+				ModelType:   mt,
 				FeTplIndex:  helper.EasyUiIDToFilePath(data.FeTplIndex),
 				FeTplList:   helper.EasyUiIDToFilePath(data.FeTplList),
 				FeTplDetail: helper.EasyUiIDToFilePath(data.FeTplDetail),
@@ -306,9 +307,6 @@ func (c *DocumentController) ModelAdd() {
 						return nil, err
 					}
 				}
-				//if data.FieldRequired[k] == "on" {
-				//	f.Required = 1
-				//}
 				fields = append(fields, f)
 			}
 			rest, err := session.Insert(fields)
@@ -457,7 +455,7 @@ func (c *DocumentController) ModelEdit() {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	currentPos := models.NewMenuModel().CurrentPos(64)
+	currentPos := models.NewMenuModel().CurrentPos(86)
 	// 查找模型信息
 	document := models.NewDocumentModel().GetByID(mid)
 	if document == nil || document.Id < 1 {
@@ -613,5 +611,6 @@ func (c *DocumentController) PreviewPage() {
 		return
 	}
 	c.Ctx().Render().ViewData("form", template.HTML(buildModelForm(modelID, nil)))
+	c.Ctx().Render().ViewData("preview", 1)
 	c.Ctx().Render().HTML("backend/model_publish.html")
 }

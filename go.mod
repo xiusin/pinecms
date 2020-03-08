@@ -3,6 +3,7 @@ module github.com/xiusin/pinecms
 go 1.13
 
 require (
+	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
 	github.com/afocus/captcha v0.0.0-20191010092841-4bd1f21c8868
 	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0
@@ -20,8 +21,11 @@ require (
 	github.com/kataras/go-mailer v0.1.0
 	github.com/kataras/golog v0.0.10
 	github.com/kataras/iris/v12 v12.1.2
+	github.com/kataras/tablewriter v0.0.0-20180708051242-e063d29b7c23 // indirect
 	github.com/landoop/tableprinter v0.0.0-20180806200924-8bd8c2576d27
 	github.com/mattn/go-isatty v0.0.12 // indirect
+	github.com/mattn/go-runewidth v0.0.8 // indirect
+	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
@@ -33,9 +37,10 @@ require (
 	github.com/xiusin/debug v0.0.0-00010101000000-000000000000
 	github.com/xiusin/logger v0.0.0-00010101000000-000000000000
 	github.com/xiusin/pine v0.0.0-20200301045755-d3e2bba0b14b
+	github.com/yanyiwu/gojieba v1.1.1
 	golang.org/x/image v0.0.0-20191214001246-9130b4cfad52
-	golang.org/x/sys v0.0.0-20200219091948-cb0a6d8edb6c // indirect
 	gopkg.in/yaml.v2 v2.2.7
+	xorm.io/builder v0.3.6
 	xorm.io/core v0.7.3
 )
 

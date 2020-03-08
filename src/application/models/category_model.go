@@ -17,6 +17,26 @@ func NewCategoryModel() *CategoryModel {
 	return &CategoryModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
 }
 
+func (m CategoryModel) GetPosArr(id int64) []tables.IriscmsCategory {
+	category := tables.IriscmsCategory{Catid: id}
+	m.orm.Get(&category)
+	var links []tables.IriscmsCategory
+	for category.Parentid != 0 {
+		links = append(links, category)
+		parentid := category.Parentid
+		category = tables.IriscmsCategory{Catid: parentid}
+		m.orm.Get(&category)
+	}
+	links = append(links, category)
+	var reverse = func(s []tables.IriscmsCategory) []tables.IriscmsCategory {
+		for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+			s[i], s[j] = s[j], s[i]
+		}
+		return s
+	}
+	return reverse(links)
+}
+
 func (c CategoryModel) GetTree(categorys []tables.IriscmsCategory, parentid int64) []map[string]interface{} {
 	var res = []map[string]interface{}{}
 	if len(categorys) != 0 {

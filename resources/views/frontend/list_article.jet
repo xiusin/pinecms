@@ -1,0 +1,51 @@
+{{extends "frontend/layouts/layout.jet"}}
+{{ import "frontend/common/_link.jet" }}
+{{ import "frontend/common/_channelartlist.jet" }}
+{{block body()}}
+  <div class="left">
+        <!--首页最新模板部分-->
+            <div class="list_article_title clearfix">
+                <h3>{{field.Catname}}</h3>
+                <p>{{field.Description}}</p>
+            </div>
+
+            <div class="article_box_one">
+
+                <ul class="index_article">
+                {{range item := list(10, "")}} {*也可以使用artlist*}
+                    <li class="clearfix article_list">
+
+                        <a href="#" class="article_list_img">
+                            <img src="/assets/frontend/img/article1.png">
+                        </a>
+
+                        <h3>{{item["title"]}}</h3>
+                        <p>{{item["description"] ? item["description"] : "没有描述"}}</p>
+
+                        <div class="article_list_link">
+                            <span class="article_list_count">
+                                <i class="see_count"></i>
+                                查看次数:{{item["visit_count"]}}
+                            </span>
+
+                            <a href="/detail?aid={{item["id"]}}">查看详细+</a>
+                        </div>
+
+                    </li>
+                {{end}}
+                </ul>
+
+            </div>
+
+
+            <div class="pagelist">
+                    <a href="#">首页</a>
+                    <a href="#">上一页</a>
+                    <a href="#" class="pagelist_active">1</a>
+                    <a href="#">{{pagelist(10)}}</a>
+                    <a href="#">下一页</a>
+                    <a href="#">尾页</a>
+            </div>
+
+        </div>
+{{end}}

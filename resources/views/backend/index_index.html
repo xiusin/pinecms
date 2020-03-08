@@ -283,16 +283,21 @@
     }
 
     //显示打开内容
-    function openUrl(url, title) {
+    function openUrl(url, title, iframe) {
         if ($('#pagetabs').tabs('exists', title)) {
             $('#pagetabs').tabs('select', title);
         } else {
-            $('#pagetabs').tabs('add', {
+            var option = {
                 title: title,
                 href: url,
                 closable: true,
                 cache: false
-            });
+            }
+            if (iframe) {
+                option.href = null
+                option.content = '<iframe src="' + url + '" frameborder="0" fit="true" border="none" width="100%" height="100%"></iframe>'
+            }
+            $('#pagetabs').tabs('add', option);
         }
     }
 

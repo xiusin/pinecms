@@ -1,46 +1,142 @@
-{{ import "frontend/common/_link.jet" }} {** 妈蛋 必须在前面 **}
-{{ import "frontend/common/_type.jet" }} {** 妈蛋 必须在前面 **}
-{{ import "frontend/common/_channelartlist.jet" }} {** 妈蛋 必须在前面 **}
+{{extends "frontend/layouts/layout.jet"}}
+{{ import "frontend/common/_channelartlist.jet" }}
+{{ block body() }}
+<div class="left">
+        <!--首页学习笔记部分-->
+            {{yield channelartlist(typeid=0, son=true) content }}
+            {{if field.Type == 0 && field.HasSon}}
+                <div class="article_box_two">
+                <div class="index_article_title clearfix">
+                    <h3>{{field.Catname}}</h3>
+                    <a href="{{field.Url}}">更多></a>
+                </div>
+                <div class="article_btn">
 
-{** 直接传递一个函数到模板 **}
-{*{{ link_slice("xiusin") }}*}
-{*<br/>*}
-{*{{ link_map("xiusin") }}*}
-{*<br/>*}
-{*{{ link_map_struct("xiusin") }}*}
-{*<br/>*}
-{** 迭代模板传入变量函数数据 **}
-{*{{ range v := link_slice("xiusin") }}*}
-{*    <div>{{v}}</div>*}
-{*{{end}}*}
+                  <div class="article_btn_nav">
+                        <ul>
+                            {{yield channel(typeid=field.Catid) content}}
+                            <li>{{field.Catname}}</li>
+                            {{end}}
+                        </ul>
+                  </div>
 
-{*{{ range k,v := link_map("xiusin") }}*}
-{*<div>{{k}} => {{v}}</div>*}
-{*{{end}}*}
+                   <div class="article_btn_box">
+                    {{yield channel(typeid=field.Catid) content}}
+                        <div class="article_btn_box_item clearfix">
+                            <a href="#" class="article_btn_box_item_img">
+                                <img src="">
+                            </a>
+                                <ul>
+                                   {{yield artlist(typeid=field.Catid) content}}
+                                     <li>
+                                     <i></i>
+                                     <a href="/detail?aid={{field["id"]}}" imgsrc="/assets/frontend/img/notimg.gif">{{field["title"]}}</a>
+                                     <p>{{field["description"] ? field["description"] : "没有描述内容"}}</p>
+                                     </li>
+                                   {{end}}
+
+                                </ul>
+                        </div>
+                    {{end}}
+                    </div>
+
+                </div>
+            </div>
+            {{ end }}
+            {{end}}
+        <!--首页博文推荐部分-->
+            <div class="article_box_one">
+                <div class="index_article_title clearfix">
+                    <h3>推荐博文</h3>
+                    <a href="#">更多></a>
+                </div>
+                <ul class="index_article">
+
+                   {{yield artlist() content}}
+                    <li class="clearfix article_list">
+
+                                           <a href="#" class="article_list_img">
+                                               <img src="/assets/frontend/img/article3.jpg">
+                                           </a>
+
+                                           <h3>{{field["title"]}}</h3>
+                                           <p>{{field["description"] ? field["description"] : "没有描述内容"}}</p>
+
+                                           <div class="article_list_link">
+                                           <span class="article_list_count">
+                                               <i class="see_count"></i>
+                                               查看次数:{{field["visit_count"]}}
+                                           </span>
+                                           <a href="/detail?aid={{field["id"]}}">查看详细+</a>
+                                           </div>
+
+                                       </li>
+                    {{end}}
+                </ul>
+            </div>
+
+            <div>
+                <input type="button"  class="more" id="loadmore" value="点击加载更多">
+            </div>
+
+        </div>
+<script>
+
+        $(function(){
 
 
-{*{{ range k,v := link_map_struct("xiusin") }}*}
-{*<div>{{k}} => {{v.FirstName}} ==> {{v.LastName}}</div>*}
-{*{{end}}*}
+            var i = 2; //设置当前页数
 
-{* 给模板block 传递函数返回值 *}
-<h1>Flink标签演示</h1>
-{{yield link() content }}
-    <a href="{{item.Url}}" target="_blank"><img src="{{item.Logo}}" alt="{{item.Name}}" style="height: 50px; width: 100px; margin: 4px; border: 1px solid #0a001f"></a>
-{{end}}
+            $('#loadmore').click(function(){
+                alert("无法加载");
+                return
+                $.ajax({
 
-<h1>Type标签演示</h1>
-{{yield type(typeid=8) content }}
-    <a href="{{typelink}}" target="_blank">{{typename}}</a>
-{{end}}
+                    url : 'http://localhost/e/action/getmore.php', // 这是当前服务器的地址
 
-<h1>ChannelArtList标签</h1>
+                    type:'POST',
 
-{*{{yield channelartlist(typeid=8) content }}*}
-{*    <a href="{{typelink}}" target="_blank">{{typename}}</a>*}
-{*{{end}}*}
+                    data:{"next":i,'table':'news','classid':'9','action':'getmorenews','limit':6,'small_length':120},
 
+                    dataType : 'html',
 
-{{yield channelartlist(typeid="0,1,2") content }}
-        sadasd
+                    beforeSend:function(){
+
+                        $("#loadmore").attr('value','正在努力加载中...');
+
+                        $('#loadmore').attr('disabled','disabled');
+
+                    },
+
+                    success : function(data){
+
+                        if(data.length>10){
+
+                            $("#showajaxnews").append(data);
+
+                            $("#loadmore").removeAttr('disabled');
+
+                            $("#loadmore").attr('value','点击加载更多!');
+
+                            i++;
+
+                        }else{
+
+                            $("#loadmore").show().html("已全部加载完毕！");
+
+                            $('#loadmore').attr('disabled','disabled');
+
+                            return false;
+
+                        }
+
+                    }
+
+                });
+
+            });
+
+        });
+
+    </script>
 {{end}}

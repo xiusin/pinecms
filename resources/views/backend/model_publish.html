@@ -29,14 +29,18 @@
                 parent.$.messager.alert('提示信息', res.errmsg, 'error');
             } else {
                 parent.$.messager.alert('提示信息', res.errmsg, 'info');
-                parent.contentMainOpenUrl("/b/content/news-list?catid={{.category.Catid}}")
+                // 刷新
+                parent.$("#category_newslist_datagrid").datagrid("reload");
             }
         });
         return false;
     }
-
     function doUpload(obj) {
         event.preventDefault();
+        {{if eq .preview 1}}
+        $.messager.alert("错误提醒", "当前处于预览模式", "error");
+        return;
+        {{end}}
         $.upload({
             url: "/public/upload",
             fileName: 'filedata',
@@ -89,6 +93,10 @@
     }
 
     function submitForm() {
+        {{if eq .preview 1}}
+        $.messager.alert("错误提醒", "当前处于预览模式", "error");
+        return;
+        {{end}}
         $('#content_page_form').form('submit', {
             onSubmit: function () {
                 for (let i in siginUploader) {
@@ -110,11 +118,8 @@
                     data = JSON.parse(data)
                 }
                 if (!data.errcode) {
-                    {{/*if ('{{.submitURL}}'.indexOf("edit")) {*/}}
                     $.messager.alert("提醒", data.errmsg, "info");
-                    // } else {
-                    //     $.messager.alert("提醒",data.errmsg, "info");
-                    // }
+                    parent.$("#category_newslist_datagrid").datagrid("reload");
                 } else {
                     $.messager.alert("提醒", data.errmsg, "error");
                 }

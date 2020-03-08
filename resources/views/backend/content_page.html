@@ -8,12 +8,10 @@
         .dialogtable {
             width: 100%;
         }
-
         .dialogtable td {
             border-width: 0 1px 1px 0;
             border-style: dotted;
             border-color: #ccc;
-            /*margin: 0;*/
             padding: 15px;
         }
         input[type='text'] {
@@ -30,13 +28,19 @@
         <tr>
             <td width="60">标题：</td>
             <td>
-                <input type="text" name="title" value="{{.info.Title}}" />
+                <input type="text" class="easyui-textbox" data-options="required: true" name="title" value="{{.info.Title}}" />
             </td>
         </tr>
         <tr>
             <td>关键字：</td>
-            <td><input type="text" name="keywords" value="{{.info.Keywords}}"/></td>
+            <td><input type="text" class="easyui-textbox" name="keywords" value="{{.info.Keywords}}"/></td>
         </tr>
+
+        <tr>
+            <td>描述：</td>
+            <td><input type="text" class="easyui-textbox" data-options="multiline: true" style="width: 400px; height: 100px;" name="description" value="{{.info.Description}}"/></td>
+        </tr>
+
         <tr>
             <td>内容：</td>
             <td >
@@ -49,7 +53,7 @@
     </table>
 </form>
 <script type="text/javascript">
-    UM.getEditor('content_page_form_textarea_editor');
+    UE.getEditor('content_page_form_textarea_editor');
     function contentPageFormSubmit() {
         $.post('/b/content/page?catid={{.catid}}', $("#content_page_form").serialize(), function (res) {
             if (res.errcode) {

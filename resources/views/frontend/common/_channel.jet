@@ -1,3 +1,8 @@
-{{block channel(id,type,row=8)  }}
-    {{ tmp := channel(id, type,row) }}
+{{block channel(typeid,type = "son",row=8,field = "")  }}
+    {{ categories := channel(typeid, type, row) }}
+    {{if categories}}
+        {{range field = categories}}
+            {{yield content}}
+        {{end}}
+    {{end}}
 {{end}}

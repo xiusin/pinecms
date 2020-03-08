@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-xorm/xorm"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/yanyiwu/gojieba"
 	"html/template"
 	"strconv"
 	"strings"
@@ -173,8 +176,12 @@ func (c *ContentController) NewsList(orm *xorm.Engine) {
 			searchComps = append(searchComps, "<div class='search-div'>"+tMapF[field]+`: <input type="text" name="search_`+field+`" class="easyui-textbox"/></div>`)
 		}
 	}
+	fields["创建时间"] = map[string]string{"field": "created_time", "index": strconv.Itoa(index)}
+	index++
+	fields["更新时间"] = map[string]string{"field": "updated_time", "index": strconv.Itoa(index)}
+	index++
 	fields["管理操作"] = map[string]string{"field": "id", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
-	table := helper.Datagrid("category_categorylist_datagrid", "/b/content/news-list?grid=datagrid&catid="+strconv.Itoa(int(catid)), helper.EasyuiOptions{
+	table := helper.Datagrid("category_newslist_datagrid", "/b/content/news-list?grid=datagrid&catid="+strconv.Itoa(int(catid)), helper.EasyuiOptions{
 		"toolbar":      "content_newslist_datagrid_toolbar",
 		"singleSelect": "true",
 	}, fields)
@@ -194,15 +201,16 @@ func (c *ContentController) Page() {
 	}
 	pageModel := models.NewPageModel()
 	page := pageModel.GetPage(catid)
-	var hasPage bool = false
-	if page.Title != "" {
-		hasPage = true
+	hasPage := page != nil
+	if page == nil {
+		page = &tables.IriscmsPage{}
 	}
 	var res bool
 	if c.Ctx().IsPost() {
 		page.Title = c.Ctx().FormValue("title")
 		page.Content = c.Ctx().FormValue("content")
 		page.Keywords = c.Ctx().FormValue("keywords")
+		page.Description = c.Ctx().FormValue("description")
 		page.Updatetime = int64(helper.GetTimeStamp())
 		if !hasPage {
 			page.Catid = catid
@@ -258,11 +266,31 @@ func (c *ContentController) AddContent() {
 			helper.Ajax("缺少必要参数", 1, c.Ctx())
 			return
 		}
-		data["status"] = "0"
+
+		if _, ok := data["status"]; ok {
+			data["status"] = "1"
+		} else {
+			data["status"] = "0"
+		}
+
 		data["created_time"] = time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)
 		model := models.NewDocumentModel().GetByID(int64(mid))
 		var fields []string
 		var values []interface{}
+		if data["mid"] == "1" { // 只有默认文章模型支持自动提取关键字
+			if val, ok := data["keywords"]; ok && val == "" {
+				x := gojieba.NewJieba()
+				// 自动提取关键字
+				words := x.ExtractWithWeight(bluemonday.NewPolicy().Sanitize(data["content"]), 12)
+				x.Free()
+				data["catid"] = c.Ctx().GetString("catid")
+				var keywords []string
+				for _, w := range words {
+					keywords = append(keywords, w.Word)
+				}
+				data["keywords"] = strings.Join(keywords, ",")
+			}
+		}
 		for k, v := range data {
 			if k == "table_name" {
 				continue
@@ -309,6 +337,7 @@ func (c *ContentController) AddContent() {
 	c.Ctx().Render().ViewData("category", cat)
 	c.Ctx().Render().ViewData("form", template.HTML(buildModelForm(cat.ModelId, nil)))
 	c.Ctx().Render().ViewData("submitURL", template.HTML("/b/content/add"))
+	c.Ctx().Render().ViewData("preview", 0)
 	c.Ctx().Render().HTML("backend/model_publish.html")
 }
 
@@ -358,10 +387,31 @@ func (c *ContentController) EditContent() {
 			return
 		}
 		delete(data, "id")
-		data["status"] = "0"
+
+		if _, ok := data["status"]; ok {
+			data["status"] = "1"
+		} else {
+			data["status"] = "0"
+		}
+
 		data["updated_time"] = time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)
 		var sets []string
 		var values []interface{}
+		if data["mid"] == "1" {
+			if val, ok := data["keywords"]; ok && val == "" {
+				x := gojieba.NewJieba()
+				// 自动提取关键字
+				words := x.ExtractWithWeight(bluemonday.NewPolicy().Sanitize(data["content"]), 12)
+				x.Free()
+				data["catid"] = c.Ctx().GetString("catid")
+				var keywords []string
+				for _, w := range words {
+					keywords = append(keywords, w.Word)
+				}
+				data["keywords"] = strings.Join(keywords, ",")
+			}
+		}
+
 		for k, v := range data {
 			if k == "table_name" {
 				continue
@@ -369,6 +419,7 @@ func (c *ContentController) EditContent() {
 			sets = append(sets, "`"+k+"`= ?")
 			values = append(values, v)
 		}
+
 		// 通用字段更新
 		if relationDocumentModel.ModelType == models.SYSTEM_TYPE {
 
@@ -392,6 +443,7 @@ func (c *ContentController) EditContent() {
 	c.Ctx().Render().ViewData("form", template.HTML(buildModelForm(catogoryModel.ModelId, contents[0])))
 	c.Ctx().Render().ViewData("category", catogoryModel)
 	c.Ctx().Render().ViewData("submitURL", template.HTML("/b/content/edit"))
+	c.Ctx().Render().ViewData("preview", 0)
 	c.Ctx().Render().HTML("backend/model_publish.html")
 }
 

@@ -1,4 +1,6 @@
-{{.DataGrid}}
+<div style="width: 100%; height: 100%">
+    {{.DataGrid}}
+</div>
 
 <style>
     .search-div {
@@ -39,9 +41,8 @@
 
 
 <script type="text/javascript">
-    var content_newslist_datagrid_id = 'category_categorylist_datagrid';
+    var content_newslist_datagrid_id = 'category_newslist_datagrid';
     var rowID = 0;
-
     //排序格式化
     function contentNewsListOrderFormatter(val, arr) {
         rowID = val;

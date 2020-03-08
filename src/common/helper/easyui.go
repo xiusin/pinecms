@@ -92,13 +92,14 @@ func Datagrid(id, url string, tableoptions EasyuiOptions, field EasyuiGridfields
            url:'` + url + `',
            method:'get',
            border:` + dataOptions["border"].(string) + `,
-           fit: false,
-           fitColumns:` + dataOptions["fitColumns"].(string) + `,
+           fit: true,
+           fitColumns:true,
            pageSize:` + dataOptions["pageSize"].(string) + `,
            rownumbers:` + dataOptions["rownumbers"].(string) + `,
            autoRowHeight:false,
  		   striped: true,
 		   nowrap: true,
+           emptyMsg: '<span>没有任何记录</span>',
            singleSelect:` + dataOptions["singleSelect"].(string) + `,
            pagination:` + dataOptions["pagination"].(string) + taboptstr + `
            ">

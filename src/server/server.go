@@ -6,6 +6,7 @@ import (
 	"github.com/xiusin/debug"
 	"github.com/xiusin/logger"
 	request_log "github.com/xiusin/pine/middlewares/request-log"
+	"github.com/xiusin/pinecms/src/application/controllers/taglibs"
 	"io"
 	"net/http"
 	"os"
@@ -88,7 +89,6 @@ func initApp() {
 	app.Use(middleware.CheckDatabaseBackupDownload())
 
 	//配置前端缓存10秒
-	//app.Use(iris.Cache304(10 * time.Second))
 	if conf.Pprof.Open {
 		p := pprof.New()
 		app.GET(conf.Pprof.Route, p)
@@ -106,7 +106,6 @@ func Server() {
 }
 
 func registerStatic() {
-	//app.Static(conf.Favicon, "favicon.ico")
 	for _, static := range conf.Statics {
 		app.Static(static.Route, filepath.FromSlash(static.Path))
 	}
@@ -145,7 +144,6 @@ func runServe() {
 			}
 		}()
 	}
-
 	app.Run(
 		pine.Addr(fmt.Sprintf(":%d", conf.Port)),
 		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))),
@@ -193,10 +191,13 @@ func diConfig() {
 	pine.RegisterViewEngine(htmlEngine)
 
 	jetEngine := jet.New(conf.View.Path, ".jet", conf.View.Reload)
-	jetEngine.AddGlobalFunc("flink", controllers.Flink)
-	jetEngine.AddGlobalFunc("type", controllers.Type)
-	jetEngine.AddGlobalFunc("channel", controllers.Channel)
-	jetEngine.AddGlobalFunc("channelartlist", controllers.ChannelArtList)
+
+	jetEngine.AddGlobalFunc("flink", taglibs.Flink)
+	jetEngine.AddGlobalFunc("type", taglibs.Type)
+	jetEngine.AddGlobalFunc("channel", taglibs.Channel)
+	jetEngine.AddGlobalFunc("channelartlist", taglibs.ChannelArtList)
+	jetEngine.AddGlobalFunc("artlist", taglibs.ArcList)
+
 	pine.RegisterViewEngine(jetEngine)
 
 	di.Set("pinecms.jet", func(builder di.BuilderInf) (i interface{}, err error) {
@@ -206,7 +207,6 @@ func diConfig() {
 	di.Set(XOrmEngine, func(builder di.BuilderInf) (i interface{}, err error) {
 		return XOrmEngine, nil
 	}, true)
-
 
 	app.Use(func(ctx *pine.Context) {
 		ctx.Set("cache", iCache)

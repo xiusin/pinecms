@@ -1,6 +1,9 @@
 package models
 
 import (
+	"fmt"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
 	"log"
 	"strconv"
@@ -39,16 +42,23 @@ func (m *MenuModel) GetMenu(parentid, roleid int64) []tables.IriscmsMenu {
 
 //当前位置
 func (m MenuModel) CurrentPos(id int64) string {
-	menu := tables.IriscmsMenu{Id: id}
-	has, _ := m.orm.Get(&menu)
-	str := ""
-	if !has {
-		return ""
+	cache := pine.Make("cache.ICache").(cache.ICache)
+	cacheKey := fmt.Sprintf("backend:current_pos_%d", id)
+	data, _ := cache.Get(cacheKey)
+	if data == nil {
+		menu := tables.IriscmsMenu{Id: id}
+		has, _ := m.orm.Get(&menu)
+		str := ""
+		if !has {
+			return ""
+		}
+		if menu.Parentid != 0 {
+			str = m.CurrentPos(menu.Parentid)
+		}
+		data = []byte(str + menu.Name + " > ")
+		cache.Set(cacheKey, data)
 	}
-	if menu.Parentid != 0 {
-		str = m.CurrentPos(menu.Parentid)
-	}
-	return str + menu.Name + " > "
+	return string(data)
 }
 
 func (m MenuModel) GetTree(menus []tables.IriscmsMenu, parentid int64) []map[string]interface{} {

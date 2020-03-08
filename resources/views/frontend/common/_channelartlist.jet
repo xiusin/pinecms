@@ -1,5 +1,11 @@
-{{block channelartlist(typeid,channelInfo="")  }}
-    {{ range _,channelInfo := channelartlist(typeid) }}
-    {{yield content}}
+{{block channelartlist(typeid=-1,row=10,son=false, field="", channellist="")  }}
+    {{if typeid == -1}}
+          {{ if isset(__typeid) }}
+               {{typeid = __typeid}}
+           {{end}}
+    {{end}}
+    {{channellist = channelartlist(typeid, row, son)}}
+    {{ range _,field = channellist }}
+        {{yield content}}
     {{end}}
 {{end}}
