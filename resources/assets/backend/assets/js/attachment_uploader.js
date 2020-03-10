@@ -345,7 +345,8 @@ var webuploader = function () {
                 stats = uploader.getStats();
                 console.log("stats", stats)
                 if (stats.successNum) {
-                    alert('上传成功');
+                    parent.$('#attachments_list_datagrid').datagrid('reload');
+                    parent.$('#attachment_image_uploader').dialog('close');
                 } else {
                     // 没有成功的图片，重设
                     state = 'done';

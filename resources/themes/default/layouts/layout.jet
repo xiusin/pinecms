@@ -1,7 +1,8 @@
-{{ import "frontend/common/_link.jet" }}
-{{ import "frontend/common/_channelartlist.jet" }}
-{{ import "frontend/common/_channel.jet" }}
-{{ import "frontend/common/_artlist.jet" }}
+{{ import "_link.jet" }}
+{{ import "_channelartlist.jet" }}
+{{ import "_channel.jet" }}
+{{ import "_artlist.jet" }}
+{{ import "_query.jet" }}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,11 +63,8 @@
 
 <div class="search_box">
     <div class="search">
-    <form name="searchform" class="search_form" method="post" action="[!--news.url--]e/search/index.php" target="_blank">
+    <form name="searchform" class="search_form" method="get" action="{{ url("/search") }}" target="_blank">
         <input type="text" class="search_text" name="keyboard" placeholder="输入关键字点击搜索">
-        <input type="hidden" name="tbname" value="news">
-        <input type="hidden" name="show" value="title">
-        <input type="hidden" name="tempid" value="1">
         <input type="submit" class="search_btn" value="搜索一下">
     </form>
     </div>

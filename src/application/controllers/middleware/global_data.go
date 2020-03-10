@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"strings"
@@ -18,12 +19,24 @@ func SetGlobalConfigData(xorm *xorm.Engine, iCache cache.ICache) pine.Handler {
 		}
 		ctx.Set(controllers.CacheSetting, settingData)
 		tolower := map[string]string{}
-		for k,v := range settingData {
+		for k, v := range settingData {
 			tolower[strings.ToLower(k)] = v
 		}
 		ctx.Render().ViewData("global", tolower)
+		host := ctx.Request().Host
+		ctx.Render().ViewData("url", func(path string, params ...map[string]interface{}) string {
+			var query = "?"
+			if len(params) > 0 {
+			for k, v := range params[0] {
+				query += k + "=" + fmt.Sprintf("%s", v)
+			}
+			}
+			if len(query) == 1 {
+				query = ""
+			}
+			return "//:" + host + "/" + path + query
+		})
 		ctx.Next()
 	}
 
 }
-

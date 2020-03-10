@@ -3,9 +3,14 @@ package frontend
 import (
 	"fmt"
 	"github.com/go-xorm/xorm"
+	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/models"
+	"github.com/xiusin/pinecms/src/config"
 	"math"
+	"net/http"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -19,10 +24,11 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	b.GET("/list", "List")
 	b.GET("/detail", "Detail")
 	b.GET("/page", "Page")
+	b.GET("/click", "Click")
 }
 
 func (c *IndexController) Index() {
-	c.Ctx().Render().HTML("frontend/index.jet")
+	c.Ctx().Render().HTML(template("index.jet"))
 }
 
 func (c *IndexController) List() {
@@ -31,20 +37,15 @@ func (c *IndexController) List() {
 		c.Ctx().Abort(404)
 		return
 	}
-
 	category, err := models.NewCategoryModel().GetCategory(tid)
-
 	if err != nil {
 		c.Ctx().Abort(404)
 		return
 	}
-
-	var globalSize int = 10
-
+	var globalSize  = 10
 	c.ViewData("field", category)
 	c.ViewData("typeid", tid)
 	c.ViewData("__typeid", tid)
-
 	c.ViewData("list", func(pagesize int, orderby string) []map[string]string {
 		if orderby == "" {
 			orderby = "listorder desc"
@@ -81,9 +82,9 @@ func (c *IndexController) List() {
 	})
 
 	if category.ListTpl == "" {
-		category.ListTpl = "frontend/list_article.jet"
+		category.ListTpl = "list_article.jet"
 	}
-	c.Render().HTML(category.ListTpl)
+	c.Render().HTML(template(category.ListTpl))
 }
 
 func (c *IndexController) Detail() {
@@ -152,7 +153,7 @@ func (c *IndexController) Detail() {
 		articles, _ := sess.Limit(row).Desc("id").QueryString()
 		return articles
 	})
-	c.Ctx().Render().HTML("frontend/detail.jet")
+	c.Ctx().Render().HTML(template("detail.jet"))
 }
 
 func (c *IndexController) Page() {
@@ -179,9 +180,48 @@ func (c *IndexController) Page() {
 	}
 	page.Position = strings.Join(position, " > ")
 	c.ViewData("field", page)
-	c.View("frontend/page.jet")
+	c.View(template("page.jet"))
 }
 
-func getOrmSess() *xorm.Session {
-	return pine.Make("*xorm.Engine").(*xorm.Engine).Table("iriscms_articles")
+func (c *IndexController) Click() {
+	aid, _ := c.Ctx().GetInt64("aid")
+	tid, _ := c.Ctx().GetInt64("tid")
+	if aid < 1 || tid < 1 {
+		c.Ctx().Abort(http.StatusNotFound)
+		return
+	}
+	clickCache := fmt.Sprintf("click_%d_%d", tid, aid)
+	info := c.Ctx().GetCookie(clickCache)
+	if len(info) == 0 {
+		res, err := di.MustGet("orm").(*xorm.Engine).Table(models.NewCategoryModel().GetTable(tid)).ID(aid).Incr("visit_count").Exec()
+		if err != nil {
+			logger.Error("无法更新点击数据", err)
+			return
+		}
+		if affe, _ := res.RowsAffected(); affe > 0 {
+			c.Ctx().SetCookie(clickCache, "1", 0)
+		}
+	}
+}
+
+func (c *IndexController) GetClick() {
+	aid, _ := c.Ctx().GetInt64("aid")
+	tid, _ := c.Ctx().GetInt64("tid")
+	if aid < 1 || tid < 1 {
+		c.Ctx().Abort(http.StatusNotFound)
+		return
+	}
+	fmt.Println(di.MustGet("orm").(*xorm.Engine).Table(models.NewCategoryModel().GetTable(tid)).ID(aid).Select("visit_count").QueryString())
+}
+
+func getOrmSess(tableName ...string) *xorm.Session {
+	if len(tableName) == 0 {
+		tableName = append(tableName, "iriscms_articles")
+	}
+	return pine.Make("*xorm.Engine").(*xorm.Engine).Table(tableName[0])
+}
+
+func template(tpl string) string {
+	conf := di.MustGet("pinecms.config").(*config.Config)
+	return filepath.Join(conf.View.Theme, tpl)
 }

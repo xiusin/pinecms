@@ -1,5 +1,6 @@
 package tables
 
+// todo cat 对应的表名字段冗余
 type IriscmsCategory struct {
 	Catid                int64             `xorm:"pk" json:"Catid"`
 	Parentid             int64             `json:"Parentid"`

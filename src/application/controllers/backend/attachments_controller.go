@@ -17,6 +17,8 @@ type AttachmentController struct {
 func (c *AttachmentController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/attachments/list", "List")
 	b.POST("/attachments/delete", "Delete")
+	b.ANY("/attachments/webuploader", "Webuploader")
+
 }
 
 func (c *AttachmentController) List(orm *xorm.Engine) {
@@ -24,7 +26,8 @@ func (c *AttachmentController) List(orm *xorm.Engine) {
 	rows, _ := c.Ctx().URLParamInt64("rows")
 
 	if page > 0 {
-		list, total := models.NewAttachmentsModel().GetList(page, rows)
+		keywords := c.Ctx().GetString("keywords")
+		list, total := models.NewAttachmentsModel().GetList(keywords, page, rows)
 		c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": total})
 		return
 	}
@@ -34,12 +37,13 @@ func (c *AttachmentController) List(orm *xorm.Engine) {
 		"title":   models.NewMenuModel().CurrentPos(menuid),
 		"toolbar": "attachments_list_datagrid_toolbar",
 	}, helper.EasyuiGridfields{
-		"名称":   {"field": "origin_name", "width": "20", "index": "0"},
-		"图片":   {"field": "url", "width": "15", "index": "1", "formatter": "attachmentsListUrlFormatter"},
-		"大小":   {"field": "size", "width": "10", "index": "2", "formatter": "attachmentsListSizeFormatter"},
-		"上传时间": {"field": "upload_time", "width": "15", "index": "3"},
-		"类型":   {"field": "type", "width": "10", "index": "4"},
-		"操作":   {"field": "id", "formatter": "attachmentsListSizeOptFormatter", "index": "5"},
+		"原始名称":   {"field": "origin_name", "width": "20", "index": "0"},
+		"资源名称":   {"field": "name", "width": "20", "index": "1"},
+		"图片":   {"field": "url", "width": "10", "index": "2", "formatter": "attachmentsListUrlFormatter"},
+		"大小":   {"field": "size", "width": "5", "index": "3", "formatter": "attachmentsListSizeFormatter"},
+		"上传时间": {"field": "upload_time", "width": "15", "index": "4"},
+		"类型":   {"field": "type", "width": "10", "index": "5"},
+		"操作":   {"field": "id", "formatter": "attachmentsListSizeOptFormatter", "index": "6"},
 	})
 	c.Ctx().Render().ViewData("dataGrid", template.HTML(table))
 	c.Ctx().Render().HTML("backend/attachments_list.html")
@@ -56,4 +60,8 @@ func (c *AttachmentController) Delete(orm *xorm.Engine) {
 	} else {
 		helper.Ajax("删除附件失败", 1, c.Ctx())
 	}
+}
+
+func (c *AttachmentController) Webuploader() {
+	c.Ctx().Render().HTML("backend/attachments_webuploader.html")
 }

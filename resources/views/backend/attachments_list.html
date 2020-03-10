@@ -1,41 +1,40 @@
-<link rel="stylesheet" type="text/css" href="/assets/backend/ueditor/third-party/webuploader/webuploader.css">
-<link rel="stylesheet" type="text/css" href="/assets/backend/assets/css/attachment_uploader.css">
-<script type="text/javascript" src="/assets/backend/ueditor/third-party/webuploader/webuploader.js"></script>
-{{ .dataGrid }}
+<link rel="stylesheet" type="text/css" href="/assets/viewer/viewer.css">
+<script type="text/javascript" src="/assets/viewer/viewer.js"></script>
+<script type="text/javascript" src="/assets/viewer/jquery-viewer.js"></script>
 
-<div id="attachment_preview" class="easyui-dialog" title="大图预览" data-options="modal:true, closed:true"
-     style="width:50%; height: 50%">
-    <img id="attachment_preview_img" src="" style="width: 100%;"/>
-</div>
+{{ .dataGrid }}
+<img id="attachment_preview_img" src="" />
 
 
 <div id="attachment_image_uploader" class="easyui-dialog" title="图片上传" data-options="modal:true, closed:true"
-     style="width:70%; height: 580px;overflow: auto;">
-    <div id="uploader" class="wu-example">
-        <div class="queueList">
-            <div id="dndArea" class="placeholder">
-                <div id="filePicker"></div>
-                <p>或将照片拖到这里，单次最多可选300张</p>
-            </div>
-        </div>
-        <div class="statusBar" style="display:none;">
-            <div class="progress">
-                <span class="text">0%</span>
-                <span class="percentage"></span>
-            </div><div class="info"></div>
-            <div class="btns">
-                <div id="filePicker2"></div><div class="uploadBtn">开始上传</div>
-            </div>
-        </div>
+     style="width:70%; height: 600px;overflow: hidden;">
+    <iframe id="attachment_image_uploader_iframe" src="/b/content/public-welcome" style="width: 100%; height: 100%;border: none; overflow: auto"></iframe>
+</div>
+
+
+<div id="attachments_list_datagrid_toolbar" style="padding:1px;height:auto">
+    <form style="border-bottom:1px solid #ddd;margin-bottom:1px;padding:5px;" id="attachments_list_search_form">
+        <div class="search-div">名称: <input name="keywords" class="easyui-textbox">
+            <a href="javascript:;" onclick="attachmentsListDatagridSearch(this)" class="easyui-linkbutton"
+               iconCls="icons-map-magnifier">搜索</a></div>
+    </form>
+
+    <div>
+        <a href="javascript:;" class="easyui-linkbutton" data-options="plain:true,iconCls:'icons-arrow-add'"
+           onclick="uploadAttachmentsImage()">上传图片</a>
     </div>
 </div>
 
 <script type="text/javascript">
-
-    var attachments_list_datagrid_toolbar = [
-        {text: '上传图片', iconCls: 'icons-arrow-add', handler: uploadAttachmentsImage},
-        {text: '上传文件', iconCls: 'icons-arrow-add', handler: uploadAttachmentsFiles},
-    ];
+    function attachmentsListDatagridSearch(that) {
+        var content_datagrid = $('#attachments_list_datagrid');
+        var queryParams = content_datagrid.datagrid('options').queryParams;
+        $.each($("#attachments_list_search_form").serializeArray(), function () {
+            queryParams[this['name']] = this['value'];
+        });
+        content_datagrid.datagrid({queryParams: queryParams})
+        content_datagrid.datagrid('reload');
+    }
 
     function attachmentsListUrlFormatter(url) {
         return "<img src='" + url + "' style='height: 30px;' />"
@@ -55,8 +54,6 @@
         var btn = [];
         if (obj.type === "img") {
             btn.push("<a href=\"javascript:;\" onclick=\"attachmentListPreview('" + obj.url + "')\">查看</a>");
-            btn.push("<a href=\"javascript:;\" onclick=\"replaceAttachments('" + obj.url + "')\" >替换</a>");
-
         }
         btn.push("<a href=\"javascript:;\" onclick=\"downloadAttachments('" + obj.url + "')\" >下载</a>");
         btn.push("<a href=\"javascript:;\" onclick=\"deleteAttachments(" + id + ")\">删除</a>");
@@ -65,15 +62,23 @@
 
 
     function attachmentListPreview(url) {
-        $("#attachment_preview_img").attr("src", url);
-        $('#attachment_preview').dialog('open')
+        var $preview = $('#attachment_preview_img');
+        $preview.attr("src", url);
+        $preview.viewer({
+            inline: true,
+            toolbar: false,
+            button: false,
+            fullscreen: false
+        });
+
     }
 
     function uploadAttachmentsImage() {
-        var uploader = webuploader();
+        $("#attachment_image_uploader_iframe").attr("src",  "/b/attachments/webuploader?_=" + Math.random());
         $("#attachment_image_uploader").dialog("open");
     }
     function uploadAttachmentsFiles() {
+
     }
 
     function downloadAttachments(url) {
@@ -109,5 +114,4 @@
     }
 </script>
 
-<script type="text/javascript" src="/assets/backend/assets/js/attachment_uploader.js"></script>
 

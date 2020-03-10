@@ -20,12 +20,20 @@ func NewAttachmentsModel() *AttachmentsModel {
 	return &AttachmentsModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
 }
 
-func (a *AttachmentsModel) GetList(page, limit int64) (list []tables.IriscmsAttachments, total int64) {
+func (a *AttachmentsModel) GetList(keywords string,page, limit int64) (list []tables.IriscmsAttachments, total int64) {
 	offset := (page - 1) * limit
 	var err error
-	total, err = a.orm.Limit(int(limit), int(offset)).Desc("id").FindAndCount(&list)
+	sess :=a.orm.Limit(int(limit), int(offset)).Desc("id")
+	if len(keywords) != 0 {
+		likePrtten := "%"+keywords+"%"
+		sess.Where("origin_name like ?", likePrtten).Or("name like ?", likePrtten)
+	}
+	total, err = sess.FindAndCount(&list)
 	if err != nil {
 		golog.Error(err)
+	}
+	if list == nil {
+		list = []tables.IriscmsAttachments{}
 	}
 	return list, total
 }

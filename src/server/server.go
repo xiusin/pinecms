@@ -156,6 +156,11 @@ func runServe() {
 
 func diConfig() {
 	iCache = badger.New(badger.Option{TTL: int(conf.Session.Expires), Path: conf.CacheDb})
+	theme, _ := iCache.Get("pinecms_theme")
+	if len(theme) == 0 {
+		theme = []byte("default")
+	}
+	conf.View.Theme = string(theme)
 	di.Set("cache.ICache", func(builder di.BuilderInf) (i interface{}, err error) {
 		return iCache, nil
 	}, true)
@@ -185,18 +190,21 @@ func diConfig() {
 		return sess, nil
 	}, true)
 
-	htmlEngine := template.New(conf.View.Path, ".html", conf.View.Reload)
+	htmlEngine := template.New(conf.View.BeDirname, ".html", conf.View.Reload)
 
 	htmlEngine.AddFunc("GetInMap", controllers.GetInMap)
 	pine.RegisterViewEngine(htmlEngine)
 
-	jetEngine := jet.New(conf.View.Path, ".jet", conf.View.Reload)
+	jetEngine := jet.New(conf.View.FeDirname, ".jet", conf.View.Reload)
+
+	jetEngine.AddPath("./resources/taglibs/")
 
 	jetEngine.AddGlobalFunc("flink", taglibs.Flink)
 	jetEngine.AddGlobalFunc("type", taglibs.Type)
 	jetEngine.AddGlobalFunc("channel", taglibs.Channel)
 	jetEngine.AddGlobalFunc("channelartlist", taglibs.ChannelArtList)
 	jetEngine.AddGlobalFunc("artlist", taglibs.ArcList)
+	jetEngine.AddGlobalFunc("query", taglibs.Query)
 
 	pine.RegisterViewEngine(jetEngine)
 

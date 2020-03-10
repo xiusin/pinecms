@@ -1,5 +1,4 @@
-{{extends "frontend/layouts/layout.jet"}}
-{{ import "frontend/common/_channelartlist.jet" }}
+{{extends "layouts/layout.jet"}}
 {{ block body() }}
 <div class="left">
         <!--首页学习笔记部分-->

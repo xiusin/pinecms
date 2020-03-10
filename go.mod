@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
+	github.com/Workiva/go-datastructures v1.0.51
 	github.com/afocus/captcha v0.0.0-20191010092841-4bd1f21c8868
 	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0
 	github.com/aliyun/aliyun-oss-go-sdk v2.0.4+incompatible

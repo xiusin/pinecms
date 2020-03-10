@@ -41,7 +41,7 @@
     //操作格式化
     function categoryCategoryListOperateFormatter(id, obj) {
         var btn = [];
-        btn.push('<a href="javascript:;" onclick="categoryCategoryListAdd(' + id + ')">预览</a>');
+        btn.push('<a href="javascript:;" onclick="categoryCategoryListAdd(' + id + ', \''+obj.type+'\')">预览</a>');
         if (obj.type !== 2) {
             if (obj.router !== "") {
                 btn.push('<a href="javascript:;" onclick="categoryOpenCustomerContentList(\''+obj.router+'\', '+id+')">内容管理</a>');
@@ -61,12 +61,26 @@
     }
 
     //添加
-    function categoryCategoryListAdd(parentid) {
-        if (typeof (parentid) !== 'number') parentid = 0;
-        var url = "/b/category/category-add";
-        url += url.indexOf('?') !== -1 ? '&parentid=' + parentid : '?parentid=' + parentid;
-        $('#category_category_add_dialog').dialog({href: url});
-        $('#category_category_add_dialog').dialog('open');
+    function categoryCategoryListAdd(id, type) {
+        var url = "";
+        type = Number(type)
+        switch (type) {
+            //栏目
+            case 0:
+                url = '/list?tid=' + id;
+                break;
+            //页面
+            case 1:
+                url = '/page?tid=' + id;
+                break;
+            //链接
+            case 2:
+                url = obj.url;
+                break;
+            default:
+                $.messager.alert('提示信息', '未知的类型', 'error');
+        }
+        openUrl(url, "菜单预览", true);
     }
 
     //编辑

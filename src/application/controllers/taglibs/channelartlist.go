@@ -16,9 +16,7 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 	if row == 0 {
 		row = 10
 	}
-
-	son := args.Get(2).Bool()
-
+	// 是否包含是否有下级的属性
 	var ids []string
 	str := catid.Type().String()
 	if strings.HasPrefix(str, "float") {
@@ -45,6 +43,7 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 	}
 
 	// 判断是否有下级菜单
+	son := args.Get(2).Bool()
 	if son {
 		sess := pine.Make("*xorm.Engine").(*xorm.Engine).
 			Table(&tables.IriscmsCategory{}).
@@ -61,6 +60,5 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 			}
 		}
 	}
-
 	return reflect.ValueOf(categories)
 }

@@ -1,0 +1,7 @@
+{{block query(sql)  }}
+    {{if sql}}
+    {{ range field = query(sql) }}
+        {{yield content }}
+    {{end}}
+    {{end}}
+{{end}}

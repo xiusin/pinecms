@@ -1,4 +1,4 @@
-{{extends "frontend/layouts/layout.jet"}}
+{{extends "layouts/layout.jet"}}
 {{ block seotitle() }}  {{field.Title}} - {{field.Keywords}} - {{field.Description}} {{end}}
 {{ block seokeywords() }} {{field.Keywords}}  {{end}}
 {{ block seodescription() }} {{field.Description}} {{end}}

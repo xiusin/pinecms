@@ -2,8 +2,8 @@ port: 2019
 
 view:
   reload: true
-  fedirname: "./resources/views/frontend/"
-  path: "./resources/views/"
+  fedirname: "./resources/themes/"
+  bedirname: "./resources/views/"
 
 session:
   name: "gosessionid"

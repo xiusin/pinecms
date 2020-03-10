@@ -6,18 +6,16 @@ import (
 	"html/template"
 	"io"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/alexmullins/zip"
 	"github.com/go-xorm/xorm"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
-	"github.com/xiusin/pine/di"
 )
 
 type DatabaseController struct {
@@ -38,39 +36,39 @@ func (c *DatabaseController) RegisterRoute(b pine.IRouterWrapper) {
 	b.POST("/database/backup-download", "BackupDownload")
 
 	// 检查项
-	go func() {
-		defer func() {
-			if err := recover(); err != nil {
-				pine.Logger().Errorf("start backup database failed", err)
-			}
-		}()
-		setting, err := controllers.GetSetting(
-			di.MustGet("*xorm.Engine").(*xorm.Engine),
-			di.MustGet("cache.ICache").(cache.ICache))
-		if err != nil {
-			panic(err)
-		}
-		pine.Logger().Debug("启动自动备份线程")
-
-		ticker := time.NewTicker(time.Hour) // 每小时调用一次
-
-		for range ticker.C {
-			pine.Logger().Debug("备份数据库")
-			autoBackupHour, err := strconv.Atoi(setting["DATABASE_AUTO_BACKUP_TIME"])
-			if err == nil &&
-				autoBackupHour >= 0 &&
-				autoBackupHour <= 23 &&
-				time.Now().In(helper.GetLocation()).Hour() == autoBackupHour {
-				msg, code := c.backup(setting, true)
-				if code == 1 {
-					pine.Logger().Error("自动备份数据库失败", msg)
-				} else {
-					pine.Logger().Print("自动备份数据库成功", msg)
-				}
-			}
-
-		}
-	}()
+	//go func() {
+	//	defer func() {
+	//		if err := recover(); err != nil {
+	//			pine.Logger().Errorf("start backup database failed", err)
+	//		}
+	//	}()
+	//	setting, err := controllers.GetSetting(
+	//		di.MustGet("*xorm.Engine").(*xorm.Engine),
+	//		di.MustGet("cache.ICache").(cache.ICache))
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//	pine.Logger().Debug("启动自动备份线程")
+	//
+	//	ticker := time.NewTicker(time.Hour) // 每小时调用一次
+	//
+	//	for range ticker.C {
+	//		pine.Logger().Debug("备份数据库")
+	//		autoBackupHour, err := strconv.Atoi(setting["DATABASE_AUTO_BACKUP_TIME"])
+	//		if err == nil &&
+	//			autoBackupHour >= 0 &&
+	//			autoBackupHour <= 23 &&
+	//			time.Now().In(helper.GetLocation()).Hour() == autoBackupHour {
+	//			msg, code := c.backup(setting, true)
+	//			if code == 1 {
+	//				pine.Logger().Error("自动备份数据库失败", msg)
+	//			} else {
+	//				pine.Logger().Print("自动备份数据库成功", msg)
+	//			}
+	//		}
+	//
+	//	}
+	//}()
 
 }
 

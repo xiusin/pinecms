@@ -124,7 +124,7 @@
             background-color: #ffffff;
         }
 
-        table.mdoutable td input[type='text'],table.mdoutable td select, table.mdoutable td .easyui-combotree {
+        table.mdoutable td input[type='text'], table.mdoutable td select, table.mdoutable td .easyui-combotree {
             width: 280px;
         }
 
@@ -170,7 +170,7 @@
 <!-- 头部 -->
 <div id="toparea" data-options="region:'north',border:false,height:70">
     <div id="topmenu" class="easyui-panel" data-options="fit:true,border:false">
-{{/*        <div class="header_logo"></div>*/}}
+        {{/*        <div class="header_logo"></div>*/}}
         <ul class="nav">
 
             {{range $index,$ele := .menus}}
@@ -287,8 +287,7 @@
         if ($('#pagetabs').tabs('exists', title)) {
             $('#pagetabs').tabs('select', title);
         } else {
-            var option = {
-                title: title,
+            var option = {title: title,
                 href: url,
                 closable: true,
                 cache: false
@@ -296,6 +295,9 @@
             if (iframe) {
                 option.href = null
                 option.content = '<iframe src="' + url + '" frameborder="0" fit="true" border="none" width="100%" height="100%"></iframe>'
+            }
+            if (title === "实时日志") {
+                option.cache = true
             }
             $('#pagetabs').tabs('add', option);
         }

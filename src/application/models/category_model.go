@@ -180,3 +180,15 @@ func (c CategoryModel) IsSonCategory(id, parentid int64) bool {
 	}
 	return flag
 }
+
+func (c CategoryModel) GetTable(id int64) string {
+	cat := tables.IriscmsCategory{}
+	exists ,_ := c.orm.ID(id).Get(&cat)
+	if exists {
+		modelinfo := NewDocumentModel().GetByID(cat.ModelId)
+		if modelinfo != nil {
+			return modelinfo.Name
+		}
+	}
+	panic("无法从数据库检索出表名信息")
+}
