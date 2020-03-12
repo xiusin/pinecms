@@ -94,12 +94,12 @@
 
         //,readonly : false //编辑器初始化结束后,编辑区域是否是只读的，默认是false
 
-        //,autoClearEmptyNode : true //getContent时，是否删除空的inlineElement节点（包括嵌套的情况）
+        ,autoClearEmptyNode : true //getContent时，是否删除空的inlineElement节点（包括嵌套的情况）
 
         //启用自动保存
-        //,enableAutoSave: true
+        ,enableAutoSave: true
         //自动保存间隔时间， 单位ms
-        //,saveInterval: 500
+        ,saveInterval: 5000
 
         //,fullscreen : false //是否开启初始化时即全屏，默认关闭
 

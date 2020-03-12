@@ -65,7 +65,7 @@ func (c *MemberController) Info() {
 }
 
 func (c *MemberController) Edit() {
-	var d tables.IriscmsMember
+	var d tables.Member
 	if err := c.Ctx().BindForm(&d); err != nil || d.Id <= 0 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return

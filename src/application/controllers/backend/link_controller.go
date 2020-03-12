@@ -33,6 +33,7 @@ func (c *LinkController) List() {
 	if page > 0 {
 		list, total := models.NewLinkModel().GetList(page, rows)
 		c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": total})
+
 		return
 	}
 
@@ -58,7 +59,7 @@ func (c *LinkController) Add() {
 		if c.Ctx().Request().PostForm.Get("passed") == "on" {
 			c.Ctx().Request().PostForm.Set("passed", "1")
 		}
-		var d tables.IriscmsLink
+		var d tables.Link
 		if err := c.Ctx().BindForm(&d); err != nil {
 			helper.Ajax("参数错误："+err.Error(), 1, c.Ctx())
 			return
@@ -71,6 +72,8 @@ func (c *LinkController) Add() {
 		}
 		return
 	}
+	imageUploader := template.HTML(helper.SiginUpload("logo", "", false, "Logo", "", ""))
+	c.ViewData("imageUploader", imageUploader)
 	c.Ctx().Render().HTML("backend/link_add.html")
 }
 
@@ -79,7 +82,7 @@ func (c *LinkController) Edit() {
 		if c.Ctx().Request().PostForm.Get("passed") == "on" {
 			c.Ctx().Request().PostForm.Set("passed", "1")
 		}
-		var d tables.IriscmsLink
+		var d tables.Link
 		if err := c.Ctx().BindForm(&d); err != nil || d.Linkid < 1 {
 			helper.Ajax(fmt.Sprintf("参数错误:%s", err), 1, c.Ctx())
 			return
@@ -97,12 +100,14 @@ func (c *LinkController) Edit() {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	link := models.NewLinkModel().Get(linkId)
-	if link == nil {
+	links := models.NewLinkModel().Get(linkId)
+	if links == nil {
 		helper.Ajax("链接不存在", 1, c.Ctx())
 		return
 	}
-	c.Ctx().Render().ViewData("link", link)
+	c.Ctx().Render().ViewData("link", links)
+	imageUploader := template.HTML(helper.SiginUpload("logo", links.Logo, false, "Logo", "", ""))
+	c.ViewData("imageUploader", imageUploader)
 	c.Ctx().Render().HTML("backend/link_edit.html")
 }
 
@@ -140,7 +145,7 @@ func (c *LinkController) Order() {
 		if err != nil {
 			continue
 		}
-		c.Ctx().Value("orm").(*xorm.Engine).ID(linkid).MustCols("listorder").Update(&tables.IriscmsLink{Listorder: int64(orderNum)})
+		c.Ctx().Value("orm").(*xorm.Engine).ID(linkid).MustCols("listorder").Update(&tables.Link{Listorder: int64(orderNum)})
 	}
 	helper.Ajax("更新排序值成功", 0, c.Ctx())
 }

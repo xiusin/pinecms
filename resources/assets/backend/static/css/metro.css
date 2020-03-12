@@ -23,4 +23,4 @@ input[type="file"],input[type="image"],input[type="submit"],input[type="reset"],
 #topmenu .nav li a.focus{background-color:#E5EFF2;color:#555555;text-decoration:none;}
 #topmenu .nav-right{margin:8px 5px 0;padding:0;list-style:none;float:right}
 #topmenu .nav-right li{float:left;margin:0 5px;padding:0;}
-#topmenu .nav{float: right;margin-top: 3px;margin-right: -6px;z-index: 999999;position: absolute;right: 0;}
+#topmenu .nav{float: right;margin-top: -11px;margin-right: -6px;z-index: 999999;position: absolute;right: 0;}

@@ -23,7 +23,7 @@ func NewDocumentModel() *DocumentModel {
 	return &DocumentModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
 }
 
-func (d *DocumentModel) GetList(page, limit int64) (list []tables.IriscmsDocumentModel, total int64) {
+func (d *DocumentModel) GetList(page, limit int64) (list []tables.DocumentModel, total int64) {
 	offset := (page - 1) * limit
 	var err error
 	total, err = d.orm.Limit(int(limit), int(offset)).FindAndCount(&list)
@@ -32,8 +32,8 @@ func (d *DocumentModel) GetList(page, limit int64) (list []tables.IriscmsDocumen
 	}
 	return list, total
 }
-func (d *DocumentModel) GetByID(id int64) *tables.IriscmsDocumentModel {
-	var detail = &tables.IriscmsDocumentModel{}
+func (d *DocumentModel) GetByID(id int64) *tables.DocumentModel {
+	var detail = &tables.DocumentModel{}
 	if _, err := d.orm.ID(id).Get(detail); err != nil {
 		golog.Error("document.model", err)
 	}
@@ -42,12 +42,12 @@ func (d *DocumentModel) GetByID(id int64) *tables.IriscmsDocumentModel {
 
 func (d *DocumentModel) DeleteByID(id int64) (bool, error) {
 	// 先查找是否在用
-	total, err := d.orm.Where("model_id = ?", id).Count(&tables.IriscmsCategory{})
+	total, err := d.orm.Where("model_id = ?", id).Count(&tables.Category{})
 	if err != nil || total > 0 {
 		return false, errors.New("模型已经被使用, 请删除使用分类后再执行删除操作")
 	}
 	if _, err := d.orm.Transaction(func(session *xorm.Session) (i interface{}, err error) {
-		i, err = d.orm.ID(id).Delete(&tables.IriscmsDocumentModel{})
+		i, err = d.orm.ID(id).Delete(&tables.DocumentModel{})
 		if err != nil {
 			golog.Error(err)
 			return nil, err

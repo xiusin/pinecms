@@ -39,10 +39,6 @@
     }
     //编辑
     function linkListEdit(id) {
-        if (typeof(id) !== 'number') {
-            $.messager.alert('提示信息', '未选择管理员', 'error');
-            return false;
-        }
         var url = '/b/link/edit?id=' + id;
         $('#link_list_edit_dialog').dialog({href: url});
         $('#link_list_edit_dialog').dialog('open');

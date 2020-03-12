@@ -88,7 +88,6 @@ func Datagrid(id, url string, tableoptions EasyuiOptions, field EasyuiGridfields
 	str := `
 	<table id="` + id + `" class="easyui-datagrid" style="` + style + `"
            data-options="
-           singleSelect:` + dataOptions["singleSelect"].(string) + `,
            url:'` + url + `',
            method:'get',
            border:` + dataOptions["border"].(string) + `,

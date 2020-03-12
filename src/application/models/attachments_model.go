@@ -20,7 +20,7 @@ func NewAttachmentsModel() *AttachmentsModel {
 	return &AttachmentsModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
 }
 
-func (a *AttachmentsModel) GetList(keywords string,page, limit int64) (list []tables.IriscmsAttachments, total int64) {
+func (a *AttachmentsModel) GetList(keywords string,page, limit int64) (list []tables.Attachments, total int64) {
 	offset := (page - 1) * limit
 	var err error
 	sess :=a.orm.Limit(int(limit), int(offset)).Desc("id")
@@ -33,12 +33,12 @@ func (a *AttachmentsModel) GetList(keywords string,page, limit int64) (list []ta
 		golog.Error(err)
 	}
 	if list == nil {
-		list = []tables.IriscmsAttachments{}
+		list = []tables.Attachments{}
 	}
 	return list, total
 }
 
 func (a *AttachmentsModel) Delete(id int64) bool {
-	res, _ := a.orm.ID(id).Delete(&tables.IriscmsAttachments{})
+	res, _ := a.orm.ID(id).Delete(&tables.Attachments{})
 	return res > 0
 }

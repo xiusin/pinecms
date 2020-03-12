@@ -1,0 +1,66 @@
+<form id="ad_add_dialog_form" action="/b/ad/add" method="post">
+    <table width="100%" class="mdoutable">
+        <tr>
+            <td>名称：</td>
+            <td><input name="name" class="easyui-textbox" type="text" data-options="required:true"/></td>
+        </tr>
+        <tr>
+            <td>所属广告位：</td>
+            <td>
+                <select name="space_id" class="easyui-combobox" data-options="required:true">
+                    {{range $k,$v := .adspaces}}
+                        <option value="{{$v.Id}}">{{$v.Name}}</option>
+                    {{end}}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>图片：</td>
+            <td>
+              {{.imageUploader}}
+            </td>
+        </tr>
+        <tr>
+            <td>链接：</td>
+            <td><input name="link_url"  class="easyui-textbox" type="text"/></td>
+        </tr>
+
+        <tr>
+            <td>开始时间：</td>
+            <td><input name="start_time"  class="easyui-datetimebox" type="text"/></td>
+        </tr>
+
+        <tr>
+            <td>结束时间：</td>
+            <td><input name="end_time"  class="easyui-datetimebox" type="text"/></td>
+        </tr>
+        <tr>
+            <td>排序：</td>
+            <td><input name="listorder" class="easyui-textbox" type="text" /></td>
+        </tr>
+        <tr>
+            <td>是否启用：</td>
+            <td>
+                <input class="easyui-switchbutton" name="status" data-options="onText:'是',offText:'否'">
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script type="text/javascript">
+    function adListAddDialogFormSubmit() {
+        $("#ad_add_dialog_form").form("submit", {
+            success: function (res) {
+                res = JSON.parse(res)
+                if (res.errcode) {
+                    $.messager.alert('提示信息', res.errmsg, 'error');
+                } else {
+                    $.messager.alert('提示信息', res.errmsg, 'info');
+                    $('#ad_list_add_dialog').dialog('close');
+                    adListRefresh();
+                }
+            }
+        })
+    }
+
+</script>

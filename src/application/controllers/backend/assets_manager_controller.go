@@ -177,7 +177,7 @@ func (c *AssetsManagerController) ThemeThumb() {
 	conf := di.MustGet("pinecms.config").(*config.Config)
 	themeName := c.Param().Get("theme")
 	dirName := filepath.Join(conf.View.FeDirname, themeName, "thumb.png")
-	//todo 打开连接直接显示而不下载
 	c.Ctx().Writer().Header().Set("Content-type", "img/png")
+	//todo 打开连接直接显示而不下载
 	c.Ctx().SendFile(dirName)
 }

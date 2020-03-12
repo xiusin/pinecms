@@ -15,7 +15,7 @@ func NewPageModel() *PageModel {
 	return &PageModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
 }
 
-func (p *PageModel) AddPage(page *tables.IriscmsPage) bool {
+func (p *PageModel) AddPage(page *tables.Page) bool {
 	res, _ := p.orm.Insert(page)
 	if res != 0 {
 		return true
@@ -23,7 +23,7 @@ func (p *PageModel) AddPage(page *tables.IriscmsPage) bool {
 	return false
 }
 
-func (p *PageModel) UpdatePage(page *tables.IriscmsPage) bool {
+func (p *PageModel) UpdatePage(page *tables.Page) bool {
 	res, _ := p.orm.Where("catid=?", page.Catid).Update(page)
 	if res != 0 {
 		return true
@@ -32,15 +32,15 @@ func (p *PageModel) UpdatePage(page *tables.IriscmsPage) bool {
 }
 
 func (p *PageModel) DelPage(catid int64) bool {
-	res, _ := p.orm.Delete(&tables.IriscmsPage{Catid: catid})
+	res, _ := p.orm.Delete(&tables.Page{Catid: catid})
 	if res != 0 {
 		return true
 	}
 	return false
 }
 
-func (p *PageModel) GetPage(catid int64) *tables.IriscmsPage {
-	page := &tables.IriscmsPage{Catid: catid}
+func (p *PageModel) GetPage(catid int64) *tables.Page {
+	page := &tables.Page{Catid: catid}
 	exists, err := p.orm.Get(page)
 	if err != nil {
 		pine.Logger().Error("获取page信息失败:", err)

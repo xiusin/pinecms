@@ -4,48 +4,8 @@
     <meta charset="utf-8">
     <title>内容管理系统</title>
     {{template "backend/public_javascript.html"}}
+    {{template "backend/public_umeditor.html"}}
     <style>
-        #topmenu .nav li a {
-            margin: 0;
-            color: #fff;
-            text-shadow: none;
-            background-color: #1B9AF7;
-            border-radius: 0;
-            padding: 10px;
-        }
-
-        #topmenu .nav li a:hover {
-            background: rgb(90, 116, 131)
-        }
-
-        #topmenu .nav li {
-            text-align: center;
-            padding: 0px;
-            width: 94px;
-            height: 40px;
-            margin-right: 6px;
-        }
-
-        .position {
-            padding: 0 52px;
-            line-height: 26px;
-            background: url('/assets/backend/mdou/images/header_position_Bg.jpg') no-repeat 24px center;
-            color: #0e0e0e;
-            font: 12px/30px \5b8b\4f53;
-        }
-
-        #topmenu .nav li a.focus {
-            box-shadow: none;
-            color: #fff;
-            text-decoration: none;
-            background-color: rgb(90, 116, 131);
-            border-radius: 0;
-        }
-
-        #toparea .panel {
-            border-bottom: 4px solid rgb(73, 137, 205);
-        }
-
         .panel-header {
             background: url("/assets/backend/mdou/images/left_nav_divbg.png") no-repeat scroll 15px -3px #f0f0f0;
             color: #000000;
@@ -91,11 +51,6 @@
         .icons-folder-folder_go {
             display: none;
         }
-
-        #toparea .panel {
-            height: 40px;
-        }
-
         .tree-node-selected {
             background-color: rgb(90, 116, 131);
         }
@@ -166,34 +121,11 @@
     </style>
 
 </head>
-<body class="easyui-layout">
-<!-- 头部 -->
-<div id="toparea" data-options="region:'north',border:false,height:70">
-    <div id="topmenu" class="easyui-panel" data-options="fit:true,border:false">
-        {{/*        <div class="header_logo"></div>*/}}
-        <ul class="nav">
-
-            {{range $index,$ele := .menus}}
-                <li><a
-                            {{if eq $index 0}} class="focus" {{end}}
-                            href="javascript:;"
-                            onclick="getLeft('{{ $ele.Id }}','{{ $ele.Name }}', this)">{{ $ele.Name }}</a>
-                </li>
-            {{ end }}
-
-            <li><a onclick="logout()">退出</a></li>
-
-        </ul>
-    </div>
-    <div class="position">
-        Welcome： <span style="color: rgb(73,137,205);font-weight: bold;">{{.username}}</span>管理员
-    </div>
-</div>
-
-
+<body class="easyui-layout" >
 <!-- 左侧菜单 -->
-<div id="leftarea" data-options="iconCls:'icons-other-house',region:'west',title:'加载中...',split:true,width:260">
-    <div id="leftmenu" class="easyui-accordion" data-options="fit:true,border:false"></div>
+<div id="leftarea" data-options="iconCls:'icons-other-house',region:'west', split:true,width:230" >
+    <div style="padding: 10px;text-align: center"><img src="/assets/pinecms.png" style="width: 100px;"/></div>
+    <div id="leftmenu" class="easyui-accordion" style="background: #fff;" data-options="fit:true,border:false"></div>
 </div>
 
 <!-- 内容 -->
@@ -206,8 +138,31 @@
 
 <script type="text/javascript">
     $(function () {
-        getLeft(1, '我的信息');
+        getLeft(1, '后台首页');
     });
+    function fromUEImageUploader(that, mode) {
+        event.preventDefault();
+        var myEditorImage = UE.getEditor('myEditorImage', {autoHeightEnabled: false, isShow: false});
+        if (!mode) {
+            mode = 0
+        } else {
+            mode = 1
+        }
+        currentUploaderMode = mode;
+        myEditorImage.ready(function () {
+            myEditorImage.addListener('beforeInsertImage', function (t, arg) {
+                $(that).attr("src", arg[0].src)
+                $(that).next().val(arg[0].src)
+                parnt.currentUploaderMode = !mode;
+            });
+            setTimeout(function () {
+                var d = myEditorImage.getDialog("insertimage");
+                d.render();
+                d.open();
+            }, 200)
+        });
+        return false
+    }
 
 
     //退出登录
@@ -220,8 +175,8 @@
     //显示左侧栏目
     function getLeft(menuid, title, that) {
         //加个判断，防止多次点击重复加载
-        var options = $('body').layout('panel', 'west').panel('options');
-        if (title == options.title) return false;
+        // var options = $('body').layout('panel', 'west').panel('options');
+        // if (title == options.title) return false;
         //开始获取左侧栏目
 
 
@@ -229,24 +184,23 @@
             type: 'POST',
             url: '/b/index/menu',
             data: {menuid: menuid},
-            cache: false,
-            beforeSend: function () {
-                removeLeft();
-
-                //更新标题名称
-                $('body').layout('panel', 'west').panel({title: title});
-                var loading = '<div class="panel-loading">加载中...</div>';
-                $("#leftmenu").accordion("add", {content: loading});
-
-            },
+            cache: true,
+            // beforeSend: function () {
+            //     // removeLeft();
+            //     //更新标题名称
+            //     // $('body').layout('panel', 'west').panel({title: title});
+            //     // var loading = '<div class="panel-loading">加载中...</div>';
+            //     // $("#leftmenu").accordion("add", {content: loading});
+            //
+            // },
             success: function (data) {
-                removeLeft();
+                // removeLeft();
                 //左侧内容更新
                 $.each(data, function (i, menu) {
                     var content = '';
                     if (menu.son) {
                         var treedata = $.toJSON(menu.son);
-                        content = '<ul class="easyui-tree" data-options=\'data:' + treedata + ',animate:true,lines:true,onClick:function(node){openUrl(node.url, node.text)}\'></ul>';
+                        content = '<ul class="easyui-tree" data-options=\'data:' + treedata + ',onClick:function(node){openUrl(node.url, node.text)}\'></ul>';
                     }
                     $("#leftmenu").accordion("add", {
                         title: menu.name,
@@ -287,7 +241,8 @@
         if ($('#pagetabs').tabs('exists', title)) {
             $('#pagetabs').tabs('select', title);
         } else {
-            var option = {title: title,
+            var option = {
+                title: title,
                 href: url,
                 closable: true,
                 cache: false
@@ -327,5 +282,6 @@
     }
 
 </script>
+<div id="myEditorImage" style="display: none"></div>
 </body>
 </html>

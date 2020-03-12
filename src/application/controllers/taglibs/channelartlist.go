@@ -26,8 +26,8 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 	} else {
 		ids = strings.Split(catid.String(), ",")
 	}
-	sess := pine.Make("*xorm.Engine").(*xorm.Engine).Table(&tables.IriscmsCategory{})
-	var categories []tables.IriscmsCategory
+	sess := pine.Make("*xorm.Engine").(*xorm.Engine).Table(&tables.Category{})
+	var categories []tables.Category
 	err := sess.In("parentid", ids).Where("ismenu = ?", 1).Limit(int(row)).Desc("listorder").Find(&categories)
 	if err != nil {
 		panic(err)
@@ -46,7 +46,7 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 	son := args.Get(2).Bool()
 	if son {
 		sess := pine.Make("*xorm.Engine").(*xorm.Engine).
-			Table(&tables.IriscmsCategory{}).
+			Table(&tables.Category{}).
 			In("parentid", catids).GroupBy("parentid").Select("parentid,count(*) as total").Where("ismenu = ?", 1)
 		rest, _ := sess.QueryString()
 		var kvPairs = map[string]string{}

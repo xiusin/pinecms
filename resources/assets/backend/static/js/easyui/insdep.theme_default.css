@@ -90,7 +90,7 @@ i, cite, em, var, address, dfn {/*斜体*/
 .theme-left-layout .datagrid-row-selected,.theme-left-layout .datagrid-row-over,.theme-left-layout .accordion-header-selected
 .accordion .accordion-collapse:link,.accordion .accordion-collapse:visited,.accordion .accordion-collapse:hover,.accordion .accordion-collapse:active,.accordion .accordion-collapse:focus,
 .accordion .accordion-expand:link,.accordion .accordion-expand:visited,.accordion .accordion-expand:hover,.accordion .accordion-expand:active,.accordion .accordion-expand:focus
-{ background-color: #1e1e1e !important; }
+{}
 .theme-left-layout .theme-left-normal .datalist .datagrid-cell{padding: 8px 15px 8px 30px; color: #878787;}
 .theme-left-layout .theme-left-minimal .datalist .datagrid-cell{ text-align:center; padding:10px 15px;}
 .theme-left-layout .theme-left-minimal .datalist{ padding: 20px 0; }
@@ -457,8 +457,3 @@ border-radius:0 0 3px 3px !important;
 	}
 .edui-default .edui-dialog-closebutton{right:5px;top:12px !important;}
 .edui-default .edui-dialog-buttons .edui-label{ line-height:24px !important;}
-.edui-default .edui-dialog-buttons .edui-okbutton .edui-button-body{ background-position: 0 -270px !important; color:#fff;}
-.edui-default .edui-dialog-buttons .edui-okbutton .edui-state-hover .edui-button-body{ background-position: 0 -300px !important;}
-
-.edui-default .edui-toolbar .edui-combox-body .edui-button-body{line-height: 20px !important;}
-/*百度编辑器修复easyui修复样式结束

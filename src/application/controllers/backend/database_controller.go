@@ -34,50 +34,14 @@ func (c *DatabaseController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/database/backup-list", "BackupList")
 	b.POST("/database/backup-delete", "BackupDelete")
 	b.POST("/database/backup-download", "BackupDownload")
-
-	// 检查项
-	//go func() {
-	//	defer func() {
-	//		if err := recover(); err != nil {
-	//			pine.Logger().Errorf("start backup database failed", err)
-	//		}
-	//	}()
-	//	setting, err := controllers.GetSetting(
-	//		di.MustGet("*xorm.Engine").(*xorm.Engine),
-	//		di.MustGet("cache.ICache").(cache.ICache))
-	//	if err != nil {
-	//		panic(err)
-	//	}
-	//	pine.Logger().Debug("启动自动备份线程")
-	//
-	//	ticker := time.NewTicker(time.Hour) // 每小时调用一次
-	//
-	//	for range ticker.C {
-	//		pine.Logger().Debug("备份数据库")
-	//		autoBackupHour, err := strconv.Atoi(setting["DATABASE_AUTO_BACKUP_TIME"])
-	//		if err == nil &&
-	//			autoBackupHour >= 0 &&
-	//			autoBackupHour <= 23 &&
-	//			time.Now().In(helper.GetLocation()).Hour() == autoBackupHour {
-	//			msg, code := c.backup(setting, true)
-	//			if code == 1 {
-	//				pine.Logger().Error("自动备份数据库失败", msg)
-	//			} else {
-	//				pine.Logger().Print("自动备份数据库成功", msg)
-	//			}
-	//		}
-	//
-	//	}
-	//}()
-
 }
 
 func (c *DatabaseController) Manager(orm *xorm.Engine) {
 	if c.Ctx().URLParam("datagrid") != "" {
 		mataDatas, err := orm.DBMetas()
 		if err != nil {
-			panic(err)
 			pine.Logger().Error("读取数据库元信息失败", err)
+			panic(err)
 		}
 		var data = []map[string]interface{}{}
 		for _, mataData := range mataDatas {
@@ -91,7 +55,6 @@ func (c *DatabaseController) Manager(orm *xorm.Engine) {
 				"comment": mataData.Comment,
 			})
 		}
-
 		c.Ctx().Render().JSON(data)
 		return
 
@@ -106,10 +69,7 @@ func (c *DatabaseController) Manager(orm *xorm.Engine) {
 		"":    {"field": "table_id", "checkbox": "true", "index": "0"},
 		"数据表": {"field": "name", "width": "20", "index": "1"},
 		"记录数": {"field": "total", "width": "30", "index": "2"},
-		//"空间": {"field": "size", "width": "60", "index": "2"},
 		"引擎": {"field": "engine", "width": "10", "index": "3"},
-		//"编码": {"field": "charset", "width": "25", "index": "2"},
-		//"更新时间": {"field": "updated", "width": "25", "index": "3"},
 		"备注": {"field": "comment", "width": "70", "index": "4"},
 	})
 	c.Ctx().Render().ViewData("dataGrid", template.HTML(table))

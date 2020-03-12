@@ -8,7 +8,7 @@ import (
 	"xorm.io/core"
 )
 
-type IrisCmsXormLogger struct {
+type XormLogger struct {
 	DEBUG   *log.Logger
 	ERR     *log.Logger
 	INFO    *log.Logger
@@ -17,62 +17,62 @@ type IrisCmsXormLogger struct {
 	showSQL bool
 }
 
-var _ core.ILogger = &IrisCmsXormLogger{}
+var _ core.ILogger = &XormLogger{}
 
-func NewIrisCmsXormLogger(out io.Writer, level core.LogLevel) *IrisCmsXormLogger {
-	prefix, flag, l := "[ORM]", log.LstdFlags, level
-	return &IrisCmsXormLogger{
-		DEBUG: log.New(out, fmt.Sprintf("%s [DEBU] ", prefix), flag),
-		ERR:   log.New(out, fmt.Sprintf("%s [ERRO] ", prefix), flag),
-		INFO:  log.New(out, fmt.Sprintf("%s [INFO] ", prefix), flag),
-		WARN:  log.New(out, fmt.Sprintf("%s [WARN] ", prefix), flag),
+func NewIrisCmsXormLogger(out io.Writer, level core.LogLevel) *XormLogger {
+	flag, l :=  log.LstdFlags, level
+	return &XormLogger{
+		DEBUG: log.New(out, "[DEBU]", flag),
+		ERR:   log.New(out, "[ERRO]", flag),
+		INFO:  log.New(out, "[INFO]", flag),
+		WARN:  log.New(out, "[WARN]", flag),
 		level: l,
 	}
 }
 
-func (s *IrisCmsXormLogger) Error(v ...interface{}) {
+func (s *XormLogger) Error(v ...interface{}) {
 	if s.level <= core.LOG_ERR {
 		s.ERR.Output(2, fmt.Sprint(v...))
 	}
 	return
 }
 
-func (s *IrisCmsXormLogger) Errorf(format string, v ...interface{}) {
+func (s *XormLogger) Errorf(format string, v ...interface{}) {
 	if s.level <= core.LOG_ERR {
 		s.ERR.Output(2, fmt.Sprintf(format, v...))
 	}
 	return
 }
 
-func (s *IrisCmsXormLogger) Debug(v ...interface{}) {
+func (s *XormLogger) Debug(v ...interface{}) {
 	if s.level <= core.LOG_DEBUG {
 		s.DEBUG.Output(2, fmt.Sprint(v...))
 	}
 	return
 }
 
-func (s *IrisCmsXormLogger) Debugf(format string, v ...interface{}) {
+func (s *XormLogger) Debugf(format string, v ...interface{}) {
 	if s.level <= core.LOG_DEBUG {
 		s.DEBUG.Output(2, fmt.Sprintf(format, v...))
 	}
 	return
 }
 
-func (s *IrisCmsXormLogger) Info(v ...interface{}) {
+func (s *XormLogger) Info(v ...interface{}) {
 	if s.level <= core.LOG_INFO {
 		s.INFO.Output(2, fmt.Sprint(v...))
 	}
 	return
 }
 
-func (s *IrisCmsXormLogger) Infof(format string, v ...interface{}) {
+func (s *XormLogger) Infof(format string, v ...interface{}) {
 	if s.level <= core.LOG_INFO {
 		s.INFO.Output(2, fmt.Sprintf(format, v...))
 	}
 	return
 }
 
-func (s *IrisCmsXormLogger) Warn(v ...interface{}) {
+func (s *XormLogger) Warn(v ...interface{}) {
 	if s.level <= core.LOG_WARNING {
 		s.WARN.Output(2, fmt.Sprint(v...))
 	}
@@ -80,23 +80,23 @@ func (s *IrisCmsXormLogger) Warn(v ...interface{}) {
 }
 
 // Warnf implement core.ILogger
-func (s *IrisCmsXormLogger) Warnf(format string, v ...interface{}) {
+func (s *XormLogger) Warnf(format string, v ...interface{}) {
 	if s.level <= core.LOG_WARNING {
 		s.WARN.Output(2, fmt.Sprintf(format, v...))
 	}
 	return
 }
 
-func (s *IrisCmsXormLogger) Level() core.LogLevel {
+func (s *XormLogger) Level() core.LogLevel {
 	return s.level
 }
 
-func (s *IrisCmsXormLogger) SetLevel(l core.LogLevel) {
+func (s *XormLogger) SetLevel(l core.LogLevel) {
 	s.level = l
 	return
 }
 
-func (s *IrisCmsXormLogger) ShowSQL(show ...bool) {
+func (s *XormLogger) ShowSQL(show ...bool) {
 	if len(show) == 0 {
 		s.showSQL = true
 		return
@@ -104,6 +104,6 @@ func (s *IrisCmsXormLogger) ShowSQL(show ...bool) {
 	s.showSQL = show[0]
 }
 
-func (s *IrisCmsXormLogger) IsShowSQL() bool {
+func (s *XormLogger) IsShowSQL() bool {
 	return s.showSQL
 }

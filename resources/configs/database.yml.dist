@@ -1,10 +1,8 @@
-mysql:
-  db_name: "iriscms"
-  db_charset: "utf8"
-  db_user: "root"
-  db_pass: "root"
-  db_server: "127.0.0.1"
-  db_port: "3306"
+db:
+  dsn: "root:root@tcp(127.0.0.1:3306)/pinecms?charset=utf8"
+  dsn: "root:root@tcp(127.0.0.1:3306)/pinecms?charset=utf8"
+  db_prefix: "pinecms_"
+  db_driver: "sqlite"
 
 orm:
   show_sql: true

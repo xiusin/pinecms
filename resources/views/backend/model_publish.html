@@ -21,7 +21,27 @@
     {{.form}}
 </div>
 <script type="text/javascript">
-    parent.ajaxLoadEnd()
+    if (parent.ajaxLoadEnd) {
+        parent.ajaxLoadEnd()
+    }
+
+
+    function fromUEImageUploader(that) {
+        event.preventDefault();
+        var myEditorImage = UE.getEditor('myEditorImage', { autoHeightEnabled: false, isShow: false });
+        myEditorImage.ready(function () {
+            myEditorImage.addListener('beforeInsertImage', function (t, arg) {
+                $(that).attr("src", arg[0].src)
+                $(that).next().val(arg[0].src)
+            });
+            setTimeout(function () {
+                var d = myEditorImage.getDialog("insertimage");
+                d.render();
+                d.open();
+            }, 200)
+        });
+        return false
+    }
 
     function contentPageFormSubmit() {
         $.post('{{.submitURL}}?catid={{.category.Catid}}'.replace("\\/", "/"), $("#content_page_form").serialize(), function (res) {
@@ -130,5 +150,6 @@
     }
 
 </script>
+<div id="myEditorImage" style="display: none"></div>
 </body>
 </html>

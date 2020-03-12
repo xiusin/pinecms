@@ -115,7 +115,7 @@ func (c *PublicController) Upload() {
 		"errmsg":       path,
 		"errcode":      "0",
 	}
-	if id, _ := c.Ctx().Value("orm").(*xorm.Engine).InsertOne(&tables.IriscmsAttachments{
+	if id, _ := c.Ctx().Value("orm").(*xorm.Engine).InsertOne(&tables.Attachments{
 		Name:       filename,
 		Url:        path,
 		OriginName: fname,
@@ -134,14 +134,11 @@ func (c *PublicController) Upload() {
 ////生成验证码
 func (c *PublicController) VerifyCode() {
 	cpt := captcha.New()
-	fontPath := helper.GetRootPath() + "/resources/fonts/comic.ttf"
-	// 设置字体
-	cpt.SetFont(fontPath)
-	// 返回验证码图像对象以及验证码字符串 后期可以对字符串进行对比 判断验证
+	cpt.SetFont(helper.GetRootPath() + "/resources/fonts/comic.ttf")
+	img, str := cpt.Create(4, captcha.ALL)
+	c.Session().AddFlush("verify_code", str)
 	c.Ctx().Writer().Header().Set("Content-type","img/png")
-	img, _ := cpt.Create(1, captcha.ALL)
-	//c.Session.SetFlash("verify_code", str)
-	png.Encode(c.Ctx().Writer(), img) //发送图片内容到浏览器
+	png.Encode(c.Ctx().Writer(), img)
 }
 
 func (c *PublicController) UEditor() {
@@ -211,7 +208,7 @@ func (c *PublicController) Attachments() {
 	if start < 0 {
 		start = 0
 	}
-	var data []*tables.IriscmsAttachments
+	var data []*tables.Attachments
 	attachmentType := c.Ctx().GetString("type", models.IMG_TYPE)
 	cnt, _ := c.Ctx().Value("orm").(*xorm.Engine).Limit(30, int(start)).Where("`type` = ?", attachmentType).FindAndCount(&data)
 	c.Ctx().Render().JSON(map[string]interface{}{

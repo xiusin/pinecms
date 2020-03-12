@@ -59,7 +59,7 @@ func CheckPriv(this *pine.Context, xorm *xorm.Engine, cache cache.ICache) bool {
 	data, err := cache.Get(key)
 	ha := map[string]struct{}{}
 	if err != nil || json.Unmarshal(data, &ha) != nil {
-		var privs []*tables.IriscmsAdminRolePriv
+		var privs []*tables.AdminRolePriv
 		// 读取所有用户权限
 		err := xorm.Where("roleid = ?", roleId).Find(&privs)
 		if err != nil {

@@ -1,17 +1,14 @@
 package config
 
-type Mysql struct {
-	DbName     string `yaml:"db_name"`
-	DbChatSet  string `yaml:"db_charset"`
-	DbUser     string `yaml:"db_user"`
-	DbPassword string `yaml:"db_pass"`
-	DbServer   string `yaml:"db_server"`
-	DbPort     string `yaml:"db_port"`
+type Db struct {
+	DbDriver string `yaml:"db_driver"`
+	Dsn      string `yaml:"dsn"`
+	DbPrefix string `yaml:"db_prefix"`
 }
 
 type DbConfig struct {
-	Mysql Mysql `yaml:"mysql"`
-	Orm   Orm   `yaml:"orm"`
+	Db  Db  `yaml:"db"`
+	Orm Orm `yaml:"orm"`
 }
 
 type Orm struct {
@@ -21,11 +18,9 @@ type Orm struct {
 	MaxIdleConns int64 `yaml:"max_idle_conns"`
 }
 
+var dbConfig *DbConfig
 
-var dbConfig 		*DbConfig
-
-
-func init()  {
+func init() {
 	dbConfig = &DbConfig{}
 	parseConfig(dbYml, dbConfig)
 }

@@ -14,17 +14,17 @@ func NewWechatMemberModel() *WechatMemberModel {
 	return &WechatMemberModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
 }
 
-func (w *WechatMemberModel) GetList(page, limit int64) (list []tables.IriscmsWechatMember, total int64) {
+func (w *WechatMemberModel) GetList(page, limit int64) (list []tables.WechatMember, total int64) {
 	offset := (page - 1) * limit
 	total, _ = w.orm.Limit(int(limit), int(offset)).FindAndCount(&list)
 	if list == nil {
-		list = []tables.IriscmsWechatMember{}
+		list = []tables.WechatMember{}
 	}
 	return list, total
 }
 
-func (w *WechatMemberModel) GetInfo(id int64) tables.IriscmsWechatMember {
-	var member tables.IriscmsWechatMember
+func (w *WechatMemberModel) GetInfo(id int64) tables.WechatMember {
+	var member tables.WechatMember
 	w.orm.Where("id = ?", id).Get(&member)
 	return member
 }

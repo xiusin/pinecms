@@ -28,7 +28,7 @@ func (c *SettingController) RegisterRoute(b pine.IRouterWrapper) {
 
 func (c *SettingController) Site(iCache cache.ICache) {
 	if c.Ctx().IsPost() {
-		var setting []*tables.IriscmsSetting
+		var setting []*tables.Setting
 		act := c.Ctx().URLParam("dosubmit")
 		var setval []ConfigItem
 		if act == "" {
@@ -65,7 +65,7 @@ func (c *SettingController) Site(iCache cache.ICache) {
 			if k == "dosubmit" || len(v) == 0 {
 				continue
 			}
-			c.Ctx().Value("orm").(*xorm.Engine).Table(new(tables.IriscmsSetting)).Where("`key`=?", k).MustCols("value").Update(&tables.IriscmsSetting{Value: v[0]})
+			c.Ctx().Value("orm").(*xorm.Engine).Table(new(tables.Setting)).Where("`key`=?", k).MustCols("value").Update(&tables.Setting{Value: v[0]})
 		}
 		iCache.Delete(controllers.CacheSetting)
 		helper.Ajax("更新配置信息成功", 0, c.Ctx())

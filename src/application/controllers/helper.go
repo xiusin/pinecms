@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
-
 	"github.com/go-xorm/xorm"
-	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 )
 
 type FieldShowInPageList struct {
@@ -18,7 +18,7 @@ func GetSetting(xorm *xorm.Engine, cache cache.ICache) (map[string]string, error
 	var settingData = map[string]string{}
 	res, err := cache.Get(CacheSetting)
 	if err != nil {
-		var settings []tables.IriscmsSetting
+		var settings []tables.Setting
 		err := xorm.Find(&settings)
 		if err != nil {
 			return nil, err
@@ -49,4 +49,9 @@ func GetInMap(data map[string]FieldShowInPageList, key string) FieldShowInPageLi
 	} else {
 		return FieldShowInPageList{}
 	}
+}
+
+func GetTableName(name string) string {
+	tablePrefix := di.MustGet("pinecms.table_prefix").(string)
+	return tablePrefix + name
 }

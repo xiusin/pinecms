@@ -3,6 +3,7 @@ package taglibs
 import (
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"reflect"
 	"strings"
 )
@@ -18,5 +19,5 @@ func getInt(val reflect.Value) int {
 }
 
 func getOrmSess() *xorm.Session {
-	return pine.Make("*xorm.Engine").(*xorm.Engine).Table("iriscms_articles")
+	return pine.Make("*xorm.Engine").(*xorm.Engine).Table(controllers.GetTableName("articles"))
 }

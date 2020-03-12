@@ -121,8 +121,8 @@ func (c *ContentController) NewsList(orm *xorm.Engine) {
 		}
 
 		offset := (page - 1) * rows
-		querySql := "SELECT * FROM `iriscms_%s` WHERE " + strings.Join(querySqlWhere, " AND ") + " ORDER BY listorder DESC, id DESC LIMIT %d,%d"
-		sql := []interface{}{fmt.Sprintf(querySql, relationDocumentModel.Table, offset, rows)}
+		querySql := "SELECT * FROM `%s` WHERE " + strings.Join(querySqlWhere, " AND ") + " ORDER BY listorder DESC, id DESC LIMIT %d,%d"
+		sql := []interface{}{fmt.Sprintf(querySql, controllers.GetTableName(relationDocumentModel.Table), offset, rows)}
 		sql = append(sql, whereHolder...)
 
 		contents, err := orm.QueryString(sql...)
@@ -132,8 +132,8 @@ func (c *ContentController) NewsList(orm *xorm.Engine) {
 			return
 		}
 
-		countSql := "SELECT COUNT(*) total FROM `iriscms_%s` WHERE " + strings.Join(querySqlWhere, " AND ")
-		sql = []interface{}{fmt.Sprintf(countSql, relationDocumentModel.Table)}
+		countSql := "SELECT COUNT(*) total FROM `%s` WHERE " + strings.Join(querySqlWhere, " AND ")
+		sql = []interface{}{fmt.Sprintf(countSql, controllers.GetTableName(relationDocumentModel.Table))}
 		sql = append(sql, whereHolder)
 
 		totals, _ := orm.QueryString(sql...)
@@ -203,7 +203,7 @@ func (c *ContentController) Page() {
 	page := pageModel.GetPage(catid)
 	hasPage := page != nil
 	if page == nil {
-		page = &tables.IriscmsPage{}
+		page = &tables.Page{}
 	}
 	var res bool
 	if c.Ctx().IsPost() {
@@ -303,7 +303,7 @@ func (c *ContentController) AddContent() {
 		if model.ModelType == models.SYSTEM_TYPE {
 
 		}
-		params := append([]interface{}{fmt.Sprintf("INSERT INTO `iriscms_%s` (%s) VALUES (%s)", model.Table, strings.Join(fields, ","), strings.TrimRight(strings.Repeat("?,", len(values)), ","))}, values...)
+		params := append([]interface{}{fmt.Sprintf("INSERT INTO `%s` (%s) VALUES (%s)", controllers.GetTableName(model.Table), strings.Join(fields, ","), strings.TrimRight(strings.Repeat("?,", len(values)), ","))}, values...)
 		// 先直接入库对应表内
 		insertID, err := c.Ctx().Value("orm").(*xorm.Engine).Exec(params...)
 		if err != nil {
@@ -363,7 +363,7 @@ func (c *ContentController) EditContent() {
 		helper.Ajax("找不到关联模型", 1, c.Ctx())
 		return
 	}
-	sql := []interface{}{fmt.Sprintf("SELECT * FROM `iriscms_%s` WHERE catid=? and deleted_time IS NULL AND id = ? LIMIT 1", relationDocumentModel.Table), catid, id}
+	sql := []interface{}{fmt.Sprintf("SELECT * FROM `%s` WHERE catid=? and deleted_time IS NULL AND id = ? LIMIT 1", controllers.GetTableName(relationDocumentModel.Table)), catid, id}
 	contents, err := c.Ctx().Value("orm").(*xorm.Engine).QueryString(sql...)
 	if err != nil {
 		glog.Error(helper.GetCallerFuncName(), err.Error())
@@ -425,7 +425,7 @@ func (c *ContentController) EditContent() {
 
 		}
 		values = append(values, id, catid)
-		params := append([]interface{}{fmt.Sprintf("UPDATE `iriscms_%s` SET %s WHERE id=? and catid=?", relationDocumentModel.Table, strings.Join(sets, ", "))}, values...)
+		params := append([]interface{}{fmt.Sprintf("UPDATE `%s` SET %s WHERE id=? and catid=?", controllers.GetTableName(relationDocumentModel.Table), strings.Join(sets, ", "))}, values...)
 		insertID, err := c.Ctx().Value("orm").(*xorm.Engine).Exec(params...)
 		if err != nil {
 			glog.Error(err)
@@ -468,7 +468,7 @@ func (c *ContentController) DeleteContent() {
 		helper.Ajax("找不到关联模型", 1, c.Ctx())
 		return
 	}
-	sqlOrArgs := []interface{}{fmt.Sprintf("UPDATE `iriscms_%s` SET `deleted_time`='"+time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)+"' WHERE id = ? and catid=?", relationDocumentModel.Table), id, catid}
+	sqlOrArgs := []interface{}{fmt.Sprintf("UPDATE `%s` SET `deleted_time`='"+time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)+"' WHERE id = ? and catid=?", controllers.GetTableName(relationDocumentModel.Table)), id, catid}
 	res, err := c.Ctx().Value("orm").(*xorm.Engine).Exec(sqlOrArgs...)
 	if err != nil {
 		glog.Error(helper.GetCallerFuncName(), err.Error())
@@ -508,7 +508,7 @@ func (c *ContentController) OrderContent() {
 		return
 	}
 	for artID, orderNum := range order {
-		sqlOrArgs := []interface{}{fmt.Sprintf("UPDATE `iriscms_%s` SET `listorder`=? , updated_time = '"+time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)+"' WHERE id = ? and catid=?", relationDocumentModel.Table), orderNum, artID, id}
+		sqlOrArgs := []interface{}{fmt.Sprintf("UPDATE `%s` SET `listorder`=? , updated_time = '"+time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)+"' WHERE id = ? and catid=?", controllers.GetTableName(relationDocumentModel.Table)), orderNum, artID, id}
 		if _, err := c.Ctx().Value("orm").(*xorm.Engine).Exec(sqlOrArgs...); err != nil {
 			glog.Error(helper.GetCallerFuncName(), err.Error())
 			helper.Ajax("更新文档排序失败", 1, c.Ctx())

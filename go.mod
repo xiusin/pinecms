@@ -24,6 +24,7 @@ require (
 	github.com/kataras/tablewriter v0.0.0-20180708051242-e063d29b7c23 // indirect
 	github.com/landoop/tableprinter v0.0.0-20180806200924-8bd8c2576d27
 	github.com/mattn/go-runewidth v0.0.8 // indirect
+	github.com/mattn/go-sqlite3 v1.10.0
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/natefinch/lumberjack v2.0.0+incompatible

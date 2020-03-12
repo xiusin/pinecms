@@ -50,7 +50,7 @@ type memberlist struct {
 func (c *AdminController) PublicEditInfo() {
 	aid, _ := c.Ctx().Value("adminid").(int64) //检测是否设置过session
 	if c.Ctx().IsPost() {
-		info := tables.IriscmsAdmin{
+		info := tables.Admin{
 			Userid: aid,
 		}
 		has, _ := c.Ctx().Value("orm").(*xorm.Engine).Get(&info) //读取用户资料
@@ -147,7 +147,7 @@ func (c *AdminController) Memberlist() {
 func (c *AdminController) PublicEditpwd() {
 	aid, _ := c.Ctx().Value("adminid").(int64)
 	menuid, _ := c.Ctx().GetInt64("menuid")
-	info := tables.IriscmsAdmin{Userid: int64(aid)}
+	info := tables.Admin{Userid: int64(aid)}
 	has, _ := c.Ctx().Value("orm").(*xorm.Engine).Get(&info)
 	if !has {
 		c.Ctx().Writer().Write([]byte("没有找到"))
@@ -173,7 +173,7 @@ func (c *AdminController) PublicEditpwd() {
 }
 
 func (c *AdminController) PublicCheckEmail() {
-	info := &tables.IriscmsAdmin{Username: c.Ctx().FormValue("name")}
+	info := &tables.Admin{Username: c.Ctx().FormValue("name")}
 	has, _ := c.Ctx().Value("orm").(*xorm.Engine).Get(info)
 	if !has {
 		helper.Ajax("没有相同的用户名", 0, c.Ctx())
@@ -196,7 +196,7 @@ func (c *AdminController) PublicCheckPassword() {
 	helper.Ajax("验证密码成功", 0, c.Ctx())
 }
 func (c *AdminController) PubicCheckName() {
-	info := &tables.IriscmsAdmin{Username: c.Ctx().FormValue("name")}
+	info := &tables.Admin{Username: c.Ctx().FormValue("name")}
 	uid, _ := c.Ctx().GetInt64("id")
 	has, _ := c.Ctx().Value("orm").(*xorm.Engine).Get(info)
 	if !has || info.Userid == uid {
@@ -239,7 +239,7 @@ func (c *AdminController) MemberAdd() {
 			return
 		}
 		str := string(helper.Krand(6, 3))
-		newAdmin := &tables.IriscmsAdmin{
+		newAdmin := &tables.Admin{
 			Username: c.Ctx().FormValue("username"),
 			Password: helper.Password(c.Ctx().FormValue("password"), str),
 			Email:    c.Ctx().FormValue("email"),
@@ -317,7 +317,7 @@ func (c *AdminController) MemberDelete() {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	deleteAdmin := &tables.IriscmsAdmin{Userid: int64(id)}
+	deleteAdmin := &tables.Admin{Userid: int64(id)}
 	res, err := c.Ctx().Value("orm").(*xorm.Engine).Delete(deleteAdmin)
 	if err != nil || helper.IsFalse(res) {
 		helper.Ajax("删除失败", 1, c.Ctx())
@@ -458,7 +458,7 @@ func (c *AdminController) RolePermission(icache cache.ICache) {
 	if c.Ctx().IsPost() {
 		//提交权限分配
 		if c.Ctx().URLParam("dosubmit") == "1" {
-			_, err := c.Ctx().Value("orm").(*xorm.Engine).Where("roleid=?", roleid).Delete(&tables.IriscmsAdminRolePriv{})
+			_, err := c.Ctx().Value("orm").(*xorm.Engine).Where("roleid=?", roleid).Delete(&tables.AdminRolePriv{})
 			if err != nil {
 				helper.Ajax("设置权限失败 "+err.Error(), 1, c.Ctx())
 				return
@@ -468,18 +468,18 @@ func (c *AdminController) RolePermission(icache cache.ICache) {
 				helper.Ajax("没有选择任何权限", 1, c.Ctx())
 				return
 			}
-			var inserts []tables.IriscmsAdminRolePriv
+			var inserts []tables.AdminRolePriv
 			for _, v := range menuIds {
 				menuid, err := strconv.Atoi(v)
 				if err != nil || menuid < 1 {
 					continue
 				}
-				menu := tables.IriscmsMenu{Id: int64(menuid)}
+				menu := tables.Menu{Id: int64(menuid)}
 				has, err := c.Ctx().Value("orm").(*xorm.Engine).Get(&menu)
 				if err != nil || !has {
 					continue
 				}
-				inserts = append(inserts, tables.IriscmsAdminRolePriv{
+				inserts = append(inserts, tables.AdminRolePriv{
 					Roleid: roleid,
 					A:      menu.A,
 					C:      menu.C,

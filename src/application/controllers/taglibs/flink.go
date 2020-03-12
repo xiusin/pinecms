@@ -11,7 +11,7 @@ import (
 
 func Flink(args jet.Arguments) reflect.Value {
 	orm := pine.Make("*xorm.Engine").(*xorm.Engine)
-	sess := orm.Table(&tables.IriscmsLink{})
+	sess := orm.Table(&tables.Link{})
 	defer sess.Close()
 	row := int(args.Get(0).Float())
 	if row == 0 {
@@ -31,7 +31,7 @@ func Flink(args jet.Arguments) reflect.Value {
 	} else {
 		sess.Desc("linkid")
 	}
-	var data []tables.IriscmsLink
+	var data []tables.Link
 	if err := sess.Find(&data); err != nil {
 		panic(err)
 	}

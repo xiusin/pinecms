@@ -17,18 +17,18 @@ func NewCategoryModel() *CategoryModel {
 	return &CategoryModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
 }
 
-func (m CategoryModel) GetPosArr(id int64) []tables.IriscmsCategory {
-	category := tables.IriscmsCategory{Catid: id}
+func (m CategoryModel) GetPosArr(id int64) []tables.Category {
+	category := tables.Category{Catid: id}
 	m.orm.Get(&category)
-	var links []tables.IriscmsCategory
+	var links []tables.Category
 	for category.Parentid != 0 {
 		links = append(links, category)
 		parentid := category.Parentid
-		category = tables.IriscmsCategory{Catid: parentid}
+		category = tables.Category{Catid: parentid}
 		m.orm.Get(&category)
 	}
 	links = append(links, category)
-	var reverse = func(s []tables.IriscmsCategory) []tables.IriscmsCategory {
+	var reverse = func(s []tables.Category) []tables.Category {
 		for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
 			s[i], s[j] = s[j], s[i]
 		}
@@ -37,7 +37,7 @@ func (m CategoryModel) GetPosArr(id int64) []tables.IriscmsCategory {
 	return reverse(links)
 }
 
-func (c CategoryModel) GetTree(categorys []tables.IriscmsCategory, parentid int64) []map[string]interface{} {
+func (c CategoryModel) GetTree(categorys []tables.Category, parentid int64) []map[string]interface{} {
 	var res = []map[string]interface{}{}
 	if len(categorys) != 0 {
 		// 筛选
@@ -72,20 +72,20 @@ func (c CategoryModel) GetTree(categorys []tables.IriscmsCategory, parentid int6
 	return res
 }
 
-func (c CategoryModel) GetAll() []tables.IriscmsCategory {
-	categorys := []tables.IriscmsCategory{}
+func (c CategoryModel) GetAll() []tables.Category {
+	categorys := []tables.Category{}
 	c.orm.Asc("listorder").Desc("catid").Find(&categorys)
 	return categorys
 }
 
-func (c CategoryModel) GetNextCategory(parentid int64) []tables.IriscmsCategory {
-	categorys := new([]tables.IriscmsCategory)
+func (c CategoryModel) GetNextCategory(parentid int64) []tables.Category {
+	categorys := new([]tables.Category)
 	c.orm.Where("parentid=?", parentid).Asc("listorder").Desc("catid").Find(categorys)
 	return *categorys
 }
 
 func (c CategoryModel) GetSelectTree(parentid int64) []map[string]interface{} {
-	categorys := new([]tables.IriscmsCategory)
+	categorys := new([]tables.Category)
 	err := c.orm.Where("parentid = ?", parentid).OrderBy("`listorder` ASC,`catid` DESC").Find(categorys)
 	if err != nil {
 		log.Println(err.Error())
@@ -104,7 +104,7 @@ func (c CategoryModel) GetSelectTree(parentid int64) []map[string]interface{} {
 }
 
 //取得内容管理右部分类tree结构
-func (c CategoryModel) GetContentRightCategoryTree(categorys []tables.IriscmsCategory, parentid int64) []map[string]interface{} {
+func (c CategoryModel) GetContentRightCategoryTree(categorys []tables.Category, parentid int64) []map[string]interface{} {
 	maps := []map[string]interface{}{}
 	if len(categorys) > 0 {
 		for _, v := range categorys {
@@ -123,15 +123,15 @@ func (c CategoryModel) GetContentRightCategoryTree(categorys []tables.IriscmsCat
 }
 
 func (c CategoryModel) DeleteById(id int64) bool {
-	res, err := c.orm.Delete(tables.IriscmsCategory{Catid: id})
+	res, err := c.orm.Delete(tables.Category{Catid: id})
 	if err != nil || res == 0 {
 		return false
 	}
 	return true
 }
 
-func (c CategoryModel) GetCategory(id int64) (tables.IriscmsCategory, error) {
-	category := tables.IriscmsCategory{Catid: id}
+func (c CategoryModel) GetCategory(id int64) (tables.Category, error) {
+	category := tables.Category{Catid: id}
 	res, err := c.orm.Get(&category)
 	if err != nil || !res {
 		return category, err
@@ -139,7 +139,7 @@ func (c CategoryModel) GetCategory(id int64) (tables.IriscmsCategory, error) {
 	return category, nil
 }
 
-func (c CategoryModel) AddCategory(category tables.IriscmsCategory) bool {
+func (c CategoryModel) AddCategory(category tables.Category) bool {
 	_, err := c.orm.Insert(&category)
 	if err != nil {
 		log.Println("AddCategoryError", err)
@@ -149,7 +149,7 @@ func (c CategoryModel) AddCategory(category tables.IriscmsCategory) bool {
 	return true
 }
 
-func (c CategoryModel) UpdateCategory(category tables.IriscmsCategory) bool {
+func (c CategoryModel) UpdateCategory(category tables.Category) bool {
 	res, err := c.orm.Where("catid=?", category.Catid).Update(&category)
 	if err != nil || res == 0 {
 		log.Println("CategoryModel::UpdateCategory", err, res)
@@ -160,7 +160,7 @@ func (c CategoryModel) UpdateCategory(category tables.IriscmsCategory) bool {
 
 //判断是否是子分类
 func (c CategoryModel) IsSonCategory(id, parentid int64) bool {
-	cat := []tables.IriscmsCategory{}
+	cat := []tables.Category{}
 	err := c.orm.Where("parentid=?", id).Find(&cat)
 	if err != nil {
 		log.Println("CategoryModel::IsSonCategory", err.Error())
@@ -182,7 +182,7 @@ func (c CategoryModel) IsSonCategory(id, parentid int64) bool {
 }
 
 func (c CategoryModel) GetTable(id int64) string {
-	cat := tables.IriscmsCategory{}
+	cat := tables.Category{}
 	exists ,_ := c.orm.ID(id).Get(&cat)
 	if exists {
 		modelinfo := NewDocumentModel().GetByID(cat.ModelId)

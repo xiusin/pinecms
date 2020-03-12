@@ -3,6 +3,8 @@
 {{ import "_channel.jet" }}
 {{ import "_artlist.jet" }}
 {{ import "_query.jet" }}
+{{ import "_ad.jet" }}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -112,7 +114,9 @@
             <div class="self_erweima right_box">
                 <h3>微信二维码</h3>
                 <div>
-                    <img src="/assets/frontend/img/self_weixin_erweima.png">
+                {{yield ad(pos="二维码位置") content}}
+                    <img src="{{field.Image}}">
+                {{end}}
                 </div>
             </div>
 <!--qq二维码部分-->

@@ -15,9 +15,9 @@ func NewDocumentFieldDslModel() *DocumentModelDslModel {
 	return &DocumentModelDslModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
 }
 
-func (w *DocumentModelDslModel) GetList(mid int64)  []tables.IriscmsDocumentModelDsl {
+func (w *DocumentModelDslModel) GetList(mid int64)  []tables.DocumentModelDsl {
 	//todo need cache handler
-	var list []tables.IriscmsDocumentModelDsl
+	var list []tables.DocumentModelDsl
 	err := w.orm.Where("mid = ?", mid).Find(&list)
 	if err != nil {
 		golog.Error("NewDocumentFieldDslModel: ", err)
@@ -26,7 +26,7 @@ func (w *DocumentModelDslModel) GetList(mid int64)  []tables.IriscmsDocumentMode
 }
 
 func (w *DocumentModelDslModel) DeleteByMID(mid int64) bool {
-	_, err := w.orm.Where("mid=?", mid).Delete(&tables.IriscmsDocumentModelDsl{})
+	_, err := w.orm.Where("mid=?", mid).Delete(&tables.DocumentModelDsl{})
 	if err != nil {
 		golog.Error("DocumentModelDslModel.DeleteByMID", err)
 		return false

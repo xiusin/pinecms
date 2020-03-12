@@ -3,8 +3,8 @@ package backend
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/xiusin/pinecms/src/common/storage"
 	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pinecms/src/common/storage"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -18,8 +18,8 @@ import (
 
 //todo 清理缓存， 结合最终
 func clearMenuCache(cache cache.ICache, xorm *xorm.Engine) {
-	var roles []*tables.IriscmsAdminRole
-	var menus []*tables.IriscmsMenu
+	var roles []*tables.AdminRole
+	var menus []*tables.Menu
 	xorm.Where("parentid = ?", 0).Find(&menus)
 	xorm.Find(&roles)
 	for _, role := range roles {
@@ -31,7 +31,10 @@ func clearMenuCache(cache cache.ICache, xorm *xorm.Engine) {
 }
 
 // 构建模型表单
-func buildModelForm( mid int64, data map[string]string) string {
+func buildModelForm(mid int64, data map[string]string) string {
+	if data == nil {
+		data = map[string]string{}
+	}
 	model := models.NewDocumentModel()
 	documentModel := model.GetByID(mid)
 	if documentModel == nil || documentModel.Id < 1 {
@@ -51,7 +54,7 @@ func buildModelForm( mid int64, data map[string]string) string {
 		"<table cellpadding='2' class='dialogtable' style='width: 100%;'>"
 	for _, field := range fields {
 		h += `<tr><td style="width: 100px;text-align:right;">` + field.FormName + `：</td><td>`
-		val, _ := data[field.TableField]	// 读取字段值
+		val, _ := data[field.TableField] // 读取字段值
 		if strings.Contains(field.Html, "easyui-") {
 			h += easyUIComponents(&field, val)
 		} else {
@@ -59,15 +62,24 @@ func buildModelForm( mid int64, data map[string]string) string {
 		}
 		h += "</td></tr>"
 	}
+
+	// 点击次数生成
+	if data["visit_count"] == "" {
+		data["visit_count"] = strconv.Itoa(rand.Intn(1000))
+	}
+
+	h += "<tr><td style='text-align:right;'>点击次数：</td><td> <input class='easyui-textbox' value='" + data["visit_count"] + "' name='status'></td></tr>"
+
 	if data["status"] == "1" {
 		h += "<tr><td style='text-align:right;'>状态：</td><td> <input class='easyui-switchbutton' checked name='status'></td></tr>"
 	} else {
 		h += "<tr><td style='text-align:right;'>状态：</td><td> <input class='easyui-switchbutton' name='status'></td></tr>"
 	}
-	h += `<tr><td colspan=2><a href="javascript:void(0);" onclick="submitForm()" class="easyui-linkbutton">`+buttonTxt+`</a></td></tr></table></form>`
+
+	h += `<tr><td colspan=2><a href="javascript:void(0);" onclick="submitForm()" class="easyui-linkbutton">` + buttonTxt + `</a></td></tr></table></form>`
 	return h
 }
-func domOrCustomTagComponents(field *tables.IriscmsDocumentModelDsl, val string) string {
+func domOrCustomTagComponents(field *tables.DocumentModelDsl, val string) string {
 	attrs := []string{"name='" + field.TableField + "'"}
 	isEditor := strings.HasPrefix(field.Html, "<editor")
 	isImageUpload := strings.HasPrefix(field.Html, "<images")
@@ -79,7 +91,7 @@ func domOrCustomTagComponents(field *tables.IriscmsDocumentModelDsl, val string)
 		field.Html = helper.SiginUpload(field.TableField, val, field.Required == 1, field.FormName, field.Default, field.RequiredTips)
 	} else if isMulImageUpload {
 		field.Html = helper.MultiUpload(field.TableField, strings.Split(val, ","), 5, field.Required == 1, field.FormName, field.Default, field.RequiredTips)
-	} else if isTags{
+	} else if isTags {
 		field.Html = helper.Tags(field.TableField, val, field.Required == 1, field.FormName, field.Default, field.RequiredTips)
 	} else {
 		field.Html = strings.Replace(field.Html, "{{attr}}", strings.Join(attrs, " "), 1)
@@ -88,7 +100,7 @@ func domOrCustomTagComponents(field *tables.IriscmsDocumentModelDsl, val string)
 	return field.Html
 }
 
-func easyUIComponents(field *tables.IriscmsDocumentModelDsl, val string) string {
+func easyUIComponents(field *tables.DocumentModelDsl, val string) string {
 	var options []string
 	attrs := []string{"name='" + field.TableField + "'"}
 	if strings.Contains(field.Html, "multiline") {
@@ -226,7 +238,7 @@ func getStorageEngine(settingData map[string]string) storage.Uploader {
 	switch engine {
 	case "OSS存储":
 		uploader = storage.NewOssUploader(settingData)
-	default :
+	default:
 		uploader = storage.NewFileUploader(urlPrefixDir, uploadDir)
 	}
 	return uploader

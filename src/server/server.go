@@ -10,7 +10,6 @@ import (
 
 	"github.com/natefinch/lumberjack"
 	"github.com/xiusin/logger"
-	request_log "github.com/xiusin/pine/middlewares/request-log"
 	"github.com/xiusin/pinecms/src/application/controllers/taglibs"
 
 	"github.com/gorilla/securecookie"
@@ -31,6 +30,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -43,21 +43,23 @@ var (
 	iCache     cache.ICache
 	XOrmEngine *xorm.Engine
 	conf       = config.AppConfig()
+	dc         = config.DBConfig()
 )
 
 func initDatabase() {
-	dc := config.DBConfig()
-	m, o := dc.Mysql, dc.Orm
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s", m.DbUser, m.DbPassword, m.DbServer, m.DbPort, m.DbName, m.DbChatSet)
-	_orm, err := xorm.NewEngine("mysql", dsn)
+	m, o := dc.Db, dc.Orm
+	_orm, err := xorm.NewEngine(m.DbDriver, m.Dsn)
 	if err != nil {
 		panic(err.Error())
 	}
+	_orm.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, dc.Db.DbPrefix))
 	_orm.SetLogger(ormlogger.NewIrisCmsXormLogger(helper.NewOrmLogFile(conf.LogPath), core.LOG_INFO))
+
 	err = _orm.Ping() //检测是否联通数据库
 	if err != nil {
 		panic(err.Error())
 	}
+
 	_orm.ShowSQL(o.ShowSql)
 	_orm.ShowExecTime(o.ShowExecTime)
 	_orm.SetMaxOpenConns(int(o.MaxOpenConns))
@@ -71,23 +73,17 @@ func initDatabase() {
 	//ccStore.Debug = true
 	//cacher := xorm.NewLRUCacher(ccStore, 99999999)
 
-
-
+	//_orm.Sync(&tables.Advert{}, &tables.AdvertSpace{})
 	XOrmEngine = _orm
 }
 
 func initApp() {
 	//实例化服务器
 	app = pine.New()
-
-	app.Use(request_log.RequestRecorder())
-
+	//app.Use(request_log.RequestRecorder())
 	//app.SetRecoverHandler(debug.Recover(app))
-
 	diConfig()
-
 	app.Use(middleware.CheckDatabaseBackupDownload())
-
 	//配置前端缓存10秒
 	if conf.Pprof.Open {
 		p := pprof.New()
@@ -129,7 +125,8 @@ func registerBackendRoutes() {
 		Handle(new(backend.LinkController)).
 		Handle(new(backend.DatabaseController)).
 		Handle(new(backend.AssetsManagerController)).
-		Handle(new(backend.AttachmentController))
+		Handle(new(backend.AttachmentController)).
+		Handle(new(backend.AdController))
 
 	app.Group("/public").Handle(new(backend.PublicController))
 }
@@ -174,13 +171,12 @@ func diConfig() {
 		loggers.SetReportCaller(true, 3)
 		loggers.SetLogLevel(logger.DebugLevel)
 		loggers.SetOutput(io.MultiWriter(os.Stdout, &lumberjack.Logger{
-			Filename:   filepath.Join(conf.LogPath, "pinecms.log"),
-			MaxSize:    500,
-			Compress:   true,
+			Filename: filepath.Join(conf.LogPath, "pinecms.log"),
+			MaxSize:  500,
+			Compress: true,
 		}))
 		return loggers, nil
 	}, false)
-
 
 	di.Set(di.ServicePineSessions, func(builder di.BuilderInf) (i interface{}, err error) {
 		sess := sessions.New(cacheProvider.NewStore(iCache), &sessions.Config{
@@ -201,6 +197,7 @@ func diConfig() {
 
 	jetEngine.AddGlobalFunc("flink", taglibs.Flink)
 	jetEngine.AddGlobalFunc("type", taglibs.Type)
+	jetEngine.AddGlobalFunc("ad", taglibs.Ad)
 	jetEngine.AddGlobalFunc("channel", taglibs.Channel)
 	jetEngine.AddGlobalFunc("channelartlist", taglibs.ChannelArtList)
 	jetEngine.AddGlobalFunc("artlist", taglibs.ArcList)
@@ -214,6 +211,10 @@ func diConfig() {
 
 	di.Set(XOrmEngine, func(builder di.BuilderInf) (i interface{}, err error) {
 		return XOrmEngine, nil
+	}, true)
+
+	di.Set("pinecms.table_prefix", func(builder di.BuilderInf) (i interface{}, err error) {
+		return dc.Db.DbPrefix, nil
 	}, true)
 
 	app.Use(func(ctx *pine.Context) {

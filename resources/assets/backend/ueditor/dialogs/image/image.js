@@ -393,10 +393,12 @@
             uploader.addButton({
                 id: '#filePickerBlock'
             });
-            uploader.addButton({
-                id: '#filePickerBtn',
-                label: lang.uploadAddFile
-            });
+            if (parent.currentUploaderMode) {
+                uploader.addButton({
+                    id: '#filePickerBtn',
+                    label: lang.uploadAddFile
+                });
+            }
 
             setState('pedding');
 
@@ -528,6 +530,9 @@
                 });
 
                 $li.insertBefore($filePickerBlock);
+                if (!parent.currentUploaderMode) {
+                    $filePickerBlock.hide()
+                }
             }
 
             // 负责view的销毁
@@ -825,14 +830,19 @@
             domUtils.on(this.container, 'click', function (e) {
                 var target = e.target || e.srcElement,
                     li = target.parentNode;
-
-                if (li.tagName.toLowerCase() == 'li') {
-                    if (domUtils.hasClass(li, 'selected')) {
-                        domUtils.removeClasses(li, 'selected');
-                    } else {
-                        domUtils.addClass(li, 'selected');
+                if (0 === parent.currentUploaderMode) {
+                    $(li).parent().find("li").removeClass("selected")
+                    domUtils.addClass(li, 'selected');
+                } else {
+                    if (li.tagName.toLowerCase() == 'li') {
+                        if (domUtils.hasClass(li, 'selected')) {
+                            domUtils.removeClasses(li, 'selected');
+                        } else {
+                            domUtils.addClass(li, 'selected');
+                        }
                     }
                 }
+
             });
         },
         /* 初始化第一次的数据 */

@@ -61,9 +61,10 @@
         <tr>
             <td>缩略图：</td>
             <td>
-                <input id="content_add_news_form_thumb_input" type="image" src="" onerror="this.src='/assets/backend/static/nopic.jpg'" alt="点击上传缩略图"
-                       style="height:100px;display:block;border:1px solid #ddd;padding:2px"/>
-                <input type="hidden" name="thumb"/>
+                {{.thumbHtml}}
+{{/*                <input id="content_add_news_form_thumb_input" type="image" src="" onerror="this.src='/assets/backend/static/nopic.jpg'" alt="点击上传缩略图"*/}}
+{{/*                       style="height:100px;display:block;border:1px solid #ddd;padding:2px"/>*/}}
+{{/*                <input type="hidden" name="thumb"/>*/}}
             </td>
         </tr>
 

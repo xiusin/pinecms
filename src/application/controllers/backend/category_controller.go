@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"html/template"
 	"strconv"
 
@@ -78,7 +79,7 @@ func (c *CategoryController) CategoryDelete() {
 		return
 	}
 	// 查询文档分类
-	sql := []interface{}{fmt.Sprintf("SELECT COUNT(*) total FROM `iriscms_%s` WHERE catid=? and deleted_time IS NULL", document.Table), id}
+	sql := []interface{}{fmt.Sprintf("SELECT COUNT(*) total FROM `%s` WHERE catid=? and deleted_time IS NULL", controllers.GetTableName(document.Table)), id}
 	totals, _ := c.Ctx().Value("orm").(*xorm.Engine).QueryString(sql...)
 	var total = "0"
 	if len(totals) > 0 {
@@ -129,7 +130,7 @@ func (c *CategoryController) CategoryAdd() {
 			ModelID = 0
 		}
 
-		category := tables.IriscmsCategory{
+		category := tables.Category{
 			Catname:              c.Ctx().FormValue("catname"),
 			Parentid:             int64(parentid),
 			Type:                 int64(cattype),
@@ -160,6 +161,7 @@ func (c *CategoryController) CategoryAdd() {
 	list, _ := models.NewDocumentModel().GetList(1, 1000)
 	c.Ctx().Render().ViewData("models", list)
 	c.Ctx().Render().ViewData("parentid", parentid)
+	c.Ctx().Render().ViewData("thumbHtml", template.HTML(helper.SiginUpload("thumb","",false,"","","")))
 	c.Ctx().Render().HTML("backend/category_add.html")
 }
 
@@ -227,6 +229,7 @@ func (c *CategoryController) CategoryEdit() {
 	c.Ctx().Render().ViewData("models", list)
 	c.Ctx().Render().ViewData("model_id", int(category.ModelId))
 	c.Ctx().Render().ViewData("category", category)
+	c.Ctx().Render().ViewData("thumbHtml", template.HTML(helper.SiginUpload("thumb",category.Thumb,false,"","","")))
 	c.Ctx().Render().ViewData("typelist", []string{0: "栏目", 1: "页面", 2: "链接"})
 	c.Ctx().Render().HTML("backend/category_edit.html")
 }
@@ -253,7 +256,7 @@ func (c *CategoryController) CategoryOrder() {
 		if err != nil {
 			continue
 		}
-		orm.UpdateCategory(tables.IriscmsCategory{Catid: int64(catid), Listorder: int64(orderNum)})
+		orm.UpdateCategory(tables.Category{Catid: int64(catid), Listorder: int64(orderNum)})
 	}
 	helper.Ajax("更新栏目成功", 0, c.Ctx())
 }

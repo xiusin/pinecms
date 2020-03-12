@@ -64,7 +64,7 @@ func (c *SystemController) MenuAdd(iCache cache.ICache) {
 		data := c.Ctx().PostString("data", "")
 		display, _ := c.Ctx().PostInt64("display", 1)
 
-		menu := &tables.IriscmsMenu{
+		menu := &tables.Menu{
 			Parentid: parentid,
 			Name:     name,
 			C:        ctrl,
@@ -91,7 +91,7 @@ func (c *SystemController) MenuDelete(iCache cache.ICache) {
 		return
 	}
 	// 查找是否有下级菜单
-	exists, err := c.Ctx().Value("orm").(*xorm.Engine).Where("parentid = ?", id).Count(&tables.IriscmsMenu{})
+	exists, err := c.Ctx().Value("orm").(*xorm.Engine).Where("parentid = ?", id).Count(&tables.Menu{})
 	if err != nil {
 		helper.Ajax("删除菜单失败,异常错误", 1, c.Ctx())
 		return
@@ -100,7 +100,7 @@ func (c *SystemController) MenuDelete(iCache cache.ICache) {
 		helper.Ajax("删除菜单失败,有下级菜单", 1, c.Ctx())
 		return
 	}
-	aff, _ := c.Ctx().Value("orm").(*xorm.Engine).Id(id).Delete(&tables.IriscmsMenu{})
+	aff, _ := c.Ctx().Value("orm").(*xorm.Engine).Id(id).Delete(&tables.Menu{})
 	if aff > 0 {
 		clearMenuCache(iCache, c.Ctx().Value("orm").(*xorm.Engine))
 		helper.Ajax("删除菜单成功", 0, c.Ctx())
@@ -127,7 +127,7 @@ func (c *SystemController) MenuOrder(iCache cache.ICache) {
 	}
 	var flag int64
 	for id, val := range data {
-		menu := new(tables.IriscmsMenu)
+		menu := new(tables.Menu)
 		menu.Listorder = val
 		affected, _ := c.Ctx().Value("orm").(*xorm.Engine).Id(id).Update(menu)
 		if affected > 0 {
@@ -161,7 +161,7 @@ func (c *SystemController) MenuEdit(iCache cache.ICache) {
 		data := c.Ctx().PostString("data", "")
 		display, _ := c.Ctx().PostInt64("display", 1)
 
-		menu := &tables.IriscmsMenu{
+		menu := &tables.Menu{
 			Parentid: parentid,
 			Name:     name,
 			C:        ctrl,

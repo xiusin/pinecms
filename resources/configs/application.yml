@@ -12,7 +12,7 @@ session:
 cache_db: "./runtime/cache/"  # 包括session
 
 pprof:
-  open: true
+  open: false
   port: 6060
   route: "/debug/pprof/*action"
 

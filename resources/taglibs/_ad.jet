@@ -1,0 +1,5 @@
+{{block ad(id="", pos="", orderby="")  }}
+    {{ range field = ad(id, pos, orderby) }}
+        {{yield content }}
+    {{end}}
+{{end}}

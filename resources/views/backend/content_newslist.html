@@ -67,7 +67,7 @@
     }
 
     //搜索
-    function contentNewsListDatagridSearch(that) {
+    function contentNewsListDatagridSearch() {
         var content_datagrid = $('#' + content_newslist_datagrid_id);
         var queryParams = content_datagrid.datagrid('options').queryParams;
         $.each($("#newslist_content_search_form").serializeArray(), function () {
@@ -80,7 +80,6 @@
     //添加
     function contentNewsListAdd() {
         var url = "/b/content/add?catid={{.catid}}";
-        // contentMainOpenUrl(url, true);
         ajaxLoading()
         $("#publish_content").dialog({title: "添加内容"})
         $("#publish_content_box").attr("src", url);

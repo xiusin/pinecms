@@ -1,0 +1,90 @@
+{{ .dataGrid }}
+
+<div id="ad_list_add_dialog" class="easyui-dialog" title="添加广告"
+     data-options="modal:true,closed:true,iconCls:'icons-application-application_add',buttons:[{text:'确定',iconCls:'icons-other-tick',handler:function(){adListAddDialogFormSubmit();}},{text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#ad_list_add_dialog').dialog('close');}}]"
+     style="width:600px;height:480px;"></div>
+
+<!-- 编辑管理员 -->
+<div id="ad_list_edit_dialog" class="easyui-dialog" title="编辑广告"
+     data-options="modal:true,closed:true,iconCls:'icons-application-application_edit',buttons:[{text:'确定',iconCls:'icons-other-tick',handler:function(){adListEditDialogFormSubmit();}},{text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#ad_list_edit_dialog').dialog('close');}}]"
+     style="width:600px;height:480px;"></div>
+
+<script type="text/javascript">
+    var ad_list_datagrid_toolbar = [
+        {text: '添加', iconCls: 'icons-arrow-add', handler: adListAdd},
+        {text: '刷新', iconCls: 'icons-arrow-arrow_refresh', handler: adListRefresh},
+        {text: '排序', iconCls: 'icons-arrow-arrow_down', handler: adListOrder}
+    ];
+
+    function adListEnabledFormatter(val) {
+        return val == 1 ? "是" : "否"
+    }
+
+    //操作格式化
+    function adListOptFormatter(val) {
+        console.log(arguments)
+        var btn = [];
+        btn.push('<a href="javascript:;" onclick="adListEdit(' + val + ')">编辑</a>');
+        btn.push('<a href="javascript:;" onclick="adListDelete(' + val + ')">删除</a>');
+        return btn.join(' | ');
+    }
+
+    //刷新
+    function adListRefresh() {
+        $('#ad_list_datagrid').datagrid('reload');
+    }
+    //添加
+    function adListAdd() {
+        $('#ad_list_add_dialog').dialog({href: '/b/ad/add'});
+        $('#ad_list_add_dialog').dialog('open');
+    }
+    //编辑
+    function adListEdit(id) {
+        if (typeof(id) !== 'number') {
+            $.messager.alert('提示信息', '未选择管理员', 'error');
+            return false;
+        }
+        var url = '/b/ad/edit?id=' + id;
+        $('#ad_list_edit_dialog').dialog({href: url});
+        $('#ad_list_edit_dialog').dialog('open');
+    }
+
+    function adListOrderFormatter(val, arr) {
+        return '<input class="ad_list_order_input" type="text" name="order" value="' + val + '" size="3" style="text-align:center">' +
+            '<input class="ad_list_order_input" type="hidden" name="id" value="'+ arr['linkid'] +'"/>';
+    }
+
+    function adListLogoFormatter(val) {
+        return val ? '<img src="'+val+'" style="width: 20px;height: 20px;"/>' : ''
+    }
+
+    function adListOrder() {
+        $.post("/b/ad/order", $('.ad_list_order_input').serialize(), function (res) {
+            if (res.errcode) {
+                $.messager.alert('提示信息', res.errmsg, 'error');
+            } else {
+                $.messager.alert('提示信息', res.errmsg, 'info');
+                adListRefresh();
+            }
+        }, 'json');
+    }
+
+    //删除
+    function adListDelete(id) {
+        if (typeof(id) !== 'number') {
+            $.messager.alert('提示信息', '未选择管理员', 'error');
+            return false;
+        }
+        $.messager.confirm('提示信息', '确定要删除吗？', function (result) {
+            if (!result) return false;
+            $.get('/b/ad/delete', {id: id}, function (res) {
+                if (res.errcode) {
+                    $.messager.alert('提示信息', res.errmsg, 'error');
+                } else {
+                    $.messager.alert('提示信息', res.errmsg, 'info');
+                    adListRefresh();
+                }
+            }, 'json');
+        });
+    }
+</script>

@@ -65,7 +65,6 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 			}
 		}
 	}()
-
 }
 
 func getMems() []MemPos {

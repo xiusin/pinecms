@@ -20,8 +20,8 @@ func NewAdminModel() *AdminModel {
 }
 
 //登录用户
-func (a *AdminModel) Login(username, password, ip string) (tables.IriscmsAdmin, error) {
-	admin := tables.IriscmsAdmin{Username: username}
+func (a *AdminModel) Login(username, password, ip string) (tables.Admin, error) {
+	admin := tables.Admin{Username: username}
 	has, _ := a.orm.Get(&admin)
 	if !has {
 		return admin, errors.New("管理员不存在")
@@ -36,8 +36,8 @@ func (a *AdminModel) Login(username, password, ip string) (tables.IriscmsAdmin, 
 }
 
 //获取用户信息
-func (a *AdminModel) GetUserInfo(userid int64) (tables.IriscmsAdmin, error) {
-	admin := tables.IriscmsAdmin{Userid: userid}
+func (a *AdminModel) GetUserInfo(userid int64) (tables.Admin, error) {
+	admin := tables.Admin{Userid: userid}
 	has, _ := a.orm.Get(&admin)
 	if has {
 
@@ -48,7 +48,7 @@ func (a *AdminModel) GetUserInfo(userid int64) (tables.IriscmsAdmin, error) {
 
 //编辑密码
 func (a *AdminModel) EditPassword(userid int64, password string) bool {
-	admin := tables.IriscmsAdmin{Userid: userid}
+	admin := tables.Admin{Userid: userid}
 	res, _ := a.orm.Get(&admin)
 	encrypt := string(helper.Krand(8, 3))
 	if res {
@@ -65,9 +65,9 @@ func (a *AdminModel) EditPassword(userid int64, password string) bool {
 }
 
 //获取管理员列表
-func (a *AdminModel) GetList(where string, page, rows int, order string, sortType string) []tables.IriscmsAdmin {
+func (a *AdminModel) GetList(where string, page, rows int, order string, sortType string) []tables.Admin {
 	start := (page - 1) * rows
-	admins := []tables.IriscmsAdmin{}
+	admins := []tables.Admin{}
 	if sortType == "asc" {
 		a.orm.Where(where).Asc(order).Limit(rows, start).Find(&admins)
 	} else {
@@ -76,9 +76,9 @@ func (a *AdminModel) GetList(where string, page, rows int, order string, sortTyp
 	return admins
 }
 
-func (a *AdminModel) GetRoleList(where string, page, rows int) []tables.IriscmsAdminRole {
+func (a *AdminModel) GetRoleList(where string, page, rows int) []tables.AdminRole {
 	start := (page - 1) * rows
-	myroles := []tables.IriscmsAdminRole{}
+	myroles := []tables.AdminRole{}
 	err := a.orm.Where(where).Limit(rows, start).Find(&myroles)
 	if err != nil {
 		log.Println(err.Error())
@@ -87,7 +87,7 @@ func (a *AdminModel) GetRoleList(where string, page, rows int) []tables.IriscmsA
 }
 
 func (a *AdminModel) CheckRoleName(rolename string) bool {
-	role, err := a.orm.Get(&tables.IriscmsAdminRole{Rolename: rolename})
+	role, err := a.orm.Get(&tables.AdminRole{Rolename: rolename})
 	if err != nil {
 		return false
 	}
@@ -95,7 +95,7 @@ func (a *AdminModel) CheckRoleName(rolename string) bool {
 }
 
 func (a *AdminModel) AddRole(rolename, description string, disabled, listorder int64) bool {
-	newRole := tables.IriscmsAdminRole{
+	newRole := tables.AdminRole{
 		Rolename:    rolename,
 		Description: description,
 		Disabled:    disabled,
@@ -109,13 +109,13 @@ func (a *AdminModel) AddRole(rolename, description string, disabled, listorder i
 	return true
 }
 
-func (a *AdminModel) GetRoleById(id int64) (tables.IriscmsAdminRole, error) {
-	role := tables.IriscmsAdminRole{Roleid: id}
+func (a *AdminModel) GetRoleById(id int64) (tables.AdminRole, error) {
+	role := tables.AdminRole{Roleid: id}
 	_, err := a.orm.Get(&role)
 	return role, err
 }
 
-func (a *AdminModel) UpdateRole(role tables.IriscmsAdminRole) bool {
+func (a *AdminModel) UpdateRole(role tables.AdminRole) bool {
 	res, err := a.orm.Where("roleid=?", role.Roleid).Update(&role)
 	if err != nil || res == 0 {
 		log.Println("AdminModel::UpdateRole", err, res)
@@ -124,7 +124,7 @@ func (a *AdminModel) UpdateRole(role tables.IriscmsAdminRole) bool {
 	return true
 }
 
-func (a *AdminModel) DeleteRole(role tables.IriscmsAdminRole) bool {
+func (a *AdminModel) DeleteRole(role tables.AdminRole) bool {
 	res, err := a.orm.Delete(&role)
 	if err != nil || res == 0 {
 		log.Println("AdminModel::DeleteRole", err, res)
@@ -134,7 +134,7 @@ func (a *AdminModel) DeleteRole(role tables.IriscmsAdminRole) bool {
 }
 
 func (a *AdminModel) HasAdminByRoleId(roleid int64) bool {
-	res, err := a.orm.Count(&tables.IriscmsAdmin{Roleid: roleid})
+	res, err := a.orm.Count(&tables.Admin{Roleid: roleid})
 	if err != nil || res == 0 {
 		log.Println("AdminModel::DeleteRole", err, res)
 		return false

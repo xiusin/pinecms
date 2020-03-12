@@ -6,6 +6,7 @@ import (
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/config"
 	"math"
@@ -216,7 +217,7 @@ func (c *IndexController) GetClick() {
 
 func getOrmSess(tableName ...string) *xorm.Session {
 	if len(tableName) == 0 {
-		tableName = append(tableName, "iriscms_articles")
+		tableName = append(tableName, controllers.GetTableName("articles"))
 	}
 	return pine.Make("*xorm.Engine").(*xorm.Engine).Table(tableName[0])
 }

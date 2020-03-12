@@ -1,6 +1,3 @@
-/*
-    像素格工作室 Pixel grid studio www.pxgrids.com
-*/
 body{color:#797979;background:#f1f2f7;padding:0px !important;margin:0px !important;font-size:12px;font-family: "微软雅黑","Microsoft YaHei","Microsoft YaHei UI", "Segoe UI", Arial, Verdana, Sans-Serif, sans-serif;}
 ul li{list-style:none;}
 h1,h2,h3,h4,h5,h6,a,p,span{font-family: "微软雅黑","Microsoft YaHei","Microsoft YaHei UI","Hiragino Sans GB W3","Segoe UI", Arial, Verdana, Sans-Serif, sans-serif;}
@@ -15,7 +12,7 @@ a,a:hover,a:focus{text-decoration:none;outline:none;-webkit-transition:all 0.3s;
 /*-------------------------------------1.登录页-------------------------------------*/
 .login-body{background-color:#f1f2f7;}
 .form-signin{max-width:600px;margin:10% auto 0;background:#fff; -webkit-box-shadow: 0px 0px 25px #E4E3E3;-moz-box-shadow: 0px 0px 25px #E4E3E3;box-shadow: 0px 0px 25px #E4E3E3;}
-.loginlogo{padding: 20px 0 40px 0}
+.loginlogo{padding: 0px;}
 .form-signin .form-signin-heading{margin:0;padding:17px 15px;background:#3B4658;}
 .form-signin .form-signin-bottom{margin:0;padding:10px 15px;background:#3B4658;}
 .form-signin .form-signin-bottom,.form-signin-bottom a{color: #fff;}

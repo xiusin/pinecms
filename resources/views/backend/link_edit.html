@@ -11,9 +11,7 @@
         <tr>
             <td>Logo：</td>
             <td>
-                <input id="link_edit_news_form_thumb_input" type="image" src="{{.link.Logo}}" onerror="this.src='/assets/backend/static/nopic.jpg'" alt="点击上传缩略图"
-                       style="height:100px;width: 100px; display:block;border:1px solid #ddd;padding:2px"/>
-                <input type="hidden" value="{{.link.Logo}}" name="logo"/>
+                {{.imageUploader}}
             </td>
         </tr>
         <tr>

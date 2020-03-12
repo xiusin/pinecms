@@ -173,7 +173,7 @@ func (c *DocumentController) ModelFieldShowInListPage() {
 		strs, _ := json.Marshal(showInPage)
 		model.FieldShowInList = string(strs)
 		model.Formatters = c.Ctx().PostValue("formatters")
-		_, err := c.Ctx().Value("orm").(*xorm.Engine).Table(&tables.IriscmsDocumentModel{}).Where("id = ?", mid).Update(model)
+		_, err := c.Ctx().Value("orm").(*xorm.Engine).Table(&tables.DocumentModel{}).Where("id = ?", mid).Update(model)
 		if err != nil {
 			helper.Ajax("更新失败:"+err.Error(), 1, c.Ctx())
 		} else {
@@ -233,7 +233,7 @@ func (c *DocumentController) ModelAdd() {
 		}
 
 		//查找重复记录
-		exists, err := c.Ctx().Value("orm").(*xorm.Engine).Where("`name`=? or `table`=?", data.Name, data.Table).Exist(&tables.IriscmsDocumentModel{})
+		exists, err := c.Ctx().Value("orm").(*xorm.Engine).Where("`name`=? or `table`=?", data.Name, data.Table).Exist(&tables.DocumentModel{})
 		if exists {
 			helper.Ajax("模型名称或者数据表已经存在", 1, c.Ctx())
 			return
@@ -265,7 +265,7 @@ func (c *DocumentController) ModelAdd() {
 		}
 		mt,_:= strconv.Atoi(data.ModelType)
 		_, err = c.Ctx().Value("orm").(*xorm.Engine).Transaction(func(session *xorm.Session) (i interface{}, err error) {
-			dm := &tables.IriscmsDocumentModel{
+			dm := &tables.DocumentModel{
 				Name:        data.Name,
 				Table:       data.Table,
 				Enabled:     enabled,
@@ -283,14 +283,14 @@ func (c *DocumentController) ModelAdd() {
 			}
 
 			// 查找h
-			var fieldHtmlsMap = map[int64]*tables.IriscmsDocumentModelField{}
+			var fieldHtmlsMap = map[int64]*tables.DocumentModelField{}
 			for _, field := range list {
 				fieldHtmlsMap[field.Id] = field
 			}
 
-			var fields []tables.IriscmsDocumentModelDsl
+			var fields []tables.DocumentModelDsl
 			for k, name := range data.FieldName {
-				f := tables.IriscmsDocumentModelDsl{
+				f := tables.DocumentModelDsl{
 					Mid:          dm.Id,
 					FormName:     name,
 					TableField:   data.FieldField[k],
@@ -356,7 +356,7 @@ func (c *DocumentController) ModelEdit() {
 			return
 		}
 		//查找重复记录
-		exists, err := c.Ctx().Value("orm").(*xorm.Engine).Where("(`name`=? or `table`=?) and id <> ?", data.Name, data.Table, data.ID).Exist(&tables.IriscmsDocumentModel{})
+		exists, err := c.Ctx().Value("orm").(*xorm.Engine).Where("(`name`=? or `table`=?) and id <> ?", data.Name, data.Table, data.ID).Exist(&tables.DocumentModel{})
 		if exists {
 			helper.Ajax("模型名称或表名已经存在", 1, c.Ctx())
 			return
@@ -404,14 +404,14 @@ func (c *DocumentController) ModelEdit() {
 			if models.NewDocumentFieldDslModel().DeleteByMID(document.Id) == false {
 				return nil, errors.New("删除表字段失败")
 			}
-			var fieldHtmlsMap = map[int64]*tables.IriscmsDocumentModelField{}
+			var fieldHtmlsMap = map[int64]*tables.DocumentModelField{}
 			for _, field := range list {
 				fieldHtmlsMap[field.Id] = field
 			}
 
-			var fields []tables.IriscmsDocumentModelDsl
+			var fields []tables.DocumentModelDsl
 			for k, name := range data.FieldName {
-				f := tables.IriscmsDocumentModelDsl{
+				f := tables.DocumentModelDsl{
 					Mid:          document.Id,
 					FormName:     name,
 					TableField:   data.FieldField[k],
@@ -531,7 +531,7 @@ func (c *DocumentController) GenSQL(orm *xorm.Engine) {
 	var existsFields []map[string]string
 	var fieldStrs []string
 	querySQL := ""
-	tableName := "iriscms_" + dm.Table
+	tableName := controllers.GetTableName(dm.Table)
 	if ok, _ := orm.IsTableExist(tableName); ok {
 		querySQL = "ALTER TABLE `" + tableName + "` "
 		existsFields, _ = c.Ctx().Value("orm").(*xorm.Engine).QueryString("select * from information_schema.columns where TABLE_NAME='" + tableName + "' and  table_schema = '" + tableSchema + "'")
@@ -591,7 +591,7 @@ func (c *DocumentController) GenSQL(orm *xorm.Engine) {
 			helper.Ajax(err.Error(), 1, c.Ctx())
 			return
 		}
-		af, err := c.Ctx().Value("orm").(*xorm.Engine).ID(modelID).Table(&tables.IriscmsDocumentModel{}).Update(map[string]interface{}{"execed": 1})
+		af, err := c.Ctx().Value("orm").(*xorm.Engine).ID(modelID).Table(&tables.DocumentModel{}).Update(map[string]interface{}{"execed": 1})
 		if af > 0 {
 			helper.Ajax("执行SQL成功", 0, c.Ctx())
 			return

@@ -14,7 +14,7 @@ func Type(args jet.Arguments) reflect.Value {
 		panic("typeid参数不能小于1")
 	}
 	orm := pine.Make("*xorm.Engine").(*xorm.Engine)
-	var data = &tables.IriscmsCategory{}
+	var data = &tables.Category{}
 	sess := orm.Table(data)
 	defer sess.Close()
 
