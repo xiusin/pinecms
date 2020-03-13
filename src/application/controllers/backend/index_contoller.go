@@ -42,7 +42,6 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 
 	// mem cpu collect
 	go func() {
-
 		// 每10秒采集一次服务器信息
 		for range time.Tick(10 * time.Second) {
 			vm, err := mem.VirtualMemory()
@@ -156,13 +155,14 @@ func (c *IndexController) Menu(iCache cache.ICache) {
 	cacheKey := fmt.Sprintf(controllers.CacheAdminMenuByRoleIdAndMenuId, roleid, meid)
 	var menujs []map[string]interface{} //要返回json的对象
 	var data string
-	//if meid > 0 {
-	//	dataBytes, _ := iCache.Get(cacheKey)
-	//	data = string(dataBytes)
-	//} else {
-	data = ""
-	//}
+	if meid > 0 {
+		dataBytes, _ := iCache.Get(cacheKey)
+		data = string(dataBytes)
+	} else {
+		data = ""
+	}
 	if data == "" || json.Unmarshal([]byte(data), &menujs) != nil {
+		pine.Logger().Debug("目录列表没有走缓存")
 		for _, v := range menus {
 			menu := models.NewMenuModel().GetMenu(v.Id, roleid.(int64))
 			if len(menu) == 0 {

@@ -15,7 +15,6 @@ import (
 
 type LinkController struct {
 	pine.Controller
-	Orm     *xorm.Engine
 }
 
 func (c *LinkController) RegisterRoute(b pine.IRouterWrapper) {

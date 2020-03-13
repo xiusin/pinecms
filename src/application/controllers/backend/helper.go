@@ -16,7 +16,6 @@ import (
 	"github.com/xiusin/pinecms/src/common/helper"
 )
 
-//todo 清理缓存， 结合最终
 func clearMenuCache(cache cache.ICache, xorm *xorm.Engine) {
 	var roles []*tables.AdminRole
 	var menus []*tables.Menu
@@ -233,7 +232,6 @@ func getStorageEngine(settingData map[string]string) storage.Uploader {
 	uploadDir := settingData["UPLOAD_DIR"]
 	urlPrefixDir := settingData["UPLOAD_URL_PREFIX"]
 	engine := settingData["UPLOAD_ENGINE"]
-	fmt.Println("engine", settingData)
 	var uploader storage.Uploader
 	switch engine {
 	case "OSS存储":

@@ -5,7 +5,6 @@ import (
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
-	"log"
 	"strconv"
 	"strings"
 
@@ -90,11 +89,7 @@ func (m MenuModel) GetAll() []tables.Menu {
 func (m MenuModel) GetRoleTree(parentid int64, roleid int64) []map[string]interface{} {
 	menus := new([]tables.Menu)
 	//过滤我的面板
-	err := m.orm.Where("`parentid`=? AND `id`<>?", parentid, 1).Asc("listorder").Desc("id").Find(menus)
-	if err != nil {
-		log.Println(err.Error())
-		return nil
-	}
+	m.orm.Where("`parentid`=?", parentid).Asc("listorder").Desc("id").Find(menus)
 	res := []map[string]interface{}{}
 	if len(*menus) != 0 {
 		for _, v := range *menus {

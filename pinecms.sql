@@ -1,7 +1,7 @@
 #
 # SQL Export
 # Created by Querious (201067)
-# Created: March 12, 2020 at 9:11:04 PM GMT+8
+# Created: March 13, 2020 at 9:18:17 PM GMT+8
 # Encoding: Unicode (UTF-8)
 #
 
@@ -25,10 +25,8 @@ CREATE TABLE `pinecms_admin` (
   `lastloginip` varchar(15) DEFAULT NULL,
   `lastlogintime` int(10) unsigned DEFAULT '0',
   `email` varchar(40) DEFAULT NULL,
-  `realname` varchar(50) NOT NULL DEFAULT '',
-  PRIMARY KEY (`userid`) USING BTREE,
-  UNIQUE KEY `UQE_iriscms_admin_username` (`username`) USING BTREE,
-  KEY `username` (`username`) USING BTREE
+  `realname` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '',
+  PRIMARY KEY (`userid`) USING BTREE
 ) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='管理员表';
 
 
@@ -165,10 +163,7 @@ CREATE TABLE `pinecms_content` (
   `catids` varchar(255) DEFAULT NULL,
   `tags` varchar(255) DEFAULT NULL,
   `userid` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `status` (`status`,`listorder`,`id`) USING BTREE,
-  KEY `listorder` (`catid`,`status`,`listorder`,`id`) USING BTREE,
-  KEY `catid` (`catid`,`status`,`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='新闻表后期根据模型扩展';
 
 
@@ -239,9 +234,7 @@ CREATE TABLE `pinecms_log` (
   `username` varchar(20) NOT NULL,
   `ip` varchar(15) NOT NULL,
   `time` datetime NOT NULL,
-  PRIMARY KEY (`logid`) USING BTREE,
-  KEY `module` (`controller`,`action`) USING BTREE,
-  KEY `username` (`username`) USING BTREE
+  PRIMARY KEY (`logid`) USING BTREE
 ) ENGINE=MyISAM AUTO_INCREMENT=710 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='操作日志表';
 
 
@@ -276,33 +269,8 @@ CREATE TABLE `pinecms_menu` (
   `is_system` tinyint(1) NOT NULL DEFAULT '0',
   `listorder` smallint(6) NOT NULL DEFAULT '0',
   `display` enum('1','0') NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `listorder` (`listorder`) USING BTREE,
-  KEY `parentid` (`parentid`) USING BTREE,
-  KEY `module` (`c`,`a`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=MyISAM AUTO_INCREMENT=97 DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='权限菜单表';
-
-
-CREATE TABLE `pinecms_news` (
-  `id` mediumint(9) NOT NULL AUTO_INCREMENT,
-  `catid` smallint(6) NOT NULL DEFAULT '0',
-  `title` varchar(80) NOT NULL DEFAULT '',
-  `thumb` varchar(100) NOT NULL DEFAULT '',
-  `keywords` char(40) NOT NULL DEFAULT '',
-  `description` mediumtext NOT NULL,
-  `content` mediumtext NOT NULL,
-  `listorder` tinyint(4) NOT NULL DEFAULT '0',
-  `status` tinyint(4) NOT NULL DEFAULT '1',
-  `username` char(20) NOT NULL,
-  `inputtime` int(11) NOT NULL DEFAULT '0',
-  `updatetime` int(11) NOT NULL DEFAULT '0',
-  `tpl` varchar(255) NOT NULL COMMENT '//模板名称',
-  `recommend` tinyint(1) NOT NULL DEFAULT '0' COMMENT '推荐',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `status` (`status`,`listorder`,`id`) USING BTREE,
-  KEY `listorder` (`catid`,`status`,`listorder`,`id`) USING BTREE,
-  KEY `catid` (`catid`,`status`,`id`) USING BTREE
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='新闻表后期根据模型扩展';
 
 
 CREATE TABLE `pinecms_page` (
@@ -311,8 +279,7 @@ CREATE TABLE `pinecms_page` (
   `keywords` varchar(40) NOT NULL,
   `description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `content` text NOT NULL,
-  `updatetime` int(11) NOT NULL DEFAULT '0',
-  KEY `catid` (`catid`) USING BTREE
+  `updatetime` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='单页内容表';
 
 
@@ -372,7 +339,7 @@ LOCK TABLES `pinecms_admin_role` WRITE;
 ALTER TABLE `pinecms_admin_role` DISABLE KEYS;
 INSERT INTO `pinecms_admin_role` (`roleid`, `rolename`, `description`, `listorder`, `disabled`) VALUES 
 	(1,'超级管理员','超级管理员',0,0),
-	(9,'test','test',0,0);
+	(9,'test11','test11111111111',0,0);
 ALTER TABLE `pinecms_admin_role` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -744,12 +711,6 @@ INSERT INTO `pinecms_menu` (`id`, `name`, `parentid`, `c`, `a`, `data`, `is_syst
 	(95,'删除广告位',90,'ad-space','delete','',0,0,'1'),
 	(96,'编辑广告位',90,'ad-space','edit','',0,0,'1');
 ALTER TABLE `pinecms_menu` ENABLE KEYS;
-UNLOCK TABLES;
-
-
-LOCK TABLES `pinecms_news` WRITE;
-ALTER TABLE `pinecms_news` DISABLE KEYS;
-ALTER TABLE `pinecms_news` ENABLE KEYS;
 UNLOCK TABLES;
 
 

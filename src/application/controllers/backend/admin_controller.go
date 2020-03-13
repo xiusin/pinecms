@@ -208,16 +208,13 @@ func (c *AdminController) PubicCheckName() {
 
 func (c *AdminController) PublicCheckRoleName() {
 	rolename := c.Ctx().FormValue("rolename")
+	id,_:= c.Ctx().GetInt64("id")
+	pine.Logger().Debug(id, rolename)
 	if !c.Ctx().IsAjax() || rolename == "" {
 		helper.Ajax("参数错误 ,"+rolename, 1, c.Ctx())
 		return
 	}
-	defaultName := c.Ctx().FormValue("default")
-	if defaultName != "" && rolename == defaultName {
-		helper.Ajax("角色已存在", 1, c.Ctx())
-		return
-	}
-	if models.NewAdminModel().CheckRoleName(rolename) {
+	if models.NewAdminModel().CheckRoleName(id, rolename) {
 		helper.Ajax("角色已存在", 1, c.Ctx())
 		return
 	}
@@ -449,7 +446,7 @@ func (c *AdminController) RoleDelete(icache cache.ICache) {
 	}
 }
 
-func (c *AdminController) RolePermission(icache cache.ICache) {
+func (c *AdminController) RolePermission(icache cache.ICache, engine *xorm.Engine) {
 	roleid, _ := c.Ctx().URLParamInt64("id")
 	if roleid == 0 {
 		helper.Ajax("没有选择任何角色", 1, c.Ctx())
@@ -458,7 +455,7 @@ func (c *AdminController) RolePermission(icache cache.ICache) {
 	if c.Ctx().IsPost() {
 		//提交权限分配
 		if c.Ctx().URLParam("dosubmit") == "1" {
-			_, err := c.Ctx().Value("orm").(*xorm.Engine).Where("roleid=?", roleid).Delete(&tables.AdminRolePriv{})
+			_, err := engine.Where("roleid=?", roleid).Delete(&tables.AdminRolePriv{})
 			if err != nil {
 				helper.Ajax("设置权限失败 "+err.Error(), 1, c.Ctx())
 				return

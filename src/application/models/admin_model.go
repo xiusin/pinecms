@@ -86,12 +86,9 @@ func (a *AdminModel) GetRoleList(where string, page, rows int) []tables.AdminRol
 	return myroles
 }
 
-func (a *AdminModel) CheckRoleName(rolename string) bool {
-	role, err := a.orm.Get(&tables.AdminRole{Rolename: rolename})
-	if err != nil {
-		return false
-	}
-	return role
+func (a *AdminModel) CheckRoleName(id int64, rolename string) bool {
+	exists, _ := a.orm.Where("roleid <> ?" , id).Where("rolename = ?", rolename).Exist()
+	return exists
 }
 
 func (a *AdminModel) AddRole(rolename, description string, disabled, listorder int64) bool {
