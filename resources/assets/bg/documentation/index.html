@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Minoral 1.3 - Responsive admin theme</title>
+    <meta name="description" content="Responsive admin theme builded on Twitter Bootstrap v3, with most of mobile devices support.">
+    <meta name="author" content="Tattek">
+    <meta name="copyright" content="Tattek">
+    <meta name="generator" content="Documenter v2.0 http://rxa.li/documenter">
+    <meta name="date" content="2014-02-14T00:00:00+01:00">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <link href="assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+    <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="assets/css/documenter_style.css" rel="stylesheet">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+    <style>
+        html, body
+        {
+            background-color: #F8F7F7;
+            color: #7D7264;
+        }
+        h1, h2, h3, h4, h5, h6
+        {
+            color: #7D7264;
+        }
+        section table
+        {
+            background-color: #F8F7F7;
+        }
+        ::-moz-selection
+        {
+            background: #F1EFEA;
+            color: #7D7264;
+        }
+        ::selection
+        {
+            background: #F1EFEA;
+            color: #7D7264;
+        }
+        a.brand
+        {
+            background-image: url(assets/images/minoral-logo.png);
+        }
+        a, a:hover, a:active
+        {
+            color: #22BEEF;
+        }
+        hr
+        {
+            border-top: 1px solid #7D7264;
+            border-bottom: 1px solid #7D7264;
+        }
+        div.navbar-inner, .navbar .nav li ul
+        {
+            background: #F1E8DC;
+            color: #7D7264;
+        }
+        a.btn-navbar
+        {
+            background: #F1E8DC;
+            color: #7D7264;
+        }
+        .navbar .nav li a
+        {
+            color: #7D7264;
+        }
+        .navbar .nav li a:hover, .navbar .nav li.active a
+        {
+            text-shadow: none;
+        }
+        div.navbar-inner ul
+        {
+        }
+        .marketing-byline
+        {
+            color: #7D7264;
+        }
+        .navbar .nav > li a
+        {
+            color: #7D7264;
+        }
+        .navbar .nav > li a:hover, a.btn-navbar:hover
+        {
+            background: #F1EFEA;
+            color: #7D7264;
+        }
+        .navbar .nav .active > a, .navbar .nav .active > a:hover, a.btn-navbar:active
+        {
+            background-color: #F1EFEA;
+            color: #7D7264;
+        }
+        .navbar .nav li ul li a:hover
+        {
+            background: #F1EFEA;
+            color: #7D7264;
+        }
+        .navbar .nav li ul li a:active
+        {
+            background: #F1EFEA;
+            color: #7D7264;
+        }
+        .btn-primary
+        {
+            background-image: -moz-linear-gradient(top, #7D7264, #7D7264);
+            background-image: -ms-linear-gradient(top, #7D7264, #7D7264);
+            background-image: -webkit-gradient(linear, 0 0, 0 7D7264%, from(#F1E8DC), to(#7D7264));
+            background-image: -webkit-linear-gradient(top, #7D7264, #7D7264);
+            background-image: -o-linear-gradient(top, #7D7264, #7D7264);
+            background-image: linear-gradient(top, #7D7264, #7D7264);
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr= '#7D7264' , endColorstr= '#7D7264' , GradientType=0);
+            border-color: #7D7264 #7D7264 #bfbfbf;
+            color: #7D7264;
+        }
+        .btn-primary:hover, .btn-primary:active, .btn-primary.active, .btn-primary.disabled, .btn-primary[disabled]
+        {
+            background-color: #7D7264;
+        }
+        #documenter_copyright
+        {
+            display: block !important;
+            visibility: visible !important;
+        }
+    </style>
+</head>
+<body class="documenter-project-minoral-10" data-spy="scroll" id="top">
+    <!-- Documentation Navbar -->
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span
+                    class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+                </a><a class="brand" href="#">Minoral 1.3 - Responsive admin theme</a>
+                <div class="nav-collapse">
+                    <ul class="nav">
+                        <li><a href="#features_example_pages" title="Features & Example pages">Features & Example
+                            pages</a>
+                            <ul>
+                                <li><a href="#features_example_pages_features">Features:</a>
+                                    <li><a href="#features_example_pages_example_pages">Example Pages:</a>
+                            </ul>
+                        </li>
+                        <li><a href="#html_structure" title="HTML Structure">HTML Structure</a>
+                            <ul>
+                                <li><a href="#html_structure_preloader">Preloader:</a>
+                                    <li><a href="#html_structure_wrap_amp_fluid">Wrap &amp; Fluid:</a>
+                                        <li><a href="#html_structure_navbar">Navbar:</a>
+                                            <li><a href="#html_structure_content">Content:</a>
+                            </ul>
+                        </li>
+                        <li><a href="#css_scss_structure" title="CSS, SCSS & Structure">CSS, SCSS & Structure</a>
+                            <ul>
+                                <li><a href="#css_scss_structure_css">CSS</a>
+                                    <li><a href="#css_scss_structure_scss">SCSS:</a>
+                                        <li><a href="#css_scss_structure_scss_structure">SCSS structure:</a>
+                            </ul>
+                        </li>
+                        <li><a href="#javascript" title="Javascript">Javascript</a>
+                            <ul>
+                                <li><a href="#javascript_strongimportant_javascript_files_strong">Important Javascript
+                                    files:</a>
+                            </ul>
+                        </li>
+                        <li><a href="#sources_and_credits" title="Sources and Credits">Sources and Credits</a>
+                            <ul>
+                                <li><a href="#sources_and_credits_strongi_39ve_used_the_following_images_strong">I&#39;ve
+                                    used the following images:</a>
+                                    <li><a href="#sources_and_credits_strongand_following_js_plugins_strong">And following
+                                        js plugins:</a>
+                            </ul>
+                        </li>
+                        <li><a href="#changelog" title="Changelog">Changelog</a>
+                            <ul>
+                                <li><a href="#changelog_strongversion_10_initial_release_strong">version 1.0 - Initial
+                                    release</a>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Navbar -->
+    <!-- Main Container Beginning -->
+    <div class="container" id="documenter_content">
+        <div id="documenter-cover">
+            <div class="masthead">
+                <img src="assets/images/logo-big.png" alt style="display: block; margin: 0 auto;">
+                <h1>
+                    Minoral 1.3 - Responsive admin theme</h1>
+                <p>
+                    Responsive admin theme builded on Twitter Bootstrap v3, with most of mobile devices
+                    support.</p>
+                <ul class="marketing-byline">
+                    <li>created: 02/13/2014</li>
+                    <li>latest update: 14/5/2014</li>
+                    <li>by: Tattek</li>
+                    <li><a href="http://www.tattek.com/minoral">www.tattek.com/minoral</a></li>
+                </ul>
+                <p class="download-info">
+                </p>
+            </div>
+            <!-- masthead -->
+            <div id="intro">
+                <p class="highlight hero-unit">
+                    Thank you for purchasing my theme. If you have any questions that are beyond the
+                    scope of this help file, please feel free to email via my user page contact form
+                    here. Thank you so much!</p>
+            </div>
+            <!-- intro -->
+        </div>
+        <section id="features_example_pages">
+	<div class="page-header"><h3>Features & Example pages</h3><hr class="notop"></div>
+<h4 id="features_example_pages_features">Features:</h4>
+<hr>
+<p>
+	&nbsp;</p>
+<ul>
+	<li>
+		Responsive design</li>
+	<li>
+		SCSS</li>
+	<li>
+		Font Awesome</li>
+	<li>
+		Integrated charts (jQuery flot, Sparklines, JustGage, Rickshaw, Morris.js, EasyPieChart)</li>
+	<li>
+		Dynamic tables (Datatables)</li>
+	<li>
+		Growl style notifications (using jGrowl)</li>
+	<li>
+		Calendar (using Fullcalendar)</li>
+	<li>
+		Form wizard (using bootstrapWizard)</li>
+	<li>
+		Validated HTML5</li>
+	<li>
+		Sliders, Togglers</li>
+	<li>
+		WYSIWYG editor (using Summernote)</li>
+	<li>
+		Form validation (using parsley.js)</li>
+	<li>
+		Color Schemes</li>
+	<li>
+		Multiple selectboxes (using Chosen)</li>
+	<li>
+		Easy customized tiles</li>
+	<li>
+		Show snippet on almost every element</li>
+</ul>
+<h4 id="features_example_pages_example_pages">Example Pages:</h4>
+<hr>
+<p>
+	&nbsp;</p>
+<ol>
+	<li>
+		Overview</li>
+	<li>
+		Common form elements</li>
+	<li>
+		Form validation</li>
+	<li>
+		Form wizard</li>
+	<li>
+		UI Elements</li>
+	<li>
+		Typography</li>
+	<li>
+		Tiles</li>
+	<li>
+		Buttons &amp; Icons</li>
+	<li>
+		Grid Layout</li>
+	<li>
+		Bootstrap tables</li>
+	<li>
+		Datatables</li>
+	<li>
+		Login page</li>
+	<li>
+		Calendar</li>
+	<li>
+		Page 404</li>
+	<li>
+		Gallery</li>
+	<li>
+		Timeline</li>
+	<li>
+		Mail - vertical/horizontal</li>
+	<li>
+		Vector maps</li>
+	<li>
+		Google maps</li>
+	<li>
+		Widgets</li>
+	<li>
+		Charts &amp; Graphs</li>
+</ol>
+</section>
+        <section id="html_structure">
+	<div class="page-header"><h3>HTML Structure</h3><hr class="notop"></div>
+<h4 id="html_structure_preloader">Preloader:</h4>
+<hr>
+<p>
+	First element you can find in body is <strong>Preloader</strong>, preloader is showing loading progress when page is loading, after load it dissapear.</p>
+<pre class="prettyprint lang-html linenums">
+&lt;!-- Preloader --&gt;
+&lt;div class=&quot;mask&quot;&gt;&lt;div id=&quot;loader&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;!--/Preloader --&gt;</pre>
+<h4 id="html_structure_wrap_amp_fluid">Wrap &amp; Fluid:</h4>
+<hr>
+<p>
+	After <strong>Preloader&nbsp;</strong>there are going two <strong>divs</strong> first <strong>wrap whole page</strong> and another is making it <strong>fluid</strong></p>
+<pre class="prettyprint lang-html linenums">
+&lt;!-- Wrap all page content here --&gt;
+&lt;div id=&quot;wrap&quot;&gt;    
+
+   &lt;!-- Make page fluid --&gt;
+   &lt;div class=&quot;row&quot;&gt;
+      ...
+   &lt;/div&gt;
+   &lt;!-- /Make page fluid --&gt;
+
+&lt;/div&gt;
+&lt;!-- /Wrap all page content here --&gt;</pre>
+<h4 id="html_structure_navbar">Navbar:</h4>
+<hr>
+<p>
+	Navbar contain some important parts like as: <strong>Branding, Quick Actions </strong>(tasks, reminders),<strong> Search, User Controls </strong>(messages, control panel)<strong> and Sidebar</strong>. <strong>Quick actions, search and user controls </strong>are collapsing to the sidebar if window width is <strong>less than 768px</strong>.</p>
+<pre class="prettyprint lang-html linenums">
+&lt;!-- Fixed navbar --&gt;
+&lt;div class=&quot;navbar navbar-default navbar-fixed-top&quot; role=&quot;navigation&quot;&gt;       
+
+   &lt;!-- Branding --&gt;
+   &lt;div class=&quot;navbar-header col-md-2&quot;&gt;
+      &lt;a class=&quot;navbar-brand&quot; href=&quot;index.html&quot;&gt;
+         &lt;strong&gt;MIN&lt;/strong&gt; &lt;span class=&quot;divider vertical&quot;&gt;&lt;/span&gt; ORAL
+      &lt;/a&gt;
+     
+      &lt;div class=&quot;sidebar-collapse&quot;&gt;
+         &lt;a href=&quot;#&quot;&gt;
+            &lt;i class=&quot;fa fa-bars&quot;&gt;&lt;/i&gt;
+         &lt;/a&gt;
+      &lt;/div&gt;
+   &lt;/div&gt;
+   &lt;!-- Branding end --&gt;
+
+   &lt;!-- .nav-collapse --&gt;
+   &lt;div class=&quot;navbar-collapse&quot;&gt;
+
+      &lt;!-- Content collapsing at 768px to sidebar --&gt;
+      &lt;div class=&quot;collapsing-content&quot;&gt;
+
+         &lt;!-- Quick Actions --&gt;
+         &lt;ul class=&quot;nav navbar-nav&quot;&gt;
+               
+            &lt;li class=&quot;divided&quot;&gt;
+               &lt;a href=&quot;#&quot; class=&quot;page-refresh&quot;&gt;&lt;i class=&quot;fa fa-refresh&quot;&gt;&lt;/i&gt;&lt;/a&gt;
+               &lt;span class=&quot;divider vertical&quot;&gt;&lt;/span&gt;
+            &lt;/li&gt;
+
+            &lt;li class=&quot;dropdown quick-action tasks&quot;&gt;
+               ...
+            &lt;/li&gt;
+
+             &lt;li class=&quot;dropdown quick-action notifications&quot;&gt;
+               ...
+             &lt;/li&gt;
+
+           &lt;/ul&gt;
+           &lt;!-- Quick Actions end --&gt;
+
+           &lt;!-- Search --&gt;
+           &lt;div class=&quot;search&quot;&gt;
+             &lt;input type=&quot;text&quot; placeholder=&quot;&amp;#61442; Search in form wizard...&quot;&gt;
+           &lt;/div&gt;
+           &lt;!-- Search end --&gt;
+
+           &lt;!-- User Controls --&gt;
+           &lt;div class=&quot;user-controls&quot;&gt;
+             &lt;ul&gt;
+
+               &lt;li class=&quot;dropdown messages&quot;&gt;
+                 ...
+               &lt;li&gt;
+
+               &lt;li class=&quot;dropdown settings&quot;&gt;
+                 ...
+               &lt;/li&gt;
+
+             &lt;/ul&gt;
+           &lt;/div&gt;
+           &lt;!-- User Controls end --&gt;
+
+      &lt;/div&gt;
+      &lt;!-- /Content collapsing at 768px to sidebar --&gt;
+
+
+      &lt;!-- Sidebar --&gt;
+      &lt;ul class=&quot;nav navbar-nav side-nav&quot; id=&quot;navigation&quot;&gt;
+
+         &lt;li class=&quot;collapsed-content&quot;&gt;
+            &lt;!-- Collapsed content pasting here at 768px --&gt;
+         &lt;/li&gt;
+
+         &lt;li class=&quot;user-status status-online&quot; id=&quot;user-status&quot;&gt;
+           ...
+         &lt;/li&gt;
+
+         &lt;li class=&quot;dropdown&quot;&gt;
+           ...
+         &lt;/li&gt;
+
+         &lt;li class=&quot;dropdown open&quot;&gt;
+           ...
+         &lt;/li&gt;
+
+       &lt;/ul&gt;
+       &lt;!-- Sidebar end --&gt;
+
+     &lt;/div&gt;
+     &lt;!--/.nav-collapse --&gt;
+
+ &lt;/div&gt;
+ &lt;!-- Fixed navbar end --&gt;</pre>
+<h4 id="html_structure_content">Content:</h4>
+<hr>
+<p>
+	In page content you can find <strong>Breadcrumbs, Submenu</strong> and finally the <strong>main content </strong>in div with class<strong> .main</strong></p>
+<pre class="prettyprint lang-html linenums">
+&lt;!-- Page content --&gt;
+   &lt;div id=&quot;content&quot; class=&quot;col-md-12&quot;&gt;
+
+      &lt;!-- breadcrumbs --&gt;
+      &lt;div class=&quot;breadcrumbs&quot;&gt;
+
+         &lt;ol class=&quot;breadcrumb&quot;&gt;
+            &lt;li&gt;&lt;a href=&quot;index.html&quot;&gt;&lt;i class=&quot;fa fa-home&quot;&gt;&lt;/i&gt; Home&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href=&quot;index.html&quot;&gt;Dashboard&lt;/a&gt;&lt;/li&gt;
+            &lt;li class=&quot;active&quot;&gt;Overview&lt;/li&gt;
+         &lt;/ol&gt;
+
+      &lt;/div&gt;
+      &lt;!-- /breadcrumbs --&gt;
+
+      &lt;!-- submenu --&gt;
+      &lt;div class=&quot;submenu&quot;&gt;
+         &lt;h1&gt;Dashboard&lt;/h1&gt;
+         &lt;div class=&quot;collapsed&quot;&gt;
+            &lt;a href=&quot;#&quot; id=&quot;submenutoggle&quot;&gt;&lt;h1&gt;Dashboard &lt;i class=&quot;fa fa-bars&quot;&gt;&lt;/i&gt;&lt;/h1&gt;&lt;/a&gt;
+         &lt;/div&gt;
+         &lt;ul class=&quot;nav nav-tabs&quot;&gt;
+            &lt;li class=&quot;active&quot;&gt;&lt;a href=&quot;index.html&quot;&gt;Overview&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href=&quot;mail.html&quot;&gt;Inbox&lt;/a&gt;&lt;/li&gt;
+         &lt;/ul&gt;
+      &lt;/div&gt;
+      &lt;!-- /submenu --&gt;
+
+      &lt;!-- content main container --&gt;
+      &lt;div class=&quot;main&quot;&gt;
+         CONTENT IS HERE
+      &lt;/div&gt;
+      &lt;!-- /content main container --&gt;
+
+&lt;/div&gt;
+&lt;!-- /Page content --&gt;</pre>
+<div>
+	Most of the content is placed in tiles, every <strong>tile</strong> can have it&#39;s own<strong> header, widget, body, right side, left side and footer.&nbsp;</strong></div>
+<div>
+	&nbsp;</div>
+<pre class="prettyprint lang-html linenums">
+&lt;!-- tile --&gt;
+&lt;section class=&quot;tile left-nav&quot;&gt;
+<span style="font-family: Arial, Verdana, sans-serif;">   
+   &lt;!-- tile header --&gt;          
+</span><span style="font-family: Arial, Verdana, sans-serif;">   &lt;div class=&quot;tile-header&quot;&gt;           
+</span><span style="font-family: Arial, Verdana, sans-serif;">      TILE HEADER IS HERE
+   &lt;/div&gt;
+</span><span style="font-family: Arial, Verdana, sans-serif;">   &lt;!-- /tile header --&gt;
+</span><span style="font-family: Arial, Verdana, sans-serif;">
+   &lt;!-- tile widget --&gt;
+</span><span style="font-family: Arial, Verdana, sans-serif;">   &lt;div class=&quot;tile-widget&quot;&gt;         
+</span><span style="font-family: Arial, Verdana, sans-serif;">      TILE WIDGET IS HERE     
+   &lt;/div&gt;
+</span><span style="font-family: Arial, Verdana, sans-serif;">   &lt;!-- /tile widget --&gt;
+</span><span style="font-family: Arial, Verdana, sans-serif;">
+   &lt;!-- tile left-side --&gt;
+</span><span style="font-family: Arial, Verdana, sans-serif;">   &lt;div class=&quot;tile-left-side&quot;&gt;                 
+</span><span style="font-family: Arial, Verdana, sans-serif;">      TILE LEFT SIDE IS HERE
+   &lt;/div&gt;
+</span><span style="font-family: Arial, Verdana, sans-serif;">   &lt;!-- /tile left-side --&gt;
+</span><span style="font-family: Arial, Verdana, sans-serif;">
+   &lt;!-- tile body --&gt;
+</span><span style="font-family: Arial, Verdana, sans-serif;">   &lt;div class=&quot;tile-body&quot;&gt;
+      TILE BODY IS HERE   
+   &lt;/div&gt;
+   &lt;!-- /tile body --&gt;
+
+</span><span style="font-family: Arial, Verdana, sans-serif;">   &lt;!-- tile right-side --&gt;
+</span><span style="font-family: Arial, Verdana, sans-serif;">   &lt;div class=&quot;tile-right-side&quot;&gt;           
+</span><span style="font-family: Arial, Verdana, sans-serif;">      TILE RIGHT SIDE IS HERE
+   &lt;/div&gt;
+</span><span style="font-family: Arial, Verdana, sans-serif;">   &lt;!-- /tile right-side --&gt;</span><span style="font-family: Arial, Verdana, sans-serif;">
+</span><span style="font-family: Arial, Verdana, sans-serif;">
+   &lt;!-- tile footer --&gt;
+</span><span style="font-family: Arial, Verdana, sans-serif;">   &lt;div class=&quot;tile-footer&quot;&gt;                 
+</span><span style="font-family: Arial, Verdana, sans-serif;">      TILE FOOTER IS HERE
+   &lt;/div&gt;
+</span><span style="font-family: Arial, Verdana, sans-serif;">   &lt;!-- /tile footer --&gt;
+</span><span style="font-family: Arial, Verdana, sans-serif;">
+&lt;/div&gt;
+</span><span style="font-family: Arial, Verdana, sans-serif;">&lt;!-- /tile --&gt;</span></pre>
+<div>
+	<div>
+		Every part of tile can have it&#39;s own color option by adding class<strong> .color</strong> and color defining class such as <strong>.red</strong>, same way you can colorize whole tile.</div>
+	<div>
+		&nbsp;</div>
+	<div>
+		Every tile in demo page have <strong>view code </strong>button, so more documentation about almost every element you can find there.</div>
+</div>
+<div>
+	&nbsp;</div>
+</section>
+        <section id="css_scss_structure">
+	<div class="page-header"><h3>CSS, SCSS & Structure</h3><hr class="notop"></div>
+<h4 id="css_scss_structure_css">CSS</h4>
+<hr>
+<p>
+	Every page in demo example have necessary css files placed in header, this is list of all:</p>
+<pre class="prettyprint lang-plain linenums">
+animate.min.css // A cross-browser library of CSS animations, http://daneden.github.io/animate.css/ 
+bootstrap-checkbox.css // A custom styled checkboxes and radios
+bootstrap-colorpicker.css // Bootstrap colorpicker, http://mjolnic.github.io/bootstrap-colorpicker/
+bootstrap-theme.css // Bootstrap default theme
+bootstrap.css // Bootstrap default css file
+chosen-bootstrap.css // Chosen bootstrap style, http://harvesthq.github.io/chosen/
+chosen.css // Chosen multiselect, http://harvesthq.github.io/chosen/
+ColVis.css // Datatables colvis plugin style, http://datatables.net/extras/
+dataTables.bootstrap.css // Datatables bootstrap styling, http://datatables.net
+datepicker3.css // Bootstrap datepicker, http://eternicode.github.io/bootstrap-datepicker
+font-awesome.css // FontAwesome, http://fortawesome.github.io/Font-Awesome/
+jquery.dataTables.css // Datatables style, http://datatables.net
+jquery.jgrowl.min // Jgrowl notifications, https://github.com/stanlemon/jGrowl
+jquery.nouislider.min.css // NoUiSlider, http://refreshless.com/nouislider/
+minoral.css // Theme main css file
+morris.css // Morris.js charts style, http://www.oesmith.co.uk/morris.js/
+owl.carousel.css // Owl Carousel default style, http://owlgraphic.com/owlcarousel/
+owl.theme.css // Owl Carousel theme, http://owlgraphic.com/owlcarousel/
+rickshaw.min.css // Rickshaw charts style, http://code.shutterstock.com/rickshaw/
+summernote-bs3.css // Summernote WYSIWYG editor Bootstrap3 style, http://hackerwins.github.io/summernote/
+summernote.css // Summernote WYSIWYG editor default style, http://hackerwins.github.io/summernote/
+TableTools.css // Datatables tabletools plugin style, http://datatables.net/extras/
+typeahead.js-bootstrap // Typeahead.js style, http://twitter.github.io/typeahead.js/
+colorbox.css // Jquery colorbox gallery plugin style, http://www.jacklmoore.com/colorbox/
+bootstrap-colorpalette.css // Colorpalette for bootstrap, https://github.com/extremeFE/bootstrap-colorpalette
+fullcalendar.css // Fullcalendar style, http://arshaw.com/fullcalendar/
+jquery-jvectormap-1.2.2 // Vector maps style, http://jvectormap.com/
+style.css // Superbox gallery jquery plugin style, https://github.com/toddmotto/superbox
+tabdrop.css // TabDrop responsive tabs and pills navigation style, https://github.com/jschab/bootstrap-tabdrop</pre>
+<p>
+	Some of them you can find in <strong>root/css folder</strong> and some of them are placed with their parent jquery plugins in <strong>root/js/plugins</strong></p>
+<h4 id="css_scss_structure_scss">SCSS:</h4>
+<hr>
+<p>
+	SCSS files you can find in <strong>root/css/scss folder:</strong></p>
+<pre class="prettyprint lang-plain linenums">
+minoral.scss // main scss file
+_schemes.scss // color schemes file
+_mixins.scss // mixins file
+_colors.scss // colors file</pre>
+<h4 id="css_scss_structure_scss_structure">SCSS structure:</h4>
+<hr>
+<p>
+	Every section is divided with description like this:</p>
+<pre class="prettyprint lang-plain linenums">
+/*********************************/
+/************* FORMS *************/
+/*********************************/
+</pre>
+<p>
+	At the end of this file are settings for responsiveness</p>
+<pre class="prettyprint lang-plain linenums">
+/**************************************/
+/************* RESPONSIVE *************/
+/**************************************/</pre>
+<p>
+	Everything else is default scss</p>
+</section>
+        <section id="javascript">
+	<div class="page-header"><h3>Javascript</h3><hr class="notop"></div>
+<h4 id="javascript_strongimportant_javascript_files_strong"><strong>Important Javascript files:</strong></h4>
+<hr>
+<p>
+	1. Most important is <strong>jQuery&nbsp;</strong>-&nbsp;jQuery is a Javascript library that greatly reduces the amount of code that you must write.</p>
+<p>
+	2. Another one is <strong>bootstrap.js&nbsp;</strong>- default js file for bootstrap</p>
+<p>
+	3. Main theme js file is <strong>minoral.js&nbsp;</strong>- there are some major scripts for theme which are necessary for all pages</p>
+<p>
+	4. Every page have it&#39;s own <strong>&lt;script&gt;&lt;/script&gt;&nbsp;</strong>section where you can find all other functions</p>
+<p>
+	5. At the end there are many &nbsp;plugins which are doing more complex work and the list of them with links to documentation you can find in last chapter of documentation &quot;<strong>Sources and Credits</strong>&quot;.</p>
+</section>
+        <section id="sources_and_credits">
+	<div class="page-header"><h3>Sources and Credits</h3><hr class="notop"></div>
+<h4 id="sources_and_credits_strongi_39ve_used_the_following_images_strong"><strong>I&#39;ve used the following images:</strong></h4>
+<pre class="prettyprint lang-plain linenums">
+homer-avatar.jpg - <a href="http://morguefile.com/archive/display/210336">http://morguefile.com/archive/display/210336</a>
+morgueFile free photo
+You are allowed to copy, distribute, transmit the work and to adapt the work. Attribution is not required. You are prohibited from using this work in a stand alone manner.</pre>
+<pre class="prettyprint lang-plain linenums">
+ici.jpg - <a href="http://www.publicdomainpictures.net/view-image.php?image=7440&amp;picture=old-man">http://www.publicdomainpictures.net/view-image.php?image=7440&amp;picture=old-man</a>
+Pokud chcete použ&iacute;t obr&aacute;zek kter&yacute; zde najdete pro komerčn&iacute; použit&iacute;, pros&iacute;m, uvědomte si, že ž&aacute;dn&yacute; model release nebyl z&iacute;sk&aacute;n a obr&aacute;zky s v&yacute;robky nebo nemovitostmi by měly b&yacute;t použ&iacute;v&aacute;ny s opatrnost&iacute;.</pre>
+<pre class="prettyprint lang-plain linenums">
+peter-avatar.jpg -<a href="http://http://commons.wikimedia.org/wiki/File:Master_of_Fl%C3%A9malle_-_Portrait_of_a_Fat_Man_-_Google_Art_Project.jpg"> http://commons.wikimedia.org/wiki/File:Master_of_Fl%C3%A9malle_-_Portrait_of_a_Fat_Man_-_Google_Art_Project.jpg</a>
+From Wikimedia Commons, the free media repository</pre>
+<pre class="prettyprint lang-plain linenums">
+rimmer-avatar.jpg - <a href="http://commons.wikimedia.org/wiki/File:Andromeda_galaxy_2.jpg">http://commons.wikimedia.org/wiki/File:Andromeda_galaxy_2.jpg</a>
+From Wikimedia Commons, the free media repository</pre>
+<pre class="prettyprint lang-plain linenums">
+zoidberg-avatar.jpg - <a href="http://commons.wikimedia.org/wiki/File:Coconut_crab.jpg">http://commons.wikimedia.org/wiki/File:Coconut_crab.jpg</a>
+From Wikimedia Commons, the free media repository</pre>
+<h4 id="sources_and_credits_strongand_following_js_plugins_strong"><strong>And following js plugins:</strong></h4>
+<pre class="prettyprint lang-plain linenums">
+<strong>jquery.blockUI.js</strong>
+
+Examples at: <a href="http://malsup.com/jquery/block/">http://malsup.com/jquery/block/</a>
+Copyright (c) 2007-2013 M. Alsup
+Dual licensed under the MIT and GPL licenses:
+http://www.opensource.org/licenses/mit-license.php
+http://www.gnu.org/licenses/gpl.html</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>chosen.jquery.js</strong>
+
+Chosen, a Select Box Enhancer for jQuery and Prototype
+by Patrick Filler for Harvest, <a href="http://getharvest.com">http://getharvest.com</a>
+Version 1.0.0
+Full source at https://github.com/harvesthq/chosen
+Copyright (c) 2011 Harvest http://getharvest.com
+MIT License, https://github.com/harvesthq/chosen/blob/master/LICENSE.md
+This file is generated by `grunt build`, do not edit it by hand.</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>jquery.colorbox.js</strong>
+
+Colorbox v1.4.36 - 2014-02-01
+jQuery lightbox and modal window plugin
+(c) 2014 Jack Moore - <a href="http://www.jacklmoore.com/colorbox">http://www.jacklmoore.com/colorbox</a>
+license: http://www.opensource.org/licenses/mit-license.php</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>bootstrap-colorpalette.js</strong>
+
+<a href="https://github.com/extremeFE/bootstrap-colorpalette">https://github.com/extremeFE/bootstrap-colorpalette</a>
+(c) 2013~ Jiung Kang
+Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>bootstrap-colorpicker.js</strong>
+
+<a href="http://mjolnic.github.io/bootstrap-colorpicker/">http://mjolnic.github.io/bootstrap-colorpicker/</a>
+Originally written by (c) 2012 Stefan Petre
+Licensed under the Apache License v2.0
+http://www.apache.org/licenses/LICENSE-2.0.txt</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>jquery.dataTables.js</strong>
+
+<a href="http://datatables.net">http://datatables.net</a>
+@summary     DataTables
+@description Paginate, search and sort HTML tables
+@version     1.9.4
+@file        jquery.dataTables.js
+@author      Allan Jardine (www.sprymedia.co.uk)
+@contact     www.sprymedia.co.uk/contact
+@copyright Copyright 2008-2012 Allan Jardine, all rights reserved.
+
+This source file is free software, under either the GPL v2 license or a
+BSD style license, available at:
+http://datatables.net/license_gpl2
+http://datatables.net/license_bsd</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>bootstrap-datepicker.js
+</strong>
+Repo: https://github.com/eternicode/bootstrap-datepicker/
+Demo: <a href="http://eternicode.github.io/bootstrap-datepicker/">http://eternicode.github.io/bootstrap-datepicker/</a>
+Docs: http://bootstrap-datepicker.readthedocs.org/
+Forked from http://www.eyecon.ro/bootstrap-datepicker</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>jquery.flot.js</strong>
+
+<a href="http://www.flotcharts.org/">http://www.flotcharts.org/</a>
+Javascript plotting library for jQuery, version 0.8.2.
+Copyright (c) 2007-2013 IOLA and Ole Laursen.
+Licensed under the MIT license.</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>fullcalendar.js</strong>
+
+FullCalendar v1.6.4
+Docs &amp; License: <a href="http://arshaw.com/fullcalendar/">http://arshaw.com/fullcalendar/</a>
+(c) 2013 Adam Shaw</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>jquery.ui.map.js</strong>
+
+jQuery FN Google Map 3.0-rc
+<a href="http://code.google.com/p/jquery-ui-map/">http://code.google.com/p/jquery-ui-map/</a>
+Copyright (c) 2010 - 2012 Johan S&auml;ll Larsson
+Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>jquery.graphTable-0.3.js</strong>
+
+<a href="https://github.com/sithmel/graphTable">https://github.com/sithmel/graphTable</a>
+A simple jQuery plugin that transform an HTML table into a graph using the flot library</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>jquery.jgrowl.js</strong>
+
+<a href="https://github.com/stanlemon/jGrowl">https://github.com/stanlemon/jGrowl</a>
+jGrowl 1.2.12
+Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+
+Written by Stan Lemon &lt;&#115;&#116;&#111;&#115;&#104;&#49;&#57;&#56;&#53;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;&gt;
+Last updated: 2013.02.14
+
+jGrowl is a jQuery plugin implementing unobtrusive userland notifications. These notifications function similarly to the Growl Framework available for Mac OS X (http://growl.info).</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>jquery.animateNumbers.js</strong>
+
+jQuery plugin for animating numbers from an existing number to a new one
+<a href="https://github.com/talmand/jquery-animate-numbers">https://github.com/talmand/jquery-animate-numbers</a></pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>jquery.easypiechart.js</strong>
+
+<a href="http://rendro.github.io/easy-pie-chart/">http://rendro.github.io/easy-pie-chart/</a>
+Lightweight plugin to render simple, animated and retina optimized pie charts
+@license 
+@author Robert Fleischmann &lt;&#114;&#101;&#110;&#100;&#114;&#111;&#56;&#55;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;&gt; (http://robert-fleischmann.de)
+@version 2.1.4</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>jquery.nicescroll.js</strong>
+
+version 3.5.4
+copyright 2013-11-13 InuYaksa*2013
+licensed under the MIT
+<a href="http://areaaperta.com/nicescroll">http://areaaperta.com/nicescroll</a>
+https://github.com/inuyaksa/jquery.nicescroll</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>jquery.sparkline.js</strong>
+
+v2.1.2
+(c) Splunk, Inc
+Contact: Gareth Watts (&#103;&#97;&#114;&#101;&#116;&#104;&#64;&#115;&#112;&#108;&#117;&#110;&#107;&#46;&#99;&#111;&#109;)
+<a href="http://omnipotent.net/jquery.sparkline/">http://omnipotent.net/jquery.sparkline/</a>
+Generates inline sparkline charts from data supplied either to the method or inline in HTML
+Compatible with Internet Explorer 6.0+ and modern browsers equipped with the canvas tag
+(Firefox 2.0+, Safari, Opera, etc)
+License: New BSD License
+Copyright (c) 2012, Splunk Inc.
+All rights reserved.</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>justgage.js</strong>
+
+JustGage - this is work-in-progress, unreleased, unofficial code, so it might not work top-notch :)
+Check <a href="http://www.justgage.com">http://www.justgage.com</a> for official releases
+Licensed under MIT.
+@author Bojan Djuricic  (@Toorshia)</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>jquery-jvectormap-1.2.2.min.js</strong>
+
+jVectorMap version 1.2.2
+<a href="http://jvectormap.com/">http://jvectormap.com/</a>
+Copyright 2011-2013, Kirill Lebedev
+Licensed under the MIT license.</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>morris.js</strong>
+
+<a href="http://www.oesmith.co.uk/morris.js/">http://www.oesmith.co.uk/morris.js/</a>
+Copyright (c) 2013, Olly Smith
+All rights reserved.</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>jquery.nouislider.js</strong>
+
+version 5.0.0
+author Leon Gersen https://twitter.com/LeonGersen
+license WTFPL http://www.wtfpl.net/about/
+documentation <a href="http://refreshless.com/nouislider/">http://refreshless.com/nouislider/</a></pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>owl.carousel.js</strong>
+
+jQuery OwlCarousel v1.3.2
+Copyright (c) 2013 Bartosz Wojciechowski
+<a href="http://www.owlgraphic.com/owlcarousel/">http://www.owlgraphic.com/owlcarousel/</a>
+Licensed under MIT</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>parsley.min.js</strong>
+
+Parsley dist/parsley.min.js build version 1.2.3 <a href="http://parsleyjs.org">http://parsleyjs.org</a></pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>rickshaw.min.js</strong>
+
+<a href="http://code.shutterstock.com/rickshaw/">http://code.shutterstock.com/rickshaw/</a>
+Rickshaw is free and open source, available under the MIT license. Developed at Shutterstock.</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>skycons.js</strong>
+
+<a href="http://darkskyapp.github.io/skycons/">http://darkskyapp.github.io/skycons/</a>
+Skycons is a set of ten animated weather glyphs, procedurally generated by JavaScript using the HTML5 canvas tag.</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>summernote.js</strong>
+
+Super simple wysiwyg editor on Bootstrap v0.5.1
+<a href="http://hackerwins.github.io/summernote/">http://hackerwins.github.io/summernote/</a>
+Copyright 2013 Alan Hong. and outher contributors
+summernote may be freely distributed under the MIT license./</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>superbox.js</strong>
+
+SuperBox v1.0.0
+by Todd Motto: http://www.toddmotto.com
+Latest version: <a href="https://github.com/toddmotto/superbox">https://github.com/toddmotto/superbox</a>
+
+Copyright 2013 Todd Motto
+Licensed under the MIT license
+http://www.opensource.org/licenses/mit-license.php
+
+SuperBox, the lightbox reimagined. Fully responsive HTML5 image galleries.</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>bootstrap-tabdrop.min.js</strong>
+
+<a href="http://www.eyecon.ro/bootstrap-tabdrop">http://www.eyecon.ro/bootstrap-tabdrop</a>
+Copyright 2012 Stefan Petre</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>typeahead.js</strong>
+
+typeahead.js 0.9.3
+<a href="https://github.com/twitter/typeahead">https://github.com/twitter/typeahead</a>
+Copyright 2013 Twitter, Inc. and other contributors; Licensed MIT</pre>
+<pre class="prettyprint lang-plain linenums">
+<strong>jquery.bootstrap.wizard.js</strong>
+
+jQuery twitter bootstrap wizard plugin
+Examples and documentation at: <a href="http://github.com/VinceG/twitter-bootstrap-wizard">http://github.com/VinceG/twitter-bootstrap-wizard</a>
+version 1.0
+Requires jQuery v1.3.2 or later
+Supports Bootstrap 2.2.x, 2.3.x, 3.0
+Dual licensed under the MIT and GPL licenses:
+http://www.opensource.org/licenses/mit-license.php
+http://www.gnu.org/licenses/gpl.html
+Authors: Vadim Vincent Gabriel (http://vadimg.com), Jason Gill (www.gilluminate.com)</pre>
+<div class="alert alert-info">
+	Once again, thank you so much for purchasing this theme. As I said at the beginning, I&#39;d be glad to help you if you have any questions relating to this theme. No guarantees, but I&#39;ll do my best to assist. If you have a more general question relating to the themes on ThemeForest, you might consider visiting the forums and asking your question in the &quot;Item Discussion&quot; section.</div>
+<div class="alert alert-info">
+	<strong>Matej Drlicka - &#109;&#97;&#116;&#111;&#100;&#114;&#108;&#105;&#99;&#107;&#97;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</strong></div>
+</section>
+        <section id="changelog">
+	<div class="page-header"><h3>Changelog</h3><hr class="notop"></div>
+	
+			<h4 id="changelog_strongversion_10_initial_release_strong"><strong>Version 1.3 – 14.05.2014</strong></h4>
+<pre class="prettyprint lang-plain linenums">
+ Added RTL Direction example page
+ Added Nestable lists page into Interface</pre>
+	
+		<h4 id="changelog_strongversion_10_initial_release_strong"><strong>Version 1.2 - 08.04.2014</strong></h4>
+<pre class="prettyprint lang-plain linenums">
+  Advanced Bootstrap Table
+  Horizontal and Vertical Form Examples
+  Advanced Gallery
+  Search Results Page
+  Ability to have labels and badges at sidebar menu
+  Datetimepicker field
+  Chat Page
+  Submenu force collapse if window is smaller than submenu
+  Submenu issue on mobile devices when some of links were not clickable fixed</pre>
+	
+	<h4 id="changelog_strongversion_10_initial_release_strong"><strong>Version 1.1 - 27.02.2014</strong></h4>
+<pre class="prettyprint lang-plain linenums">
+ Some elements removed from dashboard, you can still find them on subpages
+ Main nicescroll is now applied to #content instead of html tag
+ Sidebar menu animations are back
+ Fix scrolling problem on some devices
+ New error pages like 403, 500, 503, offline/maintenance
+ jQuery file upload widget added to widgets
+ Other minor fixes</pre>
+	
+<h4 id="changelog_strongversion_10_initial_release_strong"><strong>version 1.0b - 24.02.2014</strong></h4>
+<pre class="prettyprint lang-plain linenums">
+Corner flip tile graphic bug fixed
+Sidebar bug fixed after deleting animated badge in navbar</pre>
+<h4 id="changelog_strongversion_10_initial_release_strong"><strong>version 1.0a - 18.02.2014</strong></h4>
+<pre class="prettyprint lang-plain linenums">
+card flip animation browser fix</pre>
+<h4 id="changelog_strongversion_10_initial_release_strong"><strong>version 1.0 - Initial release</strong></h4>
+<pre class="prettyprint lang-plain linenums">
+menu stay active while clicking on outside
+tabs responsive - http://www.eyecon.ro/bootstrap-tabdrop/
+tile types page to interface
+refresh and close elements
+make height 100% if there is no content
+sidebar multilevel dropdown not functional
+w3c validation
+resolve calendar scroll issue
+resolve gallery scroll issue</pre>
+</section>
+        <hr />
+        <footer>
+    <p>Copyright Tattek 2014 made with the <a href="http://rxa.li/documenter">Documenter v2.0</a></p>
+</footer>
+    </div>
+    <!-- /container -->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+    <script>document.createElement('section');var duration='500',easing='swing';</script>
+
+    <script src="assets/js/jquery.js"></script>
+
+    <script src="assets/js/jquery.scrollTo.js"></script>
+
+    <script src="assets/js/jquery.easing.js"></script>
+
+    <script src="assets/js/scripts.js"></script>
+
+    <script src="assets/js/google-code-prettify/prettify.js"></script>
+
+    <script src="assets/js/bootstrap-min.js"></script>
+
+</body>
+</html>

@@ -36,6 +36,7 @@ type CpuPos struct {
 
 func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/index/index", "Index")
+	b.ANY("/index/index1", "Index1")
 	b.ANY("/index/menu", "Menu")
 	b.ANY("/index/main", "Main")
 	b.ANY("/index/sessionlife", "Sessionlife")
@@ -94,6 +95,13 @@ func getCpus() []CpuPos {
 	return cpus
 }
 
+func (c *IndexController) Index1(icache cache.ICache) {
+	menus := c.GetMenus(icache)
+	c.Ctx().Render().ViewData("menus", menus)
+	c.Ctx().Render().ViewData("username", c.Session().Get("username"))
+	c.Ctx().Render().HTML("backend/index_index.html")
+}
+
 func (c *IndexController) Index() {
 	roleid := c.Ctx().Value("roleid")
 	if roleid == nil {
@@ -103,7 +111,7 @@ func (c *IndexController) Index() {
 	menus := models.NewMenuModel().GetMenu(0, roleid.(int64)) //读取一级菜单
 	c.Ctx().Render().ViewData("menus", menus)
 	c.Ctx().Render().ViewData("username", c.Session().Get("username"))
-	c.Ctx().Render().HTML("backend/index_index.html")
+	c.Ctx().Render().HTML("backend/index_index1.html")
 }
 
 var us, _ = disk.Usage(helper.GetRootPath())
@@ -189,6 +197,47 @@ func (c *IndexController) Menu(iCache cache.ICache) {
 	}
 	c.Ctx().Render().JSON(menujs)
 }
+
+func (c *IndexController) GetMenus(iCache cache.ICache) []map[string]interface{} {
+	roleid := c.Ctx().Value("roleid")
+	if roleid == nil {
+		roleid = interface{}(int64(0))
+	}
+	menus := models.NewMenuModel().GetMenu(1, roleid.(int64)) //获取menuid内容
+	cacheKey := fmt.Sprintf(controllers.CacheAdminMenuByRoleIdAndMenuId, roleid, 1)
+	var menujs []map[string]interface{} //要返回json的对象
+	var data string
+		dataBytes, _ := iCache.Get(cacheKey)
+		data = string(dataBytes)
+	if data == "" || json.Unmarshal([]byte(data), &menujs) != nil {
+		pine.Logger().Debug("目录列表没有走缓存")
+		for _, v := range menus {
+			menu := models.NewMenuModel().GetMenu(v.Id, roleid.(int64))
+			if len(menu) == 0 {
+				continue
+			}
+			var sonmenu []map[string]interface{}
+			for _, son := range menu {
+				sonmenu = append(sonmenu, map[string]interface{}{
+					"text": son.Name,
+					"id":   son.Id,
+					"url":  "/b/" + son.C + "/" + son.A + "?menuid=" + strconv.Itoa(int(son.Id)) + "&" + son.Data,
+				})
+			}
+			menujs = append(menujs, map[string]interface{}{
+				"name": v.Name,
+				"son":  sonmenu,
+			})
+
+		}
+		strs, _ := json.Marshal(&menujs)
+		if err := iCache.Set(cacheKey, strs); err != nil {
+			pine.Logger().Errorf("save cache %s failed: %s", cacheKey, err.Error())
+		}
+	}
+	return menujs
+}
+
 
 //维持session不过期
 func (c *IndexController) Sessionlife() {

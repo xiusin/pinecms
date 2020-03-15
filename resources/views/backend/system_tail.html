@@ -1,15 +1,19 @@
 <style>
     #tail-log {
-        background: #0a001f;
         font-size: 12px;
-        color: #fff;
         height: 100%;
         width: 100%;
         overflow: auto;
     }
     #tail-log > pre{
         font-size: 14px;
-        margin-bottom: 5px;
+        display: block;
+        line-height: 1.428571429;
+        color: #333;
+        word-break: break-all;
+        word-wrap: break-word;
+        border: none;
+        background-color: #f5f5f5;
     }
 </style>
 
@@ -22,7 +26,7 @@
     }
     var timeIntervaler = null
     wsConn.onclose = function (evt) {
-        $("#tail-log").append("<div>远程已关闭</div>")
+        $("#tail-log").append("<pre>远程已关闭</pre>")
         timeIntervaler = setInterval(function () {
             openWs()
         }, 3000)
@@ -36,13 +40,13 @@
     };
 
     function openWs() {
-        $("#tail-log").html("<div>正在连接服务器</div>")
+        $("#tail-log").html("<pre>正在连接服务器</pre>")
         wsConn = new WebSocket("ws://" + document.location.host + "/b/system/ws-connection");
         if (wsConn) {
-            $("#tail-log").html("<div>连接服务器成功</div>")
+            $("#tail-log").html("<pre>连接服务器成功</pre>")
             clearInterval(timeIntervaler)
         } else {
-            $("#tail-log").append("<div>连接失败, 稍后重试</div>")
+            $("#tail-log").append("<pre>连接失败, 稍后重试</pre>")
         }
 
     }

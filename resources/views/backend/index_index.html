@@ -1,145 +1,490 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-    <meta charset="utf-8">
-    <title>内容管理系统</title>
-    {{template "backend/public_javascript.html"}}
-    {{template "backend/public_umeditor.html"}}
-    <style>
-        .panel-header {
-            background: url("/assets/backend/mdou/images/left_nav_divbg.png") no-repeat scroll 15px -3px #f0f0f0;
-            color: #000000;
-            font: 12px/31px 宋体;
-            text-align: left;
-            text-indent: 20px;
-        }
+    <title>Minoral 1.3 - Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
 
-        .panel-icon, .panel-tool {
-            overflow: hidden;
-            position: absolute;
-            top: 50%;
-        }
-
-        .icons-other-house {
-            display: none;
-        }
-
-        .tabs-title, .datagrid-header .datagrid-cell span, .datagrid-cell, .panel-title, .tree-title {
-            font-weight: normal;
-            font-size: 12px;
-        }
-
-        .accordion .accordion-header {
-            background: url("/assets/backend/mdou/images/left_nav_divbg.png") no-repeat scroll 15px -3px #f0f0f0;
-            color: #000000;
-            font: 12px/31px 宋体;
-            text-align: left;
-            text-indent: 20px;
-        }
-
-        .accordion .accordion-header-selected {
-            background: url("/assets/backend/mdou/images/left_nav_divbg.png") no-repeat scroll 15px -27px rgb(73, 137, 205);
-            color: #fff;
-            text-decoration: none;
-            text-indent: 20px;
-        }
-
-        .accordion .accordion-header {
-            filter: none;
-        }
-
-        .icons-folder-folder_go {
-            display: none;
-        }
-        .tree-node-selected {
-            background-color: rgb(90, 116, 131);
-        }
-
-        table.mdoutable {
-            width: 100%;
-            color: #333333;
-            border-width: 1px;
-            border-color: #666666;
-            border-collapse: collapse;
-        }
-
-        table.mdoutable th {
-            border-width: 1px;
-            padding: 15px;
-            border-style: dotted;
-            border-color: rgb(204, 204, 204);
-            background-color: #dedede;
-        }
-
-        table.mdoutable td {
-            border-width: 1px;
-            padding: 8px;
-            border-style: dotted;
-            border-color: rgb(204, 204, 204);
-            background-color: #ffffff;
-        }
-
-        table.mdoutable td input[type='text'], table.mdoutable td select, table.mdoutable td .easyui-combotree {
-            width: 280px;
-        }
-
-        .tabs li.tabs-selected a.tabs-inner {
-            font-weight: normal;
-        }
-
-        .tabs-header-bottom .tabs li a.tabs-inner {
-            border-radius: 0px;
-        }
-
-        .tabs li.tabs-selected a.tabs-inner {
-            /*color: rgb(217,0,0);*/
-        }
-
-
-        .dialogtable {
-            width: 100%;
-        }
-
-        .dialogtable td {
-            border-width: 0 1px 1px 0;
-            border-style: dotted;
-            border-color: #ccc;
-            /*margin: 0;*/
-            padding: 15px;
-        }
-
-        .panel .panel-header {
-            background-image: none;
-        }
-
-        .tree-node {
-            height: 20px;
-            /* line-height: 30px; */
-            /* vertical-align: middle; */
-            padding: 5px 0;
-        }
-    </style>
+    <link rel="icon" type="image/ico" href="/assets/bg/images/favicon.ico" />
+    <!-- Bootstrap -->
+    <link href="/assets/bg/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/bg/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/bg/css/animate.min.css">
+    <link rel="stylesheet" href="/assets/bg/css/rickshaw.min.css">
+    <link rel="stylesheet" href="/assets/bg/css/bootstrap-checkbox.css">
+    <link rel="stylesheet" href="/assets/bg/css/summernote.css">
+    <link rel="stylesheet" href="/assets/bg/css/summernote-bs3.css">
+    <link rel="stylesheet" href="/assets/bg/css/chosen.min.css">
+    <link rel="stylesheet" href="/assets/bg/css/chosen-bootstrap.css">
+    <link rel="stylesheet" href="/assets/bg/js/plugins/tabdrop/css/tabdrop.css">
+    <link rel="stylesheet" href="/assets/bg/css/morris.css">
+    <link href="/assets/bg/css/minoral.css" rel="stylesheet">
 
 </head>
-<body class="easyui-layout" >
-<!-- 左侧菜单 -->
-<div id="leftarea" data-options="iconCls:'icons-other-house',region:'west', split:true,width:230" >
-    <div style="padding: 10px;text-align: center"><img src="/assets/pinecms.png" style="width: 100px;"/></div>
-    <div id="leftmenu" class="easyui-accordion" style="background: #fff;" data-options="fit:true,border:false"></div>
-</div>
+<body class="lightgrey-scheme">
 
-<!-- 内容 -->
-<div id="mainarea" data-options="region:'center'">
-    <div id="pagetabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:false">
-        <div title="后台首页" href="main" data-options="cache:false,title:'后台首页'"></div>
+<!-- Preloader -->
+<div class="mask"><div id="loader"></div></div>
+<!--/Preloader -->
+
+<!-- Wrap all page content here -->
+<div id="wrap">
+
+    <!-- Make page fluid -->
+    <div class="row">
+
+        <!-- Fixed navbar -->
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+
+            <!-- Branding -->
+            <div class="navbar-header col-md-2">
+                <a class="navbar-brand" href="/b/index/index">
+                    <strong>PINE</strong> <span class="divider vertical"></span> CMS
+                </a>
+                <div class="sidebar-collapse">
+                    <a href="#">
+                        <i class="fa fa-bars"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- Branding end -->
+
+
+            <!-- .nav-collapse -->
+            <div class="navbar-collapse">
+
+
+
+
+                <!-- Content collapsing at 768px to sidebar -->
+                <div class="collapsing-content">
+
+
+
+
+                    <!-- Quick Actions -->
+                    <ul class="nav navbar-nav">
+                        <li class="divided">
+                            <a href="#" class="page-refresh"><i class="fa fa-refresh"></i></a>
+                        </li>
+                    </ul>
+                    <!-- Quick Actions end -->
+
+
+                    <!-- User Controls -->
+                    <div class="user-controls">
+                        <ul>
+
+
+                            <li class="dropdown messages">
+                                <div class="profile-photo">
+                                    <img src="/assets/bg/images/profile-photo.jpg" alt />
+                                </div>
+                                <ul class="dropdown-menu wide arrow red nopadding">
+                                    <li><h1>You have <strong>3</strong> new messages</h1></li>
+
+                                    <li>
+                                        <a class="cyan" href="#">
+                                            <div class="profile-photo">
+                                                <img src="/assets/bg/images/ici-avatar.jpg" alt />
+                                            </div>
+                                            <div class="message-info">
+                                                <span class="sender">Ing. Imrich Kamarel</span>
+                                                <span class="time">12 mins</span>
+                                                <div class="message-content">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum</div>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="green" href="#">
+                                            <div class="profile-photo">
+                                                <img src="/assets/bg/images/arnold-avatar.jpg" alt />
+                                            </div>
+                                            <div class="message-info">
+                                                <span class="sender">Arnold Karlsberg</span>
+                                                <span class="time">1 hour</span>
+                                                <div class="message-content">Lorem ipsum dolor sit amet, consectetur adipisicing elit</div>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a href="#">
+                                            <div class="profile-photo">
+                                                <img src="/assets/bg/images/profile-photo.jpg" alt />
+                                            </div>
+                                            <div class="message-info">
+                                                <span class="sender">John Douey</span>
+                                                <span class="time">3 hours</span>
+                                                <div class="message-content">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia</div>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="red" href="#">
+                                            <div class="profile-photo">
+                                                <img src="/assets/bg/images/peter-avatar.jpg" alt />
+                                            </div>
+                                            <div class="message-info">
+                                                <span class="sender">Peter Kay</span>
+                                                <span class="time">5 hours</span>
+                                                <div class="message-content">Ut enim ad minim veniam, quis nostrud exercitation</div>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="orange" href="#">
+                                            <div class="profile-photo">
+                                                <img src="/assets/bg/images/george-avatar.jpg" alt />
+                                            </div>
+                                            <div class="message-info">
+                                                <span class="sender">George McCain</span>
+                                                <span class="time">6 hours</span>
+                                                <div class="message-content">Lorem ipsum dolor sit amet, consectetur adipisicing elit</div>
+                                            </div>
+                                        </a>
+                                    </li>
+
+
+                                    <li><a href="#">Check all messages <i class="fa fa-angle-right"></i></a></li>
+                                </ul>
+                            </li>
+
+                            <li class="dropdown settings">
+                                <a class="dropdown-toggle options" data-toggle="dropdown" href="#">
+                                    <i class="fa fa-cog"></i>
+                                </a>
+
+                                <ul class="dropdown-menu arrow">
+
+                                    <li>
+                                        <h3>Color schemes:</h3>
+                                        <ul id="color-schemes">
+                                            <li><a href="#" class="brownish-scheme" title="Brownish"></a></li>
+                                            <li><a href="#" class="darkgrey-scheme" title="Dark Grey"></a></li>
+                                            <li><a href="#" class="lightgrey-scheme" title="Light Grey"></a></li>
+                                            <li><a href="#" class="cyan-scheme" title="Cyan"></a></li>
+                                            <li><a href="#" class="red-scheme" title="Red"></a></li>
+                                            <li><a href="#" class="orange-scheme" title="Orange"></a></li>
+                                            <li><a href="#" class="green-scheme" title="Green"></a></li>
+                                            <li><a href="#" class="amethyst-scheme" title="Amethyst"></a></li>
+                                        </ul>
+                                    </li>
+
+                                    <li class="divider"></li>
+
+                                    <li>
+                                        <a href="#"><i class="fa fa-user"></i> Profile</a>
+                                    </li>
+
+                                    <li>
+                                        <a href="#"><i class="fa fa-calendar"></i> Calendar</a>
+                                    </li>
+
+                                    <li>
+                                        <a href="#"><i class="fa fa-envelope"></i> Inbox <span class="badge badge-red" id="user-inbox">3</span></a>
+                                    </li>
+
+                                    <li class="divider"></li>
+
+                                    <li>
+                                        <a href="#"><i class="fa fa-power-off"></i> Logout</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <!-- User Controls end -->
+
+
+
+
+
+                </div>
+                <!-- /Content collapsing at 768px to sidebar -->
+
+
+
+                <!-- Sidebar -->
+                <ul class="nav navbar-nav side-nav" id="navigation">
+                    <li class="collapsed-content">
+                        <!-- Collapsed content pasting here at 768px -->
+                    </li>
+                    <li class="user-status status-online" id="user-status">
+                        <div class="profile-photo">
+                            <img src="/assets/bg/images/profile-photo.jpg" alt />
+                        </div>
+                        <div class="user">
+                            John <strong>Douey</strong>
+                            <span class="role">Administrator</span>
+                            <div class="status">
+                                <ul>
+                                    <li class="dropdown change-status">
+                                        <a class="dropdown-toggle my-status" data-toggle="dropdown" href="#">Online</a>
+
+                                        <ul class="dropdown-menu arrow">
+                                            <li>
+                                                <a href="#" id="status-online" data-status="status-online">Online</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="#" id="status-away" data-status="status-away">Away</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="#" id="status-invisible" data-status="status-invisible">Invisible</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+
+
+                            </div>
+                        </div>
+                    </li>
+                    {{range $i,$v := .menus}}
+                    <li class="dropdown {{if eq $i 0}}open{{end}}">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{{$v.name}}">
+                            <i class="fa fa-dashboard">
+                                <span class="overlay-label red"></span>
+                            </i>
+                            {{$v.name}} <b class="fa fa-angle-left dropdown-arrow"></b>
+{{/*                            <span class="badge badge-cyan">1</span>*/}}
+                        </a>
+                        <ul class="dropdown-menu">
+                            {{range $i1, $v1 := $v.son}}
+                            <li class="active">
+                                <a onclick="openUrl('{{$v1.url}}', '{{$v1.text}}')">
+                                    <i class="fa fa-eye"><span class="overlay-label red80"></span></i>
+                                    {{$v1.text}}
+                                </a>
+                            </li>
+                            {{end}}
+                        </ul>
+                    </li>
+                    {{end}}
+
+                </ul>
+                <!-- Sidebar end -->
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+        <!-- Fixed navbar end -->
+        <!-- Page content -->
+        <div id="content" style="padding-right: 0" class="col-md-12">
+            <!-- content main container -->
+            <div class="main">
+                <div id="pagetabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:false">
+                    <div title="后台首页" href="main" data-options="cache:false,title:'后台首页'"></div>
+                </div>
+            </div>
+            <!-- /content container -->
+
+
+        </div>
+        <!-- Page content end -->
+
+
+
+
+
+
     </div>
+    <!-- Make page fluid-->
+
+
+
+
 </div>
+<!-- Wrap all page content end -->
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="/assets/bg/js/jquery.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/assets/bg/js/bootstrap.min.js"></script>
+<!--<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?lang=css&amp;skin=sons-of-obsidian"></script>-->
+
+<script src="/assets/bg/js/plugins/jquery.nicescroll.min.js"></script>
+
+<script src="/assets/bg/js/plugins/blockui/jquery.blockUI.js"></script>
+
+<script src="/assets/bg/js/plugins/jquery.easypiechart.min.js"></script>
+
+<script src="/assets/bg/js/plugins/jquery.animateNumbers.js"></script>
+
+<script src="/assets/bg/js/plugins/rickshaw/raphael-min.js"></script>
+<script src="/assets/bg/js/plugins/rickshaw/d3.v2.js"></script>
+
+<script src="/assets/bg/js/plugins/skycons/skycons.js"></script>
+
+<script src="/assets/bg/js/plugins/jquery.sparkline.min.js"></script>
+
+<script src="/assets/bg/js/plugins/summernote/summernote.min.js"></script>
+
+<script src="/assets/bg/js/plugins/chosen/chosen.jquery.min.js"></script>
+
+<script src="/assets/bg/js/plugins/tabdrop/bootstrap-tabdrop.min.js"></script>
+
+<script src="/assets/bg/js/minoral.js"></script>
+<link rel="stylesheet" type="text/css" href="/assets/backend/static/css/metro.css" title="metro" />
+<script type="text/javascript" src="/assets/backend/static/js/jquery.json.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/assets/backend/static/css/icons.css" />
+<link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/insdep.easyui.min.css" title="metro" />
+<link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/insdep.theme_default.css" title="metro" />
+<script type="text/javascript" src="/assets/backend/static/js/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/assets/backend/static/js/easyui/insdep.extend.min.js"></script>
+<script type="text/javascript" src="/assets/backend/static/js/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="/assets/backend/static/js/formvalidator/formValidator.js"></script>
+<script type="text/javascript" src="/assets/backend/static/js/formvalidator/formValidatorRegex.js"></script>
+<script type="text/javascript" src="/assets/backend/static/js/jquery.serializeObject.min.js"></script>
+<script type="text/javascript" src="/assets/backend/static/js/easyui/expand/jquery-easyui-radiobox/radiobox.js"></script>
+<link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/expand/jquery-easyui-radiobox/radiobox.css" title="metro" />
+<style>
+    #wrap #content .main {
+        margin: 0;
+        height: 100%;
+    }
+    table.mdoutable {
+        width: 100%;
+        color: #333333;
+        border-width: 1px;
+        border-color: #666666;
+        border-collapse: collapse;
+    }
+
+    table.mdoutable th {
+        border-width: 1px;
+        padding: 15px;
+        border-style: dotted;
+        border-color: rgb(204, 204, 204);
+        background-color: #dedede;
+    }
+
+    table.mdoutable td {
+        border-width: 1px;
+        padding: 8px;
+        border-style: dotted;
+        border-color: rgb(204, 204, 204);
+        background-color: #ffffff;
+    }
+
+    table.mdoutable td input[type='text'], table.mdoutable td select, table.mdoutable td .easyui-combotree {
+        width: 280px;
+    }
+
+</style>
+
+<script>
+    wsConn = null;
+    $(function(){
+        $('.card.hover').hover(function(){
+            $(this).addClass('flip');
+        },function(){
+            $(this).removeClass('flip');
+        });
+
+        // Make card front & back side same
+
+        $('.card').each(function() {
+            var front = $('.card .front');
+            var back = $('.card .back');
+            var frontH = front.height();
+            var backH = back.height();
 
 
+
+            if (backH > frontH) {
+                front.height(backH - 8);
+            }
+        });
+
+        // Initialize tabDrop
+        $('.tabdrop').tabdrop({text: '<i class="fa fa-th-list"></i>'});
+
+        //generate pie charts
+        $('.easypiechart').easyPieChart();
+
+        //generate actual pie charts
+        $('.pie-chart').easyPieChart();
+
+        //animate numbers on cards
+        $("#users-count").animateNumbers(Math.round( Math.random() * 1000 ));
+        $("#orders-count").animateNumbers(Math.round( Math.random() * 100 ));
+        $("#sales-count").animateNumbers(Math.round( Math.random() * 10000 ));
+        $("#visits-count").animateNumbers(Math.round( Math.random() * 10000 ));
+
+        //animate numbers with class .animate-number with data-value attribute
+        $(".animate-number").each(function() {
+            var value = $(this).data('value');
+            var duration = $(this).data('animation-duration');
+
+            $(this).animateNumbers(value, true, duration, "linear");
+        });
+
+        //animate progress bars
+        $('.animate-progress-bar').each(function(){
+            var progress =  $(this).data('percentage');
+
+            $(this).css('width', progress);
+        })
+
+        //update instance every 5 sec
+        window.setInterval(function() {
+
+            //animate numbers on cards
+            $( '#users-count' ).animateNumbers( Math.round( Math.random() * 1000 ) );
+            $( '#orders-count' ).animateNumbers( Math.round( Math.random() * 100 ) );
+            $( '#sales-count' ).animateNumbers( Math.round( Math.random() * 10000 ) );
+            $( '#visits-count' ).animateNumbers( Math.round( Math.random() * 10000 ) );
+
+            //refresh every pie chart
+            $('.easypiechart').each(function() {
+                $(this).data('easyPieChart').update(Math.floor(100*Math.random()));
+            });
+
+        }, 5000);
+
+        //sparkline charts
+        $('#projectbar1').sparkline('html', {type: 'bar', barColor: '#22beef', barWidth: 4, height: 20});
+        $('#projectbar2').sparkline('html', {type: 'bar', barColor: '#cd97eb', barWidth: 4, height: 20});
+        $('#projectbar3').sparkline('html', {type: 'bar', barColor: '#a2d200', barWidth: 4, height: 20});
+        $('#projectbar4').sparkline('html', {type: 'bar', barColor: '#ffc100', barWidth: 4, height: 20});
+        $('#projectbar5').sparkline('html', {type: 'bar', barColor: '#ff4a43', barWidth: 4, height: 20});
+        $('#projectbar6').sparkline('html', {type: 'bar', barColor: '#a2d200', barWidth: 4, height: 20});
+
+        //todo's
+        $('#todolist li label').click(function() {
+            $(this).toggleClass('done');
+        });
+
+        //load wysiwyg editor
+        $('#quick-message-content').summernote({
+            height: 158   //set editable area's height
+        });
+
+        //multiselect input
+        $(".chosen-select").chosen({disable_search_threshold: 10});
+
+        // Morris donut chart
+        // Morris.Donut({
+        //     element: 'morris-donut-example',
+        //     data: [
+        //         {label: "Download Sales", value: 12},
+        //         {label: "In-Store Sales", value: 30},
+        //         {label: "Mail-Order Sales", value: 20}
+        //     ],
+        //     colors: ['#00a3d8', '#2fbbe8', '#72cae7']
+        // });
+
+    })
+
+</script>
 <script type="text/javascript">
-    $(function () {
-        getLeft(1, '后台首页');
-    });
+
     function fromUEImageUploader(that, mode) {
         event.preventDefault();
         var myEditorImage = UE.getEditor('myEditorImage', {autoHeightEnabled: false, isShow: false});
@@ -164,59 +509,11 @@
         return false
     }
 
-
     //退出登录
     function logout() {
         $.messager.confirm('提示信息', '确定要退出登录吗？', function (result) {
             if (result) window.location.href = '/b/login/logout';
         });
-    }
-
-    //显示左侧栏目
-    function getLeft(menuid, title, that) {
-        //加个判断，防止多次点击重复加载
-        // var options = $('body').layout('panel', 'west').panel('options');
-        // if (title == options.title) return false;
-        //开始获取左侧栏目
-
-
-        $.ajax({
-            type: 'POST',
-            url: '/b/index/menu',
-            data: {menuid: menuid},
-            cache: true,
-            // beforeSend: function () {
-            //     // removeLeft();
-            //     //更新标题名称
-            //     // $('body').layout('panel', 'west').panel({title: title});
-            //     // var loading = '<div class="panel-loading">加载中...</div>';
-            //     // $("#leftmenu").accordion("add", {content: loading});
-            //
-            // },
-            success: function (data) {
-                // removeLeft();
-                //左侧内容更新
-                $.each(data, function (i, menu) {
-                    var content = '';
-                    if (menu.son) {
-                        var treedata = $.toJSON(menu.son);
-                        content = '<ul class="easyui-tree" data-options=\'data:' + treedata + ',onClick:function(node){openUrl(node.url, node.text)}\'></ul>';
-                    }
-                    $("#leftmenu").accordion("add", {
-                        title: menu.name,
-                        content: content,
-                        iconCls: 'icons-folder-folder_go'
-                    });
-                });
-            }
-        });
-        //默认选中头部菜单
-        if (that) {
-            $('#topmenu .nav li').each(function () {
-                $(this).children().removeClass('focus');
-            })
-            $(that).addClass('focus');
-        }
     }
 
     //移除左侧菜单
@@ -282,6 +579,5 @@
     }
 
 </script>
-<div id="myEditorImage" style="display: none"></div>
 </body>
 </html>
