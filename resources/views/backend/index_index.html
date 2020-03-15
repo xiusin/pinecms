@@ -52,16 +52,8 @@
 
             <!-- .nav-collapse -->
             <div class="navbar-collapse">
-
-
-
-
                 <!-- Content collapsing at 768px to sidebar -->
                 <div class="collapsing-content">
-
-
-
-
                     <!-- Quick Actions -->
                     <ul class="nav navbar-nav">
                         <li class="divided">
@@ -69,88 +61,13 @@
                         </li>
                     </ul>
                     <!-- Quick Actions end -->
-
-
                     <!-- User Controls -->
                     <div class="user-controls">
                         <ul>
 
 
                             <li class="dropdown messages">
-                                <div class="profile-photo">
-                                    <img src="/assets/bg/images/profile-photo.jpg" alt />
-                                </div>
-                                <ul class="dropdown-menu wide arrow red nopadding">
-                                    <li><h1>You have <strong>3</strong> new messages</h1></li>
-
-                                    <li>
-                                        <a class="cyan" href="#">
-                                            <div class="profile-photo">
-                                                <img src="/assets/bg/images/ici-avatar.jpg" alt />
-                                            </div>
-                                            <div class="message-info">
-                                                <span class="sender">Ing. Imrich Kamarel</span>
-                                                <span class="time">12 mins</span>
-                                                <div class="message-content">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum</div>
-                                            </div>
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a class="green" href="#">
-                                            <div class="profile-photo">
-                                                <img src="/assets/bg/images/arnold-avatar.jpg" alt />
-                                            </div>
-                                            <div class="message-info">
-                                                <span class="sender">Arnold Karlsberg</span>
-                                                <span class="time">1 hour</span>
-                                                <div class="message-content">Lorem ipsum dolor sit amet, consectetur adipisicing elit</div>
-                                            </div>
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a href="#">
-                                            <div class="profile-photo">
-                                                <img src="/assets/bg/images/profile-photo.jpg" alt />
-                                            </div>
-                                            <div class="message-info">
-                                                <span class="sender">John Douey</span>
-                                                <span class="time">3 hours</span>
-                                                <div class="message-content">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia</div>
-                                            </div>
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a class="red" href="#">
-                                            <div class="profile-photo">
-                                                <img src="/assets/bg/images/peter-avatar.jpg" alt />
-                                            </div>
-                                            <div class="message-info">
-                                                <span class="sender">Peter Kay</span>
-                                                <span class="time">5 hours</span>
-                                                <div class="message-content">Ut enim ad minim veniam, quis nostrud exercitation</div>
-                                            </div>
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a class="orange" href="#">
-                                            <div class="profile-photo">
-                                                <img src="/assets/bg/images/george-avatar.jpg" alt />
-                                            </div>
-                                            <div class="message-info">
-                                                <span class="sender">George McCain</span>
-                                                <span class="time">6 hours</span>
-                                                <div class="message-content">Lorem ipsum dolor sit amet, consectetur adipisicing elit</div>
-                                            </div>
-                                        </a>
-                                    </li>
-
-
-                                    <li><a href="#">Check all messages <i class="fa fa-angle-right"></i></a></li>
-                                </ul>
+                                <img src="/assets/pinecms.png" height="35px" />
                             </li>
 
                             <li class="dropdown settings">
@@ -199,11 +116,6 @@
                         </ul>
                     </div>
                     <!-- User Controls end -->
-
-
-
-
-
                 </div>
                 <!-- /Content collapsing at 768px to sidebar -->
 
@@ -216,33 +128,17 @@
                     </li>
                     <li class="user-status status-online" id="user-status">
                         <div class="profile-photo">
-                            <img src="/assets/bg/images/profile-photo.jpg" alt />
+                            <img src="/assets/default.png" alt />
                         </div>
                         <div class="user">
-                            John <strong>Douey</strong>
+                            {{.username}}
                             <span class="role">Administrator</span>
                             <div class="status">
                                 <ul>
-                                    <li class="dropdown change-status">
-                                        <a class="dropdown-toggle my-status" data-toggle="dropdown" href="#">Online</a>
-
-                                        <ul class="dropdown-menu arrow">
-                                            <li>
-                                                <a href="#" id="status-online" data-status="status-online">Online</a>
-                                            </li>
-
-                                            <li>
-                                                <a href="#" id="status-away" data-status="status-away">Away</a>
-                                            </li>
-
-                                            <li>
-                                                <a href="#" id="status-invisible" data-status="status-invisible">Invisible</a>
-                                            </li>
-                                        </ul>
+                                    <li class=" change-status">
+                                        <a class="my-status">Online</a>
                                     </li>
                                 </ul>
-
-
                             </div>
                         </div>
                     </li>
@@ -334,7 +230,6 @@
 <script type="text/javascript" src="/assets/backend/static/js/jquery.json.min.js"></script>
 <link rel="stylesheet" type="text/css" href="/assets/backend/static/css/icons.css" />
 <link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/insdep.easyui.min.css" title="metro" />
-<link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/insdep.theme_default.css" title="metro" />
 <script type="text/javascript" src="/assets/backend/static/js/easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="/assets/backend/static/js/easyui/insdep.extend.min.js"></script>
 <script type="text/javascript" src="/assets/backend/static/js/easyui/locale/easyui-lang-zh_CN.js"></script>
@@ -376,6 +271,58 @@
         width: 280px;
     }
 
+    #content .tabs-inner {
+        border: none;
+        border-radius: 0;
+        font-weight: normal;
+        background: white;
+    }
+    #content .tabs-inner:hover {
+        font-weight: bold;
+    }
+    #content .tabs li {
+        margin-right: 0px;
+    }
+    #content .tabs li.tabs-selected a.tabs-inner {
+        background: #e7e7e7;
+
+    }
+    #content .tabs li.tabs-selected a.tabs-inner:hover {
+        font-weight: normal;
+    }
+    #content .tabs {
+        padding-left: 0px;
+        border: none;
+        background: white;
+    }
+    #content .datagrid-header, #content .datagrid-td-rownumber{
+        background: #fff;
+    }
+    #content .datagrid-header td,#content .datagrid-body td,#content .datagrid-footer td {
+        border-width: 0 1px 1px 0;
+        border-style: solid;
+        border-color: #eee;
+        margin: 0;
+        padding: 0;
+        line-height: 1.428571429;
+    }
+    #content .datagrid-htable {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    #content .panel-title {
+        font-size: 12px;
+        font-weight: normal;
+        height: inherit;
+    }
+
+    #content .panel-header {
+        padding: 5px 15px;
+    }
+    #content .panel-header,#content .panel-body, #content .accordion {
+        border: none;
+    }
 </style>
 
 <script>

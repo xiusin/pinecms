@@ -95,14 +95,14 @@ func getCpus() []CpuPos {
 	return cpus
 }
 
-func (c *IndexController) Index1(icache cache.ICache) {
+func (c *IndexController) Index(icache cache.ICache) {
 	menus := c.GetMenus(icache)
 	c.Ctx().Render().ViewData("menus", menus)
 	c.Ctx().Render().ViewData("username", c.Session().Get("username"))
 	c.Ctx().Render().HTML("backend/index_index.html")
 }
 
-func (c *IndexController) Index() {
+func (c *IndexController) Index1() {
 	roleid := c.Ctx().Value("roleid")
 	if roleid == nil {
 		c.Ctx().Redirect("/b/login/index")

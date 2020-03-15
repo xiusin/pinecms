@@ -3,6 +3,7 @@ package backend
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/xiusin/pine/cache"
 	"image/png"
 	"io/ioutil"
 	"math/rand"
@@ -34,6 +35,7 @@ func (c *PublicController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY( "/attachments", "Attachments")
 	b.ANY( "/ueditor", "UEditor")
 	b.ANY( "/verify-code", "VerifyCode")
+	b.ANY( "/todos", "TODO")
 }
 
 func (c *PublicController) FeDirScan() {
@@ -219,4 +221,11 @@ func (c *PublicController) Attachments() {
 		"errmsg":  "读取成功",
 		"errcode": "0",
 	})
+}
+
+// TODO
+func (c *PublicController) TODO(icache cache.ICache) {
+	todos := c.Ctx().FormValue("todos")
+	icache.Set("backend_todos", []byte(todos))
+	c.Ctx().Render().JSON("success")
 }

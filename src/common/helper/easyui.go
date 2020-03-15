@@ -24,7 +24,6 @@ type EasyuiOptions map[string]string
      })
 */
 
-
 func Datagrid(id, url string, tableoptions EasyuiOptions, field EasyuiGridfields, other ...string) string {
 	dataOptions := map[string]interface{}{
 		"border":       "false",
@@ -85,8 +84,7 @@ func Datagrid(id, url string, tableoptions EasyuiOptions, field EasyuiGridfields
 		i++
 	}
 	th := strings.Join(ths, "\r\n")
-	str := `
-	<table id="` + id + `" class="easyui-datagrid" style="` + style + `"
+	str := `<table id="` + id + `" class="easyui-datagrid" style="` + style + `"
            data-options="
            url:'` + url + `',
            method:'get',
@@ -96,7 +94,6 @@ func Datagrid(id, url string, tableoptions EasyuiOptions, field EasyuiGridfields
            pageSize:` + dataOptions["pageSize"].(string) + `,
            rownumbers:` + dataOptions["rownumbers"].(string) + `,
            autoRowHeight:false,
- 		   striped: true,
 		   nowrap: true,
            emptyMsg: '<span>没有任何记录</span>',
            singleSelect:` + dataOptions["singleSelect"].(string) + `,
@@ -105,8 +102,7 @@ func Datagrid(id, url string, tableoptions EasyuiOptions, field EasyuiGridfields
         <thead>
         <tr>` + th + `</tr>
         </thead>
-    </table>
-	`
+    </table>`
 	return str
 }
 
