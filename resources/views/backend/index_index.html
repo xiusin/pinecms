@@ -108,7 +108,7 @@
                                     <li class="divider"></li>
 
                                     <li>
-                                        <a href="#"><i class="fa fa-power-off"></i> Logout</a>
+                                        <a href="javascript:logout();"><i class="fa fa-power-off"></i> Logout</a>
                                     </li>
                                 </ul>
                             </li>
@@ -132,28 +132,27 @@
                         </div>
                         <div class="user">
                             {{.username}}
-                            <span class="role">Administrator</span>
-                            <div class="status">
+                            <span class="role" style="margin-top:7px;">{{.rolename}}</span>
+                            <div class="status" style="margin-top: 0px;">
                                 <ul>
-                                    <li class=" change-status">
-                                        <a class="my-status">Online</a>
+                                    <li class="change-status">
+                                        <a class="my-status">在线</a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
                     </li>
                     {{range $i,$v := .menus}}
-                    <li class="dropdown {{if eq $i 0}}open{{end}}">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{{$v.name}}">
+                    <li class="dropdown {{if eq $i 0}}open{{end}}" >
+                        <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" title="{{$v.name}}">
                             <i class="fa fa-dashboard">
                                 <span class="overlay-label red"></span>
                             </i>
                             {{$v.name}} <b class="fa fa-angle-left dropdown-arrow"></b>
-{{/*                            <span class="badge badge-cyan">1</span>*/}}
                         </a>
                         <ul class="dropdown-menu">
                             {{range $i1, $v1 := $v.son}}
-                            <li class="active">
+                            <li  data-stopPropagation="true">
                                 <a onclick="openUrl('{{$v1.url}}', '{{$v1.text}}')">
                                     <i class="fa fa-eye"><span class="overlay-label red80"></span></i>
                                     {{$v1.text}}
@@ -163,7 +162,6 @@
                         </ul>
                     </li>
                     {{end}}
-
                 </ul>
                 <!-- Sidebar end -->
             </div>
@@ -327,110 +325,16 @@
 
 <script>
     wsConn = null;
-    $(function(){
-        $('.card.hover').hover(function(){
-            $(this).addClass('flip');
-        },function(){
-            $(this).removeClass('flip');
+
+    $(function() {
+        $("ul.dropdown-menu").on("click", "[data-stopPropagation]", function(e) {
+            e.stopPropagation();
         });
-
-        // Make card front & back side same
-
-        $('.card').each(function() {
-            var front = $('.card .front');
-            var back = $('.card .back');
-            var frontH = front.height();
-            var backH = back.height();
-
-
-
-            if (backH > frontH) {
-                front.height(backH - 8);
-            }
+        $("#navigation .dropdown-menu li").click(function(e) {
+            $("#navigation .dropdown-menu li").removeClass("active");
+            $(this).addClass("active");
         });
-
-        // Initialize tabDrop
-        $('.tabdrop').tabdrop({text: '<i class="fa fa-th-list"></i>'});
-
-        //generate pie charts
-        $('.easypiechart').easyPieChart();
-
-        //generate actual pie charts
-        $('.pie-chart').easyPieChart();
-
-        //animate numbers on cards
-        $("#users-count").animateNumbers(Math.round( Math.random() * 1000 ));
-        $("#orders-count").animateNumbers(Math.round( Math.random() * 100 ));
-        $("#sales-count").animateNumbers(Math.round( Math.random() * 10000 ));
-        $("#visits-count").animateNumbers(Math.round( Math.random() * 10000 ));
-
-        //animate numbers with class .animate-number with data-value attribute
-        $(".animate-number").each(function() {
-            var value = $(this).data('value');
-            var duration = $(this).data('animation-duration');
-
-            $(this).animateNumbers(value, true, duration, "linear");
-        });
-
-        //animate progress bars
-        $('.animate-progress-bar').each(function(){
-            var progress =  $(this).data('percentage');
-
-            $(this).css('width', progress);
-        })
-
-        //update instance every 5 sec
-        window.setInterval(function() {
-
-            //animate numbers on cards
-            $( '#users-count' ).animateNumbers( Math.round( Math.random() * 1000 ) );
-            $( '#orders-count' ).animateNumbers( Math.round( Math.random() * 100 ) );
-            $( '#sales-count' ).animateNumbers( Math.round( Math.random() * 10000 ) );
-            $( '#visits-count' ).animateNumbers( Math.round( Math.random() * 10000 ) );
-
-            //refresh every pie chart
-            $('.easypiechart').each(function() {
-                $(this).data('easyPieChart').update(Math.floor(100*Math.random()));
-            });
-
-        }, 5000);
-
-        //sparkline charts
-        $('#projectbar1').sparkline('html', {type: 'bar', barColor: '#22beef', barWidth: 4, height: 20});
-        $('#projectbar2').sparkline('html', {type: 'bar', barColor: '#cd97eb', barWidth: 4, height: 20});
-        $('#projectbar3').sparkline('html', {type: 'bar', barColor: '#a2d200', barWidth: 4, height: 20});
-        $('#projectbar4').sparkline('html', {type: 'bar', barColor: '#ffc100', barWidth: 4, height: 20});
-        $('#projectbar5').sparkline('html', {type: 'bar', barColor: '#ff4a43', barWidth: 4, height: 20});
-        $('#projectbar6').sparkline('html', {type: 'bar', barColor: '#a2d200', barWidth: 4, height: 20});
-
-        //todo's
-        $('#todolist li label').click(function() {
-            $(this).toggleClass('done');
-        });
-
-        //load wysiwyg editor
-        $('#quick-message-content').summernote({
-            height: 158   //set editable area's height
-        });
-
-        //multiselect input
-        $(".chosen-select").chosen({disable_search_threshold: 10});
-
-        // Morris donut chart
-        // Morris.Donut({
-        //     element: 'morris-donut-example',
-        //     data: [
-        //         {label: "Download Sales", value: 12},
-        //         {label: "In-Store Sales", value: 30},
-        //         {label: "Mail-Order Sales", value: 20}
-        //     ],
-        //     colors: ['#00a3d8', '#2fbbe8', '#72cae7']
-        // });
-
-    })
-
-</script>
-<script type="text/javascript">
+    });
 
     function fromUEImageUploader(that, mode) {
         event.preventDefault();
@@ -463,23 +367,6 @@
         });
     }
 
-    //移除左侧菜单
-    function removeLeft(stop) {
-        var pp = $("#leftmenu").accordion("panels");
-        $.each(pp, function (i, n) {
-            if (n) {
-                var t = n.panel("options").title;
-                $("#leftmenu").accordion("remove", t);
-            }
-        });
-        var pp = $('#leftmenu').accordion('getSelected');
-        if (pp) {
-            var t = pp.panel('options').title;
-            $('#leftmenu').accordion('remove', t);
-        }
-        if (!stop) removeLeft(true)//发现执行两次才能彻底移除
-    }
-
     //显示打开内容
     function openUrl(url, title, iframe) {
         if ($('#pagetabs').tabs('exists', title)) {
@@ -501,11 +388,6 @@
             $('#pagetabs').tabs('add', option);
         }
     }
-
-    //防止登录超时
-    setInterval(function () {
-        $.get('/b/index/sessionlife');
-    }, 200000);
 
     function ajaxLoading() {
         $("<div class=\"datagrid-mask\"></div>").css({

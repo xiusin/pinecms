@@ -13,24 +13,7 @@
     <div class="tile-body">
         <input type="text" placeholder="Type new todo..." id="type_todo" class="grey-bg w100p margin-vertical-15">
         <ul class="nolisttypes" id="todolist">
-            <li>
-                <div class="checkbox check-cyan">
-                    <input type="checkbox" value="1" id="todo-01">
-                    <label for="todo-01">Make a backup</label>
-                </div>
-            </li>
-            <li>
-                <div class="checkbox check-cyan">
-                    <input type="checkbox" checked="checked" value="1" id="todo-02">
-                    <label for="todo-02" class="done">Send e-mail to Ici</label>
-                </div>
-            </li>
-            <li>
-                <div class="checkbox check-cyan">
-                    <input type="checkbox" value="1" id="todo-03">
-                    <label for="todo-03">Buy tickets</label>
-                </div>
-            </li>
+            {{ .todos }}
         </ul>
     </div>
 
@@ -39,21 +22,17 @@
 <script>
     //todo's
     $("#type_todo").keyup(function (e) {
-        let idx = Math.ceil(Math.random() * 1000)
         if (e.keyCode === 13) {
-            $("#todolist").append(`<li>
-                <div class="checkbox check-cyan">
-                    <input type="checkbox" value="1" id="todo-`+idx+`">
-                    <label for="todo-`+idx+`">`+$(this).val()+`</label>
-                </div>
-            </li>`)
+            let idx = Math.ceil(Math.random() * 1000)
+            $("#todolist").append(`<li><div class="checkbox check-cyan"><input type="checkbox" value="1" id="todo-`+idx+`"><label for="todo-`+idx+`">`+$(this).val()+`</label></div></li>`)
             $(this).val('')
-            $.post("/b/public/todos",{todos: $("#todolist").html()}, function (data) {})
+            $.post("/public/todos",{todos: $("#todolist").html()})
         }
     })
 
     $('#todolist li label').click(function () {
         $(this).toggleClass('done');
+        $.post("/public/todos",{todos: $("#todolist").html()})
     });
 
 </script>

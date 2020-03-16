@@ -3,12 +3,12 @@ package backend
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"runtime"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/shirou/gopsutil/cpu"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 
@@ -39,9 +39,7 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/index/index1", "Index1")
 	b.ANY("/index/menu", "Menu")
 	b.ANY("/index/main", "Main")
-	b.ANY("/index/sessionlife", "Sessionlife")
 
-	// mem cpu collect
 	go func() {
 		// 每10秒采集一次服务器信息
 		for range time.Tick(10 * time.Second) {
@@ -52,16 +50,7 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 				mems := getMems()
 				mems = append(mems, MemPos{TimePos: time.Now().In(helper.GetLocation()).Format("15:04:05"), Percent: int(vm.UsedPercent)})
 				memsSaveData, _ := json.Marshal(mems)
-				pine.Make("cache.ICache").(cache.ICache).Set("memCollect", memsSaveData)
-			}
-			cpuInfos, err := cpu.Percent(0, false)
-			if err != nil {
-				pine.Logger().Error("读取服务器CPU信息错误:", err)
-			} else {
-				cpus := getCpus()
-				cpus = append(cpus, CpuPos{TimePos: time.Now().In(helper.GetLocation()).Format("15:04:05"), Value: cpuInfos})
-				memsSaveData, _ := json.Marshal(cpus)
-				pine.Make("cache.ICache").(cache.ICache).Set("cpuCollect", memsSaveData)
+				pine.Make("cache.ICache").(cache.ICache).Set(controllers.CacheMemCollect, memsSaveData)
 			}
 		}
 	}()
@@ -70,7 +59,7 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 func getMems() []MemPos {
 	var mems []MemPos
 	c := pine.Make("cache.ICache").(cache.ICache)
-	memCollect, _ := c.Get("memCollect")
+	memCollect, _ := c.Get(controllers.CacheMemCollect)
 	if memCollect == nil {
 		memCollect = []byte{}
 	}
@@ -81,25 +70,13 @@ func getMems() []MemPos {
 	return mems
 }
 
-func getCpus() []CpuPos {
-	var cpus []CpuPos
-	c := pine.Make("cache.ICache").(cache.ICache)
-	memCollect, _ := c.Get("cpuCollect")
-	if memCollect == nil {
-		memCollect = []byte{}
-	}
-	_ = json.Unmarshal(memCollect, &cpus)
-	if len(cpus) > 10 {
-		cpus = cpus[len(cpus)-10:]
-	}
-	return cpus
-}
 
 func (c *IndexController) Index(icache cache.ICache) {
 	menus := c.GetMenus(icache)
-	c.Ctx().Render().ViewData("menus", menus)
-	c.Ctx().Render().ViewData("username", c.Session().Get("username"))
-	c.Ctx().Render().HTML("backend/index_index.html")
+	c.ViewData("menus", menus)
+	c.ViewData("username", c.Session().Get("username"))
+	c.ViewData("rolename", c.Session().Get("role_name"))
+	c.View("backend/index_index.html")
 }
 
 func (c *IndexController) Index1() {
@@ -109,14 +86,14 @@ func (c *IndexController) Index1() {
 		return
 	}
 	menus := models.NewMenuModel().GetMenu(0, roleid.(int64)) //读取一级菜单
-	c.Ctx().Render().ViewData("menus", menus)
-	c.Ctx().Render().ViewData("username", c.Session().Get("username"))
-	c.Ctx().Render().HTML("backend/index_index1.html")
+	c.ViewData("menus", menus)
+	c.ViewData("username", c.Session().Get("username"))
+	c.View("backend/index_index1.html")
 }
 
 var us, _ = disk.Usage(helper.GetRootPath())
 
-func (c *IndexController) Main() {
+func (c *IndexController) Main(iCache cache.ICache) {
 
 	formatMem := func(mem uint64) string {
 		fm := map[int64]string{
@@ -138,19 +115,21 @@ func (c *IndexController) Main() {
 	//要转换的值，fmt方式，切割长度如果为-1则显示最大长度，64是float64
 	siteSize := formatMem(us.Total)
 
-	c.Ctx().Render().ViewData("SiteSize", siteSize)
-	c.Ctx().Render().ViewData("NumCPU", runtime.NumCPU())
-	c.Ctx().Render().ViewData("GoVersion", "Version "+strings.ToUpper(runtime.Version()))
-	c.Ctx().Render().ViewData("pineVersion", "Version "+pine.Version)
-	c.Ctx().Render().ViewData("Goos", strings.ToUpper(runtime.GOOS))
-	c.Ctx().Render().ViewData("Grountues", runtime.NumGoroutine())
+	c.ViewData("SiteSize", siteSize)
+	c.ViewData("NumCPU", runtime.NumCPU())
+	c.ViewData("GoVersion", "Version "+strings.ToUpper(runtime.Version()))
+	c.ViewData("pineVersion", "Version "+pine.Version)
+	c.ViewData("Goos", strings.ToUpper(runtime.GOOS))
+	c.ViewData("Grountues", runtime.NumGoroutine())
 
-	c.Ctx().Render().ViewData("Mem", "未获得内存情况")
+	c.ViewData("Mem", "未获得内存情况")
 
-	c.Ctx().Render().ViewData("cpus", getCpus())
-	c.Ctx().Render().ViewData("mems", getMems())
+	c.ViewData("mems", getMems())
 
-	c.Ctx().Render().HTML("backend/index_main.html")
+	todos ,_ := iCache.Get(controllers.CacheToDo)
+	c.ViewData("todos", template.HTML(string(todos)))
+	
+	c.View("backend/index_main.html")
 }
 
 func (c *IndexController) Menu(iCache cache.ICache) {
@@ -195,7 +174,7 @@ func (c *IndexController) Menu(iCache cache.ICache) {
 			pine.Logger().Errorf("save cache %s failed: %s", cacheKey, err.Error())
 		}
 	}
-	c.Ctx().Render().JSON(menujs)
+	c.Render().JSON(menujs)
 }
 
 func (c *IndexController) GetMenus(iCache cache.ICache) []map[string]interface{} {
@@ -238,8 +217,3 @@ func (c *IndexController) GetMenus(iCache cache.ICache) []map[string]interface{}
 	return menujs
 }
 
-
-//维持session不过期
-func (c *IndexController) Sessionlife() {
-
-}

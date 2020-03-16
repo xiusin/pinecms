@@ -5,4 +5,6 @@ const CacheAdminPriv = "admin_priv_%d"
 
 const CacheSetting = "setting"
 
+const CacheMemCollect  = "memCollect"
 
+const CacheToDo  = "pinecms.todos"

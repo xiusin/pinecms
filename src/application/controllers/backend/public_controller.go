@@ -223,9 +223,11 @@ func (c *PublicController) Attachments() {
 	})
 }
 
-// TODO
 func (c *PublicController) TODO(icache cache.ICache) {
 	todos := c.Ctx().FormValue("todos")
-	icache.Set("backend_todos", []byte(todos))
+	err := icache.Set(controllers.CacheToDo, []byte(todos))
+	if err != nil {
+		panic(err)
+	}
 	c.Ctx().Render().JSON("success")
 }
