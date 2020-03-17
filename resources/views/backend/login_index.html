@@ -1,135 +1,126 @@
 <!DOCTYPE html>
+<html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="renderer" content="webkit">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimal-ui, user-scalable=no">
-    <meta name="description" content=""/>
-    <meta name="author" content="dedemao"/>
-    <title>PINECMS 后台管理系统</title>
-    <script type="text/javascript" src="/assets/backend/static/js/easyui/jquery.min.js"></script>
-    <link href="/assets/backend/res/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="/assets/backend/res/css/bootstrapreset.css" rel="stylesheet"/>
-    <link href="/assets/backend/res/css/pxgridsicons.min.css" rel="stylesheet"/>
-    <link href="/assets/backend/res/css/style.css" rel="stylesheet"/>
-    <link href="/assets/backend/res/css/responsive.css" rel="stylesheet" media="screen"/>
-    <link href="/assets/backend/res/css/animation.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="/assets/backend/assets/css/supersized.css">
-    <script type="text/javascript" src="/assets/backend/static/js/easyui/jquery.easyui.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/insdep.easyui.min.css" title="metro"/>
-    <link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/insdep.theme_default.css"
-          title="metro"/>
+    <title>PINECMS 后台管理系统 - 登录</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
 
+    <link rel="icon" type="image/ico" href="/assets/bg/images/favicon.ico" />
+    <!-- Bootstrap -->
+    <link href="/assets/bg/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/bg/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/bg/css/animate.min.css">
+    <link rel="stylesheet" href="/assets/bg/css/bootstrap-checkbox.css">
+
+    <link href="/assets/bg/css/minoral.css" rel="stylesheet">
 
 </head>
-<body class="login-body">
-<div class="container fadeInDown">
-    <form class="form-signin" id="form_login" name="form1" method="post" action="/b/login/index"
-          onsubmit="return checkform();">
-        <div class="form-signin-heading center">
-            <a href="https://github.com/xiusin/pinecms" target="_blank" style="color:#FFFFFF">PINECMS 后台管理系统</a>
-        </div>
-        <div class="login-wrap">
-            <div class="loginlogo center" style="padding: 20px 0px;"><img src="/assets/pinecms.png" style="width: 100%;"></div>
-            <div class="form-group">
-                <div class="input-group" id="username_error">
-                    <div class="input-group-addon">
-                        <i class="icon-user"></i>
-                    </div>
-                    <input type="text" class="form-control" name="username" id="username" placeholder="用户名"
-                           autocomplete="off" autofocus>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="input-group" id="password_error">
-                    <div class="input-group-addon">
-                        <i class="icon-key5"></i>
-                    </div>
-                    <input type="password" class="form-control" name="password" id="password" placeholder="密码"
-                           autocomplete="off">
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="input-group" id="codeid_error">
-                    <div class="input-group-addon">
-                        <i class="icon-qrcode"></i>
-                    </div>
-                    <input type="text" id="codeid" name="code" class="form-control" placeholder="验证码"
-                           onfocus="changeCode()">
-                    <div class="input-group-addon" id="logincode">
-                        <img src="/assets/backend/res/images/logincode.png" style="height: 27px;" id="code_img"
-                             alt="点击刷新" onclick="changeCode()">
-                    </div>
-                </div>
-            </div>
-            <button type="submit" name="submit" class="btn btn-shadow btn-danger btn-block btn-login">登 录</button>
-        </div>
-        <div class="form-signin-bottom center">
-            技术支持：<a href="https://github.com/xiusin/pinecms" target="_blank" style="color: #fff;">Copyright © 2002-2020 XIUSIN 版权所有</a>
-        </div>
-    </form>
-</div>
-<script src="/assets/backend/res/js/bootstrap.min.js"></script>
-<script src="/assets/backend/res/js/focuse.js"></script>
-<script type="text/javascript">
-    function addclass_slide(id, errid, classname) {
-        $('#' + id).animate({
-            opacity: 'show'
-        }, 1000, function () {
-            $('#' + errid).addClass(classname);
-        });
+<body class="brownish-scheme">
 
-    }
+<!-- Preloader -->
+<div class="mask"><div id="loader"></div></div>
+<!--/Preloader -->
+
+<!-- Wrap all page content here -->
+<div id="wrap">
+
+
+
+
+    <!-- Make page fluid -->
+    <div class="row">
+
+
+
+
+
+
+        <!-- Page content -->
+        <div id="content" class="col-md-12 full-page login">
+
+
+            <div class="welcome">
+                <img src="images/logo-big.png" alt class="logo">
+                <h1><strong>Welcome</strong> PineCMS</h1>
+                <h5>最好的GO语言CMS框架</h5>
+
+                <form id="form-signin" class="form-signin">
+                    <section>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="username" id="username" placeholder="Username">
+                            <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+                            <div class="input-group-addon"><i class="fa fa-key"></i></div>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="codeid" name="code" class="form-control" placeholder="Captcha"  onfocus="changeCode()" >
+                            <div class="input-group-addon">
+                                <img src="/assets/backend/res/images/logincode.png" style="height: 20px;" id="code_img" alt="点击刷新" onclick="changeCode()">
+                            </div>
+                        </div>
+
+                    </section>
+
+                    <section class="new-acc">
+                        <button class="btn btn-greensea" onclick="return checkform();">Login to PineCMS</button>
+                    </section>
+                </form>
+            </div>
+
+
+        </div>
+        <!-- Page content end -->
+
+
+
+
+
+
+    </div>
+    <!-- Make page fluid-->
+
+
+
+
+</div>
+<!-- Wrap all page content end -->
+
+<script src="/assets/bg/js/jquery.js"></script>
+<script src="/assets/bg/js/bootstrap.min.js"></script>
+<script src="/assets/bg/js/plugins/jquery.nicescroll.min.js"></script>
+<script src="/assets/bg/js/plugins/blockui/jquery.blockUI.js"></script>
+<script src="/assets/bg/js/minoral.min.js"></script>
+
+<script>
+    $(function(){
+        $('.welcome').addClass('animated bounceIn');
+    })
 
     function checkform() {
-        $('#username_error').removeClass('validate-has-error');
-        $('#password_error').removeClass('validate-has-error');
-        $('#codeid_error').removeClass('validate-has-error');
         if ($('#username').val() == '') {
-            addclass_slide('username', 'username_error', 'validate-has-error');
             $('#username').focus();
             return false;
         }
         if ($('#password').val() == '') {
-            addclass_slide('password', 'password_error', 'validate-has-error');
             $('#password').focus();
             return false;
         }
-
-        $.post('/b/login/index', $("#form_login").serialize(), function (data) {
+        $.post('/b/login/index', $("#form-signin").serialize(), function (data) {
             if (data.errcode) {
-                $.messager.alert('提示信息', data.errmsg, 'error');
                 changeCode();
             } else {
-                $.messager.progress({text: '加载中，请稍候...'});
                 window.location.href = "/b/index/index";
             }
         }, 'json');
         return false;
-        // if($('#codeid').val()=='') {
-        //     addclass_slide('codeid','codeid_error','validate-has-error');
-        //     $('#codeid').focus();
-        //     return false;
-        // }
     }
 
-    var changeCode = function () {
+    function changeCode () {
         var that = document.getElementById('code_img');
         that.src = "/public/verify-code?" + Math.random();
     }
-
-
-    $(function () {
-        if (top.location.href != self.location.href) {
-            $('#form_login').attr('target', 'top');
-        }
-
-
-    });
 </script>
-<!-- Javascript -->
-<script src="/assets/backend/assets/js/supersized.3.2.7.min.js"></script>
-<script src="/assets/backend/assets/js/supersized-init.js"></script>
-
 </body>
 </html>

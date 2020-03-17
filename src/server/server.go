@@ -151,7 +151,7 @@ func runServe() {
 
 func diConfig() {
 	iCache = badger.New(badger.Option{TTL: int(conf.Session.Expires), Path: conf.CacheDb})
-	theme, _ := iCache.Get("pinecms_theme")
+	theme, _ := iCache.Get(controllers.CacheTheme)
 	if len(theme) == 0 {
 		theme = []byte("default")
 	}

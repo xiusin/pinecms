@@ -8,3 +8,5 @@ const CacheSetting = "setting"
 const CacheMemCollect  = "memCollect"
 
 const CacheToDo  = "pinecms.todos"
+
+const CacheTheme  = "pinecms.theme"

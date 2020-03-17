@@ -106,7 +106,7 @@ $(function(){
         if ($('body').hasClass('direction-rtl')) {
           $('#content').animate({paddingRight: "265px"},150)
         } else {
-          $('#content').animate({paddingLeft: "265px"},150)
+          $('#content').animate({paddingLeft: "225px"},150)
         }  
       }
     }
@@ -277,9 +277,9 @@ $(function(){
         };
       } else {
         if ($('#navigation').hasClass('collapsed')) {
-          $('#content').animate({left: "210px",paddingLeft: "265px"},150)
+          $('#content').animate({left: "210px",paddingLeft: "215px"},150)
         } else {
-          $('#content').animate({paddingLeft: "265px"},150)
+          $('#content').animate({paddingLeft: "225px"},150)
         };
       }    
     }  

@@ -2,6 +2,7 @@ package backend
 
 import (
 	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"html/template"
 	"io/ioutil"
 	"os"
@@ -104,7 +105,7 @@ func (c *AssetsManagerController) SetTheme(cache cache.ICache) {
 		helper.Ajax("模板主题不存在", 1, c.Ctx())
 		return
 	}
-	if cache.Set("pinecms_theme", []byte(name))	== nil {
+	if cache.Set(controllers.CacheTheme, []byte(name))	== nil {
 		conf.View.Theme = name
 		helper.Ajax("设置主题成功", 0, c.Ctx())
 	} else {

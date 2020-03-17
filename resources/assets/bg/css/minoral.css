@@ -1402,7 +1402,7 @@ html {
     min-height: 100%; }
   #wrap #content {
     padding-top: 60px;
-    padding-left: 265px;
+    padding-left: 225px;
     padding-right: 25px;
     height: 100%; }
     #wrap #content.full-width {
@@ -1938,7 +1938,7 @@ body .navbar {
   body .navbar.navbar-default {
     border: 0; }
   body .navbar .navbar-header {
-    width: 250px;
+    width: 210px;
     position: relative;
     z-index: 99; }
     body .navbar .navbar-header .navbar-brand {
@@ -2240,7 +2240,7 @@ body .navbar {
 /************* SIDEBAR *************/
 /***********************************/
 body .navbar .navbar-nav.side-nav {
-  width: 250px;
+  width: 210px;
   position: fixed;
   padding-top: 60px;
   top: 0;

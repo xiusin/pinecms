@@ -34,7 +34,6 @@ func (c *LoginController) Index(orm *xorm.Engine) {
 			helper.Ajax("验证码过期,无法验证", 1, c.Ctx())
 			return
 		}
-		pine.Logger().Debug("inputCode", code, "verifyCode", verify)
 		if strings.ToLower(code) != strings.ToLower(verify) {
 			helper.Ajax("验证码错误", 1, c.Ctx())
 			return

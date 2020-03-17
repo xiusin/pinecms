@@ -11,7 +11,7 @@
  Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 16/03/2020 22:08:23
+ Date: 17/03/2020 21:44:18
 */
 
 SET NAMES utf8mb4;
@@ -200,7 +200,7 @@ CREATE TABLE `pinecms_attachments` (
   `upload_time` datetime DEFAULT NULL,
   `type` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=utf8mb4 COMMENT='附件表';
+) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='附件表';
 
 -- ----------------------------
 -- Records of pinecms_attachments
@@ -419,19 +419,19 @@ CREATE TABLE `pinecms_content` (
 DROP TABLE IF EXISTS `pinecms_document_model`;
 CREATE TABLE `pinecms_document_model` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(128) DEFAULT NULL COMMENT '文档名称',
-  `table` varchar(128) DEFAULT NULL COMMENT '对应的表名',
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '文档名称',
+  `table` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '对应的表名',
   `enabled` tinyint(4) DEFAULT '0' COMMENT '是否启用',
   `model_type` tinyint(4) DEFAULT '0' COMMENT '模型类型: 扩展模型 和 独立模型',
-  `fe_tpl_index` varchar(128) DEFAULT NULL COMMENT '模型前端主页模板地址',
-  `fe_tpl_list` varchar(128) DEFAULT NULL COMMENT '模型前端列表模板地址',
-  `fe_tpl_detail` varchar(128) DEFAULT NULL COMMENT '模型前端详情模板地址',
+  `fe_tpl_index` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '模型前端主页模板地址',
+  `fe_tpl_list` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '模型前端列表模板地址',
+  `fe_tpl_detail` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '模型前端详情模板地址',
   `deleted_at` datetime DEFAULT NULL,
-  `field_show_in_list` text COMMENT '在后端列表页需要展示的字段以及字段应用的formatter函数.',
-  `formatters` text COMMENT '所有函数内容, 原样渲染到Html里',
+  `field_show_in_list` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '在后端列表页需要展示的字段以及字段应用的formatter函数.',
+  `formatters` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '所有函数内容, 原样渲染到Html里',
   `execed` tinyint(4) DEFAULT '0' COMMENT '是否已经执行过改动',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='文档模型用于存储自定义类型的文档内容';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='文档模型用于存储自定义类型的文档内容';
 
 -- ----------------------------
 -- Records of pinecms_document_model
@@ -447,18 +447,18 @@ DROP TABLE IF EXISTS `pinecms_document_model_dsl`;
 CREATE TABLE `pinecms_document_model_dsl` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `mid` int(11) NOT NULL DEFAULT '0' COMMENT '模型id',
-  `form_name` varchar(128) DEFAULT NULL COMMENT '字段在表单内的名称',
-  `table_field` varchar(128) DEFAULT NULL,
-  `html` text COMMENT '字段html',
+  `form_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字段在表单内的名称',
+  `table_field` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `html` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '字段html',
   `required` tinyint(4) DEFAULT '0' COMMENT '是否必填',
-  `datasource` varchar(128) DEFAULT NULL COMMENT '数据源, 可以让下拉选项等高级功能有数据读取的源头,具体设计可以是提供列表函数类的',
-  `required_tips` varchar(128) DEFAULT NULL COMMENT '必填(选)提醒',
-  `validator` varchar(128) DEFAULT NULL COMMENT '验证器名称或内容',
+  `datasource` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '数据源, 可以让下拉选项等高级功能有数据读取的源头,具体设计可以是提供列表函数类的',
+  `required_tips` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '必填(选)提醒',
+  `validator` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '验证器名称或内容',
   `deleted_at` datetime DEFAULT NULL,
   `field_type` int(11) NOT NULL DEFAULT '0',
-  `default` varchar(128) DEFAULT NULL,
+  `default` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='模型表单定义表';
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='模型表单定义表';
 
 -- ----------------------------
 -- Records of pinecms_document_model_dsl
@@ -481,12 +481,12 @@ COMMIT;
 DROP TABLE IF EXISTS `pinecms_document_model_field`;
 CREATE TABLE `pinecms_document_model_field` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(128) DEFAULT NULL COMMENT '字段名称',
-  `type` varchar(128) DEFAULT NULL COMMENT '字段对应的数据类型',
-  `desc` varchar(128) DEFAULT NULL COMMENT '字段描述',
-  `html` text,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字段名称',
+  `type` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字段对应的数据类型',
+  `desc` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字段描述',
+  `html` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='模型表单组件定义表';
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='模型表单组件定义表';
 
 -- ----------------------------
 -- Records of pinecms_document_model_field
@@ -613,8 +613,8 @@ INSERT INTO `pinecms_menu` VALUES (10, '站点设置', 9, 'setting', 'site', '',
 INSERT INTO `pinecms_menu` VALUES (11, '管理员设置', 1, 'admin', 'left', '', 0, 4, '1');
 INSERT INTO `pinecms_menu` VALUES (12, '管理员管理', 11, 'admin', 'memberlist', '', 0, 1, '1');
 INSERT INTO `pinecms_menu` VALUES (13, '角色管理', 11, 'admin', 'rolelist', '', 0, 2, '1');
-INSERT INTO `pinecms_menu` VALUES (14, '后台管理', 1, 'system', 'left', '', 0, 1, '1');
-INSERT INTO `pinecms_menu` VALUES (15, '日志管理', 14, 'system', 'loglist', '', 0, 1, '1');
+INSERT INTO `pinecms_menu` VALUES (14, '日志管理', 1, 'system', 'loglist', '', 0, 1, '1');
+INSERT INTO `pinecms_menu` VALUES (15, '操作日志', 14, 'system', 'loglist', '', 0, 1, '1');
 INSERT INTO `pinecms_menu` VALUES (16, '菜单管理', 9, 'system', 'menulist', '', 0, 2, '1');
 INSERT INTO `pinecms_menu` VALUES (17, '查看菜单', 16, 'system', 'menuview', '', 0, 0, '1');
 INSERT INTO `pinecms_menu` VALUES (18, '添加菜单', 16, 'system', 'menuadd', '', 0, 0, '1');
@@ -641,10 +641,10 @@ INSERT INTO `pinecms_menu` VALUES (38, '添加栏目', 36, 'category', 'add', ''
 INSERT INTO `pinecms_menu` VALUES (39, '编辑栏目', 36, 'category', 'edit', '', 0, 0, '1');
 INSERT INTO `pinecms_menu` VALUES (40, '删除栏目', 36, 'category', 'delete', '', 0, 0, '1');
 INSERT INTO `pinecms_menu` VALUES (41, '栏目排序', 36, 'category', 'order', '', 0, 0, '1');
-INSERT INTO `pinecms_menu` VALUES (55, '会员管理', 1, 'user', 'list', '', 0, 5, '1');
+INSERT INTO `pinecms_menu` VALUES (55, '会员管理', 1, 'user', 'list', '', 0, 5, '0');
 INSERT INTO `pinecms_menu` VALUES (56, '会员列表', 55, 'user', 'list', '', 0, 0, '1');
 INSERT INTO `pinecms_menu` VALUES (57, '会员信息', 56, 'user', 'info', '', 0, 0, '1');
-INSERT INTO `pinecms_menu` VALUES (58, '微信管理', 1, 'wechat', 'userlist', '', 0, 7, '1');
+INSERT INTO `pinecms_menu` VALUES (58, '微信管理', 1, 'wechat', 'userlist', '', 0, 7, '0');
 INSERT INTO `pinecms_menu` VALUES (59, '微信会员信息', 58, 'wechat', 'userinfo', '', 0, 0, '0');
 INSERT INTO `pinecms_menu` VALUES (60, '编辑会员', 55, 'user', 'edit', '', 0, 0, '0');
 INSERT INTO `pinecms_menu` VALUES (62, '模型管理', 9, 'model', 'list', '', 0, 1, '1');

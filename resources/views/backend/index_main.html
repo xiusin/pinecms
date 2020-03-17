@@ -22,7 +22,7 @@
 <script>
     //todo's
     $("#type_todo").keyup(function (e) {
-        if (e.keyCode === 13) {
+        if (e.keyCode === 13 && $(this).val()) {
             let idx = Math.ceil(Math.random() * 1000)
             $("#todolist").append(`<li><div class="checkbox check-cyan"><input type="checkbox" value="1" id="todo-`+idx+`"><label for="todo-`+idx+`">`+$(this).val()+`</label></div></li>`)
             $(this).val('')

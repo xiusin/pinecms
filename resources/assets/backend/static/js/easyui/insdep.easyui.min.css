@@ -1056,7 +1056,7 @@ i, cite, em, var, address, dfn {/*斜体*/
 .tabs-scroller-left,
 .tabs-scroller-right {
   position: absolute;
-  top: auto;
+  top: 4px;
   bottom: 0;
   width: 18px;
   font-size: 1px;
