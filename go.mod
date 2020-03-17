@@ -4,12 +4,14 @@ go 1.13
 
 require (
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
+	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/Workiva/go-datastructures v1.0.51
 	github.com/afocus/captcha v0.0.0-20191010092841-4bd1f21c8868
 	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0
 	github.com/aliyun/aliyun-oss-go-sdk v2.0.4+incompatible
 	github.com/fatih/color v1.9.0
 	github.com/fsnotify/fsnotify v1.4.7
+	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/go-xorm/xorm v0.7.9
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
@@ -35,7 +37,7 @@ require (
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.6.2
 	github.com/xiusin/debug v0.0.0-00010101000000-000000000000
-	github.com/xiusin/logger v0.0.0-00010101000000-000000000000
+	github.com/xiusin/logger v0.0.0-20200317110656-2975204f94e6
 	github.com/xiusin/pine v0.0.0-20200301045755-d3e2bba0b14b
 	github.com/yanyiwu/gojieba v1.1.1
 	golang.org/x/image v0.0.0-20191214001246-9130b4cfad52
@@ -45,7 +47,5 @@ require (
 )
 
 replace github.com/xiusin/pine => ../pine
-
-replace github.com/xiusin/logger => ../logger
 
 replace github.com/xiusin/debug => ../debug

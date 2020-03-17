@@ -3,10 +3,11 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/xiusin/pinecms/cmd/util"
 	"github.com/xiusin/logger"
+	"github.com/xiusin/pinecms/cmd/util"
 	"os"
 	"os/exec"
+	"os/signal"
 	"runtime"
 	"strings"
 	"sync/atomic"
@@ -29,6 +30,7 @@ var (
 	delay, limit      int32
 	watcher           *fsnotify.Watcher
 	counter           int32
+	currentCMD       *exec.Cmd
 )
 
 func init() {
@@ -46,6 +48,8 @@ func init() {
 }
 
 func devCommand(cmd *cobra.Command, args []string) error {
+	closeCh := make(chan os.Signal)
+	signal.Notify(closeCh, os.Interrupt, os.Kill)
 	if runtime.GOOS == "windows" {
 		buildName += ".exe"
 	}
@@ -62,26 +66,38 @@ func devCommand(cmd *cobra.Command, args []string) error {
 	}
 	go eventNotify()
 	go serve()
-	select {}
+	var exit = make(chan os.Signal)
+	select {
+	case <- closeCh:
+		logger.Print("关闭服务")
+		currentCMD.Process.Kill()
+		go func() {
+			time.Sleep(time.Millisecond)
+			exit <- os.Kill
+		}()
+	}
+	<- exit
+	return nil
 }
 
 func serve() {
 	var nextLoop = make(chan struct{})
 	for {
 		ctx, cancel := context.WithCancel(context.Background())
-		cmd := exec.CommandContext(ctx, fmt.Sprintf("./%s", buildName), "serve", "start", "--banner=false")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stdout
+		currentCMD = exec.CommandContext(ctx, fmt.Sprintf("./%s", buildName), "serve", "start", "--banner=false")
+		//currentCMD.Process.Signal(syscall.SIGINT)
+		currentCMD.Stdout = os.Stdout
+		currentCMD.Stderr = os.Stdout
 		go func() {
 			<-rebuildNotifier
 			cancel()
 			nextLoop <- struct{}{}
 		}()
-		if err := cmd.Start(); err != nil {
+		if err := currentCMD.Start(); err != nil {
 			logger.Error(err)
 		}
-		logger.Print("构建执行文件, 并且启动服务成功, 调整: 使用发送信号的方式重载")
-		if err := cmd.Wait(); err != nil && err.Error() != "signal: killed" {
+		logger.Print("构建执行文件, 并且启动服务成功")
+		if err := currentCMD.Wait(); err != nil && err.Error() != "signal: killed" {
 			logger.Error(err)
 		}
 		<-nextLoop

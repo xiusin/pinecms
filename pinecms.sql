@@ -200,7 +200,7 @@ CREATE TABLE `pinecms_attachments` (
   `upload_time` datetime DEFAULT NULL,
   `type` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='附件表';
+) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=utf8mb4 COMMENT='附件表';
 
 -- ----------------------------
 -- Records of pinecms_attachments
@@ -431,7 +431,7 @@ CREATE TABLE `pinecms_document_model` (
   `formatters` text COMMENT '所有函数内容, 原样渲染到Html里',
   `execed` tinyint(4) DEFAULT '0' COMMENT '是否已经执行过改动',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='文档模型用于存储自定义类型的文档内容';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='文档模型用于存储自定义类型的文档内容';
 
 -- ----------------------------
 -- Records of pinecms_document_model
@@ -458,7 +458,7 @@ CREATE TABLE `pinecms_document_model_dsl` (
   `field_type` int(11) NOT NULL DEFAULT '0',
   `default` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='模型表单定义表';
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='模型表单定义表';
 
 -- ----------------------------
 -- Records of pinecms_document_model_dsl
@@ -486,7 +486,7 @@ CREATE TABLE `pinecms_document_model_field` (
   `desc` varchar(128) DEFAULT NULL COMMENT '字段描述',
   `html` text,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='模型表单组件定义表';
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='模型表单组件定义表';
 
 -- ----------------------------
 -- Records of pinecms_document_model_field
