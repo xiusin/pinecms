@@ -15,9 +15,13 @@ func getInt(val reflect.Value) int {
 	} else if strings.Contains(str, "int") {
 		return int(val.Int())
 	}
-	panic("helper.go: 参数必须为整型: " + str + ":" + val.String())
+	pine.Logger().Error("helper.go: 参数必须为整型: " + str + ":" + val.String())
+	panic("getInt failed")
 }
 
-func getOrmSess() *xorm.Session {
-	return pine.Make("*xorm.Engine").(*xorm.Engine).Table(controllers.GetTableName("articles"))
+func getOrmSess(table ...string) *xorm.Session {
+	if len(table) == 0 {
+		table = []string{"articles"}
+	}
+	return pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(controllers.GetTableName(table[0]))
 }

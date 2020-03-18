@@ -14,7 +14,6 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/golog"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -263,7 +262,7 @@ func (c *DocumentController) ModelAdd() {
 		if data.Enabled == "on" {
 			enabled = 1
 		}
-		mt,_:= strconv.Atoi(data.ModelType)
+		mt, _ := strconv.Atoi(data.ModelType)
 		_, err = c.Ctx().Value("orm").(*xorm.Engine).Transaction(func(session *xorm.Session) (i interface{}, err error) {
 			dm := &tables.DocumentModel{
 				Name:        data.Name,
@@ -319,7 +318,7 @@ func (c *DocumentController) ModelAdd() {
 			return true, nil
 		})
 		if err != nil {
-			golog.Error("添加模型失败", err)
+			pine.Logger().Error("添加模型失败", err)
 			helper.Ajax("添加模型失败", 1, c.Ctx())
 			return
 		}
@@ -438,7 +437,7 @@ func (c *DocumentController) ModelEdit() {
 				if err == nil {
 					err = errors.New("批量添加模型字段失败")
 				}
-				golog.Error("修改模型", err)
+				pine.Logger().Error("修改模型", err)
 				return nil, err
 			}
 			return true, nil
@@ -469,7 +468,6 @@ func (c *DocumentController) ModelEdit() {
 	c.Ctx().Render().ViewData("list", list)
 	c.Ctx().Render().ViewData("title", currentPos)
 	listJson, _ := json.Marshal(list)
-	//golog.Error(string(listJson))
 
 	c.Ctx().Render().ViewData("listJson", string(listJson))
 	c.Ctx().Render().HTML("backend/model_edit.html")

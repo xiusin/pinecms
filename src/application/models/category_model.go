@@ -4,7 +4,7 @@ import (
 	"github.com/xiusin/pine/di"
 	"log"
 
-	tables "github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 
 	"github.com/go-xorm/xorm"
 )
@@ -183,7 +183,7 @@ func (c CategoryModel) IsSonCategory(id, parentid int64) bool {
 
 func (c CategoryModel) GetTable(id int64) string {
 	cat := tables.Category{}
-	exists ,_ := c.orm.ID(id).Get(&cat)
+	exists, _ := c.orm.ID(id).Get(&cat)
 	if exists {
 		modelinfo := NewDocumentModel().GetByID(cat.ModelId)
 		if modelinfo != nil {

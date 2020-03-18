@@ -2,22 +2,18 @@ package config
 
 import (
 	"fmt"
-	"io"
-	"net/http"
-	"os"
-	"path/filepath"
-	"strconv"
-
 	"github.com/natefinch/lumberjack"
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pinecms/src/application/controllers/taglibs"
+	"io"
+	"os"
+	"path/filepath"
 
 	"github.com/gorilla/securecookie"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/cache/providers/badger"
 	"github.com/xiusin/pine/di"
-	"github.com/xiusin/pine/middlewares/pprof"
 	"github.com/xiusin/pine/render/engine/jet"
 	"github.com/xiusin/pine/render/engine/template"
 	"github.com/xiusin/pine/sessions"
@@ -77,18 +73,11 @@ func initDatabase() {
 }
 
 func initApp() {
-	//实例化服务器
 	app = pine.New()
 	//app.Use(request_log.RequestRecorder())
 	//app.SetRecoverHandler(debug.Recover(app))
 	diConfig()
 	app.Use(middleware.CheckDatabaseBackupDownload())
-	//配置前端缓存10秒
-	if conf.Pprof.Open {
-		p := pprof.New()
-		app.GET(conf.Pprof.Route, p)
-		app.GET(fmt.Sprintf("%s/*action", conf.Pprof.Route), p)
-	}
 }
 
 func Server() {
@@ -130,15 +119,6 @@ func registerBackendRoutes() {
 }
 
 func runServe() {
-	if conf.Pprof.Open {
-		go func() {
-			pport := strconv.Itoa(int(conf.Pprof.Port))
-			err := http.ListenAndServe(":"+pport, nil)
-			if err != nil {
-				pine.Logger().Error("启动pprof失败", err)
-			}
-		}()
-	}
 	app.Run(
 		pine.Addr(fmt.Sprintf(":%d", conf.Port)),
 		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))),
@@ -156,11 +136,11 @@ func diConfig() {
 		theme = []byte("default")
 	}
 	conf.View.Theme = string(theme)
-	di.Set("cache.ICache", func(builder di.BuilderInf) (i interface{}, err error) {
+	di.Set(controllers.ServiceICache, func(builder di.BuilderInf) (i interface{}, err error) {
 		return iCache, nil
 	}, true)
 
-	di.Set("pinecms.config", func(builder di.BuilderInf) (i interface{}, e error) {
+	di.Set(controllers.ServiceConfig, func(builder di.BuilderInf) (i interface{}, e error) {
 		return conf, nil
 	}, true)
 
@@ -203,7 +183,7 @@ func diConfig() {
 
 	pine.RegisterViewEngine(jetEngine)
 
-	di.Set("pinecms.jet", func(builder di.BuilderInf) (i interface{}, err error) {
+	di.Set(controllers.ServiceJetEngine, func(builder di.BuilderInf) (i interface{}, err error) {
 		return jetEngine, nil
 	}, true)
 
@@ -211,7 +191,7 @@ func diConfig() {
 		return XOrmEngine, nil
 	}, true)
 
-	di.Set("pinecms.table_prefix", func(builder di.BuilderInf) (i interface{}, err error) {
+	di.Set(controllers.ServiceTablePrefix, func(builder di.BuilderInf) (i interface{}, err error) {
 		return dc.Db.DbPrefix, nil
 	}, true)
 

@@ -52,6 +52,6 @@ func GetInMap(data map[string]FieldShowInPageList, key string) FieldShowInPageLi
 }
 
 func GetTableName(name string) string {
-	tablePrefix := di.MustGet("pinecms.table_prefix").(string)
+	tablePrefix := di.MustGet(ServiceTablePrefix).(string)
 	return tablePrefix + name
 }

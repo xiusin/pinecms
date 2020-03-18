@@ -9,13 +9,12 @@ import (
 )
 
 type Config struct {
-	Favicon string  `yaml:"favicon"`
-	Port    int64   `yaml:"port"`
-	Pprof   Pprof   `yaml:"pprof"`
-	View    View    `yaml:"view"`
-	Session Session `yaml:"session"`
-	LogPath string  `yaml:"log_path"`
-	CacheDb string  `yaml:"cache_db"`
+	Favicon string     `yaml:"favicon"`
+	Port    int64      `yaml:"port"`
+	View    View       `yaml:"view"`
+	Session Session    `yaml:"session"`
+	LogPath string     `yaml:"log_path"`
+	CacheDb string     `yaml:"cache_db"`
 	Statics []struct { // 注册静态路由
 		Route string `yaml:"route"`
 		Path  string `yaml:"path"`
@@ -53,12 +52,6 @@ type Html struct {
 	Suffix string `yaml:"suffix"`
 }
 
-type Pprof struct {
-	Open  bool   `yaml:"open"`
-	Port  int64  `yaml:"port"`
-	Route string `yaml:"route"`
-}
-
 type View struct {
 	Reload    bool   `yaml:"reload"`
 	FeDirname string `yaml:"fedirname"`
@@ -70,6 +63,7 @@ const dbYml = "resources/configs/database.yml"
 const appYml = "resources/configs/application.yml"
 
 var config *Config
+
 func init() {
 	config = &Config{}
 	parseConfig(appYml, config)

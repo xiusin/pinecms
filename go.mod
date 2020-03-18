@@ -21,7 +21,6 @@ require (
 	github.com/hpcloud/tail v1.0.0
 	github.com/imroc/req v0.2.4
 	github.com/kataras/go-mailer v0.1.0
-	github.com/kataras/golog v0.0.10
 	github.com/kataras/iris/v12 v12.1.2
 	github.com/kataras/tablewriter v0.0.0-20180708051242-e063d29b7c23 // indirect
 	github.com/landoop/tableprinter v0.0.0-20180806200924-8bd8c2576d27

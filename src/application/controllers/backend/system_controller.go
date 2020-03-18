@@ -4,13 +4,15 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/gorilla/websocket"
 	"github.com/hpcloud/tail"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pinecms/src/config"
 	"html/template"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -213,9 +215,11 @@ func (c *SystemController) WsConnection() {
 		pine.Logger().Print("连接ws错误", err)
 		return
 	} else {
-		fileInfo,_ := os.Stat("./runtime/logs/pinecms.log")
+		conf := pine.Make("pinecms.config").(*config.Config)
+		logPath := filepath.Join(conf.LogPath, "pinecms.log")
+		fileInfo, _ := os.Stat(logPath)
 		size := fileInfo.Size()
-		ta, err := tail.TailFile("./runtime/logs/pinecms.log", tail.Config{
+		ta, err := tail.TailFile(logPath, tail.Config{
 			ReOpen:      true,
 			MustExist:   true,
 			Poll:        false,
@@ -226,7 +230,7 @@ func (c *SystemController) WsConnection() {
 			return
 		}
 		for text := range ta.Lines {
-			size -= int64(len(text.Text) + 1)	// 添加一个换行符字节
+			size -= int64(len(text.Text) + 1) // 添加一个换行符字节
 			if size <= 2048 {
 				if err = conn.WriteMessage(websocket.TextMessage, []byte(text.Text)); err != nil {
 					pine.Logger().Print("客户端断开连接", err)

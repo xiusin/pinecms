@@ -2,8 +2,8 @@ package models
 
 import (
 	"github.com/go-xorm/xorm"
-	tables "github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 )
 
 type WechatMemberModel struct {

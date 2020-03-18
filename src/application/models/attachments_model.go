@@ -2,9 +2,9 @@ package models
 
 import (
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/golog"
-	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 )
 
 const (
@@ -20,17 +20,17 @@ func NewAttachmentsModel() *AttachmentsModel {
 	return &AttachmentsModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
 }
 
-func (a *AttachmentsModel) GetList(keywords string,page, limit int64) (list []tables.Attachments, total int64) {
+func (a *AttachmentsModel) GetList(keywords string, page, limit int64) (list []tables.Attachments, total int64) {
 	offset := (page - 1) * limit
 	var err error
-	sess :=a.orm.Limit(int(limit), int(offset)).Desc("id")
+	sess := a.orm.Limit(int(limit), int(offset)).Desc("id")
 	if len(keywords) != 0 {
-		likePrtten := "%"+keywords+"%"
+		likePrtten := "%" + keywords + "%"
 		sess.Where("origin_name like ?", likePrtten).Or("name like ?", likePrtten)
 	}
 	total, err = sess.FindAndCount(&list)
 	if err != nil {
-		golog.Error(err)
+		pine.Logger().Error(err)
 	}
 	if list == nil {
 		list = []tables.Attachments{}

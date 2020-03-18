@@ -2,10 +2,9 @@ package models
 
 import (
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/golog"
-	"github.com/xiusin/pinecms/src/application/models/tables"
-	"github.com/xiusin/pinecms/src/common/helper"
+	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 )
 
 type LogModel struct {
@@ -22,16 +21,15 @@ func (l *LogModel) GetList(page, limit int64) ([]tables.Log, int64) {
 	var total int64
 	total, _ = l.orm.Count(&tables.Log{})
 	if err := l.orm.Desc("logid").Limit(int(limit), int(offset)).Find(&list); err != nil {
-		golog.Error(helper.GetCallerFuncName(), err)
+		pine.Logger().Error(err)
 	}
 	return list, total
 }
 
-
 func (l *LogModel) DeleteAll() bool {
 	res, err := l.orm.Where("1=1").Delete(&tables.Log{})
 	if err != nil {
-		golog.Error(helper.GetCallerFuncName(), err)
+		pine.Logger().Error(err)
 		return false
 	}
 	if res > 0 {
@@ -43,7 +41,7 @@ func (l *LogModel) DeleteAll() bool {
 func (l *LogModel) DeleteBeforeByDate(date string) bool {
 	res, err := l.orm.Where("`time` <= ? ", date).Delete(&tables.Log{})
 	if err != nil {
-		golog.Error(helper.GetCallerFuncName(), err)
+		pine.Logger().Error(err)
 		return false
 	}
 	if res > 0 {

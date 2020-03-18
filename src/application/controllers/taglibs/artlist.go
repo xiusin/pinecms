@@ -8,7 +8,6 @@ import (
 )
 
 func ArcList(args jet.Arguments) reflect.Value {
-	//typeid,offset,limit,orderby,modelid
 	catid := args.Get(0)
 	var ids []string
 	switch catid.Type().String() {
@@ -24,7 +23,7 @@ func ArcList(args jet.Arguments) reflect.Value {
 	offset := getInt(args.Get(1))
 	limit := getInt(args.Get(2))
 	sess := getOrmSess().Limit(limit, offset).Where("deleted_time IS NULL").Where("status = 1").OrderBy(orderBy)
-	if ids[0] != "0"  && ids[0] != "-1"{
+	if ids[0] != "0" && ids[0] != "-1" {
 		sess.In("catid", ids)
 	}
 	list, err := sess.QueryString()

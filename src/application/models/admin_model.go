@@ -6,14 +6,13 @@ import (
 	"log"
 
 	"github.com/go-xorm/xorm"
-	tables "github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 type AdminModel struct {
 	orm *xorm.Engine
 }
-
 
 func NewAdminModel() *AdminModel {
 	return &AdminModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
@@ -87,7 +86,7 @@ func (a *AdminModel) GetRoleList(where string, page, rows int) []tables.AdminRol
 }
 
 func (a *AdminModel) CheckRoleName(id int64, rolename string) bool {
-	exists, _ := a.orm.Where("roleid <> ?" , id).Where("rolename = ?", rolename).Exist()
+	exists, _ := a.orm.Where("roleid <> ?", id).Where("rolename = ?", rolename).Exist()
 	return exists
 }
 

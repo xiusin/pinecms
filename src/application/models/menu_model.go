@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/go-xorm/xorm"
-	tables "github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 )
 
 type MenuModel struct {
@@ -56,10 +56,10 @@ func (m MenuModel) CurrentPos(id int64, level ...int) string {
 			return ""
 		}
 		if menu.Parentid != 0 {
-			str += m.CurrentPos(menu.Parentid, level[0] + 1)
+			str += m.CurrentPos(menu.Parentid, level[0]+1)
 		}
 		if level[0] != 0 {
-			return `<li><a href=\'form-elements.html\'>`+menu.Name+`</a></li>`
+			return `<li><a href=\'form-elements.html\'>` + menu.Name + `</a></li>`
 		}
 		data = []byte(str)
 		cache.Set(cacheKey, data)
@@ -67,7 +67,7 @@ func (m MenuModel) CurrentPos(id int64, level ...int) string {
 
 	html := string(data)
 	if level[0] == 0 {
-		html = `<div class=\'breadcrumbs\'><ol class=\'breadcrumb\'><li><a href=\'index.html\'><i class=\'fa fa-home\'></i> 首页</a></li>`+html+`</ol></div>`
+		html = `<div class=\'breadcrumbs\'><ol class=\'breadcrumb\'><li><a href=\'index.html\'><i class=\'fa fa-home\'></i> 首页</a></li>` + html + `</ol></div>`
 	}
 	return html
 }

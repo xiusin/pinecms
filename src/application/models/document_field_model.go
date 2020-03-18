@@ -2,8 +2,8 @@ package models
 
 import (
 	"github.com/go-xorm/xorm"
-	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 )
 
 type DocumentModelFieldModel struct {
@@ -20,9 +20,9 @@ func (w *DocumentModelFieldModel) GetList(page, limit int64) (list []*tables.Doc
 	return list, total
 }
 
-func  (w *DocumentModelFieldModel) GetMap()  map[int64]*tables.DocumentModelField {
+func (w *DocumentModelFieldModel) GetMap() map[int64]*tables.DocumentModelField {
 	var list []*tables.DocumentModelField
-	var mapList= map[int64]*tables.DocumentModelField{}
+	var mapList = map[int64]*tables.DocumentModelField{}
 	_ = w.orm.Find(&list)
 	for _, v := range list {
 		mapList[v.Id] = v

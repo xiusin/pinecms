@@ -4,7 +4,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
-	tables "github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 )
 
 type PageModel struct {

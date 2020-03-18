@@ -2,9 +2,9 @@ package models
 
 import (
 	"github.com/go-xorm/xorm"
-	tables "github.com/xiusin/pinecms/src/application/models/tables"
-	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 type MemberModel struct {
@@ -28,11 +28,10 @@ func (m *MemberModel) GetInfo(id int64) *tables.Member {
 }
 
 func (m *MemberModel) Edit(id int64, members *tables.Member) bool {
-	res,err := m.orm.ID(id).MustCols("enabled").Update(members)
+	res, err := m.orm.ID(id).MustCols("enabled").Update(members)
 	if err != nil {
 		m.orm.Logger().Error(helper.GetCallerFuncName(), err)
 		return false
 	}
 	return res > 0
 }
-
