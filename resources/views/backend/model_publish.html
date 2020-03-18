@@ -14,7 +14,6 @@
         let MultiUploader = [];
         let tagger = [];
     </script>
-    <link rel="stylesheet" type="text/css" href="/assets/backend/mdou/css/publish.css"/>
 </head>
 <body>
 <div>
@@ -87,7 +86,7 @@
             return false;
         }
         var str = "<div class='imgbox'>\
-                  <input class='imgbox_inputBtn' type='image' onclick='return doUpload(this)' src='/assets/backend/mdou/images/uploadholder.png' alt='点击上传'/>\
+                  <input class='imgbox_inputBtn' type='image' onclick='return doUpload(this)' src='/assets/backend/static/img/nopic.png' alt='点击上传'/>\
                   <input type='hidden' name='" + field + "' />\
                   <span title=\"删除图片框\" style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer;    position: absolute;left: 92px;top: 10px;'  onclick='delImgBox(this)'>×</span>\
         </div>";
@@ -99,7 +98,7 @@
         $.messager.confirm('清空提醒', '要清空此图片吗？', function (r) {
             if (r) {
                 $(obj).prev().val("");
-                $(obj).prev().prev().attr('src', "/assets/backend/mdou/images/uploadholder.png");
+                $(obj).prev().prev().attr('src', "/assets/backend/static/nopic.jpg");
             }
         });
     }

@@ -26,7 +26,7 @@
                                 查看次数:{{item["visit_count"]}}
                             </span>
 
-                            <a href="/detail?aid={{item["id"]}}">查看详细+</a>
+                            <a href="{{detail_url(item["id"])}}">查看详细+</a>
                         </div>
 
                     </li>

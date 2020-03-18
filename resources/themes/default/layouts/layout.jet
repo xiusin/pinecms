@@ -82,7 +82,7 @@
                 <div>
                     <ul>
                     {{yield artlist(typeid=0) content}}
-                        <li><a href="/detail?aid={{field["id"]}}">{{field["title"]}}</a></li>
+                        <li><a href="{{detail_url(field["id"], field["catid"])}}">{{field["title"]}}</a></li>
                      {{end}}
                     </ul>
                 </div>
@@ -93,7 +93,7 @@
                 <div>
                     <ul>
                           {{yield artlist(orderby="visit_count desc", typeid=0) content}}
-                              <li><a href="/detail?aid={{field["id"]}}">{{field["title"]}}</a></li>
+                              <li><a href="{{detail_url(field["id"], field["catid"])}}">{{field["title"]}}</a></li>
                           {{end}}
                     </ul>
                 </div>

@@ -41,7 +41,7 @@ func (d *DocumentModel) GetTableName(id int64) string {
 	if len(tableName) == 0 {
 		var detail = &tables.DocumentModel{}
 		exists, _ := d.orm.ID(id).Get(detail)
-		if !exists || detail.Enabled == 0 {
+		if !exists {
 			return ""
 		}
 		tableName = []byte(detail.Table)

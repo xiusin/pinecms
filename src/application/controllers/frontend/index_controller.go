@@ -103,11 +103,12 @@ func (c *IndexController) Detail(icache cache.ICache) {
 	categoryCacheKey := fmt.Sprintf(controllers.CacheCategoryInfoPrefix, tid)
 	// 获取模型
 	data, _ := icache.Get(categoryCacheKey)
+
 	if len(data) > 0 {
-		err = json.Unmarshal(data, &category)
+		json.Unmarshal(data, &category)
 	}
 	catmodel := models.NewCategoryModel()
-	if err != nil {
+	if category.Catid == 0 {
 		category, err = catmodel.GetCategory(tid)
 		if err != nil || category.ModelId == 0 {
 			c.Ctx().Abort(http.StatusNotFound)
@@ -119,6 +120,7 @@ func (c *IndexController) Detail(icache cache.ICache) {
 	tableName := models.NewDocumentModel().GetTableName(category.ModelId)
 	rest, err := getOrmSess(tableName).Where("id = ?", aid).Where("catid = ?", tid).Where("status = 1").Where("deleted_time IS NULL").Limit(1).QueryString()
 	if err != nil {
+		pine.Logger().Errorf("查找tableName:%s错误: %s",tableName, err)
 		c.Ctx().Abort(http.StatusNotFound)
 		return
 	}
@@ -215,9 +217,9 @@ func (c *IndexController) GetClick() {
 
 func getOrmSess(tableName ...string) *xorm.Session {
 	if len(tableName) == 0 {
-		tableName = append(tableName, controllers.GetTableName("articles"))
+		tableName = append(tableName, "articles")
 	}
-	return pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(tableName[0])
+	return pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(controllers.GetTableName(tableName[0]))
 }
 
 func template(tpl string) string {

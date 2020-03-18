@@ -1482,12 +1482,12 @@ body #content {
     color: #717171;
     outline: 0;
     height: 16px;
-    padding: 6px 11px !important;
+    padding: 5px 5px !important;
     line-height: 18px;
     font-size: 13px;
     vertical-align: top;
     background-color: #fafafa;
-    min-height: 37px;
+    min-height: 25px;
     filter: none !important;
     -webkit-box-shadow: none !important;
     -moz-box-shadow: none !important;

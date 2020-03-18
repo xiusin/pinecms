@@ -34,15 +34,14 @@ func SetGlobalConfigData(xorm *xorm.Engine, iCache cache.ICache) pine.Handler {
 			if len(query) == 1 {
 				query = ""
 			}
-			return "//:" + host + "/" + path + query
+			return "//" + host + "/" + path + query
 		})
 
-		ctx.Render().ViewData("detail_url", func(aid int64, tid ...int64) string {
+		ctx.Render().ViewData("detail_url", func(aid string, tid ...string) string {
 			if len(tid) == 0 {
-				t,_ := ctx.GetInt64("tid")
-				tid = []int64{t}
+				tid = []string{ctx.GetString("tid")}
 			}
-			return fmt.Sprintf("//:%s/detail?aid=%d&tid=%d", host, aid, tid[0])
+			return fmt.Sprintf("//%s/detail?aid=%s&tid=%s", host, aid, tid[0])
 		})
 		ctx.Next()
 	}

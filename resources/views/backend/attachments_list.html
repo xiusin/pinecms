@@ -1,6 +1,5 @@
 <link rel="stylesheet" type="text/css" href="/assets/viewer/viewer.css">
 <script type="text/javascript" src="/assets/viewer/viewer.js"></script>
-<script type="text/javascript" src="/assets/viewer/jquery-viewer.js"></script>
 
 {{ .dataGrid }}
 <img id="attachment_preview_img" src="" />
@@ -64,12 +63,18 @@
     function attachmentListPreview(url) {
         var $preview = $('#attachment_preview_img');
         $preview.attr("src", url);
-        $preview.viewer({
+        new Viewer(document.getElementById("attachment_preview_img"),{
             inline: true,
             toolbar: false,
-            button: false,
-            fullscreen: false
-        });
+            button: true,
+            fullscreen: true,
+        })
+        // $preview.viewer({
+        //     inline: true,
+        //     toolbar: false,
+        //     button: false,
+        //     fullscreen: false
+        // });
 
     }
 

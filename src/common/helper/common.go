@@ -229,7 +229,7 @@ if (!flag) { $('#` + rid + `_tip').html("` + RequiredTips + `"); return false; }
 	if len(data) > 0 {
 		for _, v := range data {
 			box += `<div class="imgbox">
-					<input class="imgbox_inputBtn" type="image" onclick="return fromUEImageUploader(this)" src="` + v + `" alt="点击上传" onerror='this.src="/assets/backend/mdou/images/uploadholder.png"' />
+					<input class="imgbox_inputBtn" type="image" onclick="return fromUEImageUploader(this)" src="` + v + `" alt="点击上传" onerror='this.src="/assets/backend/static/nopic.jpg"' />
 					<input type="hidden" value="` + v + `" name="` + field + `" />
 					<span style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer;    position: absolute;left: 92px;top: 10px;'   onclick=''>×</span>
 				</div>`
@@ -238,7 +238,7 @@ if (!flag) { $('#` + rid + `_tip').html("` + RequiredTips + `"); return false; }
 
 	str := box + `
 		<div class="imgbox" onclick="return createHtml(this,'` + field + `', ` + strconv.Itoa(maxImgNum) + `)" style="width: 95px; margin: 8px; ">
-			<img style="height: 38px;display: block;border: 1px dashed #888;padding: 30px;" src="/assets/backend/mdou/images/jiahao.png" />
+			<img style="height: 38px;display: block;border: 1px dashed #888;padding: 30px;" src="/assets/backend/static/plus.png" />
 		</div>`
 	return str + `<div id='` + rid + `_tip' class='errtips'></div>` + requiredFunc
 }
@@ -253,7 +253,7 @@ func SiginUpload(field, data string, required bool, formName, defaultVal, Requir
 	if required {
 		requiredFunc = `<script>siginUploader.push(function(){ if ($('#` + rid + `').val() == '') {$('#` + rid + `_tip').html("` + RequiredTips + `"); return false; } $('#` + rid + `_tip').html(''); return true; });</script>`
 	}
-	html := `<input onclick="fromUEImageUploader(this)" class="image_upload_src" type="image" src="` + data + `" onerror='this.src="/assets/backend/mdou/images/uploadholder.png"' alt="点击上传" style="width:100px;height:100px;display:block;border:1px solid #ddd;padding:2px;float:left;" />
+	html := `<input onclick="fromUEImageUploader(this)" class="image_upload_src" type="image" src="` + data + `" onerror='this.src="/assets/backend/static/nopic.jpg"' alt="点击上传" style="width:100px;height:100px;display:block;border:1px solid #ddd;padding:2px;float:left;" />
 			 <input id='` + rid + `' type="hidden" class="image_upload_val" value="` + data + `" name="` + field + `" />
 			 <span title="清空图片内容" class='delImg'  onclick="DelImg(this)">×</span>
 <div id='` + rid + `_tip' class='errtips'></div>` + requiredFunc
