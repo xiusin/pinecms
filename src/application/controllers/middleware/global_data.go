@@ -36,6 +36,14 @@ func SetGlobalConfigData(xorm *xorm.Engine, iCache cache.ICache) pine.Handler {
 			}
 			return "//:" + host + "/" + path + query
 		})
+
+		ctx.Render().ViewData("detail_url", func(aid int64, tid ...int64) string {
+			if len(tid) == 0 {
+				t,_ := ctx.GetInt64("tid")
+				tid = []int64{t}
+			}
+			return fmt.Sprintf("//:%s/detail?aid=%d&tid=%d", host, aid, tid[0])
+		})
 		ctx.Next()
 	}
 

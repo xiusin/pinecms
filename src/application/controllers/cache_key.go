@@ -14,3 +14,7 @@ const CacheTheme  = "pinecms.theme"
 
 // pinecms.document_model.mid  => tableName
 const CacheDocumentModelPrefix  = "pinecms.document_model.%d"
+
+const CacheCategoryPosPrefix  = "pinecms.category.pos.%d"
+
+const CacheCategoryInfoPrefix  = "pinecms.category.%d"
