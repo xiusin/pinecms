@@ -50,8 +50,7 @@ func initDatabase() {
 	_orm.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, dc.Db.DbPrefix))
 	_orm.SetLogger(ormlogger.NewIrisCmsXormLogger(helper.NewOrmLogFile(conf.LogPath), core.LOG_INFO))
 
-	err = _orm.Ping() //检测是否联通数据库
-	if err != nil {
+	if err = _orm.Ping(); err != nil {
 		panic(err.Error())
 	}
 
@@ -74,8 +73,6 @@ func initDatabase() {
 
 func initApp() {
 	app = pine.New()
-	//app.Use(request_log.RequestRecorder())
-	//app.SetRecoverHandler(debug.Recover(app))
 	diConfig()
 	app.Use(middleware.CheckDatabaseBackupDownload())
 }

@@ -32,6 +32,8 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *IndexController) Index() {
+	// todo 渲染到静态文件html ,path 调整为静态地址
+	// todo writer 为文件对象处理
 	c.Ctx().Render().HTML(template("index.jet"))
 }
 

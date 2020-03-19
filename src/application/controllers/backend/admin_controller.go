@@ -4,6 +4,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"html/template"
 	"strconv"
 	"strings"
@@ -53,7 +54,7 @@ func (c *AdminController) PublicEditInfo() {
 		info := tables.Admin{
 			Userid: aid,
 		}
-		has, _ := c.Ctx().Value("orm").(*xorm.Engine).Get(&info) //读取用户资料
+		has, _ := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Get(&info) //读取用户资料
 		if !has {
 			helper.Ajax("用户资料已经不存在", 1, c.Ctx())
 		} else {
@@ -148,7 +149,7 @@ func (c *AdminController) PublicEditpwd() {
 	aid, _ := c.Ctx().Value("adminid").(int64)
 	menuid, _ := c.Ctx().GetInt64("menuid")
 	info := tables.Admin{Userid: int64(aid)}
-	has, _ := c.Ctx().Value("orm").(*xorm.Engine).Get(&info)
+	has, _ := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Get(&info)
 	if !has {
 		c.Ctx().Writer().Write([]byte("没有找到"))
 		return
@@ -159,7 +160,7 @@ func (c *AdminController) PublicEditpwd() {
 			return
 		}
 		info.Password = helper.Password(c.Ctx().PostValue("new_password"), info.Encrypt)
-		res, _ := c.Ctx().Value("orm").(*xorm.Engine).Id(aid).Update(info)
+		res, _ := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Id(aid).Update(info)
 		if res > 0 {
 			helper.Ajax("修改资料成功", 0, c.Ctx())
 		} else {
@@ -174,7 +175,7 @@ func (c *AdminController) PublicEditpwd() {
 
 func (c *AdminController) PublicCheckEmail() {
 	info := &tables.Admin{Username: c.Ctx().FormValue("name")}
-	has, _ := c.Ctx().Value("orm").(*xorm.Engine).Get(info)
+	has, _ := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Get(info)
 	if !has {
 		helper.Ajax("没有相同的用户名", 0, c.Ctx())
 	} else {

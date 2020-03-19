@@ -3,7 +3,7 @@
 /*****************************************
 @import url(http://fonts.googleapis.com/css?family=Roboto:400,100,900italic,700italic,900,700,500italic,500,400italic,300italic,300,100italic&subset=latin,latin-ext);
 @import url(http://fonts.googleapis.com/css?family=Open+Sans+Condensed:700&subset=latin,latin-ext);/
-
+i
 body {
   /************************************/
   /************* BROWNISH *************/
@@ -1482,12 +1482,12 @@ body #content {
     color: #717171;
     outline: 0;
     height: 16px;
-    padding: 5px 5px !important;
+    padding: 6px 11px !important;
     line-height: 18px;
     font-size: 13px;
     vertical-align: top;
     background-color: #fafafa;
-    min-height: 25px;
+    min-height: 37px;
     filter: none !important;
     -webkit-box-shadow: none !important;
     -moz-box-shadow: none !important;

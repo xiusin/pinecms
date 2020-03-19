@@ -26,10 +26,11 @@
                                 <img src="">
                             </a>
                                 <ul>
+                                   {{ curCatid := field.Catid }}
                                    {{yield artlist(typeid=field.Catid) content}}
                                      <li>
                                      <i></i>
-                                     <a href="/detail?aid={{field["id"]}}" imgsrc="/assets/frontend/img/notimg.gif">{{field["title"]}}</a>
+                                     <a href="{{detail_url(field["id"], field["catid"])}}" imgsrc="/assets/frontend/img/notimg.gif">{{field["title"]}}</a>
                                      <p>{{field["description"] ? field["description"] : "没有描述内容"}}</p>
                                      </li>
                                    {{end}}
@@ -66,76 +67,12 @@
                                                <i class="see_count"></i>
                                                查看次数:{{field["visit_count"]}}
                                            </span>
-                                           <a href="/detail?aid={{field["id"]}}">查看详细+</a>
+                                           <a href="{{detail_url(field["id"], field["catid"])}}">查看详细+</a>
                                            </div>
 
                                        </li>
                     {{end}}
                 </ul>
             </div>
-
-            <div>
-                <input type="button"  class="more" id="loadmore" value="点击加载更多">
-            </div>
-
         </div>
-<script>
-
-        $(function(){
-
-
-            var i = 2; //设置当前页数
-
-            $('#loadmore').click(function(){
-                alert("无法加载");
-                return
-                $.ajax({
-
-                    url : 'http://localhost/e/action/getmore.php', // 这是当前服务器的地址
-
-                    type:'POST',
-
-                    data:{"next":i,'table':'news','classid':'9','action':'getmorenews','limit':6,'small_length':120},
-
-                    dataType : 'html',
-
-                    beforeSend:function(){
-
-                        $("#loadmore").attr('value','正在努力加载中...');
-
-                        $('#loadmore').attr('disabled','disabled');
-
-                    },
-
-                    success : function(data){
-
-                        if(data.length>10){
-
-                            $("#showajaxnews").append(data);
-
-                            $("#loadmore").removeAttr('disabled');
-
-                            $("#loadmore").attr('value','点击加载更多!');
-
-                            i++;
-
-                        }else{
-
-                            $("#loadmore").show().html("已全部加载完毕！");
-
-                            $('#loadmore').attr('disabled','disabled');
-
-                            return false;
-
-                        }
-
-                    }
-
-                });
-
-            });
-
-        });
-
-    </script>
 {{end}}

@@ -90,6 +90,8 @@ func serve() {
 		currentCMD.Stderr = os.Stdout
 		go func() {
 			<-rebuildNotifier
+			currentCMD.Process.Kill()
+			time.Sleep(time.Second)
 			cancel()
 			nextLoop <- struct{}{}
 		}()
