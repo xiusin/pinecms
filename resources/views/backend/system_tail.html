@@ -6,7 +6,8 @@
         overflow: auto;
         background: #f5f5f5;
     }
-    #tail-log > pre{
+
+    #tail-log > pre {
         font-size: 12px;
         display: block;
         line-height: 1.428571429;
@@ -18,13 +19,23 @@
         padding: 0;
     }
 </style>
-
+<div class="panel-header panel-header-noborder">
+    <div class="panel-title">
+        <div class="breadcrumbs">
+            <ol class="breadcrumb">
+                <li><a href="javascript:;"><i class="fa fa-home"></i> 首页</a></li>
+                <li><a href="javascript:;">广告管理</a></li>
+            </ol>
+        </div>
+    </div>
+    <div class="panel-tool"></div>
+</div>
 <div id="tail-log" CONTENTEDITABLE="true"></div>
 
 
 <script>
     if (!wsConn) {
-       openWs()
+        openWs()
     }
     var timeIntervaler = null
     wsConn.onclose = function (evt) {
@@ -34,18 +45,17 @@
         }, 3000)
     };
     wsConn.onmessage = function (evt) {
-        $("#tail-log").append("<pre>"+evt.data+"</pre>")
+        $("#tail-log").append("<pre>" + evt.data + "</pre>")
         console.log(evt.data)
         try {
             document.getElementById("tail-log").scrollTop = document.getElementById("tail-log").scrollHeight;
-        } catch (e) {}
+        } catch (e) {
+        }
     };
 
     function openWs() {
-        $("#tail-log").html("<pre>正在连接服务器</pre>")
         wsConn = new WebSocket("ws://" + document.location.host + "/b/system/ws-connection");
         if (wsConn) {
-            $("#tail-log").html("<pre>连接服务器成功</pre>")
             clearInterval(timeIntervaler)
         } else {
             $("#tail-log").append("<pre>连接失败, 稍后重试</pre>")

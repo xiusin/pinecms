@@ -85,23 +85,6 @@
                                             <li><a href="#" class="amethyst-scheme" title="Amethyst"></a></li>
                                         </ul>
                                     </li>
-
-                                    <li class="divider"></li>
-
-                                    <li>
-                                        <a href="#"><i class="fa fa-user"></i> Profile</a>
-                                    </li>
-
-                                    <li>
-                                        <a href="#"><i class="fa fa-calendar"></i> Calendar</a>
-                                    </li>
-
-                                    <li>
-                                        <a href="#"><i class="fa fa-envelope"></i> Inbox <span class="badge badge-red" id="user-inbox">3</span></a>
-                                    </li>
-
-                                    <li class="divider"></li>
-
                                     <li>
                                         <a href="javascript:logout();"><i class="fa fa-power-off"></i> Logout</a>
                                     </li>
@@ -308,6 +291,11 @@
     }
     #content .panel-header,#content .panel-body, #content .accordion {
         border: none;
+    }
+
+    body #content textarea, body #content input[type="text"], body #content input[type="password"] {
+        padding: 7px !important;
+        min-height: 25px;
     }
 </style>
 
