@@ -5,6 +5,7 @@ import (
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"strconv"
 	"strings"
 
@@ -44,10 +45,9 @@ func (m MenuModel) CurrentPos(id int64, level ...int) string {
 	if len(level) == 0 {
 		level = append(level, 0)
 	}
-	cache := pine.Make("cache.ICache").(cache.ICache)
+	cache := pine.Make(controllers.ServiceICache).(cache.ICache)
 	cacheKey := fmt.Sprintf("backend:current_pos_%d", id)
 	data, _ := cache.Get(cacheKey)
-	data = nil
 	if data == nil {
 		menu := tables.Menu{Id: id}
 		has, _ := m.orm.Get(&menu)

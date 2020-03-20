@@ -66,17 +66,7 @@ func devCommand(cmd *cobra.Command, args []string) error {
 	}
 	go eventNotify()
 	go serve()
-	var exit = make(chan os.Signal)
-	select {
-	case <- closeCh:
-		logger.Print("关闭服务")
-		currentCMD.Process.Kill()
-		go func() {
-			time.Sleep(time.Millisecond)
-			exit <- os.Kill
-		}()
-	}
-	<- exit
+	<- closeCh
 	return nil
 }
 
@@ -85,20 +75,17 @@ func serve() {
 	for {
 		ctx, cancel := context.WithCancel(context.Background())
 		currentCMD = exec.CommandContext(ctx, fmt.Sprintf("./%s", buildName), "serve", "start", "--banner=false")
-		//currentCMD.Process.Signal(syscall.SIGINT)
 		currentCMD.Stdout = os.Stdout
 		currentCMD.Stderr = os.Stdout
 		go func() {
 			<-rebuildNotifier
-			currentCMD.Process.Kill()
-			time.Sleep(time.Second)
 			cancel()
 			nextLoop <- struct{}{}
 		}()
 		if err := currentCMD.Start(); err != nil {
 			logger.Error(err)
 		}
-		logger.Print("构建执行文件, 并且启动服务成功")
+		logger.Print("构建并启动服务成功")
 		if err := currentCMD.Wait(); err != nil && err.Error() != "signal: killed" {
 			logger.Error(err)
 		}
@@ -144,7 +131,7 @@ func registerFileToWatcher() error {
 		} else {
 			if !file.IsDir {
 				atomic.AddInt32(&counter, 1)
-				logger.Print(strings.Replace(file.Path, util.AppPath(), "", 1))
+				//logger.Print(strings.Replace(file.Path, util.AppPath(), "", 1))
 			}
 		}
 	}

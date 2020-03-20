@@ -39,6 +39,7 @@ require (
 	github.com/xiusin/logger v0.0.0-20200317110656-2975204f94e6
 	github.com/xiusin/pine v0.0.0-20200301045755-d3e2bba0b14b
 	github.com/yanyiwu/gojieba v1.1.1
+	go.etcd.io/bbolt v1.3.3
 	golang.org/x/image v0.0.0-20191214001246-9130b4cfad52
 	gopkg.in/yaml.v2 v2.2.7
 	xorm.io/builder v0.3.6

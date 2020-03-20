@@ -27,20 +27,6 @@
             </tr>
 
             <tr>
-                <td>模型类型：</td>
-                <td colspan="2">
-                    <div style="display: inline-block; margin-right: 5px;">
-                        <input class="easyui-radiobox" name="type" value="0" {{ if eq .document.ModelType 0 }}checked{{end}}
-                               label="独立模型">
-                    </div>
-                    <div style="display: inline-block; margin-right: 5px;">
-                        <input class="easyui-radiobox" name="type" value="1" {{ if eq .document.ModelType 1 }}checked{{end}}
-                               label="系统模型">
-                    </div>
-                </td>
-            </tr>
-
-            <tr>
                 <td>模型定义：</td>
                 <td colspan="2" id="mode-definition">
                     <div id="tab-tools">
@@ -49,7 +35,7 @@
                            onclick="addPanel()"></a>
                     </div>
 
-                    <div id="tt" class="easyui-tabs" style="width:750px;height:576px;">
+                    <div id="tt" class="easyui-tabs" style="width:750px;height:683px;">
                         {{range $i, $field := .fields}}
                             <div title="{{$field.FormName}}" data-options="closable:true">
                                 <table cellpadding="5" style="width: 100%;">
@@ -66,6 +52,13 @@
                                                    style="width: 300px"
                                                    data-options="required:true" value="{{$field.TableField}}"/></td>
                                     </tr>
+
+                                    <tr>
+                                        <td style="width: 150px;">字段排序:</td>
+                                        <td><input class="easyui-numberbox" type="text" name="field_sort"
+                                                   style="width: 300px" data-options="required: true" value="{{$field.ListOrder}}"/></td>
+                                    </tr>
+
                                     <tr>
                                         <td>是否必填:</td>
                                         <td>
@@ -201,6 +194,13 @@
                 <td><input class="easyui-textbox" type="text" name="field_field" style="width: 300px"
                            data-options="required:true"/></td>
             </tr>
+
+            <tr>
+                <td style="width: 150px;">字段排序:</td>
+                <td><input class="easyui-numberbox" type="text" name="field_sort"
+                           style="width: 300px" data-options="required: true" value="1"/></td>
+            </tr>
+
             <tr>
                 <td>是否必填:</td>
                 <td>
@@ -368,7 +368,8 @@
                             $.messager.alert('提示信息', data.errmsg, 'error');
                         } else {
                             $.messager.alert('提示信息', data.errmsg, 'info', function () {
-                                $("#model_form_cancel").click();
+                                $('#pagetabs').tabs('close', "修改模型");
+                                $('#model_list_datagrid').datagrid("reload");
                             })
                         }
                     }

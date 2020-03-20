@@ -73,7 +73,6 @@ func (c *IndexController) List() {
 	})
 
 	c.ViewData("pagelist", func(listsize int) string {
-		// 获取分页
 		total, _ := getOrmSess().Where("catid = ?", tid).
 			Where("deleted_time IS NULL").Where("status = 1").Count()
 		// 计算页码

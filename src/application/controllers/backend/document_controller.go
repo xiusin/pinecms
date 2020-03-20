@@ -40,6 +40,7 @@ type ModelForm struct {
 	fieldID           []uint
 	FieldDataSource   []string `form:"field_datasource" json:"field_datasource"`
 	FieldField        []string `form:"field_field" json:"field_field"`
+	FieldSort         []string  `form:"field_sort" json:"field_sort"`
 	FieldHtml         []string `form:"field_html" json:"field_html"`
 	FieldName         []string `form:"field_name" json:"field_name"`
 	FieldRequired     []string `form:"field_required" json:"field_required"`
@@ -76,12 +77,28 @@ var extraFields = []map[string]string{
 		"COLUMN_DEFAULT": "0",
 	},
 	{
-		"COLUMN_NAME":    "refid",
+		"COLUMN_NAME":    "title",
 		"EXTRA":          "",
-		"COLUMN_TYPE":    "int(11) unsigned",
+		"COLUMN_TYPE":    "varchar(255)",
 		"IS_NULLABLE":    "NO",
-		"COLUMN_COMMENT": "模型关联的文章ID",
-		"COLUMN_DEFAULT": "0",
+		"COLUMN_COMMENT": "标题,默认字段不可删除",
+		"COLUMN_DEFAULT": "",
+	},
+	{
+		"COLUMN_NAME":    "keywords",
+		"EXTRA":          "",
+		"COLUMN_TYPE":    "varchar(255)",
+		"IS_NULLABLE":    "YES",
+		"COLUMN_COMMENT": "关键字",
+		"COLUMN_DEFAULT": "",
+	},
+	{
+		"COLUMN_NAME":    "description",
+		"EXTRA":          "",
+		"COLUMN_TYPE":    "text",
+		"IS_NULLABLE":    "YES",
+		"COLUMN_COMMENT": "描述",
+		"COLUMN_DEFAULT": "",
 	},
 	{
 		"COLUMN_NAME":    "listorder",
@@ -104,7 +121,7 @@ var extraFields = []map[string]string{
 		"EXTRA":          "",
 		"COLUMN_TYPE":    "tinyint(1) unsigned",
 		"IS_NULLABLE":    "NO",
-		"COLUMN_COMMENT": "状态",
+		"COLUMN_COMMENT": "审核状态, 前端检索条件之一",
 		"COLUMN_DEFAULT": "0",
 	},
 	{
@@ -262,13 +279,12 @@ func (c *DocumentController) ModelAdd() {
 		if data.Enabled == "on" {
 			enabled = 1
 		}
-		mt, _ := strconv.Atoi(data.ModelType)
 		_, err = c.Ctx().Value("orm").(*xorm.Engine).Transaction(func(session *xorm.Session) (i interface{}, err error) {
 			dm := &tables.DocumentModel{
 				Name:        data.Name,
 				Table:       data.Table,
 				Enabled:     enabled,
-				ModelType:   mt,
+				ModelType:   1,
 				FeTplIndex:  helper.EasyUiIDToFilePath(data.FeTplIndex),
 				FeTplList:   helper.EasyUiIDToFilePath(data.FeTplList),
 				FeTplDetail: helper.EasyUiIDToFilePath(data.FeTplDetail),
@@ -289,10 +305,12 @@ func (c *DocumentController) ModelAdd() {
 
 			var fields []tables.DocumentModelDsl
 			for k, name := range data.FieldName {
+				listorder,_ := strconv.Atoi(data.FieldSort[k])
 				f := tables.DocumentModelDsl{
 					Mid:          dm.Id,
 					FormName:     name,
 					TableField:   data.FieldField[k],
+					ListOrder:    int64(listorder),
 					FieldType:    data.fieldType[k],
 					Datasource:   data.FieldDataSource[k],
 					RequiredTips: data.FieldRequiredTips[k],
@@ -326,6 +344,13 @@ func (c *DocumentController) ModelAdd() {
 		return
 	}
 	currentPos := models.NewMenuModel().CurrentPos(64)
+
+
+	// 传递默认字段给modeladd
+
+	fields := models.NewDocumentFieldDslModel().GetList(0)
+	c.Ctx().Render().ViewData("fields", fields)
+	c.Ctx().Render().ViewData("fieldslen", len(fields))
 
 	c.Ctx().Render().ViewData("list", list)
 	c.Ctx().Render().ViewData("title", currentPos)
@@ -410,11 +435,13 @@ func (c *DocumentController) ModelEdit() {
 
 			var fields []tables.DocumentModelDsl
 			for k, name := range data.FieldName {
+				listorder,_ := strconv.Atoi(data.FieldSort[k])
 				f := tables.DocumentModelDsl{
 					Mid:          document.Id,
 					FormName:     name,
 					TableField:   data.FieldField[k],
 					FieldType:    data.fieldType[k],
+					ListOrder:    int64(listorder),
 					Datasource:   data.FieldDataSource[k],
 					RequiredTips: data.FieldRequiredTips[k],
 					Validator:    data.FieldValidator[k],

@@ -20,18 +20,6 @@
             </tr>
 
             <tr>
-                <td>模型类型：</td>
-                <td colspan="2">
-                    <div style="display: inline-block; margin-right: 5px;">
-                        <input class="easyui-radiobox" name="type" value="0" checked label="独立模型">
-                    </div>
-                    <div style="display: inline-block; margin-right: 5px;">
-                        <input class="easyui-radiobox" name="type" value="1" label="系统模型">
-                    </div>
-                </td>
-            </tr>
-
-            <tr>
                 <td>模型定义：</td>
                 <td colspan="2" id="mode-definition">
                     <div id="tab-tools">
@@ -40,83 +28,99 @@
                            onclick="addPanel()"></a>
                     </div>
 
-                    <div id="tt" class="easyui-tabs" style="width:750px;height:576px;">
-                        <div title="未命名字段1" data-options="closable:true">
-                            <table cellpadding="5" style="width: 100%;">
-                                <tr>
-                                    <td style="width: 150px;">表单名称:</td>
-                                    <td><input class="easyui-textbox" type="text" name="field_name" style="width: 300px"
-                                               data-options="required:true, onChange: textBoxOnChange"/></td>
-                                </tr>
+                    <div id="tt" class="easyui-tabs" style="width:750px;height:683px;">
+                        {{range $i, $field := .fields}}
+                            <div title="{{$field.FormName}}">
+                                <table cellpadding="5" style="width: 100%;">
+                                    <tr>
+                                        <td style="width: 150px;">表单名称:</td>
+                                        <td><input class="easyui-textbox" type="text" name="field_name"
+                                                   value="{{$field.FormName}}" style="width: 300px"
+                                                   data-options="required:true, onChange: textBoxOnChange" readonly/></td>
+                                    </tr>
 
-                                <tr>
-                                    <td style="width: 150px;">字段名称:</td>
-                                    <td><input class="easyui-textbox" type="text" name="field_field"
-                                               style="width: 300px"
-                                               data-options="required:true"/></td>
-                                </tr>
-                                <tr>
-                                    <td>是否必填:</td>
-                                    <td>
-                                        <select class="easyui-combobox" name="field_required" style="width: 300px;">
-                                            <option value="off" selected>非必填</option>
-                                            <option value="on">必填</option>
-                                        </select>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td style="width: 150px;">字段名称:</td>
+                                        <td><input class="easyui-textbox" type="text" name="field_field"
+                                                   style="width: 300px"
+                                                   data-options="required:true" value="{{$field.TableField}}" readonly/></td>
+                                    </tr>
 
-                                <tr style="blocdisplay: k">
-                                    <td>必填提醒内容:</td>
-                                    <td>
-                                        <input class="easyui-textbox" type="text" name="field_required_tips"
-                                               style="width: 300px;"/>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td style="width: 150px;">字段排序:</td>
+                                        <td><input class="easyui-numberbox" type="text" name="field_sort"
+                                                   style="width: 300px" data-options="required: true" value="{{$field.ListOrder}}"/></td>
+                                    </tr>
 
-                                <tr>
-                                    <td>字段类型:</td>
-                                    <td>
-                                        <select class="easyui-combobox" name="field_type" style="width: 300px;"
-                                                data-options="onSelect: onSelectChange">
-                                            {{range $index,$ele := .list}}
-                                                <option value="{{$ele.Id}}">{{$ele.Name}}</option>
-                                            {{end}}
-                                        </select>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td>是否必填:</td>
+                                        <td>
+                                            <select class="easyui-combobox" name="field_required" style="width: 300px;">
+                                                <option value="off" {{if eq $field.Required 1}} selected {{end}}>非必填
+                                                </option>
+                                                <option value="on" {{if eq $field.Required 1}} selected {{end}}>必填
+                                                </option>
+                                            </select>
+                                        </td>
+                                    </tr>
 
-                                <tr>
-                                    <td>数据源:</td>
-                                    <td><input class="easyui-textbox" name="field_datasource"
-                                               data-options="multiline:true, prompt: '请填写如json/数组格式或者url接口地址, 如不能解析,导致页面无法渲染. json支持key为string格式. 其他格式可能无法达到预期'"
-                                               style="height:150px; width: 500px;"/>
-                                    </td>
-                                </tr>
+                                    <tr style="blocdisplay: k">
+                                        <td>必填提醒内容:</td>
+                                        <td>
+                                            <input class="easyui-textbox" type="text" name="field_required_tips"
+                                                   style="width: 300px;" value="{{$field.RequiredTips}}"/>
+                                        </td>
+                                    </tr>
 
-                                <tr>
-                                    <td>默认值:</td>
-                                    <td><input class="easyui-textbox" name="field_default"
-                                               data-options="prompt: '数据源选项, 仅对单选,多选,开关按钮,多个用|分割'"
-                                               style="width:300px; "/>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td>字段类型:</td>
+                                        <td>
+                                            <select class="easyui-combobox" name="field_type" style="width: 300px;"
+                                                    data-options="onSelect: onSelectChange">
+                                                {{range $index,$ele := $.list}}
+                                                    {{if eq $field.FieldType $ele.Id}}
+                                                        <option value="{{$ele.Id}}" selected>{{$ele.Name}}</option>
+                                                    {{else}}
+                                                        <option value="{{$ele.Id}}">{{$ele.Name}}</option>
+                                                    {{end}}
+                                                {{end}}
+                                            </select>
+                                        </td>
+                                    </tr>
 
-                                <tr>
-                                    <td>类型描述:</td>
-                                    <td>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td>数据源:</td>
+                                        <td><input class="easyui-textbox" name="field_datasource"
+                                                   data-options="multiline:true, prompt: '组件数据源, 写入Json或者接口地址'"
+                                                   style="height:150px; width: 500px;" value="{{$field.Datasource}}"/>
+                                        </td>
+                                    </tr>
 
-                                <tr>
-                                    <td>字段验证器:</td>
-                                    <td>
-                                        <input class="easyui-textbox html" name="field_validator"
-                                               data-options="multiline:true, prompt: 'easyui标准验证器'"
-                                               style="height:119px; width: 500px;"/>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
+                                    <tr>
+                                        <td>默认值:</td>
+                                        <td><input class="easyui-textbox" name="field_default"
+                                                   data-options="prompt: '数据源选项, 仅对单选,多选,开关按钮,多个用|分割'"
+                                                   style="width:300px; " value="{{$field.Default}}"/>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>类型描述:</td>
+                                        <td>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>字段验证器:</td>
+                                        <td>
+                                            <input class="easyui-textbox html" name="field_validator"
+                                                   data-options="multiline:true, prompt: '遵循easyui的验证规则或自定义'"
+                                                   style="height:119px; width: 500px;" value="{{$field.Validator}}"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        {{end}}
                     </div>
                 </td>
             </tr>
@@ -182,6 +186,13 @@
             <td><input class="easyui-textbox" type="text" name="field_field" style="width: 300px"
                        data-options="required:true"/></td>
         </tr>
+
+        <tr>
+            <td style="width: 150px;">字段排序:</td>
+            <td><input class="easyui-numberbox" type="text" name="field_sort"
+                       style="width: 300px"  data-options="required: true" value="1"/></td>
+        </tr>
+
         <tr>
             <td>是否必填:</td>
             <td>
@@ -342,7 +353,8 @@
                             $.messager.alert('提示信息', data.errmsg, 'error');
                         } else {
                             $.messager.alert('提示信息', data.errmsg, 'info', function () {
-                                $("#model_form_cancel").click();
+                                $('#model_list_datagrid').datagrid('reload');
+                                $('#pagetabs').tabs('close', "添加模型");
                             })
                         }
                     }

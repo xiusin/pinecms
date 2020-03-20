@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/natefinch/lumberjack"
 	"github.com/xiusin/logger"
+	"github.com/xiusin/pine/cache/providers/badger"
 	"github.com/xiusin/pinecms/src/application/controllers/taglibs"
 	"io"
 	"os"
@@ -12,7 +13,6 @@ import (
 	"github.com/gorilla/securecookie"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
-	"github.com/xiusin/pine/cache/providers/badger"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pine/render/engine/jet"
 	"github.com/xiusin/pine/render/engine/template"
@@ -128,6 +128,15 @@ func runServe() {
 
 func diConfig() {
 	iCache = badger.New(badger.Option{TTL: int(conf.Session.Expires), Path: conf.CacheDb})
+	//iCache = bbolt.New(bbolt.Option{
+	//	TTL:             int(conf.Session.Expires),
+	//	Path:            conf.CacheDb,
+	//	Prefix:          "",
+	//	CleanupInterval: 0,
+	//})
+	// bbolt 错误, 无法获取key信息 迭代可以获取, 先不管了
+	// windows上badger存在bug, 先换成bbolt
+
 	theme, _ := iCache.Get(controllers.CacheTheme)
 	if len(theme) == 0 {
 		theme = []byte("default")

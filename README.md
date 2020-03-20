@@ -32,19 +32,20 @@
 
 1. 重新定义一下系统模型和独立模型(参考shuipfcms)
 2. 默认字段可以设置为显示隐藏, 可以为数字类型的组件设置随机值
-3. 默认字段添加title keywords description的(建立模型表的时候直接显示为不可删除状态)
-4. 为字段添加排序值, 下次进入页面按照排序值调整
-5. 文档模型
-    - 系统模型（以附表方式关联数据，可级联管理， 表明是否以模型ID做附表方便关联数据）
-    - 独立模型（单独生成数据表）    
-6. 考虑模型的递归显示，如果分布在不同的表里如何组合显示。
-7. 如果放到同一张表里字段数据使用json保存如何。
-系统字段显示， 搜索字段展示， 页面静态化 参考水平凡cms的实现
+3. 默认字段添加title keywords description的(在DSL里默认字段内容, 设置所属模型为0)
+
+```sql
+INSERT INTO `pinecms`.`pinecms_document_model_dsl`( `mid`, `form_name`, `table_field`, `html`, `required`, `datasource`, `required_tips`, `validator`, `deleted_at`, `field_type`, `default`) VALUES ( 0, '标题', 'title', '<input class=\"easyui-textbox\" {{attr}} value=\"{{value}}\" style=\"width:300px\">', 0, '', '', '', NULL, 1, '');
+INSERT INTO `pinecms`.`pinecms_document_model_dsl`( `mid`, `form_name`, `table_field`, `html`, `required`, `datasource`, `required_tips`, `validator`, `deleted_at`, `field_type`, `default`) VALUES (0, '关键字', 'keywords', '<input class=\"easyui-textbox\" {{attr}} value=\"{{value}}\" style=\"width:300px\">', 0, '', '', '', NULL, 1, '');
+INSERT INTO `pinecms`.`pinecms_document_model_dsl`( `mid`, `form_name`, `table_field`, `html`, `required`, `datasource`, `required_tips`, `validator`, `deleted_at`, `field_type`, `default`) VALUES ( 0, '摘要', 'description', '<input class=\"easyui-textbox\" {{attr}} value=\"{{value}}\" style=\"height:80px; width: 300px;\"  multiline />', 0, '', '', '', NULL, 2, '');
+
+```
+4. 系统字段显示， 搜索字段展示， 页面静态化 参考水平凡cms的实现
 
 ## 第二期 ## 
 
-- [ ] 数据模块
-- [ ] plugin (模块管理)
+- [ ] 数据模块 浏览次数, 搜索引擎来源, 服务器监控, 待审核信息, 会员信息等
+- [ ] plugin (模块管理, 是否要动态状态 使用外部plugin的注入看性能如何)
 
 
 # 相似的php项目 #

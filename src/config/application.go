@@ -15,7 +15,7 @@ type Config struct {
 	Session Session    `yaml:"session"`
 	LogPath string     `yaml:"log_path"`
 	CacheDb string     `yaml:"cache_db"`
-	Statics []struct { // 注册静态路由
+	Statics []struct {
 		Route string `yaml:"route"`
 		Path  string `yaml:"path"`
 	} `yaml:"statics"`
@@ -28,18 +28,6 @@ type Config struct {
 		Engine      string `yaml:"engine"`
 		BasePath    string `yaml:"base_path"`
 	} `yaml:"upload"`
-	Redis struct {
-		Host                 string `yaml:"host"`
-		ConnectTimeOut       int    `yaml:"connect_timeout"`
-		ReadTimeOut          int    `yaml:"read_timeout"`
-		WriteTimeOut         int    `yaml:"write_timeout"`
-		CacheDatabaseIndex   int    `yaml:"cache_database_index"`
-		SessionDatabaseIndex int    `yaml:"session_database_index"`
-		Password             string `yaml:"password"`
-		MaxIdle              int    `yaml:"max_idle"`
-		MaxActive            int    `yaml:"max_active"`
-		IdleTimeout          int    `yaml:"idle_timeout"`
-	} `yaml:"redis"`
 }
 
 type Session struct {
@@ -67,7 +55,6 @@ var config *Config
 func init() {
 	config = &Config{}
 	parseConfig(appYml, config)
-	//创建目录
 	os.MkdirAll(config.LogPath, os.ModePerm)
 }
 

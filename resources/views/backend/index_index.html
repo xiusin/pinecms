@@ -207,6 +207,7 @@
 <script type="text/javascript" src="/assets/backend/static/js/jquery.serializeObject.min.js"></script>
 <script type="text/javascript" src="/assets/backend/static/js/easyui/expand/jquery-easyui-radiobox/radiobox.js"></script>
 <link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/expand/jquery-easyui-radiobox/radiobox.css" title="metro" />
+{{template "backend/public_umeditor.html"}}
 <style>
     #wrap #content .main {
         margin: 0;
@@ -298,7 +299,7 @@
         min-height: 25px;
     }
 </style>
-
+<div id="myEditorImage" style="display: none"></div>
 <script>
     wsConn = null;
 
@@ -325,7 +326,7 @@
             myEditorImage.addListener('beforeInsertImage', function (t, arg) {
                 $(that).attr("src", arg[0].src)
                 $(that).next().val(arg[0].src)
-                parnt.currentUploaderMode = !mode;
+                currentUploaderMode = !mode;
             });
             setTimeout(function () {
                 var d = myEditorImage.getDialog("insertimage");

@@ -3,20 +3,17 @@ package backend
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/cache"
 	"html/template"
 	"runtime"
 	"strconv"
 	"strings"
-	"time"
-
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
 
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 
 	"github.com/shirou/gopsutil/disk"
-	"github.com/shirou/gopsutil/mem"
 	"github.com/xiusin/pinecms/src/common/helper"
 )
 
@@ -40,32 +37,34 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/index/menu", "Menu")
 	b.ANY("/index/main", "Main")
 
-	go func() {
-		// 每10秒采集一次服务器信息
-		for range time.Tick(10 * time.Second) {
-			vm, err := mem.VirtualMemory()
-			if err != nil {
-				pine.Logger().Error("读取服务器内存信息错误:", err)
-			} else {
-				mems := getMems()
-				mems = append(mems, MemPos{TimePos: time.Now().In(helper.GetLocation()).Format("15:04:05"), Percent: int(vm.UsedPercent)})
-				memsSaveData, _ := json.Marshal(mems)
-				pine.Make("cache.ICache").(cache.ICache).Set(controllers.CacheMemCollect, memsSaveData)
-			}
-		}
-	}()
+	//go func() {
+	//	// 每10秒采集一次服务器信息
+	//	for range time.Tick(10 * time.Second) {
+	//		vm, err := mem.VirtualMemory()
+	//		if err != nil {
+	//			pine.Logger().Error("读取服务器内存信息错误:", err)
+	//		} else {
+	//			mems := getMems()
+	//			mems = append(mems, MemPos{TimePos: time.Now().In(helper.GetLocation()).Format("15:04:05"), Percent: int(vm.UsedPercent)})
+	//			memsSaveData, _ := json.Marshal(mems)
+	//			pine.Make(controllers.ServiceICache).(cache.ICache).Set(controllers.CacheMemCollect, memsSaveData)
+	//		}
+	//	}
+	//}()
 }
 
 func getMems() []MemPos {
 	var mems []MemPos
-	c := pine.Make("cache.ICache").(cache.ICache)
+	c := pine.Make(controllers.ServiceICache).(cache.ICache)
 	memCollect, _ := c.Get(controllers.CacheMemCollect)
 	if memCollect == nil {
 		memCollect = []byte{}
 	}
-	_ = json.Unmarshal(memCollect, &mems)
-	if len(mems) > 10 {
-		mems = mems[len(mems)-10:]
+	err := json.Unmarshal(memCollect, &mems)
+	if err == nil {
+		if len(mems) > 10 {
+			mems = mems[len(mems)-10:]
+		}
 	}
 	return mems
 }

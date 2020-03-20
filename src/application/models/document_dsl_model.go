@@ -16,9 +16,8 @@ func NewDocumentFieldDslModel() *DocumentModelDslModel {
 }
 
 func (w *DocumentModelDslModel) GetList(mid int64) []tables.DocumentModelDsl {
-	//todo need cache handler
 	var list []tables.DocumentModelDsl
-	err := w.orm.Where("mid = ?", mid).Find(&list)
+	err := w.orm.Where("mid = ?", mid).Asc("listorder").Asc("id").Find(&list)
 	if err != nil {
 		pine.Logger().Error("NewDocumentFieldDslModel: ", err)
 	}

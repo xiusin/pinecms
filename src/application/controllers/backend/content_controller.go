@@ -298,11 +298,7 @@ func (c *ContentController) AddContent() {
 			fields = append(fields, "`"+k+"`")
 			values = append(values, v)
 		}
-		// 通用字段更新
 
-		if model.ModelType == models.SYSTEM_TYPE {
-
-		}
 		params := append([]interface{}{fmt.Sprintf("INSERT INTO `%s` (%s) VALUES (%s)", controllers.GetTableName(model.Table), strings.Join(fields, ","), strings.TrimRight(strings.Repeat("?,", len(values)), ","))}, values...)
 		// 先直接入库对应表内
 		insertID, err := c.Ctx().Value("orm").(*xorm.Engine).Exec(params...)
@@ -420,10 +416,6 @@ func (c *ContentController) EditContent() {
 			values = append(values, v)
 		}
 
-		// 通用字段更新
-		if relationDocumentModel.ModelType == models.SYSTEM_TYPE {
-
-		}
 		values = append(values, id, catid)
 		params := append([]interface{}{fmt.Sprintf("UPDATE `%s` SET %s WHERE id=? and catid=?", controllers.GetTableName(relationDocumentModel.Table), strings.Join(sets, ", "))}, values...)
 		insertID, err := c.Ctx().Value("orm").(*xorm.Engine).Exec(params...)
