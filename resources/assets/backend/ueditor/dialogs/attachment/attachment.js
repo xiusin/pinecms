@@ -735,6 +735,7 @@
             }
         },
         getInsertList: function () {
+            alert("/* 在线文件的文件预览图标 */, 选择文件时候添加源文件名和类型图标. icon获取方法直接从UE里获取")
             var i, lis = this.list.children, list = [];
             for (i = 0; i < lis.length; i++) {
                 if (domUtils.hasClass(lis[i], 'selected')) {
@@ -742,7 +743,8 @@
                     var title = lis[i].getAttribute('data-title') || url.substr(url.lastIndexOf('/') + 1);
                     list.push({
                         title: title,
-                        url: url
+                        url: url,
+                        thumb: ""
                     });
                 }
             }

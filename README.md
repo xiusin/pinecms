@@ -25,22 +25,13 @@
 ## 第一期 ##
 
 - [ ] 模板静态化功能
-- [ ] 图片上传 功能修改针对ueditor的多图上传弹性输出多选或单选数据(根据组件类型)
 - [ ] 添加导入数据命令
 
 ### 细化文档模型 ### 
 
 1. 重新定义一下系统模型和独立模型(参考shuipfcms)
 2. 默认字段可以设置为显示隐藏, 可以为数字类型的组件设置随机值
-3. 默认字段添加title keywords description的(在DSL里默认字段内容, 设置所属模型为0)
-
-```sql
-INSERT INTO `pinecms`.`pinecms_document_model_dsl`( `mid`, `form_name`, `table_field`, `html`, `required`, `datasource`, `required_tips`, `validator`, `deleted_at`, `field_type`, `default`) VALUES ( 0, '标题', 'title', '<input class=\"easyui-textbox\" {{attr}} value=\"{{value}}\" style=\"width:300px\">', 0, '', '', '', NULL, 1, '');
-INSERT INTO `pinecms`.`pinecms_document_model_dsl`( `mid`, `form_name`, `table_field`, `html`, `required`, `datasource`, `required_tips`, `validator`, `deleted_at`, `field_type`, `default`) VALUES (0, '关键字', 'keywords', '<input class=\"easyui-textbox\" {{attr}} value=\"{{value}}\" style=\"width:300px\">', 0, '', '', '', NULL, 1, '');
-INSERT INTO `pinecms`.`pinecms_document_model_dsl`( `mid`, `form_name`, `table_field`, `html`, `required`, `datasource`, `required_tips`, `validator`, `deleted_at`, `field_type`, `default`) VALUES ( 0, '摘要', 'description', '<input class=\"easyui-textbox\" {{attr}} value=\"{{value}}\" style=\"height:80px; width: 300px;\"  multiline />', 0, '', '', '', NULL, 2, '');
-
-```
-4. 系统字段显示， 搜索字段展示， 页面静态化 参考水平凡cms的实现
+4. 搜索字段默认设置
 
 ## 第二期 ## 
 

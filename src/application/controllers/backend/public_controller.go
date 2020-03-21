@@ -51,6 +51,14 @@ func (c *PublicController) Upload() {
 	if mid == "" {
 		mid = "public"
 	}
+	// 判断上传类型
+	uploadType := models.IMG_TYPE
+	id := c.Ctx().FormValue("id")
+
+	if id != "" && strings.Contains(id, "_FILE_") {
+		uploadType = models.FILE_TYPE
+	}
+
 	uploader := getStorageEngine(settingData)
 	uploadDir := fmt.Sprintf("%s/%s", mid, helper.NowDate("Ymd"))
 	file, fs, err := c.Ctx().Files("filedata")
@@ -60,6 +68,7 @@ func (c *PublicController) Upload() {
 			uploadAjax(c.Ctx(), map[string]interface{}{"state": "打开上传临时文件失败 : " + err.Error(), "errcode": "1",}, isEditor)
 			return
 		} else {
+			// 涂鸦上传
 			dist, err := base64.StdEncoding.DecodeString(fileData)
 			if err != nil {
 				uploadAjax(c.Ctx(), map[string]interface{}{"state": "解码base64数据失败 : " + err.Error(), "errcode": "1",}, isEditor)
@@ -84,17 +93,23 @@ func (c *PublicController) Upload() {
 		size = fs.Size
 		fname = fs.Filename
 	} else {
+		// 涂鸦上传
 		fname = helper.GetRandomString(10) + ".png"
 	}
 
 	info := strings.Split(fname, ".")
 	ext := strings.ToLower(info[len(info)-1])
-	canUpload := []string{"jpg", "jpeg", "png"}
 	flag := false
-	for _, v := range canUpload {
-		if v == ext {
-			flag = true
+
+	if uploadType != models.FILE_TYPE {
+		canUpload := []string{"jpg", "jpeg", "png"}
+		for _, v := range canUpload {
+			if v == ext {
+				flag = true
+			}
 		}
+	} else {
+		flag = true
 	}
 	if !flag {
 		uploadAjax(c.Ctx(), map[string]interface{}{"state": "不支持的文件类型", "errcode": "1",}, isEditor)
@@ -123,7 +138,7 @@ func (c *PublicController) Upload() {
 		OriginName: fname,
 		Size:       size,
 		UploadTime: time.Now(),
-		Type:       models.IMG_TYPE,
+		Type:       uploadType,
 	}); id > 0 {
 		uploadAjax(c.Ctx(), resJson, isEditor)
 	} else {
@@ -165,7 +180,7 @@ func (c *PublicController) UEditor() {
    "catcherLocalDomain": ["127.0.0.1", "localhost", "img.baidu.com"],
    "catcherActionName": "catchimage",
    "catcherFieldName": "source",
-   "catcherPathFormat": "/ueditor/php/upload/image/{yyyy}{mm}{dd}/{time}{rand:6}",
+   "catcherPathFormat": "",
    "catcherUrlPrefix": "",
    "catcherMaxSize": 2048000,
    "catcherAllowFiles": [".png", ".jpg", ".jpeg", ".gif", ".bmp"],
@@ -173,25 +188,37 @@ func (c *PublicController) UEditor() {
    "imageManagerUrlPrefix": "",
    "imageManagerInsertAlign": "none",
    "imageManagerAllowFiles": [".png", ".jpg", ".jpeg", ".gif", ".bmp"],
+   "fileActionName": "upload", 
+   "fileFieldName": "filedata", 
+   "filePathFormat": "", 
+   "fileUrlPrefix": "", 
+   "fileMaxSize": 51200000,
+   "fileAllowFiles": [
+        ".png", ".jpg", ".jpeg", ".gif", ".bmp",
+        ".flv", ".swf", ".mkv", ".avi", ".rm", ".rmvb", ".mpeg", ".mpg",
+        ".ogg", ".ogv", ".mov", ".wmv", ".mp4", ".webm", ".mp3", ".wav", ".mid",
+        ".rar", ".zip", ".tar", ".gz", ".7z", ".bz2", ".cab", ".iso",
+        ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".pdf", ".txt", ".md", ".xml"
+   ],
    "fileManagerActionName": "attachments-file",
-   "fileManagerListPath": "/ueditor/php/upload/file/",
+   "fileManagerListPath": "",
    "fileManagerUrlPrefix": "",
    "fileManagerListSize": 20,
    "fileManagerAllowFiles": [
-       ".png", ".jpg", ".jpeg", ".gif", ".bmp",
-       ".flv", ".swf", ".mkv", ".avi", ".rm", ".rmvb", ".mpeg", ".mpg",
-       ".ogg", ".ogv", ".mov", ".wmv", ".mp4", ".webm", ".mp3", ".wav", ".mid",
-       ".rar", ".zip", ".tar", ".gz", ".7z", ".bz2", ".cab", ".iso",
-       ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".pdf", ".txt", ".md", ".xml"
-   ]
+        ".png", ".jpg", ".jpeg", ".gif", ".bmp",
+        ".flv", ".swf", ".mkv", ".avi", ".rm", ".rmvb", ".mpeg", ".mpg",
+        ".ogg", ".ogv", ".mov", ".wmv", ".mp4", ".webm", ".mp3", ".wav", ".mid",
+        ".rar", ".zip", ".tar", ".gz", ".7z", ".bz2", ".cab", ".iso",
+        ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".pdf", ".txt", ".md", ".xml"
+   ] 
 }
 `)
 	case "upload":
 		c.Upload()
 	case "attachments-img":
-		c.Ctx().Request().ParseForm()
-		c.Ctx().Request().Form.Add("type", models.IMG_TYPE)
-		c.Attachments()
+		c.Attachments(models.IMG_TYPE)
+	case "attachments-file":
+		c.Attachments(models.FILE_TYPE)
 	}
 }
 
@@ -201,7 +228,7 @@ func uploadAjax(ctx *pine.Context, uploadData map[string]interface{}, isEditor b
 }
 
 // 读取资源列表
-func (c *PublicController) Attachments() {
+func (c *PublicController) Attachments(attachmentType string) {
 	page, _ := c.Ctx().URLParamInt64("page")
 	if page < 1 {
 		page = 1
@@ -211,7 +238,6 @@ func (c *PublicController) Attachments() {
 		start = 0
 	}
 	var data []*tables.Attachments
-	attachmentType := c.Ctx().GetString("type", models.IMG_TYPE)
 	cnt, _ := c.Ctx().Value("orm").(*xorm.Engine).Limit(30, int(start)).Where("`type` = ?", attachmentType).FindAndCount(&data)
 	c.Ctx().Render().JSON(map[string]interface{}{
 		"state":   "SUCCESS",

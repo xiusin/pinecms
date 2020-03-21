@@ -8,6 +8,15 @@
     <link rel="stylesheet" type="text/css" href="/assets/backend/static/jquery.tagsinput.css"/>
     <script src="/assets/backend/static/jquery.tagsinput.js"></script>
     <script src="/assets/backend/static/jquery.upload.js"></script>
+    <link href="/assets/bg/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/bg/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/bg/css/morris.css">
+    <link href="/assets/bg/css/minoral.css" rel="stylesheet">
+    <style>
+        .btn {
+            padding: 5px 12px;
+        }
+    </style>
     <script>
         let editors = [];
         let siginUploader = [];
@@ -23,8 +32,6 @@
     if (parent.ajaxLoadEnd) {
         parent.ajaxLoadEnd()
     }
-
-
     function fromUEImageUploader(that) {
         event.preventDefault();
         var myEditorImage = UE.getEditor('myEditorImage', { autoHeightEnabled: false, isShow: false });
@@ -35,6 +42,32 @@
             });
             setTimeout(function () {
                 var d = myEditorImage.getDialog("insertimage");
+                d.render();
+                d.open();
+            }, 200)
+        });
+        return false
+    }
+
+    function fromUEFileUploader(that) {
+        var myEditorImage = UE.getEditor('myEditorImage', {autoHeightEnabled: false, isShow: false});
+        myEditorImage.ready(function () {
+            myEditorImage.addListener('beforeInsertFile', function (t, args) {
+                console.log(args)
+                var files = [];
+                for (var i = 0; i < args.length; i++) {
+                    files.push(args[i].url)
+                    $(that).next().append(`<li class="list-item">
+                        <div class="preview"><img class="preview-img" src="`+args[i].url+`"></div>
+                        <div class="info"><p class="filename">`+args[i].title+`</p></div>
+                        <label class="btn-delete-item delete-label cursor-select"><i class="delete-icon">X</i></label>
+                        </li>`)
+                }
+                $(that).prev().val(files.join(","))
+            });
+
+            setTimeout(function () {
+                var d = myEditorImage.getDialog("attachment");
                 d.render();
                 d.open();
             }, 200)
@@ -54,6 +87,7 @@
         });
         return false;
     }
+
     function doUpload(obj) {
         event.preventDefault();
         {{if eq .preview 1}}

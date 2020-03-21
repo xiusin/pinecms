@@ -24784,7 +24784,7 @@ UE.plugin.register('insertfile', function (){
             'insertfile': {
                 execCommand: function (command, filelist){
                     filelist = utils.isArray(filelist) ? filelist : [filelist];
-
+                    console.log(filelist)
                     var i, item, icon, title,
                         html = '',
                         URL = me.getOpt('UEDITOR_HOME_URL'),
@@ -24798,6 +24798,7 @@ UE.plugin.register('insertfile', function (){
                             '<a style="font-size:12px; color:#0066cc;" href="' + item.url +'" title="' + title + '">' + title + '</a>' +
                             '</p>';
                     }
+                    me.fireEvent('beforeInsertFile', filelist);
                     me.execCommand('insertHtml', html);
                 }
             }

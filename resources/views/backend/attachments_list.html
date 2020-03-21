@@ -1,15 +1,7 @@
-<link rel="stylesheet" type="text/css" href="/assets/viewer/viewer.css">
-<script type="text/javascript" src="/assets/viewer/viewer.js"></script>
+<script type="text/javascript" src="/assets/lightgallery/js/lightgallery-all.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/assets/lightgallery/css/lightgallery.css">
 
 {{ .dataGrid }}
-<img id="attachment_preview_img" src="" />
-
-
-<div id="attachment_image_uploader" class="easyui-dialog" title="图片上传" data-options="modal:true, closed:true"
-     style="width:70%; height: 600px;overflow: hidden;">
-    <iframe id="attachment_image_uploader_iframe" src="/b/content/public-welcome" style="width: 100%; height: 100%;border: none; overflow: auto"></iframe>
-</div>
-
 
 <div id="attachments_list_datagrid_toolbar" style="padding:1px;height:auto">
     <form style="border-bottom:1px solid #ddd;margin-bottom:1px;padding:5px;" id="attachments_list_search_form">
@@ -25,8 +17,8 @@
 </div>
 
 <script type="text/javascript">
+    var content_datagrid = $('#attachments_list_datagrid');
     function attachmentsListDatagridSearch(that) {
-        var content_datagrid = $('#attachments_list_datagrid');
         var queryParams = content_datagrid.datagrid('options').queryParams;
         $.each($("#attachments_list_search_form").serializeArray(), function () {
             queryParams[this['name']] = this['value'];
@@ -52,38 +44,27 @@
     function attachmentsListSizeOptFormatter(id, obj) {
         var btn = [];
         if (obj.type === "img") {
-            btn.push("<a href=\"javascript:;\" onclick=\"attachmentListPreview('" + obj.url + "')\">查看</a>");
+            btn.push("<a href=\"javascript:;\" onclick=\"attachmentListPreview('" + obj.url + "', this)\">查看</a>");
         }
         btn.push("<a href=\"javascript:;\" onclick=\"downloadAttachments('" + obj.url + "')\" >下载</a>");
         btn.push("<a href=\"javascript:;\" onclick=\"deleteAttachments(" + id + ")\">删除</a>");
         return btn.join(' | ');
     }
 
-
-    function attachmentListPreview(url) {
-        var $preview = $('#attachment_preview_img');
-        $preview.attr("src", url);
-        new Viewer(document.getElementById("attachment_preview_img"),{
-            inline: true,
-            toolbar: false,
-            button: true,
-            fullscreen: true,
+    function attachmentListPreview(url, that) {
+        $(that).lightGallery({
+            dynamic: true,
+            dynamicEl: [{
+                "src": url,
+                'thumb': url,
+                'subHtml': '<h4>Fading Light</h4><p>Classic view from Rigwood Jetty on Coniston Water an old archive shot similar to an old post but a little later on.</p>'
+            }]
         })
-        // $preview.viewer({
-        //     inline: true,
-        //     toolbar: false,
-        //     button: false,
-        //     fullscreen: false
-        // });
 
     }
 
     function uploadAttachmentsImage() {
-        $("#attachment_image_uploader_iframe").attr("src",  "/b/attachments/webuploader?_=" + Math.random());
-        $("#attachment_image_uploader").dialog("open");
-    }
-    function uploadAttachmentsFiles() {
-
+        fromUEImageUploader(this, 1)
     }
 
     function downloadAttachments(url) {
@@ -98,10 +79,6 @@
             alink.click();
             alink.parentNode.removeChild(a);
         });
-    }
-
-    function replaceAttachments() {
-        $.messager.alert("替换提醒", "替换附件内容, 比如资源失效什么的可以再次生成连接", "info");
     }
 
     function deleteAttachments(id) {

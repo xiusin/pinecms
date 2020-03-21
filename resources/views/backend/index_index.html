@@ -3,9 +3,9 @@
 <head>
     <title>PINECMS 后台管理系统 - 管理</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
 
-    <link rel="icon" type="image/ico" href="/assets/bg/images/favicon.ico" />
+    <link rel="icon" type="image/ico" href="/assets/bg/images/favicon.ico"/>
     <link href="/assets/bg/css/bootstrap.min.css" rel="stylesheet">
     <link href="/assets/bg/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/bg/css/animate.min.css">
@@ -21,7 +21,9 @@
 
 </head>
 <body class="lightgrey-scheme">
-<div class="mask"><div id="loader"></div></div>
+<div class="mask">
+    <div id="loader"></div>
+</div>
 
 <div id="wrap">
 
@@ -62,7 +64,7 @@
 
 
                             <li class="dropdown messages">
-                                <img src="/assets/pinecms.png" height="35px" />
+                                <img src="/assets/pinecms.png" height="35px"/>
                             </li>
 
                             <li class="dropdown settings">
@@ -98,7 +100,6 @@
                 <!-- /Content collapsing at 768px to sidebar -->
 
 
-
                 <!-- Sidebar -->
                 <ul class="nav navbar-nav side-nav" id="navigation">
                     <li class="collapsed-content">
@@ -106,7 +107,7 @@
                     </li>
                     <li class="user-status status-online" id="user-status">
                         <div class="profile-photo">
-                            <img src="/assets/default.png" alt />
+                            <img src="/assets/default.png" alt/>
                         </div>
                         <div class="user">
                             {{.username}}
@@ -121,24 +122,24 @@
                         </div>
                     </li>
                     {{range $i,$v := .menus}}
-                    <li class="dropdown {{if eq $i 0}}open{{end}}" >
-                        <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" title="{{$v.name}}">
-                            <i class="fa fa-dashboard">
-                                <span class="overlay-label red"></span>
-                            </i>
-                            {{$v.name}} <b class="fa fa-angle-left dropdown-arrow"></b>
-                        </a>
-                        <ul class="dropdown-menu">
-                            {{range $i1, $v1 := $v.son}}
-                            <li  data-stopPropagation="true">
-                                <a onclick="openUrl('{{$v1.url}}', '{{$v1.text}}')">
-                                    <i class="fa fa-eye"><span class="overlay-label red80"></span></i>
-                                    {{$v1.text}}
-                                </a>
-                            </li>
-                            {{end}}
-                        </ul>
-                    </li>
+                        <li class="dropdown {{if eq $i 0}}open{{end}}">
+                            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" title="{{$v.name}}">
+                                <i class="fa fa-dashboard">
+                                    <span class="overlay-label red"></span>
+                                </i>
+                                {{$v.name}} <b class="fa fa-angle-left dropdown-arrow"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                {{range $i1, $v1 := $v.son}}
+                                    <li data-stopPropagation="true">
+                                        <a onclick="openUrl('{{$v1.url}}', '{{$v1.text}}')">
+                                            <i class="fa fa-eye"><span class="overlay-label red80"></span></i>
+                                            {{$v1.text}}
+                                        </a>
+                                    </li>
+                                {{end}}
+                            </ul>
+                        </li>
                     {{end}}
                 </ul>
                 <!-- Sidebar end -->
@@ -150,7 +151,8 @@
         <div id="content" style="padding-right: 0" class="col-md-12">
             <!-- content main container -->
             <div class="main">
-                <div id="pagetabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:false">
+                <div id="pagetabs" class="easyui-tabs"
+                     data-options="tabPosition:'top',fit:true,border:false,plain:false">
                     <div title="后台首页" href="main" data-options="cache:false,title:'后台首页'"></div>
                 </div>
             </div>
@@ -161,14 +163,8 @@
         <!-- Page content end -->
 
 
-
-
-
-
     </div>
     <!-- Make page fluid-->
-
-
 
 
 </div>
@@ -195,24 +191,27 @@
 <script src="/assets/bg/js/plugins/chosen/chosen.jquery.min.js"></script>
 <script src="/assets/bg/js/plugins/tabdrop/bootstrap-tabdrop.min.js"></script>
 <script src="/assets/bg/js/minoral.js"></script>
-<link rel="stylesheet" type="text/css" href="/assets/backend/static/css/metro.css" title="metro" />
+<link rel="stylesheet" type="text/css" href="/assets/backend/static/css/metro.css" title="metro"/>
 <script type="text/javascript" src="/assets/backend/static/js/jquery.json.min.js"></script>
-<link rel="stylesheet" type="text/css" href="/assets/backend/static/css/icons.css" />
-<link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/insdep.easyui.min.css" title="metro" />
+<link rel="stylesheet" type="text/css" href="/assets/backend/static/css/icons.css"/>
+<link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/insdep.easyui.min.css" title="metro"/>
 <script type="text/javascript" src="/assets/backend/static/js/easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="/assets/backend/static/js/easyui/insdep.extend.min.js"></script>
 <script type="text/javascript" src="/assets/backend/static/js/easyui/locale/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="/assets/backend/static/js/formvalidator/formValidator.js"></script>
 <script type="text/javascript" src="/assets/backend/static/js/formvalidator/formValidatorRegex.js"></script>
 <script type="text/javascript" src="/assets/backend/static/js/jquery.serializeObject.min.js"></script>
-<script type="text/javascript" src="/assets/backend/static/js/easyui/expand/jquery-easyui-radiobox/radiobox.js"></script>
-<link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/expand/jquery-easyui-radiobox/radiobox.css" title="metro" />
+<script type="text/javascript"
+        src="/assets/backend/static/js/easyui/expand/jquery-easyui-radiobox/radiobox.js"></script>
+<link rel="stylesheet" type="text/css"
+      href="/assets/backend/static/js/easyui/expand/jquery-easyui-radiobox/radiobox.css" title="metro"/>
 {{template "backend/public_umeditor.html"}}
 <style>
     #wrap #content .main {
         margin: 0;
         height: 100%;
     }
+
     table.mdoutable {
         width: 100%;
         color: #333333;
@@ -247,28 +246,35 @@
         font-weight: normal;
         background: white;
     }
+
     #content .tabs-inner:hover {
         font-weight: bold;
     }
+
     #content .tabs li {
         margin-right: 0px;
     }
+
     #content .tabs li.tabs-selected a.tabs-inner {
         background: #e7e7e7;
 
     }
+
     #content .tabs li.tabs-selected a.tabs-inner:hover {
         font-weight: normal;
     }
+
     #content .tabs {
         padding-left: 0px;
         border: none;
         background: white;
     }
-    #content .datagrid-header, #content .datagrid-td-rownumber{
+
+    #content .datagrid-header, #content .datagrid-td-rownumber {
         background: #fff;
     }
-    #content .datagrid-header td,#content .datagrid-body td,#content .datagrid-footer td {
+
+    #content .datagrid-header td, #content .datagrid-body td, #content .datagrid-footer td {
         border-width: 0 1px 1px 0;
         border-style: solid;
         border-color: #eee;
@@ -276,6 +282,7 @@
         padding: 0;
         line-height: 1.428571429;
     }
+
     #content .datagrid-htable {
         font-weight: bold;
         font-size: 14px;
@@ -290,7 +297,8 @@
     #content .panel-header {
         padding: 5px 15px;
     }
-    #content .panel-header,#content .panel-body, #content .accordion {
+
+    #content .panel-header, #content .panel-body, #content .accordion {
         border: none;
     }
 
@@ -303,17 +311,17 @@
 <script>
     wsConn = null;
 
-    $(function() {
-        $("ul.dropdown-menu").on("click", "[data-stopPropagation]", function(e) {
+    $(function () {
+        $("ul.dropdown-menu").on("click", "[data-stopPropagation]", function (e) {
             e.stopPropagation();
         });
-        $("#navigation .dropdown-menu li").click(function(e) {
+        $("#navigation .dropdown-menu li").click(function (e) {
             $("#navigation .dropdown-menu li").removeClass("active");
             $(this).addClass("active");
         });
     });
 
-    function fromUEImageUploader(that, mode) {
+    function fromUEImageUploader(that, mode, callback) {
         event.preventDefault();
         var myEditorImage = UE.getEditor('myEditorImage', {autoHeightEnabled: false, isShow: false});
         if (!mode) {
@@ -323,9 +331,13 @@
         }
         currentUploaderMode = mode;
         myEditorImage.ready(function () {
-            myEditorImage.addListener('beforeInsertImage', function (t, arg) {
-                $(that).attr("src", arg[0].src)
-                $(that).next().val(arg[0].src)
+            myEditorImage.addListener('beforeInsertImage', function (t, args) {
+                if (currentUploaderMode === 1) {
+                    callback && callback(args)  // 多图上传使用回调
+                } else {
+                    $(that).attr("src", args[0].src)
+                    $(that).next().val(args[0].src)
+                }
                 currentUploaderMode = !mode;
             });
             setTimeout(function () {
@@ -336,6 +348,34 @@
         });
         return false
     }
+
+    function fromUEFileUploader(that, mode, callback) {
+        var myEditorImage = UE.getEditor('myEditorImage', {autoHeightEnabled: false, isShow: false});
+        if (!mode) {
+            mode = 0
+        } else {
+            mode = 1
+        }
+        currentUploaderMode = mode;
+        myEditorImage.ready(function () {
+            myEditorImage.addListener('afterUpfile', function (t, args) {
+                if (currentUploaderMode === 1) {
+                    callback && callback(args)  // 多图上传使用回调
+                } else {
+                    $(that).attr("src", args[0].src)
+                    $(that).next().val(args[0].src)
+                }
+                currentUploaderMode = !mode;
+            });
+            setTimeout(function () {
+                var d = myEditorImage.getDialog("attachment");
+                d.render();
+                d.open();
+            }, 200)
+        });
+        return false
+    }
+
 
     //退出登录
     function logout() {
