@@ -2367,7 +2367,7 @@ body .navbar .navbar-nav.side-nav {
   body .navbar .navbar-nav.side-nav li.dropdown-submenu > ul.dropdown-menu {
     float: none;
     position: relative;
-    min-width: 250px;
+    min-width: 200px;
     margin: 0;
     padding: 0;
     border: none;

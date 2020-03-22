@@ -18,11 +18,11 @@ func SetGlobalConfigData(xorm *xorm.Engine, iCache cache.ICache) pine.Handler {
 			return
 		}
 		ctx.Set(controllers.CacheSetting, settingData)
-		tolower := map[string]string{}
+		lower := map[string]string{}
 		for k, v := range settingData {
-			tolower[strings.ToLower(k)] = v
+			lower[strings.ToLower(k)] = v
 		}
-		ctx.Render().ViewData("global", tolower)
+		ctx.Render().ViewData("global", lower)
 		host := ctx.Request().Host
 		ctx.Render().ViewData("url", func(path string, params ...map[string]interface{}) string {
 			var query = "?"
@@ -36,7 +36,6 @@ func SetGlobalConfigData(xorm *xorm.Engine, iCache cache.ICache) pine.Handler {
 			}
 			return "//" + host + "/" + path + query
 		})
-
 		ctx.Render().ViewData("detail_url", func(aid string, tid ...string) string {
 			if len(tid) == 0 {
 				tid = []string{ctx.GetString("tid")}

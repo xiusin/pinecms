@@ -17,8 +17,6 @@ type AttachmentController struct {
 func (c *AttachmentController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/attachments/list", "List")
 	b.POST("/attachments/delete", "Delete")
-	b.ANY("/attachments/webuploader", "Webuploader")
-
 }
 
 func (c *AttachmentController) List(orm *xorm.Engine) {
@@ -37,7 +35,7 @@ func (c *AttachmentController) List(orm *xorm.Engine) {
 		"title":   models.NewMenuModel().CurrentPos(menuid),
 		"toolbar": "attachments_list_datagrid_toolbar",
 	}, helper.EasyuiGridfields{
-		"原始名称":   {"field": "origin_name", "width": "20", "index": "0"},
+		"原始名称":   {"field": "original", "width": "20", "index": "0"},
 		"资源名称":   {"field": "name", "width": "20", "index": "1"},
 		"图片":   {"field": "url", "width": "10", "index": "2", "formatter": "attachmentsListUrlFormatter"},
 		"大小":   {"field": "size", "width": "5", "index": "3", "formatter": "attachmentsListSizeFormatter"},
@@ -45,6 +43,7 @@ func (c *AttachmentController) List(orm *xorm.Engine) {
 		"类型":   {"field": "type", "width": "10", "index": "5"},
 		"操作":   {"field": "id", "formatter": "attachmentsListSizeOptFormatter", "index": "6"},
 	})
+
 	c.Ctx().Render().ViewData("dataGrid", template.HTML(table))
 	c.Ctx().Render().HTML("backend/attachments_list.html")
 }
@@ -60,8 +59,4 @@ func (c *AttachmentController) Delete(orm *xorm.Engine) {
 	} else {
 		helper.Ajax("删除附件失败", 1, c.Ctx())
 	}
-}
-
-func (c *AttachmentController) Webuploader() {
-	c.Ctx().Render().HTML("backend/attachments_webuploader.html")
 }

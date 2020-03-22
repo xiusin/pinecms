@@ -63,11 +63,11 @@ func buildModelForm(mid int64, data map[string]string) string {
 	}
 
 	// 点击次数生成
-	if data["visit_count"] == "" {
-		data["visit_count"] = strconv.Itoa(rand.Intn(1000))
-	}
-
-	h += "<tr><td style='text-align:right;'>点击次数：</td><td> <input class='easyui-textbox' value='" + data["visit_count"] + "' name='status'></td></tr>"
+	//if data["visit_count"] == "" {
+	//	data["visit_count"] = strconv.Itoa(rand.Intn(1000))
+	//}
+	//
+	//h += "<tr><td style='text-align:right;'>点击次数：</td><td> <input class='easyui-textbox' value='" + data["visit_count"] + "' name='status'></td></tr>"
 
 	if data["status"] == "1" {
 		h += "<tr><td style='text-align:right;'>状态：</td><td> <input class='easyui-switchbutton' checked name='status'></td></tr>"
@@ -84,6 +84,7 @@ func domOrCustomTagComponents(field *tables.DocumentModelDsl, val string) string
 	isImageUpload := strings.HasPrefix(field.Html, "<images")
 	isMulImageUpload := strings.HasPrefix(field.Html, "<mul-images")
 	isTags := strings.HasPrefix(field.Html, "<tags")
+	isFileUpload := strings.HasPrefix(field.Html, "<fileupload")
 	if isEditor {
 		field.Html = getEditor(field.TableField, val, strings.Join(attrs, " "), field.Required == 1, field.FormName, field.Default, field.RequiredTips)
 	} else if isImageUpload {
@@ -92,6 +93,8 @@ func domOrCustomTagComponents(field *tables.DocumentModelDsl, val string) string
 		field.Html = helper.MultiUpload(field.TableField, strings.Split(val, ","), 5, field.Required == 1, field.FormName, field.Default, field.RequiredTips)
 	} else if isTags {
 		field.Html = helper.Tags(field.TableField, val, field.Required == 1, field.FormName, field.Default, field.RequiredTips)
+	} else if isFileUpload {
+		field.Html = helper.FileUpload(field.TableField, val, field.Required == 1, field.FormName, field.Default, field.RequiredTips)
 	} else {
 		field.Html = strings.Replace(field.Html, "{{attr}}", strings.Join(attrs, " "), 1)
 		field.Html = strings.Replace(field.Html, "{{value}}", val, 1)

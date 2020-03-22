@@ -134,6 +134,7 @@ func diConfig() {
 	//	Prefix:          "",
 	//	CleanupInterval: 0,
 	//})
+
 	// bbolt 错误, 无法获取key信息 迭代可以获取, 先不管了
 	// windows上badger存在bug, 先换成bbolt
 

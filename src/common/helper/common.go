@@ -118,7 +118,7 @@ func Ajax(errmsg interface{}, errcode int64, this *pine.Context) {
 	this.Render().JSON(pine.H{"errcode": errcode, "errmsg": errmsg})
 }
 
-func Dialog(errmsg interface{}, this *pine.Context)  {
+func Dialog(errmsg interface{}, this *pine.Context) {
 	this.Render().Text(fmt.Sprintf(`<div class="easyui-dialog" title="错误提醒" style="width:400px;height:200px;"
     data-options="iconCls:'icon-error',resizable:true">%s</div>`, errmsg))
 }
@@ -257,6 +257,27 @@ func SiginUpload(field, data string, required bool, formName, defaultVal, Requir
 			 <input id='` + rid + `' type="hidden" class="image_upload_val" value="` + data + `" name="` + field + `" />
 			 <span title="清空图片内容" class='delImg'  onclick="DelImg(this)">×</span>
 <div id='` + rid + `_tip' class='errtips'></div>` + requiredFunc
+	return html
+}
+
+func FileUpload(field, data string, required bool, formName, defaultVal, RequiredTips string) string {
+	rid := "fileUploader_" + strconv.Itoa(rand.Int())
+	if RequiredTips == "" {
+		RequiredTips = formName + "必须上传"
+	}
+	jsJSON := "{}"
+	if len(data) > 0 {
+		jsJSON = data
+	}
+	var requiredFunc = `<script>buildFileLists(document.getElementById('`+rid+`_button'), `+jsJSON+`);</script>`
+
+	if required {
+		requiredFunc = `<script> fileUploader.push(function(){ if ($('#` + rid + `').val() == '') {$('#` + rid + `_tip').html("` + RequiredTips + `"); return false; } $('#` + rid + `_tip').html(''); return true; });
+</script>`
+	}
+	html := `<input name="` + field + `" id="`+rid+`" type="hidden" value='` + data +
+		`'/><button class="btn btn-default" type="button" id="`+rid+`_button" onclick="fromUEFileUploader(this, 0)" title="会自动过滤重复文件">上传或选择文件</button><div class='easy-uploader'><ul class="list"></ul></div><div id='` + rid + `_tip' class='errtips'></div>
+` + requiredFunc
 	return html
 }
 

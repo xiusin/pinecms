@@ -22,12 +22,9 @@
         let siginUploader = [];
         let MultiUploader = [];
         let tagger = [];
+        let fileUploader = [];
     </script>
 </head>
-<body>
-<div>
-    {{.form}}
-</div>
 <script type="text/javascript">
     if (parent.ajaxLoadEnd) {
         parent.ajaxLoadEnd()
@@ -53,17 +50,24 @@
         var myEditorImage = UE.getEditor('myEditorImage', {autoHeightEnabled: false, isShow: false});
         myEditorImage.ready(function () {
             myEditorImage.addListener('beforeInsertFile', function (t, args) {
-                console.log(args)
-                var files = [];
-                for (var i = 0; i < args.length; i++) {
-                    files.push(args[i].url)
-                    $(that).next().append(`<li class="list-item">
-                        <div class="preview"><img class="preview-img" src="`+args[i].url+`"></div>
-                        <div class="info"><p class="filename">`+args[i].title+`</p></div>
-                        <label class="btn-delete-item delete-label cursor-select"><i class="delete-icon">X</i></label>
-                        </li>`)
+                var vals = $(that).prev().val();
+                var urlSet = new Set();
+                if (vals) {
+                    vals = JSON.parse(vals)    // 序列化数据字符串
+                } else {
+                    vals = [];
                 }
-                $(that).prev().val(files.join(","))
+                vals = [...new Set(vals.concat(args))].filter(item => {
+                    if (urlSet.has(item.url) ) {
+                        return false;
+                    }  else {
+                        urlSet.add(item.url);
+                        return true;
+                    }
+                });
+                $(that).next().find(".list").html("");
+                buildFileLists(that, vals)
+                $(that).prev().val(JSON.stringify(vals))    // 序列化数据字符串
             });
 
             setTimeout(function () {
@@ -73,6 +77,25 @@
             }, 200)
         });
         return false
+    }
+
+    function buildFileLists(that, vals) {
+        for (var i = 0; i < vals.length; i++) {
+            $(that).next().find(".list").append(`<li class="list-item">
+                        <i class="file-preview `+'file-type-' + vals[i].type +`"></i>
+                        <div class="info"><p class="filename">`+vals[i].title+`</p></div>
+                        <label class="btn-delete-item delete-label cursor-select" onclick="removeFileLi(this, '`+vals[i].title+`', '`+vals[i].url+`')"><i class="delete-icon">X</i></label>
+                        </li>`)
+        }
+    }
+
+    function removeFileLi(obj, title, url) {
+        $.messager.confirm("删除提醒", "是否要删除文件附件: " + title, function (res) {
+            if (res){
+                $(obj).parents(".easy-uploader").prev().prev().val(JSON.stringify( JSON.parse($(obj).parents(".easy-uploader").prev().prev().val()).filter(item => item.url !== url)));
+                $(obj).parent().remove()
+            }
+        })
     }
 
     function contentPageFormSubmit() {
@@ -183,6 +206,11 @@
     }
 
 </script>
+<body>
+<div>
+    {{.form}}
+</div>
+
 <div id="myEditorImage" style="display: none"></div>
 </body>
 </html>

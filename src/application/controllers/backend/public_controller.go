@@ -9,15 +9,16 @@ import (
 	"math/rand"
 	"mime/multipart"
 	"os"
+	"path"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/config"
-	"github.com/xiusin/pine"
 
 	"github.com/afocus/captcha"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -30,12 +31,12 @@ type PublicController struct {
 }
 
 func (c *PublicController) RegisterRoute(b pine.IRouterWrapper) {
-	b.ANY( "/upload", "Upload")
-	b.ANY( "/fedir-scan", "FeDirScan")
-	b.ANY( "/attachments", "Attachments")
-	b.ANY( "/ueditor", "UEditor")
-	b.ANY( "/verify-code", "VerifyCode")
-	b.ANY( "/todos", "TODO")
+	b.ANY("/upload", "Upload")
+	b.ANY("/fedir-scan", "FeDirScan")
+	b.ANY("/attachments", "Attachments")
+	b.ANY("/ueditor", "UEditor")
+	b.ANY("/verify-code", "VerifyCode")
+	b.ANY("/todos", "TODO")
 }
 
 func (c *PublicController) FeDirScan() {
@@ -93,8 +94,7 @@ func (c *PublicController) Upload() {
 		size = fs.Size
 		fname = fs.Filename
 	} else {
-		// 涂鸦上传
-		fname = helper.GetRandomString(10) + ".png"
+		fname = helper.GetRandomString(10) + ".png"		// 涂鸦上传
 	}
 
 	info := strings.Split(fname, ".")
@@ -143,18 +143,21 @@ func (c *PublicController) Upload() {
 		uploadAjax(c.Ctx(), resJson, isEditor)
 	} else {
 		os.Remove(storageName)
-		uploadAjax(c.Ctx(), map[string]interface{}{"state":   "保存上传失败", "errcode": "1"}, isEditor)
+		uploadAjax(c.Ctx(), map[string]interface{}{"state": "保存上传失败", "errcode": "1"}, isEditor)
 	}
 
 }
 
-////生成验证码
 func (c *PublicController) VerifyCode() {
 	cpt := captcha.New()
-	cpt.SetFont(helper.GetRootPath() + "/resources/fonts/comic.ttf")
-	img, str := cpt.Create(4, captcha.ALL)
-	c.Session().AddFlush("verify_code", str)
-	c.Ctx().Writer().Header().Set("Content-type","img/png")
+	cpt.SetFont(path.Join(helper.GetRootPath(), "resources/fonts/comic.ttf"))
+
+	img, str:= cpt.Create(4, captcha.ALL)
+
+	c.Session().AddFlush("verify", str)
+
+	c.Ctx().Writer().Header().Set("Content-type", "img/png")
+
 	png.Encode(c.Ctx().Writer(), img)
 }
 

@@ -11,7 +11,7 @@
     </div>
 
     <div class="tile-body">
-        <input type="text" placeholder="Type new todo..." id="type_todo" class="grey-bg w100p margin-vertical-15">
+        <input type="text" placeholder="Type new todo..." id="type_todo" class="grey-bg margin-vertical-15" style="width: 100%">
         <ul class="nolisttypes" id="todolist">
             {{ .todos }}
         </ul>
@@ -19,7 +19,53 @@
 
 </section>
 
+
+<section class="tile">
+
+    <div class="tile-header transparent">
+        <h1><strong>Recent</strong> Activity</h1>
+        <div class="controls">
+            <a href="#" class="refresh"><i class="fa fa-refresh"></i></a>
+            <a href="#" class="remove"><i class="fa fa-times"></i></a>
+        </div>
+    </div>
+
+    <div class="tile-widget nopadding">
+        <ul class="nav nav-tabs tabdrop">
+            <li class="active"><a href="#users-tab" data-toggle="tab" data-toggle="tab"><i class="fa fa-users"></i></a></li>
+            <li><a href="#orders-tab" data-toggle="tab"><i class="fa fa-shopping-cart"></i></a></li>
+            <li><a href="#messages-tab" data-toggle="tab"><i class="fa fa-envelope"></i></a></li>
+            <li><a href="#tasks-tab" data-toggle="tab"><i class="fa fa-tasks"></i></a></li>
+            <li><a href="#comments-tab" data-toggle="tab"><i class="fa fa-comments"></i></a></li>
+        </ul>
+    </div>
+
+    <div class="tile-body tab-content nopadding">
+
+        <ul id="users-tab" class="tab-pane fade in active">
+            <li>
+                <span class="date">06.01.2014</span>
+                <span class="icon"><i class="fa fa-user fa-lg red-text"></i></span>
+                <span class="subject">User <a href="#">Arnold Karlsberg</a> banned</span>
+                <span class="more pull-right"><i class="fa fa-caret-right"></i></span>
+            </li>
+            <li>
+                ...
+            </li>
+        </ul>
+
+        <ul id="orders-tab" class="tab-pane fade">
+        </ul>
+
+
+    </div>
+</section>
+
+
+
 <script>
+
+    $('.tabdrop').tabdrop({text: '<i class="fa fa-th-list"></i>'})
     //todo's
     $("#type_todo").keyup(function (e) {
         if (e.keyCode === 13 && $(this).val()) {

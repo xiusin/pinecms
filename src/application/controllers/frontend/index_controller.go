@@ -28,6 +28,14 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	b.GET("/list", "List")
 	b.GET("/detail", "Detail")
 	b.GET("/page", "Page")
+
+	b.GET("/list/:tid:int.html", "List")
+
+	b.GET("/view/:aid<\\d+-\\d+>", "Detail")
+
+	b.GET("/detail", "Detail")
+	b.GET("/page", "Page")
+
 	b.GET("/click", "Click")
 }
 
@@ -93,6 +101,7 @@ func (c *IndexController) List() {
 }
 
 func (c *IndexController) Detail(icache cache.ICache) {
+	fmt.Println("detail", c.Param().Get("aid"))
 	var err error
 	var category tables.Category
 	aid, _ := c.Ctx().GetInt64("aid")

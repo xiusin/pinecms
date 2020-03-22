@@ -689,6 +689,7 @@
                         textSpan.innerHTML = list[i].url.substr(list[i].url.lastIndexOf('/') + 1);
                         preview = document.createElement('div');
                         preview.appendChild(ic);
+                        textSpan.innerHTML = list[i].original;
                         preview.appendChild(textSpan);
                         domUtils.addClass(preview, 'file-wrapper');
                         domUtils.addClass(textSpan, 'file-title');
@@ -735,16 +736,16 @@
             }
         },
         getInsertList: function () {
-            alert("/* 在线文件的文件预览图标 */, 选择文件时候添加源文件名和类型图标. icon获取方法直接从UE里获取")
             var i, lis = this.list.children, list = [];
             for (i = 0; i < lis.length; i++) {
                 if (domUtils.hasClass(lis[i], 'selected')) {
                     var url = lis[i].getAttribute('data-url');
+                    var filetype = url.substr(url.lastIndexOf('.') + 1);
                     var title = lis[i].getAttribute('data-title') || url.substr(url.lastIndexOf('/') + 1);
                     list.push({
                         title: title,
                         url: url,
-                        thumb: ""
+                        type: filetype
                     });
                 }
             }

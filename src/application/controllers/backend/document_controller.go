@@ -77,30 +77,6 @@ var extraFields = []map[string]string{
 		"COLUMN_DEFAULT": "0",
 	},
 	{
-		"COLUMN_NAME":    "title",
-		"EXTRA":          "",
-		"COLUMN_TYPE":    "varchar(255)",
-		"IS_NULLABLE":    "NO",
-		"COLUMN_COMMENT": "标题,默认字段不可删除",
-		"COLUMN_DEFAULT": "",
-	},
-	{
-		"COLUMN_NAME":    "keywords",
-		"EXTRA":          "",
-		"COLUMN_TYPE":    "varchar(255)",
-		"IS_NULLABLE":    "YES",
-		"COLUMN_COMMENT": "关键字",
-		"COLUMN_DEFAULT": "",
-	},
-	{
-		"COLUMN_NAME":    "description",
-		"EXTRA":          "",
-		"COLUMN_TYPE":    "text",
-		"IS_NULLABLE":    "YES",
-		"COLUMN_COMMENT": "描述",
-		"COLUMN_DEFAULT": "",
-	},
-	{
 		"COLUMN_NAME":    "listorder",
 		"EXTRA":          "",
 		"COLUMN_TYPE":    "int(5) unsigned",
@@ -606,7 +582,7 @@ func (c *DocumentController) GenSQL(orm *xorm.Engine) {
 				}
 			}
 		}
-		querySQL += "\tPRIMARY KEY (`id`) USING BTREE\n, KEY `refid` (`refid`)  USING BTREE) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+		querySQL += "\tPRIMARY KEY (`id`) USING BTREE) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 		//}
 	}
 	querySQL = regexp.MustCompile(" +").ReplaceAllString(querySQL, " ")

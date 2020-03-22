@@ -25,7 +25,7 @@ func (c *LoginController) Index(orm *xorm.Engine) {
 		username := c.Ctx().PostString("username")
 		password := c.Ctx().PostString("password")
 		code := c.Ctx().PostString("code")
-		verify := c.Session().Get("verify_code")
+		verify := c.Session().Get("verify")
 		if helper.IsFalse(username, password, code) {
 			helper.Ajax("参数不能为空", 1, c.Ctx())
 			return
@@ -56,7 +56,6 @@ func (c *LoginController) Index(orm *xorm.Engine) {
 	c.Ctx().Render().HTML("backend/login_index.html")
 }
 
-//退出系统
 func (c *LoginController) Logout() {
 	c.Session().Remove("adminid")
 	c.Session().Remove("roleid")

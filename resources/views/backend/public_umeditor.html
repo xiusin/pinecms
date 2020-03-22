@@ -3,6 +3,7 @@
 <!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
 <!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
 <script type="text/javascript" charset="utf-8" src="/assets/backend/ueditor/lang/zh-cn/zh-cn.js"></script>
+<link href="/assets/backend/ueditor/dialogs/attachment/attachment.css" rel="stylesheet">
 
 <script>
     var currentUploaderMode = 1;
@@ -61,36 +62,26 @@
         list-style: none
     }
 
+    i.file-preview {
+        display: inline-block;
+        float: left;
+    }
     .easy-uploader .list-item {
         box-sizing: border-box;
         position: relative;
+        padding: 0px 10px;
+        height: 100px;
         margin-top: 10px;
-        padding: 10px 10px 10px 90px;
-        height: 52px;
         background-color: #fff;
         border: 1px solid #c0ccda;
         overflow: hidden
-    }
-
-    .easy-uploader .preview {
-        position: relative;
-        z-index: 1;
-        float: left;
-        vertical-align: middle;
-        margin-left: -80px;
-        width: 50px;
-        height: 50px
-    }
-
-    .easy-uploader .preview-img {
-        max-width: 50px;
-        max-height: 50px
     }
 
     .easy-uploader .info {
         position: relative;
         margin-right: 40px;
         padding-left: 4px;
+        margin-top: 35px;
         color: #606266
     }
 
@@ -154,5 +145,8 @@
         right: -30px;
         top: 50%;
         transform: translateY(-50%)
+    }
+    i.file-preview.file-type-jpg, i.file-preview.file-type-jpeg, i.file-preview.file-type-gif, i.file-preview.file-type-bmp, i.file-preview.file-type-png, i.file-preview.file-type-psd {
+        background-position: -145px center;
     }
 </style>
