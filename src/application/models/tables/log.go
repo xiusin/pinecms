@@ -1,12 +1,13 @@
 package tables
 
+import "time"
+
 type Log struct {
-	Logid       int64 `xorm:"pk"`
-	Controller  string
-	Action      string
-	Querystring string
-	Userid      int64
-	Username    string
-	Ip          string
-	Time        string
+	Id       int64 `xorm:"pk"`
+	Type     int
+	Message  string
+	UserID   int64 `json:"userid"`
+	Username string
+	Ip       string
+	Time     time.Time
 }

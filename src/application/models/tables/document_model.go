@@ -13,6 +13,7 @@ type DocumentModel struct {
 	FeTplDetail     string    `json:"fe_tpl_detail"`
 	DeletedAt       time.Time `xorm:"deleted_at" json:"deleted_at"`
 	FieldShowInList string    `json:"field_show_in_list"`
+	FeSearchFields  string    `json:"fe_search_fields"`
 	Formatters      string    `json:"formatters"`
 	Execed          int       `json:"execed"`
 }

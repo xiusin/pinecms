@@ -138,7 +138,7 @@ func diConfig() {
 	//})
 
 	redisOpt := redis.DefaultOption()
-	redisOpt.Port = 6380
+	//redisOpt.Port = 6380
 	iCache = redis.New(redisOpt)
 
 	theme, _ := iCache.Get(controllers.CacheTheme)

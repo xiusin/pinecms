@@ -147,6 +147,7 @@ func (c *DocumentController) ModelFieldShowInListPage() {
 	}
 	fields := models.NewDocumentFieldDslModel().GetList(mid)
 	var showInPage = map[string]controllers.FieldShowInPageList{}
+	var fieldArr []string
 	if c.Ctx().IsPost() {
 		postDatas := c.Ctx().PostData()
 		for _, field := range fields {
@@ -157,6 +158,9 @@ func (c *DocumentController) ModelFieldShowInListPage() {
 				search, _ = strconv.Atoi(ssearch)
 			}
 			_, feSearchExists := postDatas["fe_search_"+field.TableField]
+			if feSearchExists {
+				fieldArr = append(fieldArr, field.TableField)
+			}
 			showInPage[field.TableField] = controllers.FieldShowInPageList{
 				Show:      showExists,
 				Search:    search,
@@ -166,6 +170,7 @@ func (c *DocumentController) ModelFieldShowInListPage() {
 		}
 		strs, _ := json.Marshal(showInPage)
 		model.FieldShowInList = string(strs)
+		model.FeSearchFields = strings.Join(fieldArr, ",")
 		model.Formatters = c.Ctx().PostValue("formatters")
 		_, err := c.Ctx().Value("orm").(*xorm.Engine).Table(&tables.DocumentModel{}).Where("id = ?", mid).Update(model)
 		if err != nil {

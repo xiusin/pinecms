@@ -5,6 +5,7 @@ resources/configs/database.yml
 .idea
 pinecms-dev-build
 pinecms-dev-build.exe
+pinecms-dev-build.exe~
 node_modules/
 tmp/runner-build
 *.js___jb_tmp___
