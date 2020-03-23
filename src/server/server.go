@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/natefinch/lumberjack"
 	"github.com/xiusin/logger"
-	"github.com/xiusin/pine/cache/providers/badger"
+	"github.com/xiusin/pine/cache/providers/redis"
 	"github.com/xiusin/pinecms/src/application/controllers/taglibs"
 	"io"
 	"os"
@@ -127,7 +127,9 @@ func runServe() {
 }
 
 func diConfig() {
-	iCache = badger.New(badger.Option{TTL: int(conf.Session.Expires), Path: conf.CacheDb})
+
+	//todo 两个内嵌缓存库居然都有问题
+	//iCache = badger.New(badger.Option{TTL: int(conf.Session.Expires), Path: conf.CacheDb})
 	//iCache = bbolt.New(bbolt.Option{
 	//	TTL:             int(conf.Session.Expires),
 	//	Path:            conf.CacheDb,
@@ -135,8 +137,9 @@ func diConfig() {
 	//	CleanupInterval: 0,
 	//})
 
-	// bbolt 错误, 无法获取key信息 迭代可以获取, 先不管了
-	// windows上badger存在bug, 先换成bbolt
+	redisOpt := redis.DefaultOption()
+	redisOpt.Port = 6380
+	iCache = redis.New(redisOpt)
 
 	theme, _ := iCache.Get(controllers.CacheTheme)
 	if len(theme) == 0 {
@@ -177,9 +180,7 @@ func diConfig() {
 	pine.RegisterViewEngine(htmlEngine)
 
 	jetEngine := jet.New(conf.View.FeDirname, ".jet", conf.View.Reload)
-
 	jetEngine.AddPath("./resources/taglibs/")
-
 	jetEngine.AddGlobalFunc("flink", taglibs.Flink)
 	jetEngine.AddGlobalFunc("type", taglibs.Type)
 	jetEngine.AddGlobalFunc("ad", taglibs.Ad)
@@ -207,5 +208,4 @@ func diConfig() {
 		ctx.Set("orm", XOrmEngine)
 		ctx.Next()
 	})
-
 }

@@ -11,6 +11,7 @@ import (
 type FieldShowInPageList struct {
 	Show      bool   `json:"show"`
 	Search    int    `json:"search"`
+	FeSearch  bool   `json:"fe_search"`
 	Formatter string `json:"formatter"`
 }
 

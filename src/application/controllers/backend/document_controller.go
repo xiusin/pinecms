@@ -40,7 +40,7 @@ type ModelForm struct {
 	fieldID           []uint
 	FieldDataSource   []string `form:"field_datasource" json:"field_datasource"`
 	FieldField        []string `form:"field_field" json:"field_field"`
-	FieldSort         []string  `form:"field_sort" json:"field_sort"`
+	FieldSort         []string `form:"field_sort" json:"field_sort"`
 	FieldHtml         []string `form:"field_html" json:"field_html"`
 	FieldName         []string `form:"field_name" json:"field_name"`
 	FieldRequired     []string `form:"field_required" json:"field_required"`
@@ -150,15 +150,17 @@ func (c *DocumentController) ModelFieldShowInListPage() {
 	if c.Ctx().IsPost() {
 		postDatas := c.Ctx().PostData()
 		for _, field := range fields {
-			_, ok := postDatas["show_"+field.TableField]
+			_, showExists := postDatas["show_"+field.TableField]
 			search := 0
 			if _, exists := postDatas["search_"+field.TableField]; exists {
 				ssearch := postDatas["search_"+field.TableField][0]
 				search, _ = strconv.Atoi(ssearch)
 			}
+			_, feSearchExists := postDatas["fe_search_"+field.TableField]
 			showInPage[field.TableField] = controllers.FieldShowInPageList{
-				Show:      ok,
+				Show:      showExists,
 				Search:    search,
+				FeSearch:  feSearchExists,
 				Formatter: postDatas["formatter_"+field.TableField][0],
 			}
 		}
@@ -281,7 +283,7 @@ func (c *DocumentController) ModelAdd() {
 
 			var fields []tables.DocumentModelDsl
 			for k, name := range data.FieldName {
-				listorder,_ := strconv.Atoi(data.FieldSort[k])
+				listorder, _ := strconv.Atoi(data.FieldSort[k])
 				f := tables.DocumentModelDsl{
 					Mid:          dm.Id,
 					FormName:     name,
@@ -320,7 +322,6 @@ func (c *DocumentController) ModelAdd() {
 		return
 	}
 	currentPos := models.NewMenuModel().CurrentPos(64)
-
 
 	// 传递默认字段给modeladd
 
@@ -411,7 +412,7 @@ func (c *DocumentController) ModelEdit() {
 
 			var fields []tables.DocumentModelDsl
 			for k, name := range data.FieldName {
-				listorder,_ := strconv.Atoi(data.FieldSort[k])
+				listorder, _ := strconv.Atoi(data.FieldSort[k])
 				f := tables.DocumentModelDsl{
 					Mid:          document.Id,
 					FormName:     name,

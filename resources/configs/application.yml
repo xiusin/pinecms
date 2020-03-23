@@ -9,7 +9,7 @@ session:
   name: "gosessionid"
   expires: 0
 
-cache_db: "./runtime/cache/"  # 包括session
+cache_db: "./runtime/cache.db"  # 包括session
 log_path: "./runtime/logs/"
 
 favicon: "./resources/assets/favicon.ico"
