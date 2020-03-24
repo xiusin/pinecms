@@ -15,7 +15,7 @@ import (
 /**
 广告标签
 {{yield ad(id=3, pos="首页banner图")}}
-返回一组广告包括一个
+返回一组广告
 */
 func Ad(args jet.Arguments) reflect.Value {
 	id := args.Get(0)

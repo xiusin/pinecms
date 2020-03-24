@@ -28,7 +28,7 @@ func (c *AssetsManagerController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/assets-manager/edit", "Edit")
 	b.ANY("/assets-manager/add", "Add")
 	b.ANY("/assets-manager/theme", "Theme")
-	b.ANY("/assets-manager/theme-thumb/:theme", "ThemeThumb")
+	b.GET("/assets-manager/theme-thumb/:theme", "ThemeThumb")
 	b.POST("/assets-manager/set-theme", "SetTheme")
 }
 

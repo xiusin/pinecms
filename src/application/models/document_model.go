@@ -11,11 +11,6 @@ import (
 	"github.com/xiusin/pinecms/src/application/models/tables"
 )
 
-const (
-	CUSTOM_TYPE = iota
-	SYSTEM_TYPE
-)
-
 type DocumentModel struct {
 	orm *xorm.Engine
 }
@@ -34,26 +29,29 @@ func (d *DocumentModel) GetList(page, limit int64) (list []tables.DocumentModel,
 	return list, total
 }
 
-func (d *DocumentModel) GetTableName(id int64) string {
-	icache := di.MustGet(controllers.ServiceICache).(cache.ICache)
-	key := fmt.Sprintf(controllers.CacheDocumentModelPrefix, id)
-	tableName, _ := icache.Get(key)
-	if len(tableName) == 0 {
-		var detail = &tables.DocumentModel{}
-		exists, _ := d.orm.ID(id).Get(detail)
-		if !exists {
-			return ""
-		}
-		tableName = []byte(detail.Table)
-		icache.Set(key, tableName)
+func (d *DocumentModel) GetByID(id int64) *tables.DocumentModel {
+	detail := &tables.DocumentModel{}
+	caheKey := fmt.Sprintf(controllers.CacheDocumentModelPrefix, id)
+	di.MustGet(controllers.ServiceICache).(cache.ICache).Delete(caheKey)
+	if exists, err := d.orm.ID(id).Get(detail); err != nil {
+		pine.Logger().Error("document.model", err)
+	} else if !exists {
+		return nil
 	}
-	return string(tableName)
+	return detail
 }
 
-func (d *DocumentModel) GetByID(id int64) *tables.DocumentModel {
-	var detail = &tables.DocumentModel{}
-	if _, err := d.orm.ID(id).Get(detail); err != nil {
-		pine.Logger().Error("document.model", err)
+func (d *DocumentModel) GetByIDWithCache(id int64) *tables.DocumentModel {
+	detail := &tables.DocumentModel{}
+	caheKey := fmt.Sprintf(controllers.CacheDocumentModelPrefix, id)
+	icache := di.MustGet(controllers.ServiceICache).(cache.ICache)
+	err := icache.GetWithUnmarshal(caheKey, detail)
+	if err != nil {
+		detail = d.GetByID(id)
+		if detail == nil {
+			return nil
+		}
+		icache.SetWithMarshal(caheKey, detail)
 	}
 	return detail
 }

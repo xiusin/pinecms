@@ -11,6 +11,11 @@ import (
 )
 
 func ChannelArtList(args jet.Arguments) reflect.Value {
+	defer func() {
+		if err := recover(); err != nil {
+			pine.Logger().Error("ChannelArtList Failed", err)
+		}
+	}()
 	catid := args.Get(0)
 	row := getInt(args.Get(1))
 	if row == 0 {

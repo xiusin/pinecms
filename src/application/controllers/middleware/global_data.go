@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pinecms/src/common/helper"
+	"strconv"
 	"strings"
 
 	"github.com/go-xorm/xorm"
@@ -40,7 +42,9 @@ func SetGlobalConfigData(xorm *xorm.Engine, iCache cache.ICache) pine.Handler {
 			if len(tid) == 0 {
 				tid = []string{ctx.GetString("tid")}
 			}
-			return fmt.Sprintf("//%s/detail?aid=%s&tid=%s", host, aid, tid[0])
+			iaid,_ := strconv.Atoi(aid)
+			itid,_ := strconv.Atoi(tid[0])
+			return fmt.Sprintf("//%s%s", host, helper.DetailUrl(iaid, itid))
 		})
 		ctx.Next()
 	}

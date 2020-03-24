@@ -2,6 +2,7 @@ package storage
 
 import (
 	"errors"
+	"github.com/xiusin/pine"
 	"io"
 	"path/filepath"
 	"strings"
@@ -56,10 +57,12 @@ func (s *OssUploader) Upload(storageName string, LocalFile io.Reader) (string, e
 	if s.client == nil {
 		return "", errors.New("ossClient is error")
 	}
+	storageName = strings.TrimLeft(storageName, "/")
 	if err := s.bucket.PutObject(storageName, LocalFile); err != nil { //上传图片对象
+		pine.Logger().Error("upoadFile failed", storageName, LocalFile == nil)
 		return "", err
 	}
-	return s.host + "/" + strings.TrimLeft(storageName, "/"), nil
+	return s.host + "/" + storageName, nil
 }
 
 func (s *OssUploader) List(dir string) ([]string, string, error) {

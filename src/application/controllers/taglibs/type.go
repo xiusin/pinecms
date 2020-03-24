@@ -9,6 +9,11 @@ import (
 )
 
 func Type(args jet.Arguments) reflect.Value {
+	defer func() {
+		if err := recover(); err != nil {
+			pine.Logger().Error("Type Failed", err)
+		}
+	}()
 	catid := int(args.Get(0).Float())
 	if catid < 0 {
 		panic("typeid参数不能小于1")

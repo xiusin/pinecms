@@ -1,7 +1,7 @@
 {{block channel(typeid,type = "son",row=8,field = "")  }}
     {{ categories := channel(typeid, type, row) }}
     {{if categories}}
-        {{range field = categories}}
+        {{range index,field = categories}}
             {{yield content}}
         {{end}}
     {{end}}

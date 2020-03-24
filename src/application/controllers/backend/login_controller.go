@@ -61,5 +61,7 @@ func (c *LoginController) Logout() {
 	c.Session().Remove("roleid")
 	c.Ctx().RemoveCookie("username")
 	c.Ctx().RemoveCookie("userid")
+	c.Session().Remove("role_name")
+	c.Session().Remove("username")
 	c.Ctx().Redirect("/b/login/index", iris.StatusFound)
 }

@@ -274,7 +274,7 @@ func (c *ContentController) AddContent() {
 		}
 
 		data["created_time"] = time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)
-		model := models.NewDocumentModel().GetByID(int64(mid))
+		model := models.NewDocumentModel().GetByID(int64(mid), )
 		var fields []string
 		var values []interface{}
 		if data["mid"] == "1" { // 只有默认文章模型支持自动提取关键字

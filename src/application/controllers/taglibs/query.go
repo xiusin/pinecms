@@ -16,6 +16,11 @@ import (
  * 	sql SQL语句，只用于select类型语句
  */
 func Query(args jet.Arguments) reflect.Value {
+	defer func() {
+		if err := recover(); err != nil {
+			pine.Logger().Error("Query Failed", err)
+		}
+	}()
 	sess := pine.Make("*xorm.Engine").(*xorm.Engine)
 	query := strings.Trim(args.Get(0).String(), " ")
 	// 只允许查询操作

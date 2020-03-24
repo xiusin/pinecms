@@ -1,7 +1,12 @@
 package models
 
 import (
+	"errors"
+	"fmt"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"log"
 
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -13,19 +18,21 @@ type CategoryModel struct {
 	orm *xorm.Engine
 }
 
+var ErrCategoryNotExists = errors.New("category not exists")
+
 func NewCategoryModel() *CategoryModel {
 	return &CategoryModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
 }
 
-func (m CategoryModel) GetPosArr(id int64) []tables.Category {
+func (c CategoryModel) GetPosArr(id int64) []tables.Category {
 	category := tables.Category{Catid: id}
-	m.orm.Get(&category)
+	c.orm.Get(&category)
 	var links []tables.Category
 	for category.Parentid != 0 {
 		links = append(links, category)
 		parentid := category.Parentid
 		category = tables.Category{Catid: parentid}
-		m.orm.Get(&category)
+		c.orm.Get(&category)
 	}
 	links = append(links, category)
 	var reverse = func(s []tables.Category) []tables.Category {
@@ -139,10 +146,34 @@ func (c CategoryModel) GetCategory(id int64) (tables.Category, error) {
 	return category, nil
 }
 
+func (c CategoryModel) GetCategoryFullWithCache(id int64) (category *tables.Category, err error) {
+	caheKey := fmt.Sprintf(controllers.CacheCategoryInfoPrefix, id)
+	icache := di.MustGet(controllers.ServiceICache).(cache.ICache)
+	category = &tables.Category{}
+	var exists bool
+	err = icache.GetWithUnmarshal(caheKey, category)
+	if err != nil {
+		exists, err = c.orm.ID(id).Get(category)
+		if err != nil || !exists {
+			if err == nil {
+				err = ErrCategoryNotExists
+			}
+			category = nil
+			return
+		}
+		icache.SetWithMarshal(caheKey, category)	// 忽略失败判断
+	}
+	category.Model = NewDocumentModel().GetByID(category.ModelId)
+	if category.Model == nil {
+		return nil, ErrCategoryNotExists
+	}
+	return category, nil
+}
+
 func (c CategoryModel) AddCategory(category tables.Category) bool {
 	_, err := c.orm.Insert(&category)
 	if err != nil {
-		log.Println("AddCategoryError", err)
+		pine.Logger().Error("AddCategoryError", err)
 		return false
 	}
 
@@ -152,7 +183,7 @@ func (c CategoryModel) AddCategory(category tables.Category) bool {
 func (c CategoryModel) UpdateCategory(category tables.Category) bool {
 	res, err := c.orm.Where("catid=?", category.Catid).Update(&category)
 	if err != nil || res == 0 {
-		log.Println("CategoryModel::UpdateCategory", err, res)
+		pine.Logger().Error("CategoryModel::UpdateCategory", err, res)
 		return false
 	}
 	return true
@@ -163,7 +194,7 @@ func (c CategoryModel) IsSonCategory(id, parentid int64) bool {
 	cat := []tables.Category{}
 	err := c.orm.Where("parentid=?", id).Find(&cat)
 	if err != nil {
-		log.Println("CategoryModel::IsSonCategory", err.Error())
+		pine.Logger().Error("CategoryModel::IsSonCategory", err.Error())
 		return false
 	}
 	if len(cat) == 0 {
@@ -179,16 +210,4 @@ func (c CategoryModel) IsSonCategory(id, parentid int64) bool {
 		}
 	}
 	return flag
-}
-
-func (c CategoryModel) GetTable(id int64) string {
-	cat := tables.Category{}
-	exists, _ := c.orm.ID(id).Get(&cat)
-	if exists {
-		modelinfo := NewDocumentModel().GetByID(cat.ModelId)
-		if modelinfo != nil {
-			return modelinfo.Name
-		}
-	}
-	panic("无法从数据库检索出表名信息")
 }

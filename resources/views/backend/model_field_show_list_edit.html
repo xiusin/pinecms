@@ -27,7 +27,7 @@
             <th width="100px">表单名称</th>
             <th width="120px">后端字段显隐</th>
             <th width="120px">后端搜索</th>
-            <th width="120px">前端搜索字段</th>
+{{/*            <th width="120px">前端搜索字段</th>*/}}
             <th width="150px">formatter函数</th>
             <th>模型formatter函数内容</th>
         </tr>
@@ -38,7 +38,7 @@
                 <td>
                     {{if eq $str1.Show true }}
                         <input class="easyui-switchbutton" data-options="onText:'显示', offText:'隐藏'" checked
-                               name="" style="width:100px;height:30px"/>
+                               value="on" style="width:100px;height:30px"/>
                     {{else}}
                         <input class="easyui-switchbutton" data-options="onText:'显示', offText:'隐藏'"
                                name="show_{{$ele.TableField}}" style="width:100px;height:30px"/>
@@ -59,15 +59,15 @@
                         <option value="2" {{if eq $str1.Search 2}}selected{{end}}>模糊查询</option>
                     </select>
                 </td>
-                <td>
-                    {{if eq $str1.FeSearch true }}
-                        <input class="easyui-switchbutton" data-options="onText:'开启', offText:'关闭'" checked
-                               name="fe_search_{{$ele.TableField}}" style="width:100px;height:30px"/>
-                    {{else}}
-                        <input class="easyui-switchbutton" data-options="onText:'开启', offText:'关闭'"
-                               name="fe_search_{{$ele.TableField}}" style="width:100px;height:30px"/>
-                    {{end}}
-                </td>
+{{/*                <td>*/}}
+{{/*                    {{if eq $str1.FeSearch true }}*/}}
+{{/*                        <input class="easyui-switchbutton" data-options="onText:'开启', offText:'关闭'" checked*/}}
+{{/*                               name="fe_search_{{$ele.TableField}}" style="width:100px;height:30px"/>*/}}
+{{/*                    {{else}}*/}}
+{{/*                        <input class="easyui-switchbutton" data-options="onText:'开启', offText:'关闭'"*/}}
+{{/*                               name="fe_search_{{$ele.TableField}}" style="width:100px;height:30px"/>*/}}
+{{/*                    {{end}}*/}}
+{{/*                </td>*/}}
                 <td>
                     <label>
                         <input

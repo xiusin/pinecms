@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/xiusin/pine/cache"
 	"html/template"
 	"regexp"
 	"strconv"
@@ -131,12 +132,13 @@ func (c *DocumentController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/model/add", "ModelAdd")
 	b.ANY("/model/edit", "ModelEdit")
 	b.ANY("/model/delete", "ModelDelete")
+
 	b.ANY("/model/list-field-show", "ModelFieldShowInListPage")
 	b.ANY("/model/gen-sql", "GenSQL")
 	b.ANY("/model/preview-page", "PreviewPage")
 }
 
-func (c *DocumentController) ModelFieldShowInListPage() {
+func (c *DocumentController) ModelFieldShowInListPage(icache cache.ICache) {
 	mid, _ := c.Ctx().URLParamInt64("mid")
 	if mid < 1 {
 		return
@@ -147,7 +149,6 @@ func (c *DocumentController) ModelFieldShowInListPage() {
 	}
 	fields := models.NewDocumentFieldDslModel().GetList(mid)
 	var showInPage = map[string]controllers.FieldShowInPageList{}
-	var fieldArr []string
 	if c.Ctx().IsPost() {
 		postDatas := c.Ctx().PostData()
 		for _, field := range fields {
@@ -157,22 +158,26 @@ func (c *DocumentController) ModelFieldShowInListPage() {
 				ssearch := postDatas["search_"+field.TableField][0]
 				search, _ = strconv.Atoi(ssearch)
 			}
-			_, feSearchExists := postDatas["fe_search_"+field.TableField]
-			if feSearchExists {
-				fieldArr = append(fieldArr, field.TableField)
-			}
+			//_, feSearchExists := postDatas["fe_search_"+field.TableField]
+			//if feSearchExists {
+			//	fieldArr = append(fieldArr, field.TableField)
+			//}
 			showInPage[field.TableField] = controllers.FieldShowInPageList{
 				Show:      showExists,
 				Search:    search,
-				FeSearch:  feSearchExists,
+				//FeSearch:  feSearchExists,
 				Formatter: postDatas["formatter_"+field.TableField][0],
 			}
 		}
 		strs, _ := json.Marshal(showInPage)
 		model.FieldShowInList = string(strs)
-		model.FeSearchFields = strings.Join(fieldArr, ",")
-		model.Formatters = c.Ctx().PostValue("formatters")
-		_, err := c.Ctx().Value("orm").(*xorm.Engine).Table(&tables.DocumentModel{}).Where("id = ?", mid).Update(model)
+		//if len(fieldArr) != 0 {
+		//	model.FeSearchFields = strings.Join(fieldArr, ",")
+		//} else {
+		//	model.FeSearchFields = "*"
+		//}
+		model.Formatters = c.Ctx().PostString("formatters", " ")
+		_, err := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(&tables.DocumentModel{}).Where("id = ?", mid).Update(model)
 		if err != nil {
 			helper.Ajax("更新失败:"+err.Error(), 1, c.Ctx())
 		} else {
@@ -216,6 +221,7 @@ func (c *DocumentController) ModelList() {
 	c.Ctx().Render().ViewData("dataGrid", template.HTML(table))
 	c.Ctx().Render().HTML("backend/model_list.html")
 }
+
 
 func (c *DocumentController) ModelAdd() {
 	list, _ := models.NewDocumentModelFieldModel().GetList(1, 1000)
@@ -341,7 +347,7 @@ func (c *DocumentController) ModelAdd() {
 	c.Ctx().Render().HTML("backend/model_add.html")
 }
 
-func (c *DocumentController) ModelEdit() {
+func (c *DocumentController) ModelEdit(iCache cache.ICache) {
 	list, _ := models.NewDocumentModelFieldModel().GetList(1, 1000)
 	if c.Ctx().IsPost() {
 		var data ModelForm
@@ -400,7 +406,7 @@ func (c *DocumentController) ModelEdit() {
 			document.FeTplIndex = helper.EasyUiIDToFilePath(data.FeTplIndex)
 			document.FeTplList = helper.EasyUiIDToFilePath(data.FeTplList)
 			document.FeTplDetail = helper.EasyUiIDToFilePath(data.FeTplDetail)
-			document.FieldShowInList = ""
+			//document.FieldShowInList = ""
 			document.Execed = 0
 			_, err = session.ID(document.Id).AllCols().Update(document)
 			if err != nil {
@@ -455,6 +461,7 @@ func (c *DocumentController) ModelEdit() {
 			helper.Ajax("更新模型失败:"+err.Error(), 1, c.Ctx())
 			return
 		}
+		iCache.Delete(fmt.Sprintf(controllers.CacheDocumentModelPrefix, data.intID))
 		helper.Ajax("更新模型成功", 0, c.Ctx())
 		return
 	}
@@ -495,6 +502,7 @@ func (c *DocumentController) ModelDelete() {
 		return
 	}
 	if _, err := model.DeleteByID(modelID); err == nil {
+
 		helper.Ajax("删除模型成功", 0, c.Ctx())
 	} else {
 		helper.Ajax("删除模型失败: "+err.Error(), 1, c.Ctx())

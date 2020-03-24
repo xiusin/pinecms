@@ -10,6 +10,11 @@ import (
 )
 
 func Flink(args jet.Arguments) reflect.Value {
+	defer func() {
+		if err := recover(); err != nil {
+			pine.Logger().Error("Flink Failed", err)
+		}
+	}()
 	orm := pine.Make("*xorm.Engine").(*xorm.Engine)
 	sess := orm.Table(&tables.Link{})
 	defer sess.Close()

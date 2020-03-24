@@ -1,10 +1,8 @@
 package frontend
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/go-xorm/xorm"
-	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
@@ -28,14 +26,10 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	b.GET("/list", "List")
 	b.GET("/detail", "Detail")
 	b.GET("/page", "Page")
-
 	b.GET("/list/:tid:int.html", "List")
-
-	b.GET("/view/:aid<\\d+-\\d+>", "Detail")
-
+	b.GET("/articles/:tid<\\d+>-:aid<\\d+>.html", "Detail")
 	b.GET("/detail", "Detail")
 	b.GET("/page", "Page")
-
 	b.GET("/click", "Click")
 }
 
@@ -46,14 +40,15 @@ func (c *IndexController) Index() {
 }
 
 func (c *IndexController) List() {
-	tid, err := c.Ctx().GetInt64("tid")
-	if err != nil || tid < 1 {
+	queryTid,_ := c.Ctx().GetInt64("tid")
+	tid, _ := c.Ctx().Params().GetInt64("tid", queryTid)
+	if tid < 1 {
 		c.Ctx().Abort(404)
 		return
 	}
-	category, err := models.NewCategoryModel().GetCategory(tid)
+	category, err := models.NewCategoryModel().GetCategoryFullWithCache(tid)
 	if err != nil {
-		c.Ctx().Abort(404)
+		c.Ctx().Abort(404, "错误:" + err.Error())
 		return
 	}
 	var globalSize = 10
@@ -69,8 +64,7 @@ func (c *IndexController) List() {
 		} else {
 			pagesize = globalSize
 		}
-		list, err := getOrmSess().Limit(pagesize).Where("catid = ?", tid).
-			Where("deleted_time IS NULL").Where("status = 1").OrderBy(orderby).QueryString()
+		list, err := getOrmSess(category.Model).Limit(pagesize).Where("catid = ?", tid).OrderBy(orderby).QueryString()
 		if err != nil {
 			panic(err)
 		}
@@ -81,8 +75,7 @@ func (c *IndexController) List() {
 	})
 
 	c.ViewData("pagelist", func(listsize int) string {
-		total, _ := getOrmSess().Where("catid = ?", tid).
-			Where("deleted_time IS NULL").Where("status = 1").Count()
+		total, _ := getOrmSess(category.Model).Where("catid = ?", tid).Count()
 		// 计算页码
 		totalPage := int(math.Ceil(float64(total) / float64(globalSize)))
 		pagenum, _ := c.Ctx().GetInt("page")
@@ -100,37 +93,24 @@ func (c *IndexController) List() {
 	c.Render().HTML(template(category.ListTpl))
 }
 
-func (c *IndexController) Detail(icache cache.ICache) {
-	fmt.Println("detail", c.Param().Get("aid"))
-	var err error
-	var category tables.Category
+func (c *IndexController) Detail() {
 	aid, _ := c.Ctx().GetInt64("aid")
 	tid, _ := c.Ctx().GetInt64("tid")
+	aid, _ = c.Param().GetInt64("aid", aid)
+	tid,_ = c.Param().GetInt64("tid", tid)
+	var err error
 	if tid < 1 || aid < 1 {
 		c.Ctx().Abort(http.StatusNotFound)
 		return
 	}
-	categoryCacheKey := fmt.Sprintf(controllers.CacheCategoryInfoPrefix, tid)
-	// 获取模型
-	data, _ := icache.Get(categoryCacheKey)
-
-	if len(data) > 0 {
-		json.Unmarshal(data, &category)
-	}
-	catmodel := models.NewCategoryModel()
-	if category.Catid == 0 {
-		category, err = catmodel.GetCategory(tid)
-		if err != nil || category.ModelId == 0 {
-			c.Ctx().Abort(http.StatusNotFound)
-			return
-		}
-		data, _ := json.Marshal(&category)
-		icache.Set(categoryCacheKey, data)
-	}
-	tableName := models.NewDocumentModel().GetTableName(category.ModelId)
-	rest, err := getOrmSess(tableName).Where("id = ?", aid).Where("catid = ?", tid).Where("status = 1").Where("deleted_time IS NULL").Limit(1).QueryString()
+	category, err := models.NewCategoryModel().GetCategoryFullWithCache(tid)
 	if err != nil {
-		pine.Logger().Errorf("查找tableName:%s错误: %s",tableName, err)
+		c.Ctx().Abort(http.StatusNotFound)
+		return
+	}
+	rest, err := getOrmSess(category.Model).Where("id = ?", aid).Where("catid = ?", tid).Limit(1).QueryString()
+	if err != nil {
+		pine.Logger().Errorf("查找tableName:%s错误: %s",category.Model.Table, err)
 		c.Ctx().Abort(http.StatusNotFound)
 		return
 	}
@@ -143,11 +123,11 @@ func (c *IndexController) Detail(icache cache.ICache) {
 	c.ViewData("prenext", func() string {
 		var str string
 		// aid 根据aid 读取上一篇和下一篇
-		pre, _ := getOrmSess(tableName).Where("id < ?", aid).Where("status = 1").Where("deleted_time IS NULL").Desc("id").Limit(1).QueryString()
+		pre, _ := getOrmSess(category.Model).Where("id < ?", aid).Desc("id").Limit(1).QueryString()
 		if len(pre) > 0 {
 			str += "<a href='/detail?aid=" + pre[0]["id"] + "'>上一篇：" + pre[0]["title"] + "</a>"
 		}
-		next, _ := getOrmSess(tableName).Where("id > ?", aid).Where("status = 1").Where("deleted_time IS NULL").Asc("id").Limit(1).QueryString()
+		next, _ := getOrmSess(category.Model).Where("id > ?", aid).Asc("id").Limit(1).QueryString()
 		if len(next) > 0 {
 			str += "<a href='/detail?aid=" + next[0]["id"] + "'>下一篇: " + next[0]["title"] + "</a>"
 		}
@@ -162,7 +142,7 @@ func (c *IndexController) Detail(icache cache.ICache) {
 			row = 10
 		}
 		var conds = []string{}
-		sess := getOrmSess(tableName).Where("id <> ?", article["id"]).Where("status = 1").Where("deleted_time IS NULL")
+		sess := getOrmSess(category.Model).Where("id <> ?", article["id"])
 		for _, kw := range kws {
 			splitKeywords := strings.Split(kw, ",")
 			for _, keyword := range splitKeywords {
@@ -174,7 +154,10 @@ func (c *IndexController) Detail(icache cache.ICache) {
 		articles, _ := sess.Limit(row).Desc("id").QueryString()
 		return articles
 	})
-	c.Ctx().Render().HTML(template("detail.jet"))
+	if category.Model.FeTplDetail == "" {
+		category.Model.FeTplDetail = "detail.jet"
+	}
+	c.Ctx().Render().HTML(template(category.Model.FeTplDetail))
 }
 
 func (c *IndexController) Page() {
@@ -195,41 +178,39 @@ func (c *IndexController) Page() {
 }
 
 func (c *IndexController) Click() {
-	aid, _ := c.Ctx().GetInt64("aid")
-	tid, _ := c.Ctx().GetInt64("tid")
-	if aid < 1 || tid < 1 {
-		c.Ctx().Abort(http.StatusNotFound)
-		return
-	}
-	clickCache := fmt.Sprintf("click_%d_%d", tid, aid)
-	info := c.Ctx().GetCookie(clickCache)
-	if len(info) == 0 {
-		res, err := di.MustGet("orm").(*xorm.Engine).Table(models.NewCategoryModel().GetTable(tid)).ID(aid).Incr("visit_count").Exec()
-		if err != nil {
-			logger.Error("无法更新点击数据", err)
-			return
-		}
-		if affe, _ := res.RowsAffected(); affe > 0 {
-			c.Ctx().SetCookie(clickCache, "1", 0)
-		}
-	}
+	//aid, _ := c.Ctx().GetInt64("aid")
+	//tid, _ := c.Ctx().GetInt64("tid")
+	//if aid < 1 || tid < 1 {
+	//	c.Ctx().Abort(http.StatusNotFound)
+	//	return
+	//}
+	//clickCache := fmt.Sprintf("click_%d_%d", tid, aid)
+	//info := c.Ctx().GetCookie(clickCache)
+	//if len(info) == 0 {
+	//	res, err := di.MustGet("orm").(*xorm.Engine).Table(models.NewCategoryModel().GetTable(tid)).ID(aid).Incr("visit_count").Exec()
+	//	if err != nil {
+	//		logger.Error("无法更新点击数据", err)
+	//		return
+	//	}
+	//	if affe, _ := res.RowsAffected(); affe > 0 {
+	//		c.Ctx().SetCookie(clickCache, "1", 0)
+	//	}
+	//}
 }
 
 func (c *IndexController) GetClick() {
-	aid, _ := c.Ctx().GetInt64("aid")
-	tid, _ := c.Ctx().GetInt64("tid")
-	if aid < 1 || tid < 1 {
-		c.Ctx().Abort(http.StatusNotFound)
-		return
-	}
-	fmt.Println(di.MustGet("orm").(*xorm.Engine).Table(models.NewCategoryModel().GetTable(tid)).ID(aid).Select("visit_count").QueryString())
+	//aid, _ := c.Ctx().GetInt64("aid")
+	//tid, _ := c.Ctx().GetInt64("tid")
+	//if aid < 1 || tid < 1 {
+	//	c.Ctx().Abort(http.StatusNotFound)
+	//	return
+	//}
+	//fmt.Println(di.MustGet("orm").(*xorm.Engine).Table(models.NewCategoryModel().GetTable(tid)).ID(aid).Select("visit_count").QueryString())
 }
 
-func getOrmSess(tableName ...string) *xorm.Session {
-	if len(tableName) == 0 {
-		tableName = append(tableName, "articles")
-	}
-	return pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(controllers.GetTableName(tableName[0]))
+func getOrmSess(model *tables.DocumentModel) *xorm.Session {
+	//.Select(model.FeSearchFields)
+	return pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(controllers.GetTableName(model.Table)).Where("status = 1").Where("deleted_time IS NULL")
 }
 
 func template(tpl string) string {
@@ -243,10 +224,7 @@ func getCategoryPos(tid int64) string {
 	var arr []tables.Category
 	key := fmt.Sprintf(controllers.CacheCategoryPosPrefix, tid)
 	icache := di.MustGet(controllers.ServiceICache).(cache.ICache)
-	data, err := icache.Get(key)
-	if len(data) > 0 {
-		err = json.Unmarshal(data, &res)
-	}
+	err := icache.GetWithUnmarshal(key, &res)
 	if err != nil {
 		arr = models.NewCategoryModel().GetPosArr(tid)
 		for _, cat := range arr {
@@ -260,8 +238,9 @@ func getCategoryPos(tid int64) string {
 		}
 		if len(arr) > 0 {
 			res = strings.Join(position, " > ")
-			icache.Set(key, []byte(res))
+			icache.SetWithMarshal(key, res)
 		}
 	}
+
 	return res
 }

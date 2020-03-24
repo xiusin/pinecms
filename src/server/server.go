@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/gorilla/securecookie"
 	"github.com/xiusin/pine"
@@ -138,7 +139,9 @@ func diConfig() {
 	//})
 
 	redisOpt := redis.DefaultOption()
-	//redisOpt.Port = 6380
+	if runtime.GOOS != "darwin" {
+		redisOpt.Port = 6380
+	}
 	iCache = redis.New(redisOpt)
 
 	theme, _ := iCache.Get(controllers.CacheTheme)
@@ -176,7 +179,6 @@ func diConfig() {
 
 	htmlEngine := template.New(conf.View.BeDirname, ".html", conf.View.Reload)
 	htmlEngine.AddFunc("GetInMap", controllers.GetInMap)
-
 	pine.RegisterViewEngine(htmlEngine)
 
 	jetEngine := jet.New(conf.View.FeDirname, ".jet", conf.View.Reload)

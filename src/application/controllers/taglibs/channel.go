@@ -10,6 +10,11 @@ import (
 )
 
 func Channel(args jet.Arguments) reflect.Value {
+	defer func() {
+		if err := recover(); err != nil {
+			pine.Logger().Error("Channel Failed", err)
+		}
+	}()
 	row := getInt(args.Get(2))
 	if row <= 0 {
 		row = 10

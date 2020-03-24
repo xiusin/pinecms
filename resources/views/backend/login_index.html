@@ -3,9 +3,9 @@
 <head>
     <title>PINECMS 后台管理系统 - 登录</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
 
-    <link rel="icon" type="image/ico" href="/assets/bg/images/favicon.ico" />
+    <link rel="icon" type="image/ico" href="/assets/bg/images/favicon.ico"/>
     <!-- Bootstrap -->
     <link href="/assets/bg/css/bootstrap.min.css" rel="stylesheet">
     <link href="/assets/bg/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
@@ -18,7 +18,9 @@
 <body class="brownish-scheme">
 
 <!-- Preloader -->
-<div class="mask"><div id="loader"></div></div>
+<div class="mask">
+    <div id="loader"></div>
+</div>
 <!--/Preloader -->
 
 <!-- Wrap all page content here -->
@@ -33,20 +35,23 @@
                 <form id="form-signin" class="form-signin">
                     <section>
                         <div class="input-group">
-                            <input type="text" class="form-control" name="username" id="username" placeholder="Username">
+                            <input type="text" class="form-control" name="username" id="username"
+                                   placeholder="Username">
                             <div class="input-group-addon"><i class="fa fa-user"></i></div>
                         </div>
                         <div class="input-group">
-                            <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+                            <input type="password" class="form-control" name="password" id="password"
+                                   placeholder="Password">
                             <div class="input-group-addon"><i class="fa fa-key"></i></div>
                         </div>
                         <div class="input-group">
-                            <input type="text" id="codeid" name="code" class="form-control" placeholder="Captcha" >
+                            <input type="text" id="codeid" name="code" class="form-control" placeholder="Captcha">
                             <div class="input-group-addon">
-                                <img src="/assets/logincode.png" style="height: 20px;" id="code_img" alt="点击刷新" onclick="changeCode()">
+                                <img src="/assets/logincode.png" style="height: 20px;" id="code_img" alt="点击刷新"
+                                     onclick="changeCode()">
                             </div>
                         </div>
-
+                        <div class="alert alert-red" id="errmsg" style="display: none"></div>
                     </section>
 
                     <section class="new-acc">
@@ -60,14 +65,8 @@
         <!-- Page content end -->
 
 
-
-
-
-
     </div>
     <!-- Make page fluid-->
-
-
 
 
 </div>
@@ -80,21 +79,33 @@
 <script src="/assets/bg/js/minoral.min.js"></script>
 
 <script>
-    $(function(){
+    var showCpt = false;
+    $(function () {
         $('.welcome').addClass('animated bounceIn');
+        $('#username, #password, #codeid').focus(function () {
+            $("#errmsg").hide();
+        })
+        $("#codeid").focus(function () {
+            if (!showCpt) changeCode()
+        })
     })
 
     function checkform() {
-        if ($('#username').val() == '') {
+        if ($('#username').val() === '') {
             $('#username').focus();
             return false;
         }
-        if ($('#password').val() == '') {
+        if ($('#password').val() === '') {
             $('#password').focus();
+            return false;
+        }
+        if ($('#codeid').val() === '') {
+            $('#codeid').focus();
             return false;
         }
         $.post('/b/login/index', $("#form-signin").serialize(), function (data) {
             if (data.errcode) {
+                $("#errmsg").html(data.errmsg).show();
                 changeCode();
             } else {
                 window.location.href = "/b/index/index";
@@ -103,9 +114,9 @@
         return false;
     }
 
-    function changeCode () {
-        var that = document.getElementById('code_img');
-        that.src = "/public/verify-code?" + Math.random();
+    function changeCode() {
+        showCpt = true;
+        document.getElementById('code_img').src = "/public/verify-code?" + Math.random();
     }
 </script>
 </body>

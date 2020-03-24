@@ -2,12 +2,18 @@ package taglibs
 
 import (
 	"github.com/CloudyKit/jet"
+	"github.com/xiusin/pine"
 	"reflect"
 	"strconv"
 	"strings"
 )
 
 func ArcList(args jet.Arguments) reflect.Value {
+	defer func() {
+		if err := recover(); err != nil {
+			pine.Logger().Error("ArcList Failed", err)
+		}
+	}()
 	catid := args.Get(0)
 	var ids []string
 	switch catid.Type().String() {
@@ -29,9 +35,6 @@ func ArcList(args jet.Arguments) reflect.Value {
 	list, err := sess.QueryString()
 	if err != nil {
 		panic(err)
-	}
-	if list == nil {
-		list = []map[string]string{}
 	}
 	return reflect.ValueOf(list)
 }
