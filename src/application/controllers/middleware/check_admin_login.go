@@ -17,7 +17,6 @@ import (
 func CheckAdminLoginAndAccess(xorm *xorm.Engine, iCache cache.ICache) pine.Handler {
 	return func(this *pine.Context) {
 		if strings.Contains(this.Request().URL.Path, "login") {
-			this.Session().Clear()
 			this.Next()
 			return
 		}
@@ -40,7 +39,6 @@ func CheckAdminLoginAndAccess(xorm *xorm.Engine, iCache cache.ICache) pine.Handl
 			}
 			this.Next()
 		} else {
-			this.Session().Clear()
 			this.Redirect("/b/login/index", 302)
 			return
 		}

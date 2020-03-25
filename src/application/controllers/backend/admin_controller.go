@@ -33,7 +33,6 @@ func (c *AdminController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/admin/role-edit", "RoleEdit")
 	b.ANY("/admin/role-delete", "RoleDelete")
 	b.ANY("/admin/role-permission", "RolePermission")
-	b.ANY("/admin/check-rolename", "PublicCheckRoleName")
 
 }
 
@@ -210,7 +209,6 @@ func (c *AdminController) PubicCheckName() {
 func (c *AdminController) PublicCheckRoleName() {
 	rolename := c.Ctx().FormValue("rolename")
 	id,_:= c.Ctx().GetInt64("id")
-	pine.Logger().Debug(id, rolename)
 	if !c.Ctx().IsAjax() || rolename == "" {
 		helper.Ajax("参数错误 ,"+rolename, 1, c.Ctx())
 		return

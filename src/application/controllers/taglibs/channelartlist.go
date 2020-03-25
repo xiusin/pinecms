@@ -5,6 +5,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"reflect"
 	"strconv"
 	"strings"
@@ -62,6 +63,11 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 			val, exists := kvPairs[strconv.Itoa(int(v.Catid))]
 			if exists && len(val) > 0 && val != "0" {
 				categories[k].HasSon = true
+			}
+			if v.Type == 0 {
+				categories[k].Url = helper.ListUrl(int(v.Catid))
+			} else if categories[k].Type == 1 {
+				categories[k].Url = helper.PageUrl(int(v.Catid))
 			}
 		}
 	}

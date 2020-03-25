@@ -1,0 +1,16 @@
+{{extends "layouts/layout.jet"}}
+
+{{ block seotitle() }}  {{field.Title}} - {{field.Keywords}} - {{field.Description}} {{end}}
+{{ block seokeywords() }} {{field.Keywords}}  {{end}}
+{{ block seodescription() }} {{field.Description}} {{end}}
+
+{{ block body() }}
+  <div class="lbox">
+    <div class="content_box whitebg">
+      <h2 class="htitle">{{field.Title}}<span class="con_nav">您现在的位置是：<a href="/">首页</a>>{{field.Position | unsafe}}</h2>
+      <div class="con_text">
+        {{field.Content | unsafe}}
+      </div>
+    </div>
+  </div>
+{{ end }}

@@ -4,7 +4,7 @@
 <form id="category_category_add_dialog_form" method="post">
     <table width="100%" class="mdoutable">
         <tr>
-            <td width="100">上级栏目：</td>
+            <td width="130">上级栏目：</td>
             <td><input id="category_category_add_dialog_form_parentid" name="parentid" class="easyui-combotree" value="{{ .parentid }}"/></td>
         </tr>
         <tr>
@@ -72,6 +72,13 @@
             <td>链接：</td>
             <td><input name="url" type="text" style="width:100%;height:22px"/></td>
         </tr>
+
+        <tr >
+            <td>栏目目录：</td>
+            <td><input name="dir" class="easyui-textbox" value="" type="text" data-options="required: true"/></td>
+            <td>
+        </tr>
+
         <tr>
             <td>描述：</td>
             <td><textarea name="description" style="width:100%;height:60px"></textarea></td>

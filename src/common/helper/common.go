@@ -14,7 +14,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"os"
-	"path"
+	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
@@ -58,16 +58,19 @@ func ScanDir(dir string) []node {
 		panic(fmt.Sprintf("打开%s:%s", dir, err.Error()))
 	}
 	for _, f := range fs {
-		name := path.Join(dir, f.Name())
+		if filepath.Ext(f.Name()) != ".jet" {
+			continue
+		}
+		name := f.Name()
 		id := FilePathToEasyUiID(name)
 		node := node{
 			Id:       id,
 			Name:     name,
 			Children: nil,
 		}
-		if f.IsDir() {
-			node.Children = ScanDir(name)
-		}
+		//if f.IsDir() {
+		//	node.Children = ScanDir(name)
+		//}
 		nodes = append(nodes, node)
 	}
 	return nodes

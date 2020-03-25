@@ -1,8 +1,11 @@
 package taglibs
 
 import (
+	"fmt"
 	"github.com/CloudyKit/jet"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"reflect"
 	"strconv"
 	"strings"
@@ -28,13 +31,32 @@ func ArcList(args jet.Arguments) reflect.Value {
 	}
 	offset := getInt(args.Get(1))
 	limit := getInt(args.Get(2))
-	sess := getOrmSess().Limit(limit, offset).Where("deleted_time IS NULL").Where("status = 1").OrderBy(orderBy)
+
+	modelTable := controllers.GetTableName("articles")
+
+	categoryTable := controllers.GetTableName("category")
+
+	sess := getOrmSess().
+		Limit(limit, offset).Select(fmt.Sprintf("%s.*, %s.catname, %s.url as caturl, %s.type ", modelTable, categoryTable, categoryTable, categoryTable)).
+		Join("LEFT", categoryTable, categoryTable + ".catid = " + modelTable + ".catid").
+		Where(modelTable +".deleted_time IS NULL").Where(modelTable +".status = 1").OrderBy(orderBy)
 	if ids[0] != "0" && ids[0] != "-1" {
-		sess.In("catid", ids)
+		sess.In(modelTable + ".catid", ids)
 	}
 	list, err := sess.QueryString()
+
+
 	if err != nil {
 		panic(err)
+	}
+	// 重写URL
+	for i, art := range list {
+		catid,_ := strconv.Atoi(art["catid"])
+		if art["type"] == "0" {
+			list[i]["caturl"] = helper.ListUrl(catid)
+		} else if art["type"] == "1" {
+			list[i]["caturl"]  = helper.PageUrl(catid)
+		}
 	}
 	return reflect.ValueOf(list)
 }

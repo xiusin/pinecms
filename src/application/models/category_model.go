@@ -163,7 +163,7 @@ func (c CategoryModel) GetCategoryFullWithCache(id int64) (category *tables.Cate
 		}
 		icache.SetWithMarshal(caheKey, category)	// 忽略失败判断
 	}
-	category.Model = NewDocumentModel().GetByID(category.ModelId)
+	category.Model = NewDocumentModel().GetByIDWithCache(category.ModelId)
 	if category.Model == nil {
 		return nil, ErrCategoryNotExists
 	}

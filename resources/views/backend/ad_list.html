@@ -21,9 +21,9 @@
     }
 
     //操作格式化
-    function adListOptFormatter(val) {
-        console.log(arguments)
+    function adListOptFormatter(val, obj) {
         var btn = [];
+        btn.push('<a href="javascript:;" onclick="previewPic(\'' + obj.image + '\', this)">查看</a>');
         btn.push('<a href="javascript:;" onclick="adListEdit(' + val + ')">编辑</a>');
         btn.push('<a href="javascript:;" onclick="adListDelete(' + val + ')">删除</a>');
         return btn.join(' | ');
@@ -55,7 +55,7 @@
     }
 
     function adListLogoFormatter(val) {
-        return val ? '<img src="'+val+'" style="width: 20px;height: 20px;"/>' : ''
+        return val ? '<img src="'+val+'" style="width: 20px;height: 20px;" />' : ''
     }
 
     function adListOrder() {

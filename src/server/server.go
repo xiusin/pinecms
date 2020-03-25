@@ -2,24 +2,22 @@ package config
 
 import (
 	"fmt"
+	"github.com/gorilla/securecookie"
 	"github.com/natefinch/lumberjack"
 	"github.com/xiusin/logger"
-	"github.com/xiusin/pine/cache/providers/redis"
-	"github.com/xiusin/pinecms/src/application/controllers/taglibs"
-	"io"
-	"os"
-	"path/filepath"
-	"runtime"
-
-	"github.com/gorilla/securecookie"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pine/cache/providers/badger"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pine/render/engine/jet"
 	"github.com/xiusin/pine/render/engine/template"
 	"github.com/xiusin/pine/sessions"
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/controllers/taglibs"
+	"io"
+	"os"
+	"path/filepath"
 	"xorm.io/core"
 
 	"github.com/xiusin/pinecms/src/config"
@@ -59,16 +57,9 @@ func initDatabase() {
 	_orm.ShowExecTime(o.ShowExecTime)
 	_orm.SetMaxOpenConns(int(o.MaxOpenConns))
 	_orm.SetMaxIdleConns(int(o.MaxIdleConns))
-	//_orm.SetDefaultCacher(cacher)
-	//configs := map[string]string{
-	//	"conn": Cfg.RedisAddr,
-	//	"key":  "default", // the collection name of redis for cache adapter.
-	//}
-	//ccStore := cachestore.NewRedisCache(configs)
-	//ccStore.Debug = true
-	//cacher := xorm.NewLRUCacher(ccStore, 99999999)
 
-	//_orm.Sync(&tables.Advert{}, &tables.AdvertSpace{})
+	// todo 使用xorm缓存适配器
+
 	XOrmEngine = _orm
 }
 
@@ -76,6 +67,7 @@ func initApp() {
 	app = pine.New()
 	diConfig()
 	app.Use(middleware.CheckDatabaseBackupDownload())
+	//app.Use(middleware.Demo())
 }
 
 func Server() {
@@ -129,8 +121,7 @@ func runServe() {
 
 func diConfig() {
 
-	//todo 两个内嵌缓存库居然都有问题
-	//iCache = badger.New(badger.Option{TTL: int(conf.Session.Expires), Path: conf.CacheDb})
+	iCache = badger.New(badger.Option{TTL: int(conf.Session.Expires), Path: conf.CacheDb})
 	//iCache = bbolt.New(bbolt.Option{
 	//	TTL:             int(conf.Session.Expires),
 	//	Path:            conf.CacheDb,
@@ -138,11 +129,11 @@ func diConfig() {
 	//	CleanupInterval: 0,
 	//})
 
-	redisOpt := redis.DefaultOption()
-	if runtime.GOOS != "darwin" {
-		redisOpt.Port = 6380
-	}
-	iCache = redis.New(redisOpt)
+	//redisOpt := redis.DefaultOption()
+	//if runtime.GOOS != "darwin" {
+	//	redisOpt.Port = 6380
+	//}
+	//iCache = redis.New(redisOpt)
 
 	theme, _ := iCache.Get(controllers.CacheTheme)
 	if len(theme) == 0 {

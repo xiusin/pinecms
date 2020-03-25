@@ -205,6 +205,10 @@
         src="/assets/backend/static/js/easyui/expand/jquery-easyui-radiobox/radiobox.js"></script>
 <link rel="stylesheet" type="text/css"
       href="/assets/backend/static/js/easyui/expand/jquery-easyui-radiobox/radiobox.css" title="metro"/>
+
+<script type="text/javascript" src="/assets/lightgallery/js/lightgallery-all.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/assets/lightgallery/css/lightgallery.min.css">
+
 {{template "backend/public_umeditor.html"}}
 <style>
     #wrap #content .main {
@@ -310,10 +314,26 @@
         padding: 7px !important;
         min-height: 25px;
     }
+    .datagrid-row {
+        height: 40px;
+        line-height: 40px;
+    }
 </style>
 <div id="myEditorImage" style="display: none"></div>
 <script>
     wsConn = null;
+
+    function previewPic(url, that) {
+        $(that).lightGallery({
+            dynamic: true,
+            dynamicEl: [{
+                "src": url,
+                'thumb': url,
+                'subHtml': '<h4>Fading Light</h4><p>Classic view from Rigwood Jetty on Coniston Water an old archive shot similar to an old post but a little later on.</p>'
+            }]
+        })
+
+    }
 
     $(function () {
         $("ul.dropdown-menu").on("click", "[data-stopPropagation]", function (e) {

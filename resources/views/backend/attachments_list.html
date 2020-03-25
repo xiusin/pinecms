@@ -1,5 +1,4 @@
-<script type="text/javascript" src="/assets/lightgallery/js/lightgallery-all.min.js"></script>
-<link rel="stylesheet" type="text/css" href="/assets/lightgallery/css/lightgallery.css">
+
 
 {{ .dataGrid }}
 
@@ -43,25 +42,14 @@
 
     function attachmentsListSizeOptFormatter(id, obj) {
         var btn = [];
-        if (obj.type === "img") {
-            btn.push("<a href=\"javascript:;\" onclick=\"attachmentListPreview('" + obj.url + "', this)\">查看</a>");
+        isImage = /png|jpg|bmp|gif/.test(obj.url)
+        if (obj.type === "img" || isImage) {
+            btn.push("<a href=\"javascript:;\" onclick=\"previewPic('" + obj.url + "', this)\">查看</a>");
         }
-        btn.push("<a href=\"javascript:;\" onclick=\"downloadAttachments('" + obj.url + "')\" >下载</a>");
         btn.push("<a href=\"javascript:;\" onclick=\"deleteAttachments(" + id + ")\">删除</a>");
         return btn.join(' | ');
     }
 
-    function attachmentListPreview(url, that) {
-        $(that).lightGallery({
-            dynamic: true,
-            dynamicEl: [{
-                "src": url,
-                'thumb': url,
-                'subHtml': '<h4>Fading Light</h4><p>Classic view from Rigwood Jetty on Coniston Water an old archive shot similar to an old post but a little later on.</p>'
-            }]
-        })
-
-    }
 
     function uploadAttachmentsImage() {
         fromUEImageUploader(this, 1)

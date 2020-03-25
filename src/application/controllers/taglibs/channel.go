@@ -5,8 +5,8 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"reflect"
-	"strconv"
 )
 
 func Channel(args jet.Arguments) reflect.Value {
@@ -39,9 +39,9 @@ func Channel(args jet.Arguments) reflect.Value {
 	sess.Find(&data)
 	for k, v := range data {
 		if v.Type == 0 {
-			data[k].Url = "/list?tid=" + strconv.Itoa(int(v.Catid))
-		} else if v.Type == 1 {
-			data[k].Url = "/page?tid=" + strconv.Itoa(int(v.Catid))
+			data[k].Url = helper.ListUrl(int(v.Catid))
+		} else if data[k].Type == 1 {
+			data[k].Url = helper.PageUrl(int(v.Catid))
 		}
 	}
 	return reflect.ValueOf(data)

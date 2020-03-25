@@ -2,17 +2,23 @@ package frontend
 
 import (
 	"fmt"
+	jet2 "github.com/CloudyKit/jet"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pine/render/engine/jet"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
+	"io/ioutil"
 	"math"
 	"net/http"
+	"os"
 	"path/filepath"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -23,145 +29,236 @@ type IndexController struct {
 
 func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	b.GET("/", "Index")
-	b.GET("/list", "List")
-	b.GET("/detail", "Detail")
-	b.GET("/page", "Page")
-	b.GET("/list/:tid:int.html", "List")
-	b.GET("/articles/:tid<\\d+>-:aid<\\d+>.html", "Detail")
-	b.GET("/detail", "Detail")
-	b.GET("/page", "Page")
+	b.GET("/page/:tid:int.html", "Page")
+	b.GET("/list/:tid:int-:page:int.html", "List")
+	b.GET("/news/:tid<\\d+>-:aid<\\d+>.html", "Detail")
 	b.GET("/click", "Click")
+	b.GET("/search", "Search")
+}
+
+// 检查静态页面
+func getStaticFile(filename string) string {
+	return filepath.Join("./resources/pages/", filename)
+}
+
+func viewDataToJetMap(binding map[string]interface{}) jet2.VarMap {
+	vars := jet2.VarMap{}
+	for k, v := range binding {
+		vars[k] = reflect.ValueOf(v)
+	}
+	return vars
 }
 
 func (c *IndexController) Index() {
-	// todo 渲染到静态文件html ,path 调整为静态地址
-	// todo writer 为文件对象处理
-	c.Ctx().Render().HTML(template("index.jet"))
+	indexPage := "index.html"
+	finfo, err := os.Stat(getStaticFile(indexPage))
+	if err != nil || finfo.Size() == 0 {
+		f, err := os.OpenFile(getStaticFile(indexPage), os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
+		if err != nil {
+			c.Ctx().WriteString(err.Error())
+			return
+		}
+		defer f.Close()
+		jet := pine.Make(controllers.ServiceJetEngine).(*jet.PineJet)
+		temp, err := jet.GetTemplate(template("index.jet"))
+		if err != nil {
+			c.Ctx().WriteString(err.Error())
+			return
+		}
+		err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), nil)
+		if err != nil {
+			c.Ctx().WriteString(err.Error())
+			return
+		}
+	}
+	data, _ := ioutil.ReadFile(getStaticFile(indexPage))
+	c.Ctx().Writer().Write(data)
 }
 
 func (c *IndexController) List() {
-	queryTid,_ := c.Ctx().GetInt64("tid")
-	tid, _ := c.Ctx().Params().GetInt64("tid", queryTid)
-	if tid < 1 {
-		c.Ctx().Abort(404)
-		return
-	}
-	category, err := models.NewCategoryModel().GetCategoryFullWithCache(tid)
-	if err != nil {
-		c.Ctx().Abort(404, "错误:" + err.Error())
-		return
-	}
-	var globalSize = 10
-	c.ViewData("field", category)
-	c.ViewData("typeid", tid)
-	c.ViewData("__typeid", tid)
-	c.ViewData("list", func(pagesize int, orderby string) []map[string]string {
-		if orderby == "" {
-			orderby = "listorder desc"
+	pagename := c.Ctx().Request().URL.Path
+	_, err := os.Stat(getStaticFile(pagename))
+
+	if os.IsNotExist(err) {
+		queryTid, _ := c.Ctx().GetInt64("tid")
+		tid, _ := c.Ctx().Params().GetInt64("tid", queryTid)
+		if tid < 1 {
+			c.Ctx().Abort(404)
+			return
 		}
-		if pagesize > 0 {
-			globalSize = pagesize
-		} else {
-			pagesize = globalSize
-		}
-		list, err := getOrmSess(category.Model).Limit(pagesize).Where("catid = ?", tid).OrderBy(orderby).QueryString()
+
+		category, err := models.NewCategoryModel().GetCategoryFullWithCache(tid)
 		if err != nil {
-			panic(err)
+			c.Ctx().Abort(404, "错误:"+err.Error())
+			return
 		}
-		if list == nil {
-			list = []map[string]string{}
+		var globalSize = 10
+		pageNum, _ := c.Ctx().Params().GetInt("page", 1)
+		if pageNum < 1 {
+			pageNum = 1
 		}
-		return list
-	})
+		c.ViewData("field", category)
+		c.ViewData("typeid", tid)
+		c.ViewData("__typeid", tid)
+		c.ViewData("list", func(pagesize int, orderby string) []map[string]string {
+			if orderby == "" {
+				orderby = "listorder desc"
+			}
+			if pagesize > 0 {
+				globalSize = pagesize
+			} else {
+				pagesize = globalSize
+			}
+			start := (pageNum - 1) * pagesize
+			list, err := getOrmSess(category.Model).Limit(pagesize, start).Where("catid = ?", tid).OrderBy(orderby).QueryString()
+			if err != nil {
+				panic(err)
+			}
+			if list == nil {
+				list = []map[string]string{}
+			}
+			return list
+		})
 
-	c.ViewData("pagelist", func(listsize int) string {
-		total, _ := getOrmSess(category.Model).Where("catid = ?", tid).Count()
-		// 计算页码
-		totalPage := int(math.Ceil(float64(total) / float64(globalSize)))
-		pagenum, _ := c.Ctx().GetInt("page")
-		if pagenum < 1 {
-			pagenum = 1
-		} else if pagenum > totalPage {
-			pagenum = totalPage
-		}
-		return fmt.Sprintf("总记录数: %d, 总页数: %d, 当前页数: %d, 分页条目数为: %d", total, totalPage, pagenum, globalSize)
-	})
+		c.ViewData("pagelist", func(listsize int) string {
+			total, _ := getOrmSess(category.Model).Where("catid = ?", tid).Count()
+			// 计算页码
+			totalPage := int(math.Ceil(float64(total) / float64(globalSize)))
+			pagenum, _ := c.Ctx().GetInt("page")
+			if pagenum < 1 {
+				pagenum = 1
+			} else if pagenum > totalPage {
+				pagenum = totalPage
+			}
+			return fmt.Sprintf("总记录数: %d, 总页数: %d, 当前页数: %d, 分页条目数为: %d", total, totalPage, pagenum, globalSize)
+		})
 
-	if category.ListTpl == "" {
-		category.ListTpl = "list_article.jet"
+		if category.Model.FeTplList == "" {
+			category.Model.FeTplList = "list_article.jet"
+		}
+
+		os.MkdirAll(filepath.Dir(getStaticFile(pagename)), os.ModePerm)
+
+		f, err := os.OpenFile(getStaticFile(pagename), os.O_CREATE|os.O_RDWR, os.ModePerm)
+		if err != nil {
+			pine.Logger().Error(err)
+			c.Ctx().Abort(http.StatusNotFound)
+			return
+		}
+		defer f.Close()
+		jet := pine.Make(controllers.ServiceJetEngine).(*jet.PineJet)
+		temp, err := jet.GetTemplate(template(category.Model.FeTplList))
+		if err != nil {
+			pine.Logger().Error(err)
+			c.Ctx().Abort(http.StatusNotFound)
+			return
+		}
+		err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), nil)
+		if err != nil {
+			pine.Logger().Error(err)
+			c.Ctx().Abort(http.StatusNotFound)
+			return
+		}
 	}
-	c.Render().HTML(template(category.ListTpl))
+	data, _ := ioutil.ReadFile(getStaticFile(pagename))
+	c.Ctx().Writer().Write(data)
 }
 
 func (c *IndexController) Detail() {
-	aid, _ := c.Ctx().GetInt64("aid")
-	tid, _ := c.Ctx().GetInt64("tid")
-	aid, _ = c.Param().GetInt64("aid", aid)
-	tid,_ = c.Param().GetInt64("tid", tid)
-	var err error
-	if tid < 1 || aid < 1 {
-		c.Ctx().Abort(http.StatusNotFound)
-		return
-	}
-	category, err := models.NewCategoryModel().GetCategoryFullWithCache(tid)
-	if err != nil {
-		c.Ctx().Abort(http.StatusNotFound)
-		return
-	}
-	rest, err := getOrmSess(category.Model).Where("id = ?", aid).Where("catid = ?", tid).Limit(1).QueryString()
-	if err != nil {
-		pine.Logger().Errorf("查找tableName:%s错误: %s",category.Model.Table, err)
-		c.Ctx().Abort(http.StatusNotFound)
-		return
-	}
-	article := rest[0]
-	article["catname"] = category.Catname
-	article["position"] = getCategoryPos(tid)
-
-	c.ViewData("field", article)
-	c.ViewData("__typeid", tid)
-	c.ViewData("prenext", func() string {
-		var str string
-		// aid 根据aid 读取上一篇和下一篇
-		pre, _ := getOrmSess(category.Model).Where("id < ?", aid).Desc("id").Limit(1).QueryString()
-		if len(pre) > 0 {
-			str += "<a href='/detail?aid=" + pre[0]["id"] + "'>上一篇：" + pre[0]["title"] + "</a>"
+	pagename := c.Ctx().Request().URL.Path
+	finfo, err := os.Stat(getStaticFile(pagename))
+	if err != nil || finfo.Size() == 0 {
+		aid, _ := c.Param().GetInt64("aid")
+		tid, _ := c.Param().GetInt64("tid")
+		var err error
+		if tid < 1 || aid < 1 {
+			c.Ctx().Abort(http.StatusNotFound)
+			return
 		}
-		next, _ := getOrmSess(category.Model).Where("id > ?", aid).Asc("id").Limit(1).QueryString()
-		if len(next) > 0 {
-			str += "<a href='/detail?aid=" + next[0]["id"] + "'>下一篇: " + next[0]["title"] + "</a>"
+		category, err := models.NewCategoryModel().GetCategoryFullWithCache(tid)
+		if err != nil {
+			c.Ctx().Abort(http.StatusNotFound)
+			return
 		}
-		return str
-	})
-	c.ViewData("likearticle", func(row int, kws ...string) []map[string]string {
-		var keywords []interface{}
-		if kws == nil || len(kws) == 0 {
-			kws = append(kws, article["keywords"], article["tags"])
+		sess := getOrmSess(category.Model).Where("id = ?", aid).Where("catid = ?", tid).Limit(1)
+		rest, err := sess.QueryString()
+		if err != nil || len(rest) == 0 {
+			pine.Logger().Errorf("查找tableName:%s错误: %s", category.Model.Table, err)
+			c.Ctx().Abort(http.StatusNotFound)
+			return
 		}
-		if row < 1 {
-			row = 10
-		}
-		var conds = []string{}
-		sess := getOrmSess(category.Model).Where("id <> ?", article["id"])
-		for _, kw := range kws {
-			splitKeywords := strings.Split(kw, ",")
-			for _, keyword := range splitKeywords {
-				conds = append(conds, "CONCAT(keywords,' ',title, ' ', tags) LIKE ?")
-				keywords = append(keywords, "%"+strings.Trim(keyword, "")+"%")
+		article := rest[0]
+		article["catname"] = category.Catname
+		article["position"] = getCategoryPos(tid)
+		article["caturl"] = helper.ListUrl(int(tid))
+		c.ViewData("field", article)
+		c.ViewData("__typeid", tid)
+		c.ViewData("prenext", func() string {
+			var str string
+			// aid 根据aid 读取上一篇和下一篇
+			pre, _ := getOrmSess(category.Model).Where("id < ?", aid).Desc("id").Limit(1).QueryString()
+			if len(pre) > 0 {
+				aid, _ := strconv.Atoi(pre[0]["id"])
+				cid, _ := strconv.Atoi(pre[0]["catid"])
+				str += "<p><a href='" + helper.DetailUrl(cid, aid) + "'>上一篇：" + pre[0]["title"] + "</a></p>"
 			}
+			next, _ := getOrmSess(category.Model).Where("id > ?", aid).Asc("id").Limit(1).QueryString()
+			if len(next) > 0 {
+				aid, _ := strconv.Atoi(next[0]["id"])
+				cid, _ := strconv.Atoi(next[0]["catid"])
+				str += "<p><a href='" + helper.DetailUrl(cid, aid) + "'>下一篇: " + next[0]["title"] + "</a></p>"
+			}
+			return str
+		})
+		c.ViewData("likearticle", func(row int, kws ...string) []map[string]string {
+			var keywords []interface{}
+			if kws == nil || len(kws) == 0 {
+				kws = append(kws, article["keywords"], article["tags"])
+			}
+			if row < 1 {
+				row = 10
+			}
+			var conds = []string{}
+			sess := getOrmSess(category.Model).Where("id <> ?", article["id"])
+			for _, kw := range kws {
+				splitKeywords := strings.Split(kw, ",")
+				for _, keyword := range splitKeywords {
+					conds = append(conds, "CONCAT(keywords,' ',title, ' ', tags) LIKE ?")
+					keywords = append(keywords, "%"+strings.Trim(keyword, "")+"%")
+				}
+			}
+			sess.And(strings.Join(conds, " OR "), keywords...)
+			articles, _ := sess.Limit(row).Desc("id").QueryString()
+			return articles
+		})
+		if category.Model.FeTplDetail == "" {
+			category.Model.FeTplDetail = "detail.jet"
 		}
-		sess.And(strings.Join(conds, " OR "), keywords...)
-		articles, _ := sess.Limit(row).Desc("id").QueryString()
-		return articles
-	})
-	if category.Model.FeTplDetail == "" {
-		category.Model.FeTplDetail = "detail.jet"
+		os.MkdirAll(filepath.Dir(getStaticFile(pagename)), os.ModePerm)
+		f, err := os.OpenFile(getStaticFile(pagename), os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
+		if err != nil {
+			c.Ctx().WriteString(err.Error())
+			return
+		}
+		defer f.Close()
+		jet := pine.Make(controllers.ServiceJetEngine).(*jet.PineJet)
+		temp, err := jet.GetTemplate(template(category.Model.FeTplDetail))
+		if err != nil {
+			c.Ctx().WriteString(err.Error())
+			return
+		}
+		err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), nil)
+		if err != nil {
+			c.Ctx().WriteString(err.Error())
+			return
+		}
 	}
-	c.Ctx().Render().HTML(template(category.Model.FeTplDetail))
+	data, _ := ioutil.ReadFile(getStaticFile(pagename))
+	c.Ctx().Writer().Write(data)
 }
 
 func (c *IndexController) Page() {
-	tid, _ := c.Ctx().GetInt64("tid")
+	tid, _ := c.Ctx().Params().GetInt64("tid")
 	if tid < 1 {
 		c.Ctx().Abort(404)
 		return
@@ -229,9 +326,9 @@ func getCategoryPos(tid int64) string {
 		arr = models.NewCategoryModel().GetPosArr(tid)
 		for _, cat := range arr {
 			if cat.Type == 0 {
-				position = append(position, "<a href='/list?tid="+strconv.Itoa(int(cat.Catid))+"'>"+cat.Catname+"</a>")
+				position = append(position, "<a href='"+helper.ListUrl(int(cat.Catid))+"'>"+cat.Catname+"</a>")
 			} else if cat.Type == 1 {
-				position = append(position, "<a href='/page?tid="+strconv.Itoa(int(cat.Catid))+"'>"+cat.Catname+"</a>")
+				position = append(position, "<a href='"+helper.PageUrl(int(cat.Catid))+"'>"+cat.Catname+"</a>")
 			} else {
 				position = append(position, "<a href='"+cat.Url+"'>"+cat.Catname+"</a>")
 			}
@@ -241,6 +338,5 @@ func getCategoryPos(tid int64) string {
 			icache.SetWithMarshal(key, res)
 		}
 	}
-
 	return res
 }

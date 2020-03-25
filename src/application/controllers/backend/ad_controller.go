@@ -48,9 +48,8 @@ func (c *AdController) AdList() {
 	}, helper.EasyuiGridfields{
 		"名称":  {"field": "name", "width": "30", "index": "0"},
 		"广告位": {"field": "space_name", "width": "50", "index": "1"},
-		"图片":  {"field": "image", "width": "30", "index": "2", "formatter": "adListLogoFormatter"},
-		"启用":  {"field": "status", "width": "20", "index": "3", "formatter": "adListEnabledFormatter"},
-		"操作":  {"field": "id", "index": "4", "formatter": "adListOptFormatter"},
+		"启用":  {"field": "status", "width": "20", "index": "2", "formatter": "adListEnabledFormatter"},
+		"操作":  {"field": "id", "index": "3", "formatter": "adListOptFormatter"},
 	})
 	c.Ctx().Render().ViewData("dataGrid", template.HTML(table))
 	c.Ctx().Render().HTML("backend/ad_list.html")

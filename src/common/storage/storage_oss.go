@@ -2,6 +2,7 @@ package storage
 
 import (
 	"errors"
+	"fmt"
 	"github.com/xiusin/pine"
 	"io"
 	"path/filepath"
@@ -18,15 +19,16 @@ type OssUploader struct {
 }
 
 func (s *OssUploader) Remove(name string) error {
-	panic("implement me")
+	return s.bucket.DeleteObject( strings.TrimLeft(filepath.Join(s.urlPrefix, name), "/"))
 }
 
 func (s *OssUploader) GetFullUrl(name string) string {
-	panic("implement me")
+	return fmt.Sprintf("%s/%s", strings.TrimRight(s.host,"/"),strings.TrimLeft(filepath.Join(s.urlPrefix, name), "/"))
 }
 
 func (s *OssUploader) Exists(name string) (bool, error) {
-	panic("implement me")
+	name = strings.TrimLeft(filepath.Join(s.urlPrefix, name), "/")
+	return s.bucket.IsObjectExist(name)
 }
 
 func NewOssUploader(config map[string]string) *OssUploader {
@@ -66,5 +68,13 @@ func (s *OssUploader) Upload(storageName string, LocalFile io.Reader) (string, e
 }
 
 func (s *OssUploader) List(dir string) ([]string, string, error) {
-	panic("implement me")
+	list,err := s.bucket.ListObjects(oss.Prefix(strings.TrimLeft(filepath.Join(s.urlPrefix, dir), "/")))
+	if err != nil {
+		return nil, "", err
+	}
+	var files = []string{}
+	for _, object := range list.Objects {
+		files = append(files, s.host + object.Key)
+	}
+	return files, s.host, nil
 }

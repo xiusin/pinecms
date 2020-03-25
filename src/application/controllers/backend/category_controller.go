@@ -139,6 +139,7 @@ func (c *CategoryController) CategoryAdd() {
 			EditContentRouter:    edit,
 			ManagerContentRouter: manager,
 			Thumb:                c.Ctx().FormValue("thumb"),
+			Dir:                  c.Ctx().FormValue("dir"),
 			Url:                  url,
 			Description:          c.Ctx().FormValue("description"),
 			Ismenu:               ismenu,
@@ -161,7 +162,7 @@ func (c *CategoryController) CategoryAdd() {
 	list, _ := models.NewDocumentModel().GetList(1, 1000)
 	c.Ctx().Render().ViewData("models", list)
 	c.Ctx().Render().ViewData("parentid", parentid)
-	c.Ctx().Render().ViewData("thumbHtml", template.HTML(helper.SiginUpload("thumb","",false,"","","")))
+	c.Ctx().Render().ViewData("thumbHtml", template.HTML(helper.SiginUpload("thumb", "", false, "", "", "")))
 	c.Ctx().Render().HTML("backend/category_add.html")
 }
 
@@ -210,7 +211,7 @@ func (c *CategoryController) CategoryEdit() {
 		category.Parentid = int64(parentid)
 		category.Thumb = c.Ctx().FormValue("thumb")
 		category.Description = c.Ctx().FormValue("description")
-
+		category.Dir = c.Ctx().FormValue("dir")
 		if category.ModelId == 0 && category.Type == 0 {
 			category.AddContentRouter = c.Ctx().FormValue("add_content_router")
 			category.EditContentRouter = c.Ctx().FormValue("edit_content_router")
@@ -229,7 +230,7 @@ func (c *CategoryController) CategoryEdit() {
 	c.Ctx().Render().ViewData("models", list)
 	c.Ctx().Render().ViewData("model_id", int(category.ModelId))
 	c.Ctx().Render().ViewData("category", category)
-	c.Ctx().Render().ViewData("thumbHtml", template.HTML(helper.SiginUpload("thumb",category.Thumb,false,"","","")))
+	c.Ctx().Render().ViewData("thumbHtml", template.HTML(helper.SiginUpload("thumb", category.Thumb, false, "", "", "")))
 	c.Ctx().Render().ViewData("typelist", []string{0: "栏目", 1: "页面", 2: "链接"})
 	c.Ctx().Render().HTML("backend/category_edit.html")
 }

@@ -40,11 +40,11 @@ func SetGlobalConfigData(xorm *xorm.Engine, iCache cache.ICache) pine.Handler {
 		})
 		ctx.Render().ViewData("detail_url", func(aid string, tid ...string) string {
 			if len(tid) == 0 {
-				tid = []string{ctx.GetString("tid")}
+				tid = []string{ctx.Params().Get("tid")}
 			}
 			iaid,_ := strconv.Atoi(aid)
 			itid,_ := strconv.Atoi(tid[0])
-			return fmt.Sprintf("//%s%s", host, helper.DetailUrl(iaid, itid))
+			return fmt.Sprintf("//%s%s", host, helper.DetailUrl(itid, iaid))
 		})
 		ctx.Next()
 	}

@@ -5,7 +5,6 @@
 {{ import "_query.jet" }}
 {{ import "_ad.jet" }}
 {{ assetsDir := "/assets/blog/" }}
-
 <!doctype html>
 <html>
 <head>
@@ -26,7 +25,7 @@
 <header id="header">
   <div class="navbox">
     <h2 id="mnavh"><span class="navicon"></span></h2>
-    <div class="logo"><a href="#">PINECMS</a></div>
+    <div class="logo"><a href="#">PineCMS</a></div>
     <nav>
       <ul id="starlist">
         <li><a href="/">首页</a></li>
@@ -63,7 +62,22 @@
 <article>
   {{yield body()}}
   <div class="rbox">
-      <div class="card">
+   <div class="whitebg tongji">
+          <h2 class="htitle">站点信息</h2>
+          <ul>
+            <li><b>建站时间</b>：2020-03-24</li>
+            <li><b>网站程序</b>：PineCMS 1.0</li>
+            <li><b>主题模板</b>：<a href="http://www.yangqq.com" target="_blank">《今夕何夕》</a></li>
+{*            <li><b>文章统计</b>：299条</li>*}
+{*            <li><b>文章评论</b>：490条</li>*}
+{*            <li><b>统计数据</b>：<a href="/">百度统计</a></li>*}
+            <li><b>微信公众号</b>：扫描二维码，关注我们</li>
+            {{yield ad(pos="个人二维码") content}}
+                <img src="{{field.Image}}" class="tongji_gzh">
+             {{end}}
+          </ul>
+        </div>
+      <div class="card" style="display: none">
         <h2>我的名片</h2>
         <p>网名：DanceSmile | 即步非烟</p>
         <p>职业：Web前端设计师、网页设计</p>
@@ -76,7 +90,7 @@
           <li id="weixin"><a href="#" target="_blank" class="iconfont icon-weixin" title="关注我的微信"></a><i><img src="{{assetsDir}}images/wx.png"></i></li>
         </ul>
       </div>
-      <div class="whitebg notice">
+      <div class="whitebg notice" style="display: none">
         <h2 class="htitle">网站公告</h2>
         <ul>
           <li><a href="/">十条设计原则教你学会如何设计网页布局!</a></li>
@@ -89,17 +103,12 @@
         <h2 class="htitle">点击排行</h2>
         <section class="topnews imgscale"><a href="/"><img src="{{assetsDir}}images/h1.jpg"><span>6条网页设计配色原则,让你秒变配色高手</span></a></section>
         <ul>
-          <li><i></i><a href="/">十条设计原则教你学会如何设计网页布局!</a></li>
-          <li><i></i><a href="/">用js+css3来写一个手机栏目导航</a></li>
-          <li><i></i><a href="/">6条网页设计配色原则,让你秒变配色高手</a></li>
-          <li><i></i><a href="/">三步实现滚动条触动css动画效果</a></li>
-          <li><i></i><a href="/">个人博客，属于我的小世界！</a></li>
-          <li><i></i><a href="/">安静地做一个爱设计的女子</a></li>
-          <li><i></i><a href="/">个人网站做好了，百度不收录怎么办？来，看看他们怎么做的。</a></li>
-          <li><i></i><a href="/">做个人博客如何用帝国cms美化留言增加头像选择</a></li>
+         {{yield artlist(orderby="visit_count desc", typeid=0, limit=5) content}}
+              <li><i></i><a href="{{detail_url(field["id"], field["catid"])}}">{{field["title"]}}</a></li>
+         {{end}}
         </ul>
       </div>
-      <div class="whitebg tuijian">
+      <div class="whitebg tuijian" style="display: none">
         <h2 class="htitle">站长推荐</h2>
         <section class="topnews imgscale"><a href="/"><img src="{{assetsDir}}images/h2.jpg"><span>6条网页设计配色原则,让你秒变配色高手</span></a></section>
         <ul>
@@ -134,7 +143,7 @@
 
         </ul>
       </div>
-      <div class="whitebg wenzi">
+      <div class="whitebg wenzi" style="display: none">
         <h2 class="htitle">猜你喜欢</h2>
         <ul>
           <li><a href="/">十条设计原则教你学会如何设计网页布局!</a></li>
@@ -147,28 +156,14 @@
           <li><a href="/">做个人博客如何用帝国cms美化留言增加头像选择</a></li>
         </ul>
       </div>
-      <div class="ad whitebg imgscale">
+      <div class="ad whitebg imgscale" style="display: none">
         <ul>
           {{yield ad(id=10) content}}
              <a href="/"><img src="{{field.Image}}"></a>
           {{end}}
         </ul>
       </div>
-      <div class="whitebg tongji">
-        <h2 class="htitle">站点信息</h2>
-        <ul>
-          <li><b>建站时间</b>：2020-03-24</li>
-          <li><b>网站程序</b>：PineCMS 1.0</li>
-          <li><b>主题模板</b>：<a href="http://www.yangqq.com" target="_blank">《今夕何夕》</a></li>
-          <li><b>文章统计</b>：299条</li>
-          <li><b>文章评论</b>：490条</li>
-          <li><b>统计数据</b>：<a href="/">百度统计</a></li>
-          <li><b>微信公众号</b>：扫描二维码，关注我们</li>
-          {{yield ad(pos="个人二维码") content}}
-              <img src="{{field.Image}}" class="tongji_gzh">
-           {{end}}
-        </ul>
-      </div>
+
       <div class="links whitebg">
         <h2 class="htitle"><span class="sqlink"><a href="/">申请链接</a></span>友情链接</h2>
         <ul>
@@ -190,9 +185,11 @@
     </div>
     <div class="endnav">
       <p><b>站点声明：</b></p>
-      <p>1、本站个人PINECMS模板案例，主题设置者杨青青</p>
+      <p>1、本站个人PINECMS模板案例，主题设计者杨青青</p>
       <p>2、开源CMS项目只求大家的Star和PR。Email：<a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=HHh9cn95b3F1cHVye1xtbTJ-c3E" target="_blank">xiusin.chen@gmail.com</a></p>
-      <p>Copyright © <a href="http://www.xiusin.com" target="_blank">www.xiusin.com</a> All Rights Reserved. 备案号：<a href="http://www.miitbeian.gov.cn/" target="_blank">蜀ICP备11002373号-1</a></p>
+      <p>Copyright © <a href="http://www.xiusin.com" target="_blank">www.xiusin.com</a> All Rights Reserved.
+{*      备案号：<a href="http://www.miitbeian.gov.cn/" target="_blank">蜀ICP备11002373号-1</a>*}
+      </p>
     </div>
   </div>
   <a href="#">

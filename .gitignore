@@ -1,4 +1,4 @@
-t  ./vendor
+./vendor
 *.log
 runtime
 resources/configs/database.yml
@@ -10,3 +10,4 @@ node_modules/
 tmp/runner-build
 *.js___jb_tmp___
 go.sum
+resources/pages/

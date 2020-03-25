@@ -40,7 +40,7 @@ func (c *PublicController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *PublicController) FeDirScan() {
-	c.Ctx().Render().JSON(helper.ScanDir(config.AppConfig().View.FeDirname))
+	c.Ctx().Render().JSON(helper.ScanDir(path.Join(config.AppConfig().View.FeDirname, config.AppConfig().View.Theme) ))
 }
 
 //上传图片
