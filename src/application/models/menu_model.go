@@ -1,11 +1,7 @@
 package models
 
 import (
-	"fmt"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
-	"github.com/xiusin/pinecms/src/application/controllers"
 	"strconv"
 	"strings"
 
@@ -41,36 +37,23 @@ func (m *MenuModel) GetMenu(parentid, roleid int64) []tables.Menu {
 }
 
 //当前位置
-func (m MenuModel) CurrentPos(id int64, level ...int) string {
-	if len(level) == 0 {
-		level = append(level, 0)
+func (m MenuModel) currentPos(id int64) string {
+	menu := tables.Menu{Id: id}
+	has, _ := m.orm.Get(&menu)
+	str := ""
+	if !has {
+		return ""
 	}
-	cache := pine.Make(controllers.ServiceICache).(cache.ICache)
-	cacheKey := fmt.Sprintf("backend:current_pos_%d", id)
-	data, _ := cache.Get(cacheKey)
-	if data == nil {
-		menu := tables.Menu{Id: id}
-		has, _ := m.orm.Get(&menu)
-		str := ""
-		if !has {
-			return ""
-		}
-		if menu.Parentid != 0 {
-			str += m.CurrentPos(menu.Parentid, level[0]+1)
-		}
-		if level[0] != 0 {
-			return `<li><a href=\'javascript:;\'>` + menu.Name + `</a></li>`
-		}
-		data = []byte(str)
-		cache.Set(cacheKey, data)
+	if menu.Parentid != 0 {
+		str += m.currentPos(menu.Parentid)
 	}
-
-	html := string(data)
-	if level[0] == 0 {
-		html = `<div class=\'breadcrumbs\'><ol class=\'breadcrumb\'><li><a href=\'javascript:;\'><i class=\'fa fa-home\'></i> 首页</a></li>` + html + `</ol></div>`
-	}
-	return html
+	return str + "<li><a href=\\'javascript:;\\'>"+menu.Name+"</a></li>"
 }
+
+func (m MenuModel) CurrentPos(id int64) string {
+	return `<div class=\'breadcrumbs\'><ol class=\'breadcrumb\'><li><a href=\'javascript:;\'><i class=\'fa fa-home\'></i> 首页</a></li>` + m.currentPos(id) + `</ol></div>`
+}
+
 
 func (m MenuModel) GetTree(menus []tables.Menu, parentid int64) []map[string]interface{} {
 	res := []map[string]interface{}{}

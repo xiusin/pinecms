@@ -37,9 +37,7 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 // 检查静态页面
-func getStaticFile(filename string) string {
-	return filepath.Join("./resources/pages/", filename)
-}
+
 
 func viewDataToJetMap(binding map[string]interface{}) jet2.VarMap {
 	vars := jet2.VarMap{}
@@ -51,9 +49,10 @@ func viewDataToJetMap(binding map[string]interface{}) jet2.VarMap {
 
 func (c *IndexController) Index() {
 	indexPage := "index.html"
-	finfo, err := os.Stat(getStaticFile(indexPage))
+	pageFilePath := controllers.GetStaticFile(indexPage)
+	finfo, err := os.Stat(pageFilePath)
 	if err != nil || finfo.Size() == 0 {
-		f, err := os.OpenFile(getStaticFile(indexPage), os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
+		f, err := os.OpenFile(pageFilePath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
 		if err != nil {
 			c.Ctx().WriteString(err.Error())
 			return
@@ -71,13 +70,14 @@ func (c *IndexController) Index() {
 			return
 		}
 	}
-	data, _ := ioutil.ReadFile(getStaticFile(indexPage))
+	data, _ := ioutil.ReadFile(pageFilePath)
 	c.Ctx().Writer().Write(data)
 }
 
 func (c *IndexController) List() {
 	pagename := c.Ctx().Request().URL.Path
-	_, err := os.Stat(getStaticFile(pagename))
+	pageFilePath := controllers.GetStaticFile(pagename)
+	_, err := os.Stat(pageFilePath)
 
 	if os.IsNotExist(err) {
 		queryTid, _ := c.Ctx().GetInt64("tid")
@@ -137,9 +137,9 @@ func (c *IndexController) List() {
 			category.Model.FeTplList = "list_article.jet"
 		}
 
-		os.MkdirAll(filepath.Dir(getStaticFile(pagename)), os.ModePerm)
+		os.MkdirAll(filepath.Dir(pageFilePath), os.ModePerm)
 
-		f, err := os.OpenFile(getStaticFile(pagename), os.O_CREATE|os.O_RDWR, os.ModePerm)
+		f, err := os.OpenFile(pageFilePath, os.O_CREATE|os.O_RDWR, os.ModePerm)
 		if err != nil {
 			pine.Logger().Error(err)
 			c.Ctx().Abort(http.StatusNotFound)
@@ -160,13 +160,14 @@ func (c *IndexController) List() {
 			return
 		}
 	}
-	data, _ := ioutil.ReadFile(getStaticFile(pagename))
+	data, _ := ioutil.ReadFile(pageFilePath)
 	c.Ctx().Writer().Write(data)
 }
 
 func (c *IndexController) Detail() {
 	pagename := c.Ctx().Request().URL.Path
-	finfo, err := os.Stat(getStaticFile(pagename))
+	pageFilePath := controllers.GetStaticFile(pagename)
+	finfo, err := os.Stat(pageFilePath)
 	if err != nil || finfo.Size() == 0 {
 		aid, _ := c.Param().GetInt64("aid")
 		tid, _ := c.Param().GetInt64("tid")
@@ -234,8 +235,8 @@ func (c *IndexController) Detail() {
 		if category.Model.FeTplDetail == "" {
 			category.Model.FeTplDetail = "detail.jet"
 		}
-		os.MkdirAll(filepath.Dir(getStaticFile(pagename)), os.ModePerm)
-		f, err := os.OpenFile(getStaticFile(pagename), os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
+		os.MkdirAll(filepath.Dir(pageFilePath), os.ModePerm)
+		f, err := os.OpenFile(pageFilePath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
 		if err != nil {
 			c.Ctx().WriteString(err.Error())
 			return
@@ -253,7 +254,7 @@ func (c *IndexController) Detail() {
 			return
 		}
 	}
-	data, _ := ioutil.ReadFile(getStaticFile(pagename))
+	data, _ := ioutil.ReadFile(pageFilePath)
 	c.Ctx().Writer().Write(data)
 }
 

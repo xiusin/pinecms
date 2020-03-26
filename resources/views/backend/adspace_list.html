@@ -21,10 +21,10 @@
 
     //操作格式化
     function adspaceListOptFormatter(val) {
-        var btn = [];
-        btn.push('<a href="javascript:;" onclick="adspaceListEdit(' + val + ')">编辑</a>');
-        btn.push('<a href="javascript:;" onclick="adspaceListDelete(' + val + ')">删除</a>');
-        return btn.join(' | ');
+        return '<div class="btn-group-sm">' +
+            '<button type="button" class="btn btn-default" onclick="adspaceListEdit(' + val + ')">编辑</button>' +
+            '<button type="button" class="btn btn-danger" onclick="adspaceListDelete(' + val + ')">删除</button>' +
+            '</div>';
     }
 
     //刷新

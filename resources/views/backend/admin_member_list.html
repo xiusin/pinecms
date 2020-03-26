@@ -21,15 +21,13 @@
     }
     //操作格式化
     function adminMemberListOperateFormatter(val) {
-        var btn = [];
-        if (val == 1) {
-            btn.push('编辑')
-            btn.push('删除')
-        } else {
-            btn.push('<a href="javascript:;" onclick="adminMemberEdit(' + val + ')">编辑</a>');
-            btn.push('<a href="javascript:;" onclick="adminMemberDelete(' + val + ')">删除</a>');
+        var btn = ["<div class=\"btn-group-sm\">"];
+        if (val !== 1) {
+            btn.push('<a class="btn btn-default" href="javascript:;" onclick="adminMemberEdit(' + val + ')">编辑</a>');
+            btn.push('<a class="btn btn-danger" href="javascript:;" onclick="adminMemberDelete(' + val + ')">删除</a>');
         }
-        return btn.join(' | ');
+        btn.push("</div>")
+        return btn.join('');
     }
 
     //刷新

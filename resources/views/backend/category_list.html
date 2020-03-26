@@ -5,14 +5,14 @@
      data-options="modal:true,closed:true,iconCls:'icons-application-application_add',buttons:[{text:'确定',iconCls:'icons-other-tick',handler:function(){
      categoryCategoryAddDialogFormSubmit();
      }},{text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#category_category_add_dialog').dialog('close');}}]"
-     style="width:800px;height:500px;"></div>
+     style="width:800px;height:720px;"></div>
 
 <!-- 编辑栏目 -->
 <div id="category_category_edit_dialog" class="easyui-dialog" title="编辑栏目"
      data-options="modal:true,closed:true,iconCls:'icons-application-application_edit',buttons:[{text:'确定',iconCls:'icons-other-tick',handler:function(){
      categoryCategoryAddDialogFormSubmit();
      }},{text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#category_category_edit_dialog').dialog('close');}}]"
-     style="width:800px;height:500px;"></div>
+     style="width:800px;height:720px;"></div>
 
 <script type="text/javascript">
     var category_categorylist_treegrid_toolbar = [
@@ -40,19 +40,24 @@
 
     //操作格式化
     function categoryCategoryListOperateFormatter(id, obj) {
-        var btn = [];
-        btn.push('<a href="javascript:;" onclick="categoryCategoryListPreview(' + id + ', \'' + obj.type + '\')">预览</a>');
+        var btn = [`<div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作
+            <span class="caret"></span>
+        </button><ul class="dropdown-menu" role="menu" >`]
+
+        btn.push('<li><a href="javascript:;" onclick="categoryCategoryListPreview(' + id + ', \'' + obj.type + '\')">预览</a></li>');
         if (obj.type !== 2) {
             if (obj.router !== "") {
-                btn.push('<a href="javascript:;" onclick="categoryOpenCustomerContentList(\'' + obj.router + '\', ' + id + ')">内容管理</a>');
+                btn.push('<li><a href="javascript:;" onclick="categoryOpenCustomerContentList(\'' + obj.router + '\', ' + id + ')">内容管理</a></li>');
             } else {
-                btn.push('<a href="javascript:;" onclick="categoryOpenContentList(' + obj.type + ',' + id + ')">内容管理</a>');
+                btn.push('<li><a href="javascript:;" onclick="categoryOpenContentList(' + obj.type + ',' + id + ')">内容管理</a></li>');
             }
-            btn.push('<a href="javascript:;" onclick="categoryCategoryListAdd(' + id + ')">添加子栏目</a>');
+            btn.push('<li><a href="javascript:;" onclick="categoryCategoryListAdd(' + id + ')">添加子栏目</a></li>');
         }
-        btn.push('<a href="javascript:;" onclick="categoryCategoryListEdit(' + id + ')">修改</a>');
-        btn.push('<a href="javascript:;" onclick="categoryCategoryListDelete(' + id + ')">删除</a>');
-        return btn.join(' | ');
+        btn.push('<li><a href="javascript:;" onclick="categoryCategoryListEdit(' + id + ')">修改</a></li>');
+        btn.push('<li><a href="javascript:;" onclick="categoryCategoryListDelete(' + id + ')">删除</a></li>');
+        btn.push('</ul></div>') ;
+        return btn.join('');
     }
 
     //刷新

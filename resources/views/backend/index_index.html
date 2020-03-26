@@ -88,7 +88,7 @@
                                         </ul>
                                     </li>
                                     <li>
-                                        <a href="javascript:logout();"><i class="fa fa-power-off"></i> Logout</a>
+                                        <a href="javascript:logout();"><i class="fa fa-power-off"></i> 退出登录</a>
                                     </li>
                                 </ul>
                             </li>
@@ -417,14 +417,11 @@
                 title: title,
                 href: url,
                 closable: true,
-                cache: false
+                cache: true
             }
             if (iframe) {
                 option.href = null
                 option.content = '<iframe src="' + url + '" frameborder="0" fit="true" border="none" width="100%" height="100%"></iframe>'
-            }
-            if (title === "实时日志") {
-                option.cache = true
             }
             $('#pagetabs').tabs('add', option);
         }
@@ -442,6 +439,7 @@
             top: ($(window).height() - 45) / 2
         });
     }
+
 
     function ajaxLoadEnd() {
         $(".datagrid-mask").remove();

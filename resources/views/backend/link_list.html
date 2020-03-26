@@ -22,10 +22,12 @@
 
     //操作格式化
     function linkListOptFormatter(val) {
-        var btn = [];
-        btn.push('<a href="javascript:;" onclick="linkListEdit(' + val + ')">编辑</a>');
-        btn.push('<a href="javascript:;" onclick="linkListDelete(' + val + ')">删除</a>');
-        return btn.join(' | ');
+        var btn = ["<div class=\"btn-group-sm\">"];
+        btn.push('<a class="btn btn-default" href="javascript:void(0);" onclick="linkListEdit(' + val + ')">编辑</a>');
+        btn.push('<a class="btn btn-danger" href="javascript:void(0);" onclick="linkListDelete(' + val + ')">删除</a>');
+        btn.push("</div>")
+        return btn.join('');
+
     }
 
     //刷新

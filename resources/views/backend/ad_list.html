@@ -22,11 +22,11 @@
 
     //操作格式化
     function adListOptFormatter(val, obj) {
-        var btn = [];
-        btn.push('<a href="javascript:;" onclick="previewPic(\'' + obj.image + '\', this)">查看</a>');
-        btn.push('<a href="javascript:;" onclick="adListEdit(' + val + ')">编辑</a>');
-        btn.push('<a href="javascript:;" onclick="adListDelete(' + val + ')">删除</a>');
-        return btn.join(' | ');
+        return '<div class="btn-group-sm">' +
+            '<button type="button" class="btn btn-info" onclick="previewPic(\'' + obj.image + '\', this)">查看</button>' +
+            '<button type="button" class="btn btn-default" onclick="adListEdit(' + val + ')">编辑</button>' +
+            '<button type="button" class="btn btn-danger" onclick="adListDelete(' + val + ')">删除</button>' +
+            '</div>';
     }
 
     //刷新

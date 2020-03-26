@@ -1,5 +1,3 @@
-
-
 {{ .dataGrid }}
 
 <div id="attachments_list_datagrid_toolbar" style="padding:1px;height:auto">
@@ -41,13 +39,15 @@
     }
 
     function attachmentsListSizeOptFormatter(id, obj) {
-        var btn = [];
+        var btn = ["<div class=\"btn-group-sm\">"];
         isImage = /png|jpg|bmp|gif/.test(obj.url)
         if (obj.type === "img" || isImage) {
-            btn.push("<a href=\"javascript:;\" onclick=\"previewPic('" + obj.url + "', this)\">查看</a>");
+            btn.push("<a class='btn btn-info' href=\"javascript:;\" onclick=\"previewPic('" + obj.url + "', this)\">查看</a>");
         }
-        btn.push("<a href=\"javascript:;\" onclick=\"deleteAttachments(" + id + ")\">删除</a>");
-        return btn.join(' | ');
+        btn.push("<a class='btn btn-danger' href=\"javascript:;\" onclick=\"deleteAttachments(" + id + ")\">删除</a>");
+        btn.push("</div>");
+
+        return btn.join('');
     }
 
 

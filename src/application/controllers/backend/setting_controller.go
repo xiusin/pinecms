@@ -6,6 +6,7 @@ import (
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"html/template"
+	"os"
 	"strings"
 
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -23,7 +24,9 @@ type SettingController struct {
 }
 
 func (c *SettingController) RegisterRoute(b pine.IRouterWrapper) {
-	b.ANY( "/setting/site", "Site")
+	b.ANY("/setting/site", "Site")
+	b.ANY("/setting/cache", "Cache")
+	b.POST("/setting/del-cache", "DelCache")
 }
 
 func (c *SettingController) Site(iCache cache.ICache) {
@@ -83,4 +86,90 @@ func (c *SettingController) Site(iCache cache.ICache) {
 	})
 	c.Ctx().Render().ViewData("grid", template.HTML(grid))
 	c.Ctx().Render().HTML("backend/setting_site.html")
+}
+
+func (c *SettingController) Cache(iCache cache.ICache) {
+	if c.Ctx().GetString("getlist") != "" {
+		var list = []map[string]string{
+			{
+				"key":         "index",
+				"name":        "首页缓存",
+				"description": "首页静态页面文件,清理后首次访问自动生成",
+			},
+			{
+				"key":         "list",
+				"name":        "分类缓存",
+				"description": "分类页面各个分页静态缓存文件,清理后首次访问自动生成",
+			},
+			{
+				"key":         "news",
+				"name":        "内容缓存",
+				"description": "内容详情页面静态缓存文件,清理后首次访问自动生成",
+			},
+			{
+				"key":         "page",
+				"name":        "单页缓存",
+				"description": "分类信息单页缓存数据,清理后首次访问自动生成",
+			},
+			{
+				"key":         "all",
+				"name":        "所有模板缓存",
+				"description": "所有模板信息缓存,清理后首次访问自动生成",
+			},
+			{
+				"key":         "log",
+				"name":        "日志数据",
+				"description": "网站运行过程中会记录各种错误日志，以文件的方式保存, 可删除",
+			},
+		}
+
+		c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": len(list)})
+
+		return
+	}
+	menuid, _ := c.Ctx().URLParamInt64("menuid")
+	table := helper.Datagrid("setting_cache_datagrid", "/b/setting/cache?getlist=true", helper.EasyuiOptions{
+		"title":   models.NewMenuModel().CurrentPos(menuid),
+		"toolbar": "setting_cache_datagrid_toolbar",
+	}, helper.EasyuiGridfields{
+		"缓存": {"field": "name", "width": "20", "index": "0"},
+		"描述": {"field": "description", "width": "30", "index": "1"},
+		"操作": {"field": "key", "width": "50", "index": "2", "formatter": "settingCacheOperateFormatter"},
+	})
+	c.Ctx().Render().ViewData("dataGrid", template.HTML(table))
+	c.Ctx().Render().HTML("backend/setting_cache.html")
+
+}
+
+func (c *SettingController) DelCache(iCache cache.ICache) {
+	key := c.Ctx().PostString("key")
+	switch key {
+	case "log":
+	case "index":
+		basePath := controllers.GetStaticFile("index.html")
+		err := os.Remove(basePath)
+		if err != nil {
+			pine.Logger().Error(err)
+		}
+	case "list":
+		fallthrough
+	case "page":
+		fallthrough
+	case "news":
+		fallthrough
+	case "all":
+		if key == "all" {
+			key = ""
+		}
+		basePath := controllers.GetStaticFile(key)
+		err := os.RemoveAll(basePath)
+		if err != nil {
+			pine.Logger().Error(err)
+		}
+	default:
+		helper.Ajax("错误请求", 1, c.Ctx())
+		return
+	}
+
+	helper.Ajax("清理缓存数据成功", 0, c.Ctx())
 }

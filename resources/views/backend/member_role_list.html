@@ -3,7 +3,7 @@
 <!-- 权限设置 -->
 <div id="admin_rolelist_permission_dialog" class="easyui-dialog" title="权限设置"
      data-options="modal:true,closed:true,iconCls:'icons-lock-lock_edit',buttons:[{text:'确定',iconCls:'icons-other-tick',handler:function(){$('#admin_rolelist_permission_dialog_form').submit();}},{text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#admin_rolelist_permission_dialog').dialog('close');}}]"
-     style="width:400px;height:300px;"></div>
+     style="width:500px;height:700px;"></div>
 
 <!-- 添加角色 -->
 <div id="admin_rolelist_add_dialog" class="easyui-dialog" title="添加角色"
@@ -26,17 +26,19 @@
     }
     //操作格式化
     function adminRoleListOperateFormatter(val) {
-        var btn = [];
-        if (val === 1) {
-            btn.push('权限设置');
-            btn.push('编辑');
-            btn.push('删除');
-        } else {
-            btn.push('<a href="javascript:void(0);" onclick="adminRoleListPermission(' + val + ')">权限设置</a>');
-            btn.push('<a href="javascript:void(0);" onclick="adminRoleListEdit(' + val + ')">编辑</a>');
-            btn.push('<a href="javascript:void(0);" onclick="adminRoleListDelete(' + val + ')">删除</a>');
+        var btn = ["<div class=\"btn-group-sm\">"];
+
+        if (val !== 1) {
+            // btn.push('权限设置');
+            // btn.push('编辑');
+            // btn.push('删除');
+        // } else {
+            btn.push('<a class="btn-info btn" href="javascript:void(0);" onclick="adminRoleListPermission(' + val + ')">权限设置</a>');
+            btn.push('<a class="btn btn-default" href="javascript:void(0);" onclick="adminRoleListEdit(' + val + ')">编辑</a>');
+            btn.push('<a class="btn btn-danger" href="javascript:void(0);" onclick="adminRoleListDelete(' + val + ')">删除</a>');
         }
-        return btn.join(' | ');
+        btn.push("</div>")
+        return btn.join('');
     }
     //刷新
     function adminRoleListRefresh() {

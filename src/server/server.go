@@ -9,6 +9,8 @@ import (
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/cache/providers/badger"
 	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pine/middlewares/cache304"
+	request_log "github.com/xiusin/pine/middlewares/request-log"
 	"github.com/xiusin/pine/render/engine/jet"
 	"github.com/xiusin/pine/render/engine/template"
 	"github.com/xiusin/pine/sessions"
@@ -18,6 +20,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 	"xorm.io/core"
 
 	"github.com/xiusin/pinecms/src/config"
@@ -66,6 +69,12 @@ func initDatabase() {
 func initApp() {
 	app = pine.New()
 	diConfig()
+	app.Use(request_log.RequestRecorder())
+	var staticPathPrefix []string
+	for _, static := range conf.Statics {
+		staticPathPrefix = append(staticPathPrefix, static.Route)
+	}
+	app.Use(cache304.Cache304(30 * time.Second, staticPathPrefix...))
 	app.Use(middleware.CheckDatabaseBackupDownload())
 	//app.Use(middleware.Demo())
 }

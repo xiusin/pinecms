@@ -7,6 +7,7 @@ import (
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"html/template"
+	"time"
 )
 
 type AdController struct {
@@ -71,8 +72,8 @@ func (c *AdController) AdAdd() {
 			helper.Ajax("广告位参数错误", 1, c.Ctx())
 			return
 		}
-		ad.StartTime = c.Ctx().PostString("start_time")
-		ad.EndTime = c.Ctx().PostString("end_time")
+		ad.StartTime = c.Ctx().PostString("start_time", time.Now().In(helper.GetLocation()).Format(helper.TimeFormat))
+		ad.EndTime = c.Ctx().PostString("end_time", time.Now().In(helper.GetLocation()).Add(365 * 24 * 3600 * time.Second).Format(helper.TimeFormat))
 		ad.Image = c.Ctx().PostString("image")
 		listorder, _ := c.Ctx().PostInt("listorder")
 		ad.ListOrder = uint(listorder)
@@ -112,8 +113,9 @@ func (c *AdController) AdEdit() {
 			helper.Ajax("广告位参数错误", 1, c.Ctx())
 			return
 		}
-		ad.StartTime = c.Ctx().PostString("start_time")
-		ad.EndTime = c.Ctx().PostString("end_time")
+		// 默认为当前时间向后推迟到一年
+		ad.StartTime = c.Ctx().PostString("start_time", time.Now().In(helper.GetLocation()).Format(helper.TimeFormat))
+		ad.EndTime = c.Ctx().PostString("end_time", time.Now().In(helper.GetLocation()).Add(365 * 24 * 3600 * time.Second).Format(helper.TimeFormat))
 		ad.Image = c.Ctx().PostString("image")
 		listorder, _ := c.Ctx().PostInt("listorder")
 		ad.ListOrder = uint(listorder)

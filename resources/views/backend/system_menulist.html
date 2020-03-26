@@ -17,12 +17,12 @@
         iconCls:'icons-arrow-cross',
         handler:function(){$('#system_menu_add_dialog').dialog('close');}}
      ]"
-     style="width:500px;height:310px;"></div>
+     style="width:500px;height:500px;"></div>
 
 <!-- 编辑菜单 -->
 <div id="system_menu_edit_dialog" class="easyui-dialog" title="编辑菜单"
      data-options="modal:true,closed:true,iconCls:'icons-application-application_edit',buttons:[{text:'确定',iconCls:'icons-other-tick',handler:function(){$('#system_menu_edit_dialog_form').submit();}},{text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#system_menu_edit_dialog').dialog('close');}}]"
-     style="width:500px;height:270px;"></div>
+     style="width:500px;height:500px;"></div>
 
 <script type="text/javascript">
     //工具栏
@@ -38,17 +38,8 @@
     }
     //操作格式化
     function systemMenuOperateFormatter(id, arr) {
-        var btn = [];
-        if (arr.is_system === 1) {
-            // btn.push('<a href="javascript:;" onclick="systemMenuAdd(' + id + ')">添加子菜单</a>');
-            btn.push('修改');
-            btn.push('删除');
-        } else {
-            // btn.push('<a href="javascript:;" onclick="systemMenuAdd(' + id + ')">添加子菜单</a>');
-            btn.push('<a href="javascript:;" onclick="systemMenuEdit(' + id + ')">修改</a>');
-            btn.push('<a href="javascript:;" onclick="systemMenuDelete(' + id + ')">删除</a>');
-        }
-        return btn.join(' | ');
+        return '<div class="btn-group-sm"><button type="button" class="btn btn-default" onclick="systemMenuEdit(' + id + ')">编辑</button>' +
+            '<button type="button" class="btn btn-danger" onclick="systemMenuDelete(' + id + ')">删除</button></div>';
     }
     //刷新
     function systemMenuRefresh() {

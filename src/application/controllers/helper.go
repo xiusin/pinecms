@@ -6,6 +6,7 @@ import (
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"path/filepath"
 )
 
 type FieldShowInPageList struct {
@@ -13,6 +14,10 @@ type FieldShowInPageList struct {
 	Search    int    `json:"search"`
 	FeSearch  bool   `json:"fe_search"`
 	Formatter string `json:"formatter"`
+}
+
+func GetStaticFile(filename string) string {
+	return filepath.Join("./resources/pages/", filename)
 }
 
 func GetSetting(xorm *xorm.Engine, cache cache.ICache) (map[string]string, error) {

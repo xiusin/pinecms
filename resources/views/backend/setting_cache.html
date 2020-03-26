@@ -1,0 +1,26 @@
+{{ .dataGrid }}
+<div id="setting_cache_datagrid_toolbar" style="padding:5px;height:auto">
+{{/*    <form><a href="javascript:;" onclick="systemLogDelete();" class="easyui-linkbutton" iconCls="icons-other-delete">清除所有模板缓存</a>*/}}
+{{/*    </form>*/}}
+</div>
+
+
+<script>
+    function settingCacheOperateFormatter(key) {
+        return '<a href="javascript:;" class="btn btn-danger btn-small" onclick="settingCacheDelete(\'' + key + '\')">清理</a>'
+    }
+
+    function settingCacheDelete(key) {
+        $.messager.confirm('提示信息', '确定要删除缓存吗？', function (result) {
+            if (!result) return false;
+            $.post('/b/setting/del-cache', {key: key}, function (res) {
+                if (res.errcode) {
+                    $.messager.alert('提示信息', res.errmsg, 'error');
+                } else {
+                    $.messager.alert('提示信息', res.errmsg, 'info');
+                }
+            }, 'json');
+        });
+    }
+
+</script>
