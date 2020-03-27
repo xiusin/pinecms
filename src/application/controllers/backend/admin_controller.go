@@ -377,7 +377,7 @@ func (c *AdminController) RoleAdd() {
 	}
 	c.Ctx().Render().HTML("backend/member_role_add.html")
 }
-func (c *AdminController) RoleEdit(icache cache.ICache) {
+func (c *AdminController) RoleEdit(icache cache.AbstractCache) {
 	id, err := c.Ctx().URLParamInt64("id")
 	if err != nil {
 		c.Ctx().WriteString(err.Error())
@@ -414,7 +414,7 @@ func (c *AdminController) RoleEdit(icache cache.ICache) {
 	c.Ctx().Render().HTML("backend/member_role_edit.html")
 }
 
-func (c *AdminController) RoleDelete(icache cache.ICache) {
+func (c *AdminController) RoleDelete(icache cache.AbstractCache) {
 	roleid, _ := strconv.Atoi(c.Ctx().FormValue("id"))
 	if roleid == 0 {
 		helper.Ajax("没有选择任何角色", 1, c.Ctx())
@@ -445,7 +445,7 @@ func (c *AdminController) RoleDelete(icache cache.ICache) {
 	}
 }
 
-func (c *AdminController) RolePermission(icache cache.ICache, engine *xorm.Engine) {
+func (c *AdminController) RolePermission(icache cache.AbstractCache, engine *xorm.Engine) {
 	roleid, _ := c.Ctx().URLParamInt64("id")
 	if roleid == 0 {
 		helper.Ajax("没有选择任何角色", 1, c.Ctx())

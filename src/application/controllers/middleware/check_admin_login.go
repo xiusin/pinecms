@@ -14,7 +14,7 @@ import (
 	"github.com/xiusin/pinecms/src/common/helper"
 )
 
-func CheckAdminLoginAndAccess(xorm *xorm.Engine, iCache cache.ICache) pine.Handler {
+func CheckAdminLoginAndAccess(xorm *xorm.Engine, iCache cache.AbstractCache) pine.Handler {
 	return func(this *pine.Context) {
 		if strings.Contains(this.Request().URL.Path, "login") {
 			this.Next()
@@ -46,7 +46,7 @@ func CheckAdminLoginAndAccess(xorm *xorm.Engine, iCache cache.ICache) pine.Handl
 }
 
 //检查权限
-func CheckPriv(this *pine.Context, xorm *xorm.Engine, cache cache.ICache) bool {
+func CheckPriv(this *pine.Context, xorm *xorm.Engine, cache cache.AbstractCache) bool {
 	pathinfo := strings.Split(strings.Trim(this.Request().URL.Path, "/"), "/")
 	roleId, err := strconv.Atoi(this.Session().Get("roleid"))
 	if err != nil || len(pathinfo) < 3 {

@@ -148,7 +148,7 @@ func (c CategoryModel) GetCategory(id int64) (tables.Category, error) {
 
 func (c CategoryModel) GetCategoryFullWithCache(id int64) (category *tables.Category, err error) {
 	caheKey := fmt.Sprintf(controllers.CacheCategoryInfoPrefix, id)
-	icache := di.MustGet(controllers.ServiceICache).(cache.ICache)
+	icache := di.MustGet(controllers.ServiceICache).(cache.AbstractCache)
 	category = &tables.Category{}
 	var exists bool
 	err = icache.GetWithUnmarshal(caheKey, category)

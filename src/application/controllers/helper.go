@@ -20,7 +20,7 @@ func GetStaticFile(filename string) string {
 	return filepath.Join("./resources/pages/", filename)
 }
 
-func GetSetting(xorm *xorm.Engine, cache cache.ICache) (map[string]string, error) {
+func GetSetting(xorm *xorm.Engine, cache cache.AbstractCache) (map[string]string, error) {
 	var settingData = map[string]string{}
 	res, err := cache.Get(CacheSetting)
 	if err != nil {

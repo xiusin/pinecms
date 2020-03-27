@@ -252,7 +252,7 @@ func (c *PublicController) Attachments(attachmentType string) {
 	})
 }
 
-func (c *PublicController) TODO(icache cache.ICache) {
+func (c *PublicController) TODO(icache cache.AbstractCache) {
 	todos := c.Ctx().FormValue("todos")
 	err := icache.Set(controllers.CacheToDo, []byte(todos))
 	if err != nil {

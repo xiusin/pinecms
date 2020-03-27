@@ -12,7 +12,7 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 )
 
-func SetGlobalConfigData(xorm *xorm.Engine, iCache cache.ICache) pine.Handler {
+func SetGlobalConfigData(xorm *xorm.Engine, iCache cache.AbstractCache) pine.Handler {
 	return func(ctx *pine.Context) {
 		settingData, err := controllers.GetSetting(xorm, iCache)
 		if err != nil {

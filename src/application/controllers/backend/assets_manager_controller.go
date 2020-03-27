@@ -93,7 +93,7 @@ func (c *AssetsManagerController) Theme() {
 }
 
 
-func (c *AssetsManagerController) SetTheme(cache cache.ICache) {
+func (c *AssetsManagerController) SetTheme(cache cache.AbstractCache) {
 	conf := di.MustGet("pinecms.config").(*config.Config)
 	name := c.Ctx().FormValue("theme")
 	if name == "" {

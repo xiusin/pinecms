@@ -16,7 +16,7 @@ import (
 	"github.com/xiusin/pinecms/src/common/helper"
 )
 
-func clearMenuCache(cache cache.ICache, xorm *xorm.Engine) {
+func clearMenuCache(cache cache.AbstractCache, xorm *xorm.Engine) {
 	var roles []*tables.AdminRole
 	var menus []*tables.Menu
 	xorm.Where("parentid = ?", 0).Find(&menus)

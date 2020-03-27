@@ -32,7 +32,7 @@ func (d *DocumentModel) GetList(page, limit int64) (list []tables.DocumentModel,
 func (d *DocumentModel) GetByID(id int64) *tables.DocumentModel {
 	detail := &tables.DocumentModel{}
 	caheKey := fmt.Sprintf(controllers.CacheDocumentModelPrefix, id)
-	di.MustGet(controllers.ServiceICache).(cache.ICache).Delete(caheKey)
+	di.MustGet(controllers.ServiceICache).(cache.AbstractCache).Delete(caheKey)
 	if exists, err := d.orm.ID(id).Get(detail); err != nil {
 		pine.Logger().Error("document.model", err)
 	} else if !exists {
@@ -44,7 +44,7 @@ func (d *DocumentModel) GetByID(id int64) *tables.DocumentModel {
 func (d *DocumentModel) GetByIDWithCache(id int64) *tables.DocumentModel {
 	detail := &tables.DocumentModel{}
 	caheKey := fmt.Sprintf(controllers.CacheDocumentModelPrefix, id)
-	icache := di.MustGet(controllers.ServiceICache).(cache.ICache)
+	icache := di.MustGet(controllers.ServiceICache).(cache.AbstractCache)
 	err := icache.GetWithUnmarshal(caheKey, detail)
 	if err != nil {
 		detail = d.GetByID(id)
@@ -74,7 +74,7 @@ func (d *DocumentModel) DeleteByID(id int64) (bool, error) {
 			pine.Logger().Errorf("删除数据模型ID: %d 成功, 删除关联字段失败, 回滚数据", id)
 			return nil, errors.New(fmt.Sprintf("删除数据模型ID: %d 成功, 删除关联字段失败, 回滚数据", id))
 		}
-		icache := di.MustGet(controllers.ServiceICache).(cache.ICache)
+		icache := di.MustGet(controllers.ServiceICache).(cache.AbstractCache)
 		key := fmt.Sprintf(controllers.CacheDocumentModelPrefix, id)
 		icache.Delete(key)
 		return true, nil

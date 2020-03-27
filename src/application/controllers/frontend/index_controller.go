@@ -321,7 +321,7 @@ func getCategoryPos(tid int64) string {
 	var res string
 	var arr []tables.Category
 	key := fmt.Sprintf(controllers.CacheCategoryPosPrefix, tid)
-	icache := di.MustGet(controllers.ServiceICache).(cache.ICache)
+	icache := di.MustGet(controllers.ServiceICache).(cache.AbstractCache)
 	err := icache.GetWithUnmarshal(key, &res)
 	if err != nil {
 		arr = models.NewCategoryModel().GetPosArr(tid)

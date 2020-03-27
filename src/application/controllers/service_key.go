@@ -2,7 +2,7 @@ package controllers
 
 const ServiceConfig = "pinecms.config"
 
-const ServiceICache = "cache.ICache"
+const ServiceICache = "cache.AbstractCache"
 
 const ServiceTablePrefix = "pinecms.table_prefix"
 

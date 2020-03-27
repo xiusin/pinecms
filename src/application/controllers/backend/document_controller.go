@@ -138,7 +138,7 @@ func (c *DocumentController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/model/preview-page", "PreviewPage")
 }
 
-func (c *DocumentController) ModelFieldShowInListPage(icache cache.ICache) {
+func (c *DocumentController) ModelFieldShowInListPage(icache cache.AbstractCache) {
 	mid, _ := c.Ctx().URLParamInt64("mid")
 	if mid < 1 {
 		return
@@ -347,7 +347,7 @@ func (c *DocumentController) ModelAdd() {
 	c.Ctx().Render().HTML("backend/model_add.html")
 }
 
-func (c *DocumentController) ModelEdit(iCache cache.ICache) {
+func (c *DocumentController) ModelEdit(iCache cache.AbstractCache) {
 	list, _ := models.NewDocumentModelFieldModel().GetList(1, 1000)
 	if c.Ctx().IsPost() {
 		var data ModelForm

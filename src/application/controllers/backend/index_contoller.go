@@ -47,7 +47,7 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	//			mems := getMems()
 	//			mems = append(mems, MemPos{TimePos: time.Now().In(helper.GetLocation()).Format("15:04:05"), Percent: int(vm.UsedPercent)})
 	//			memsSaveData, _ := json.Marshal(mems)
-	//			pine.Make(controllers.ServiceICache).(cache.ICache).Set(controllers.CacheMemCollect, memsSaveData)
+	//			pine.Make(controllers.ServiceICache).(cache.AbstractCache).Set(controllers.CacheMemCollect, memsSaveData)
 	//		}
 	//	}
 	//}()
@@ -55,7 +55,7 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 
 func getMems() []MemPos {
 	var mems []MemPos
-	c := pine.Make(controllers.ServiceICache).(cache.ICache)
+	c := pine.Make(controllers.ServiceICache).(cache.AbstractCache)
 	memCollect, _ := c.Get(controllers.CacheMemCollect)
 	if memCollect == nil {
 		memCollect = []byte{}
@@ -70,7 +70,7 @@ func getMems() []MemPos {
 }
 
 
-func (c *IndexController) Index(icache cache.ICache) {
+func (c *IndexController) Index(icache cache.AbstractCache) {
 	menus := c.GetMenus(icache)
 	c.ViewData("menus", menus)
 	c.ViewData("username", c.Session().Get("username"))
@@ -92,7 +92,7 @@ func (c *IndexController) Index1() {
 
 var us, _ = disk.Usage(helper.GetRootPath())
 
-func (c *IndexController) Main(iCache cache.ICache) {
+func (c *IndexController) Main(iCache cache.AbstractCache) {
 
 	formatMem := func(mem uint64) string {
 		fm := map[int64]string{
@@ -126,12 +126,13 @@ func (c *IndexController) Main(iCache cache.ICache) {
 	c.ViewData("mems", getMems())
 
 	todos ,_ := iCache.Get(controllers.CacheToDo)
+	fmt.Println(string(todos))
 	c.ViewData("todos", template.HTML(string(todos)))
 	
 	c.View("backend/index_main.html")
 }
 
-func (c *IndexController) Menu(iCache cache.ICache) {
+func (c *IndexController) Menu(iCache cache.AbstractCache) {
 	meid, _ := c.Ctx().PostInt64("menuid")
 	roleid := c.Ctx().Value("roleid")
 	if roleid == nil {
@@ -176,7 +177,7 @@ func (c *IndexController) Menu(iCache cache.ICache) {
 	c.Render().JSON(menujs)
 }
 
-func (c *IndexController) GetMenus(iCache cache.ICache) []map[string]interface{} {
+func (c *IndexController) GetMenus(iCache cache.AbstractCache) []map[string]interface{} {
 	roleid := c.Ctx().Value("roleid")
 	if roleid == nil {
 		roleid = interface{}(int64(0))

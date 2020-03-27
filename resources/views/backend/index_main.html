@@ -1,110 +1,142 @@
-<section class="tile cornered" style="display: none">
 
-    <div class="tile-header color red text-center">
-        <button class="btn pull-left btn-black-transparent" type="button"><i class="fa fa-caret-square-o-down"></i>
-        </button>
-        <h1 class="small-uppercase">TODOs</h1>
-        <div class="controls">
-            <a href="#" class="refresh"><i class="fa fa-refresh"></i></a>
-            <a href="#" class="remove"><i class="fa fa-times"></i></a>
-        </div>
+
+<div style="background: rgba(125, 114, 100, 0.05); overflow: auto">
+    <div class="col-md-6" >
+        <section class="tile" >
+
+            <div class="tile-header color red text-center">
+                <button class="btn pull-left btn-black-transparent" type="button"><i class="fa fa-caret-square-o-down"></i>
+                </button>
+                <h1 class="small-uppercase">TODOs</h1>
+            </div>
+
+            <div class="tile-body">
+                <input type="text" placeholder="Type new todo..." id="type_todo" class="grey-bg margin-vertical-15" style="width: 100%">
+                <ul class="nolisttypes" id="todolist">
+                    {{ .todos }}
+                </ul>
+            </div>
+
+        </section>
     </div>
+    <div class="col-md-6 text-center" >
 
-    <div class="tile-body">
-        <input type="text" placeholder="Type new todo..." id="type_todo" class="grey-bg margin-vertical-15" style="width: 100%">
-        <ul class="nolisttypes" id="todolist">
-            {{ .todos }}
-        </ul>
+
+        <section class="tile" >
+
+            <div class="tile-header color red text-center">
+                <button class="btn pull-left btn-black-transparent" type="button"><i class="fa fa-caret-square-o-down"></i>
+                </button>
+                <h1 class="small-uppercase">TimeLines</h1>
+            </div>
+
+            <div class="tile-body">
+{{/*                <h1 class="timeline-heading red-bg">开发线</h1>*/}}
+
+                <ol class="timeline">
+
+                    <li>
+                        <div class="pointer greensea">
+                            <i class="fa fa-clock-o"></i>
+                        </div>
+                        <div class="el-container">
+                            <div class="content">
+                                <span class="time"><i class="fa fa-clock-o"></i> no time</span>
+                                <h1>插件(so, dll?, 激发开发者加入开发)</h1>
+                                <p>看是否可以动态加载so, dll 并且注册路由等功能. </p>
+                            </div>
+                        </div>
+                    </li>
+
+
+                    <li>
+                        <div class="pointer greensea">
+                            <i class="fa fa-clock-o"></i>
+                        </div>
+                        <div class="el-container">
+                            <div class="content">
+                                <span class="time"><i class="fa fa-clock-o"></i> no time</span>
+                                <h1>标签功能改进<span class="label label-warning">todo</span></h1>
+                                <p>细化标签功能, 数据在标签间传递, 无须直接指明数据名称. URL地址生成基于静态化路由规则. </p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div class="pointer greensea">
+                            <i class="fa fa-coffee"></i>
+                        </div>
+                        <div class="el-container">
+                            <div class="content">
+                                <span class="time"><i class="fa fa-clock-o"></i> no time</span>
+                                <h1>文档模型<span class="label label-warning">todo</span></h1>
+                                <p>添加一些默认字段, 并且禁止删除和修改.
+                                    easyui的组件更替为bootstrap, 前端模型和分类联动性. 考虑前端级联调用不同模型的数据显示.
+                                    默认搜索字段开放, 静态化路由规则开发.
+                                    基于模型清除模板缓存文件. 添加一些默认的行为方法, 比如随机数字, 随机字符串, 联动选项, 随机提取关键字等功能. </p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div class="pointer greensea">
+                            <i class="fa fa-envelope"></i>
+                        </div>
+                        <div class="el-container">
+                            <div class="content">
+                                <span class="time"><i class="fa fa-clock-o"></i> 2020-03-26</span>
+                                <h1>代码优化<span class="label label-success">doing</span></h1>
+                                <p>测试内部多模块数据, 完善menu菜单入库数据. 页面按钮优化. 表单样式更改为bootstrap4, <b>model_publish.html</b>布局更改为左右布局. 可以发布文档到多个相同模型的分类里, 减少发布复杂度.  开发审核模块, 并且使用权限分割数据显示. </p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div class="pointer greensea">
+                            <i class="fa fa-comments"></i>
+                        </div>
+                        <div class="el-container">
+                            <div class="content">
+                                <span class="time"><i class="fa fa-clock-o"></i> 2020-03-25</span>
+                                <h1>缓存清理<span class="label label-hotpink">done</span></h1>
+                                <p>可到后台 <b>缓存管理</b> 位置清理不需要的缓存, 比如切换主题, 模板文件需要重新生成. 模板文件修改数据调用需要清理缓存,均可在此模块刷新数据</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div class="pointer ">
+                            <i class="fa fa-heart"></i>
+                        </div>
+                        <div class="el-container">
+                            <div class="content">
+                                <span class="time"><i class="fa fa-clock-o"></i> 2020-03-24</span>
+                                <h1>前端静态<span class="label label-hotpink">done</span></h1>
+                                <p>基于路由规则生成静态页面缓存到目录resources/pages/xxxx.html, 逻辑上判断静态文件直接展示静态. (可用nginx代理静态文件, 不存在转发给PineCMS生成), 动态数据可以通过api的方式调用出来.</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div class="pointer greensea">
+                            <i class="fa fa-clock-o"></i>
+                        </div>
+                        <div class="el-container">
+                            <div class="content">
+                                <span class="time"><i class="fa fa-clock-o"></i> 2020-03-15</span>
+                                <h1>标签开发<span class="label label-hotpink">done</span></h1>
+                                <p>参考dedecms开发一部分标签, 挑选模板引擎为Jet, 支持参数化标签. 具体可以参考模板提供的案例. 大致可以分为, 每个标签内部暴露的变量均为<b>field</b>, 模型相关的表字段使用map方式调用, 如:<b>field["title"]</b>,  其他的均为: <b>field.FieldName</b></p>
+                            </div>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+
+        </section>
+
+
+
     </div>
-
-</section>
-
-
-<div class="col-md-6 text-center" style="background: rgba(125, 114, 100, 0.05); padding: 50px;">
-
-    <h1 class="timeline-heading red-bg">开发线</h1>
-
-    <ol class="timeline">
-
-        <li>
-            <div class="pointer greensea">
-                <i class="fa fa-clock-o"></i>
-            </div>
-            <div class="el-container">
-                <div class="content">
-                    <span class="time"><i class="fa fa-clock-o"></i> Today, 03:12pm</span>
-                    <h1>前端标功能开发</h1>
-                    <p>细化标签功能, 数据在标签间传递, 无须直接指明数据名称. URL地址生成基于静态化路由规则. </p>
-                </div>
-            </div>
-        </li>
-
-        <li>
-            <div class="pointer greensea">
-                <i class="fa fa-coffee"></i>
-            </div>
-            <div class="el-container">
-                <div class="content">
-                    <span class="time"><i class="fa fa-clock-o"></i> Today, 01:55pm</span>
-                    <h1>文档模型功能改进</h1>
-                    <p>添加一些默认字段, 并且禁止删除和修改. easyui的组件更替为bootstrap, 前端模型和分类联动性. 考虑前端级联调用不同模型的数据显示. 默认搜索字段开放, 静态化路由规则开发. 基于模型清除模板缓存文件. </p>
-                </div>
-            </div>
-        </li>
-
-        <li>
-            <div class="pointer greensea">
-                <i class="fa fa-envelope"></i>
-            </div>
-            <div class="el-container">
-                <div class="content">
-                    <span class="time"><i class="fa fa-clock-o"></i> 2020-03-26</span>
-                    <h1>CMS内部代码优化</h1>
-                    <p>测试内部多模块数据, 完善menu菜单入库数据. 页面按钮优化. 表单样式更改为bootstrap4, <b>model_publish.html</b>布局更改为左右布局. 可以发布文档到多个相同模型的分类里, 减少发布复杂度.  开发审核模块, 并且使用权限分割数据显示. </p>
-                </div>
-            </div>
-        </li>
-
-        <li>
-            <div class="pointer greensea">
-                <i class="fa fa-comments"></i>
-            </div>
-            <div class="el-container">
-                <div class="content">
-                    <span class="time"><i class="fa fa-clock-o"></i> 2020-03-25</span>
-                    <h1>添加缓存清理模块</h1>
-                    <p>可到后台 <b>缓存管理</b> 位置清理不需要的缓存, 比如切换主题, 模板文件需要重新生成. 模板文件修改数据调用需要清理缓存,均可在此模块刷新数据</p>
-                </div>
-            </div>
-        </li>
-
-        <li>
-            <div class="pointer ">
-                <i class="fa fa-heart"></i>
-            </div>
-            <div class="el-container">
-                <div class="content">
-                    <span class="time"><i class="fa fa-clock-o"></i> 2020-03-24</span>
-                    <h1>前端页面生成静态</h1>
-                    <p>基于路由规则生成静态页面缓存到目录resources/pages/xxxx.html, 逻辑上判断静态文件直接展示静态. (可用nginx代理静态文件, 不存在转发给PineCMS生成), 动态数据可以通过api的方式调用出来.</p>
-                </div>
-            </div>
-        </li>
-
-        <li>
-            <div class="pointer greensea">
-                <i class="fa fa-clock-o"></i>
-            </div>
-            <div class="el-container">
-                <div class="content">
-                    <span class="time"><i class="fa fa-clock-o"></i> 2020-03-15</span>
-                    <h1>前端标功能开发</h1>
-                    <p>参考dedecms开发一部分标签, 挑选模板引擎为Jet, 支持参数化标签. 具体可以参考模板提供的案例. 大致可以分为, 每个标签内部暴露的变量均为<b>field</b>, 模型相关的表字段使用map方式调用, 如:<b>field["title"]</b>,  其他的均为: <b>field.FieldName</b></p>
-                </div>
-            </div>
-        </li>
-    </ol>
-
 </div>
 
 

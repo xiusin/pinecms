@@ -18,6 +18,7 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/taglibs"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"time"
@@ -37,7 +38,7 @@ import (
 var (
 	app *pine.Application
 
-	iCache     cache.ICache
+	iCache     cache.AbstractCache
 	XOrmEngine *xorm.Engine
 	conf       = config.AppConfig()
 	dc         = config.DBConfig()
@@ -51,7 +52,6 @@ func initDatabase() {
 	}
 	_orm.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, dc.Db.DbPrefix))
 	_orm.SetLogger(ormlogger.NewIrisCmsXormLogger(helper.NewOrmLogFile(conf.LogPath), core.LOG_INFO))
-
 	if err = _orm.Ping(); err != nil {
 		panic(err.Error())
 	}
@@ -62,21 +62,27 @@ func initDatabase() {
 	_orm.SetMaxIdleConns(int(o.MaxIdleConns))
 
 	// todo 使用xorm缓存适配器
-
 	XOrmEngine = _orm
 }
 
 func initApp() {
 	app = pine.New()
+	//app.StartPProf()
 	diConfig()
 	app.Use(request_log.RequestRecorder())
 	var staticPathPrefix []string
 	for _, static := range conf.Statics {
 		staticPathPrefix = append(staticPathPrefix, static.Route)
 	}
-	app.Use(cache304.Cache304(30 * time.Second, staticPathPrefix...))
+	app.Use(cache304.Cache304(30000 * time.Second, staticPathPrefix...))
 	app.Use(middleware.CheckDatabaseBackupDownload())
 	//app.Use(middleware.Demo())
+
+	pine.RegisterErrorCodeHandler(http.StatusNotFound, func(ctx *pine.Context) {
+		// 不同状态码可以显示不同的内容
+		// 自定义页面
+		ctx.WriteString("404 NotFround")
+	})
 }
 
 func Server() {
@@ -137,7 +143,6 @@ func diConfig() {
 	//	Prefix:          "",
 	//	CleanupInterval: 0,
 	//})
-
 	//redisOpt := redis.DefaultOption()
 	//if runtime.GOOS != "darwin" {
 	//	redisOpt.Port = 6380
@@ -149,15 +154,15 @@ func diConfig() {
 		theme = []byte("default")
 	}
 	conf.View.Theme = string(theme)
-	di.Set(controllers.ServiceICache, func(builder di.BuilderInf) (i interface{}, err error) {
+	di.Set(controllers.ServiceICache, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return iCache, nil
 	}, true)
 
-	di.Set(controllers.ServiceConfig, func(builder di.BuilderInf) (i interface{}, e error) {
+	di.Set(controllers.ServiceConfig, func(builder di.AbstractBuilder) (i interface{}, e error) {
 		return conf, nil
 	}, true)
 
-	di.Set(di.ServicePineLogger, func(builder di.BuilderInf) (i interface{}, err error) {
+	di.Set(di.ServicePineLogger, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		loggers := logger.New()
 		loggers.SetReportCaller(true, 3)
 		loggers.SetLogLevel(logger.DebugLevel)
@@ -169,7 +174,7 @@ func diConfig() {
 		return loggers, nil
 	}, false)
 
-	di.Set(di.ServicePineSessions, func(builder di.BuilderInf) (i interface{}, err error) {
+	di.Set(di.ServicePineSessions, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		sess := sessions.New(cacheProvider.NewStore(iCache), &sessions.Config{
 			CookieName: conf.Session.Name,
 			Expires:    conf.Session.Expires,
@@ -193,17 +198,18 @@ func diConfig() {
 
 	pine.RegisterViewEngine(jetEngine)
 
-	di.Set(controllers.ServiceJetEngine, func(builder di.BuilderInf) (i interface{}, err error) {
+	di.Set(controllers.ServiceJetEngine, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return jetEngine, nil
 	}, true)
 
-	di.Set(XOrmEngine, func(builder di.BuilderInf) (i interface{}, err error) {
+	di.Set(XOrmEngine, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return XOrmEngine, nil
 	}, true)
 
-	di.Set(controllers.ServiceTablePrefix, func(builder di.BuilderInf) (i interface{}, err error) {
+	di.Set(controllers.ServiceTablePrefix, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return dc.Db.DbPrefix, nil
 	}, true)
+
 
 	app.Use(func(ctx *pine.Context) {
 		ctx.Set("cache", iCache)

@@ -29,7 +29,7 @@ func (c *SettingController) RegisterRoute(b pine.IRouterWrapper) {
 	b.POST("/setting/del-cache", "DelCache")
 }
 
-func (c *SettingController) Site(iCache cache.ICache) {
+func (c *SettingController) Site(iCache cache.AbstractCache) {
 	if c.Ctx().IsPost() {
 		var setting []*tables.Setting
 		act := c.Ctx().URLParam("dosubmit")
@@ -88,7 +88,7 @@ func (c *SettingController) Site(iCache cache.ICache) {
 	c.Ctx().Render().HTML("backend/setting_site.html")
 }
 
-func (c *SettingController) Cache(iCache cache.ICache) {
+func (c *SettingController) Cache(iCache cache.AbstractCache) {
 	if c.Ctx().GetString("getlist") != "" {
 		var list = []map[string]string{
 			{
@@ -141,7 +141,7 @@ func (c *SettingController) Cache(iCache cache.ICache) {
 
 }
 
-func (c *SettingController) DelCache(iCache cache.ICache) {
+func (c *SettingController) DelCache(iCache cache.AbstractCache) {
 	key := c.Ctx().PostString("key")
 	switch key {
 	case "log":

@@ -57,7 +57,7 @@ func (c *SystemController) MenuList() {
 	c.Ctx().Render().HTML("backend/system_menulist.html")
 }
 
-func (c *SystemController) MenuAdd(iCache cache.ICache) {
+func (c *SystemController) MenuAdd(iCache cache.AbstractCache) {
 	if c.Ctx().IsPost() {
 		parentid, _ := c.Ctx().PostInt64("parentid", 0)
 		name := c.Ctx().PostString("name", "")
@@ -86,14 +86,14 @@ func (c *SystemController) MenuAdd(iCache cache.ICache) {
 	c.Ctx().Render().HTML("backend/system_menuadd.html")
 }
 
-func (c *SystemController) MenuDelete(iCache cache.ICache) {
+func (c *SystemController) MenuDelete(iCache cache.AbstractCache, orm *xorm.Engine) {
 	id, _ := c.Ctx().PostInt64("id", 0)
 	if id < 1 {
 		helper.Ajax("参数失败", 1, c.Ctx())
 		return
 	}
 	// 查找是否有下级菜单
-	exists, err := c.Ctx().Value("orm").(*xorm.Engine).Where("parentid = ?", id).Count(&tables.Menu{})
+	exists, err := orm.Where("parentid = ?", id).Count(&tables.Menu{})
 	if err != nil {
 		helper.Ajax("删除菜单失败,异常错误", 1, c.Ctx())
 		return
@@ -111,7 +111,7 @@ func (c *SystemController) MenuDelete(iCache cache.ICache) {
 	}
 }
 
-func (c *SystemController) MenuOrder(iCache cache.ICache) {
+func (c *SystemController) MenuOrder(iCache cache.AbstractCache) {
 	posts := c.Ctx().PostData()
 	data := map[int64]int64{}
 	for k, v := range posts {
@@ -144,7 +144,7 @@ func (c *SystemController) MenuOrder(iCache cache.ICache) {
 	}
 }
 
-func (c *SystemController) MenuEdit(iCache cache.ICache) {
+func (c *SystemController) MenuEdit(iCache cache.AbstractCache) {
 	id, _ := c.Ctx().URLParamInt64("id")
 	if id == 0 {
 		helper.Ajax("参数错误", 1, c.Ctx())
@@ -233,7 +233,7 @@ func (c *SystemController) WsConnection() {
 			size -= int64(len(text.Text) + 1) // 添加一个换行符字节
 			if size <= 2048 {
 				if err = conn.WriteMessage(websocket.TextMessage, []byte(text.Text)); err != nil {
-					pine.Logger().Print("客户端断开连接", err)
+					pine.Logger().Error("tail log failed", err)
 					_ = ta.Stop()
 					ta.Cleanup()
 					ta = nil
