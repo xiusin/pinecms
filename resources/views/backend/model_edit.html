@@ -34,10 +34,10 @@
                            data-options="plain:true,iconCls:'icons-arrow-add'"
                            onclick="addPanel()"></a>
                     </div>
-
                     <div id="tt" class="easyui-tabs" style="width:750px;height:683px;">
                         {{range $i, $field := .fields}}
-                            <div title="{{$field.FormName}}" data-options="closable:true">
+                            {{ $f := in_array $.dfs $field.TableField}}
+                            <div title="{{$field.FormName}}" {{if eq $f false}} data-options="closable:true" {{end}}>
                                 <table cellpadding="5" style="width: 100%;">
                                     <tr>
                                         <td style="width: 150px;">表单名称:</td>
@@ -50,7 +50,7 @@
                                         <td style="width: 150px;">字段名称:</td>
                                         <td><input class="easyui-textbox" type="text" name="field_field"
                                                    style="width: 300px"
-                                                   data-options="required:true" value="{{$field.TableField}}"/></td>
+                                                     data-options="required:true" {{if eq $f true}} readonly {{end}} value="{{$field.TableField}}"/></td>
                                     </tr>
 
                                     <tr>

@@ -32,7 +32,7 @@
                 <select name="model_id" class="easyui-combobox"
                         data-options="editable:false,panelHeight:'auto', onSelect: modelSelectValEvent"
                         style="width:280px">
-                    <option value="0">自定义(需要设置路由)</option>
+{{/*                    <option value="0">自定义(需要设置路由)</option>*/}}
                     {{range $v := .models}}
                         <option value="{{$v.Id}}">{{$v.Name}}</option>
                     {{end}}
@@ -42,20 +42,20 @@
         </tr>
 
 
-        <tr class="custom_manager">
-            <td>列表管理路由：</td>
-            <td><input name="manager_content_router" type="text" class="easyui-textbox"/></td>
-        </tr>
+{{/*        <tr class="custom_manager">*/}}
+{{/*            <td>列表管理路由：</td>*/}}
+{{/*            <td><input name="manager_content_router" type="text" class="easyui-textbox"/></td>*/}}
+{{/*        </tr>*/}}
 
-        <tr class="custom_manager">
-            <td>添加内容路由：</td>
-            <td><input name="add_content_router" type="text" class="easyui-textbox"/></td>
-        </tr>
+{{/*        <tr class="custom_manager">*/}}
+{{/*            <td>添加内容路由：</td>*/}}
+{{/*            <td><input name="add_content_router" type="text" class="easyui-textbox"/></td>*/}}
+{{/*        </tr>*/}}
 
-        <tr class="custom_manager">
-            <td>修改内容路由：</td>
-            <td><input name="edit_content_router" type="text" class="easyui-textbox"/></td>
-        </tr>
+{{/*        <tr class="custom_manager">*/}}
+{{/*            <td>修改内容路由：</td>*/}}
+{{/*            <td><input name="edit_content_router" type="text" class="easyui-textbox"/></td>*/}}
+{{/*        </tr>*/}}
 
 
         <tr>
@@ -76,7 +76,6 @@
         <tr >
             <td>栏目目录：</td>
             <td><input name="dir" class="easyui-textbox" value="" type="text" data-options="required: true"/></td>
-            <td>
         </tr>
 
         <tr>

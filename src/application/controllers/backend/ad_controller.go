@@ -1,12 +1,15 @@
 package backend
 
 import (
+	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"html/template"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -18,6 +21,7 @@ func (c *AdController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/ad/list", "AdList")
 	b.ANY("/ad/add", "AdAdd")
 	b.ANY("/ad/edit", "AdEdit")
+	b.ANY("/ad/order", "AdOrder")
 	b.ANY("/ad/delete", "AdDelete")
 
 	b.ANY("/ad-space/list", "AdSpaceList")
@@ -47,10 +51,11 @@ func (c *AdController) AdList() {
 		"title":   models.NewMenuModel().CurrentPos(menuid),
 		"toolbar": "ad_list_datagrid_toolbar",
 	}, helper.EasyuiGridfields{
-		"名称":  {"field": "name", "width": "30", "index": "0"},
-		"广告位": {"field": "space_name", "width": "50", "index": "1"},
-		"启用":  {"field": "status", "width": "20", "index": "2", "formatter": "adListEnabledFormatter"},
-		"操作":  {"field": "id", "index": "3", "formatter": "adListOptFormatter"},
+		"排序":  {"field": "listorder", "width": "10", "index": "0", "formatter": "adListOrderFormatter"},
+		"名称":  {"field": "name", "width": "30", "index": "1"},
+		"广告位": {"field": "space_name", "width": "50", "index": "2"},
+		"启用":  {"field": "status", "width": "20", "index": "3", "formatter": "adListEnabledFormatter"},
+		"操作":  {"field": "id", "index": "4", "formatter": "adListOptFormatter"},
 	})
 	c.Ctx().Render().ViewData("dataGrid", template.HTML(table))
 	c.Ctx().Render().HTML("backend/ad_list.html")
@@ -134,6 +139,42 @@ func (c *AdController) AdEdit() {
 	c.ViewData("ad", ad)
 	c.ViewData("adspaces", models.NewAdSpaceModel().All())
 	c.Ctx().Render().HTML("backend/ad_edit.html")
+}
+
+func (c *AdController) AdOrder(orm *xorm.Engine)  {
+	posts := c.Ctx().PostData()
+	fmt.Println(posts)
+	data := map[int64]int64{}
+	for k, v := range posts {
+		k = strings.Replace(k, "order[", "", 1)
+		k = strings.Replace(k, "]", "", 1)
+		s, e := strconv.Atoi(k)
+		if e != nil {
+			continue
+		}
+		sort, e := strconv.Atoi(v[0])
+		if e != nil {
+			continue
+		}
+		data[int64(s)] = int64(sort)
+	}
+	var flag int64
+	for id, val := range data {
+		ad := new(tables.Advert)
+		ad.ListOrder = uint(val)
+		affected, err := orm.Id(id).Update(ad)
+		if err != nil {
+			c.Logger().Error("adorder", err)
+		}
+		if affected > 0 {
+			flag++
+		}
+	}
+	if flag > 0 {
+		helper.Ajax("排序更新成功", 0, c.Ctx())
+	} else {
+		helper.Ajax("排序规则没有发生任何改变", 1, c.Ctx())
+	}
 }
 
 func (c *AdController) AdDelete() {

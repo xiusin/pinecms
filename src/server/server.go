@@ -29,6 +29,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -184,6 +185,7 @@ func diConfig() {
 
 	htmlEngine := template.New(conf.View.BeDirname, ".html", conf.View.Reload)
 	htmlEngine.AddFunc("GetInMap", controllers.GetInMap)
+	htmlEngine.AddFunc("in_array", controllers.InStringArr)
 	pine.RegisterViewEngine(htmlEngine)
 
 	jetEngine := jet.New(conf.View.FeDirname, ".jet", conf.View.Reload)

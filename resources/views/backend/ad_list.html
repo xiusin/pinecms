@@ -50,8 +50,7 @@
     }
 
     function adListOrderFormatter(val, arr) {
-        return '<input class="ad_list_order_input" type="text" name="order" value="' + val + '" size="3" style="text-align:center">' +
-            '<input class="ad_list_order_input" type="hidden" name="id" value="'+ arr['linkid'] +'"/>';
+        return '<input class="ad_list_order_input" type="text" name="order['+arr['id']+']" value="' + val + '" size="3" style="text-align:center">';
     }
 
     function adListLogoFormatter(val) {

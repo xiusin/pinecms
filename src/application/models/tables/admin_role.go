@@ -1,7 +1,7 @@
 package tables
 
 type AdminRole struct {
-	Roleid      int64  `xorm:"pk"`
+	Roleid      int64  `xorm:"pk autoincr"`
 	Rolename    string
 	Description string
 	Listorder   int64

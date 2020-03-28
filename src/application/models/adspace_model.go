@@ -35,7 +35,7 @@ func (l *AdSpaceModel) GetList(page, limit int64) ([]tables.AdvertSpace, int64) 
 }
 
 func (l *AdSpaceModel) Add(data *tables.AdvertSpace) int64 {
-	id, err := l.orm.InsertOne(data)
+	id, err := l.orm.Insert(data)
 	if err != nil {
 		pine.Logger().Error(err)
 	}

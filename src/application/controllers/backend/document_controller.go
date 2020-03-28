@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pinecms/src/config"
 	"html/template"
 	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/xiusin/pine"
+	"time"
 
 	"github.com/xiusin/pinecms/src/application/controllers"
 
@@ -54,17 +55,9 @@ type ModelForm struct {
 
 var extraFields = []map[string]string{
 	{
-		"COLUMN_NAME":    "id",
-		"EXTRA":          "auto_increment",
-		"COLUMN_TYPE":    "int(11) unsigned",
-		"IS_NULLABLE":    "NO",
-		"COLUMN_COMMENT": "",
-		"COLUMN_DEFAULT": "",
-	},
-	{
 		"COLUMN_NAME":    "catid",
 		"EXTRA":          "",
-		"COLUMN_TYPE":    "int(11) unsigned",
+		"COLUMN_TYPE":    "int",
 		"IS_NULLABLE":    "NO",
 		"COLUMN_COMMENT": "所属栏目ID",
 		"COLUMN_DEFAULT": "0",
@@ -72,35 +65,35 @@ var extraFields = []map[string]string{
 	{
 		"COLUMN_NAME":    "mid",
 		"EXTRA":          "",
-		"COLUMN_TYPE":    "int(5) unsigned",
+		"COLUMN_TYPE":    "int",
 		"IS_NULLABLE":    "NO",
 		"COLUMN_COMMENT": "模型ID",
 		"COLUMN_DEFAULT": "0",
 	},
-	{
-		"COLUMN_NAME":    "listorder",
-		"EXTRA":          "",
-		"COLUMN_TYPE":    "int(5) unsigned",
-		"IS_NULLABLE":    "NO",
-		"COLUMN_COMMENT": "排序值",
-		"COLUMN_DEFAULT": "0",
-	},
-	{
-		"COLUMN_NAME":    "visit_count",
-		"EXTRA":          "",
-		"COLUMN_TYPE":    "int(11) unsigned",
-		"IS_NULLABLE":    "NO",
-		"COLUMN_COMMENT": "访问次数",
-		"COLUMN_DEFAULT": "0",
-	},
-	{
-		"COLUMN_NAME":    "status",
-		"EXTRA":          "",
-		"COLUMN_TYPE":    "tinyint(1) unsigned",
-		"IS_NULLABLE":    "NO",
-		"COLUMN_COMMENT": "审核状态, 前端检索条件之一",
-		"COLUMN_DEFAULT": "0",
-	},
+	//{
+	//	"COLUMN_NAME":    "listorder",
+	//	"EXTRA":          "",
+	//	"COLUMN_TYPE":    "int",
+	//	"IS_NULLABLE":    "NO",
+	//	"COLUMN_COMMENT": "排序值",
+	//	"COLUMN_DEFAULT": "0",
+	//},
+	//{
+	//	"COLUMN_NAME":    "visit_count",
+	//	"EXTRA":          "",
+	//	"COLUMN_TYPE":    "int",
+	//	"IS_NULLABLE":    "NO",
+	//	"COLUMN_COMMENT": "访问次数",
+	//	"COLUMN_DEFAULT": "0",
+	//},
+	//{
+	//	"COLUMN_NAME":    "status",
+	//	"EXTRA":          "",
+	//	"COLUMN_TYPE":    "int",
+	//	"IS_NULLABLE":    "NO",
+	//	"COLUMN_COMMENT": "审核状态, 前端检索条件之一",
+	//	"COLUMN_DEFAULT": "0",
+	//},
 	{
 		"COLUMN_NAME":    "created_time",
 		"EXTRA":          "",
@@ -134,7 +127,11 @@ func (c *DocumentController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/model/delete", "ModelDelete")
 
 	b.ANY("/model/list-field-show", "ModelFieldShowInListPage")
-	b.ANY("/model/gen-sql", "GenSQL")
+	if config.DBConfig().Db.DbDriver == "mysql" {
+		b.ANY("/model/gen-sql", "GenSQL")
+	} else {
+		b.ANY("/model/gen-sql", "GenSQLFromSQLite3")
+	}
 	b.ANY("/model/preview-page", "PreviewPage")
 }
 
@@ -163,8 +160,8 @@ func (c *DocumentController) ModelFieldShowInListPage(icache cache.AbstractCache
 			//	fieldArr = append(fieldArr, field.TableField)
 			//}
 			showInPage[field.TableField] = controllers.FieldShowInPageList{
-				Show:      showExists,
-				Search:    search,
+				Show:   showExists,
+				Search: search,
 				//FeSearch:  feSearchExists,
 				Formatter: postDatas["formatter_"+field.TableField][0],
 			}
@@ -221,7 +218,6 @@ func (c *DocumentController) ModelList() {
 	c.Ctx().Render().ViewData("dataGrid", template.HTML(table))
 	c.Ctx().Render().HTML("backend/model_list.html")
 }
-
 
 func (c *DocumentController) ModelAdd() {
 	list, _ := models.NewDocumentModelFieldModel().GetList(1, 1000)
@@ -310,6 +306,7 @@ func (c *DocumentController) ModelAdd() {
 				if strings.HasPrefix(f.Datasource, "[") || strings.HasPrefix(f.Datasource, "{") {
 					var dataSourceJson interface{}
 					if err := json.Unmarshal([]byte(f.Datasource), &dataSourceJson); err != nil {
+						fmt.Println("数据源格式错误", f.Datasource, err)
 						return nil, err
 					}
 				}
@@ -413,7 +410,7 @@ func (c *DocumentController) ModelEdit(iCache cache.AbstractCache) {
 				return nil, err
 			}
 			// 先删除所有字段
-			if models.NewDocumentFieldDslModel().DeleteByMID(document.Id) == false {
+			if af, _ := session.Where("mid=?", document.Id).Delete(&tables.DocumentModelDsl{}); af == 0 {
 				return nil, errors.New("删除表字段失败")
 			}
 			var fieldHtmlsMap = map[int64]*tables.DocumentModelField{}
@@ -479,6 +476,13 @@ func (c *DocumentController) ModelEdit(iCache cache.AbstractCache) {
 	}
 	fields := models.NewDocumentFieldDslModel().GetList(mid)
 	c.Ctx().Render().ViewData("fields", fields)
+	// 读取系统默认字段
+	defaultFields := models.NewDocumentFieldDslModel().GetList(0)
+	var conntDelFields []string
+	for _, v := range defaultFields {
+		conntDelFields = append(conntDelFields, v.TableField)
+	}
+	c.Ctx().Render().ViewData("dfs", conntDelFields)
 	c.Ctx().Render().ViewData("fieldslen", len(fields))
 	c.Ctx().Render().ViewData("document", document)
 	c.Ctx().Render().ViewData("list", list)
@@ -512,6 +516,11 @@ func (c *DocumentController) ModelDelete() {
 var sqlFieldTypeMap = map[string]string{
 	"varchar": "varchar(100)",
 	"int":     "int(10)",
+}
+
+var sqlLite3FieldTypeMap = map[string]string{
+	"varchar": "TEXT",
+	"int":     "INTEGER",
 }
 
 // 生成SQL 传入模型ID
@@ -549,7 +558,7 @@ func (c *DocumentController) GenSQL(orm *xorm.Engine) {
 	tableName := controllers.GetTableName(dm.Table)
 	if ok, _ := orm.IsTableExist(tableName); ok {
 		querySQL = "ALTER TABLE `" + tableName + "` "
-		existsFields, _ = c.Ctx().Value("orm").(*xorm.Engine).QueryString("select * from information_schema.columns where TABLE_NAME='" + tableName + "' and  table_schema = '" + tableSchema + "'")
+		existsFields, _ = orm.QueryString("select * from information_schema.columns where TABLE_NAME='" + tableName + "' and  table_schema = '" + tableSchema + "'")
 		for _, field := range fields {
 			var exists bool
 			for _, existsField := range existsFields {
@@ -573,9 +582,17 @@ func (c *DocumentController) GenSQL(orm *xorm.Engine) {
 		}
 	} else {
 		existsFields = append(existsFields, extraFields...)
-		//if dm.ModelType != models.SYSTEM_TYPE {
-		// 无论什么模型, 都要创建数据表.
 		querySQL += "CREATE TABLE `" + tableName + "` ( \n"
+		querySQL += fmt.Sprintf("\t`%s` %s %s %s %s %s,\n", "id", "int", "NOT NULL", "", "auto_increment", `COMMENT "ID自增字段"`)
+
+		for _, field := range fields {
+			colType, ok := sqlFieldTypeMap[fieldTypes[field.FieldType].Type]
+			if !ok {
+				colType = fieldTypes[field.FieldType].Type
+			}
+			querySQL += fmt.Sprintf("\t`%s` %s %s %s %s %s,\n", field.TableField, strings.ToUpper(colType), "", "", "", `COMMENT "`+field.FormName+`"`)
+		}
+
 		for _, f := range existsFields {
 			var notNull = ""
 			if f["IS_NULLABLE"] == "NO" {
@@ -585,19 +602,9 @@ func (c *DocumentController) GenSQL(orm *xorm.Engine) {
 			if f["COLUMN_DEFAULT"] != "" {
 				defaultVal = "DEFAULT '" + f["COLUMN_DEFAULT"] + "'"
 			}
-			querySQL += fmt.Sprintf("\t`%s` %s %s %s %s %s,\n", f["COLUMN_NAME"], f["COLUMN_TYPE"], notNull, defaultVal, f["EXTRA"], `COMMENT "`+f["COLUMN_COMMENT"]+`"`)
-			if f["COLUMN_NAME"] == "id" {
-				for _, field := range fields {
-					colType, ok := sqlFieldTypeMap[fieldTypes[field.FieldType].Type]
-					if !ok {
-						colType = fieldTypes[field.FieldType].Type
-					}
-					querySQL += fmt.Sprintf("\t`%s` %s %s %s %s %s,\n", field.TableField, colType, "", "", "", `COMMENT "`+field.FormName+`"`)
-				}
-			}
+			querySQL += fmt.Sprintf("\t`%s` %s %s %s %s %s,\n", f["COLUMN_NAME"], strings.ToUpper(f["COLUMN_TYPE"]), notNull, defaultVal, f["EXTRA"], `COMMENT "`+f["COLUMN_COMMENT"]+`"`)
 		}
 		querySQL += "\tPRIMARY KEY (`id`) USING BTREE) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
-		//}
 	}
 	querySQL = regexp.MustCompile(" +").ReplaceAllString(querySQL, " ")
 	if exec && querySQL != "" {
@@ -616,6 +623,111 @@ func (c *DocumentController) GenSQL(orm *xorm.Engine) {
 		helper.Ajax(querySQL, 0, c.Ctx())
 	}
 
+}
+
+func (c *DocumentController) GenSQLFromSQLite3(orm *xorm.Engine) {
+	modelID, _ := c.Ctx().URLParamInt64("mid")
+	if modelID < 1 {
+		helper.Ajax("模型参数错误", 1, c.Ctx())
+		return
+	}
+	model := models.NewDocumentModel()
+	dm := model.GetByID(modelID)
+	if dm == nil {
+		helper.Ajax("模型不存在", 1, c.Ctx())
+		return
+	}
+
+	// 如果已经执行过SQL 直接返回一个错误
+	if dm.Execed == 1 {
+		helper.Ajax("没有任何改动可以执行", 1, c.Ctx())
+		return
+	}
+	//由于执行与SQL显示在同一个控制器内, 所以通过exec区分一下
+	exec, _ := c.Ctx().GetBool("exec")
+	// 模型字段
+	fields := models.NewDocumentFieldDslModel().GetList(modelID)
+	// 关联数据
+	fieldTypes := models.NewDocumentModelFieldModel().GetMap()
+
+	querySQL := ""
+	tableName := controllers.GetTableName(dm.Table)
+	tableName = "pinecms_demo"
+	querySQL += "CREATE TABLE `" + tableName + "` ( \n"
+
+	var createFields []string
+	createFields = append(createFields, fmt.Sprintf("\t`%s` %s %s %s %s", "id", "INTEGER", "NOT NULL", "PRIMARY KEY AUTOINCREMENT", ""))
+
+	// 模型字段定义
+	for _, field := range fields {
+		colType, ok := sqlLite3FieldTypeMap[fieldTypes[field.FieldType].Type]
+		if !ok {
+			colType = fieldTypes[field.FieldType].Type
+		}
+		createFields = append(createFields, strings.Trim(fmt.Sprintf("\t`%s` %s %s %s %s", field.TableField, strings.ToUpper(colType), "", "", ""), " "))
+	}
+
+	// 额外的字段添加
+	for _, f := range extraFields {
+		var notNull = ""
+		if f["IS_NULLABLE"] == "NO" {
+			notNull = "NOT NULL"
+		}
+		var defaultVal = ""
+		if f["COLUMN_DEFAULT"] != "" {
+			defaultVal = "DEFAULT " + f["COLUMN_DEFAULT"]
+		}
+		if f["COLUMN_TYPE"] == "int" {
+			f["COLUMN_TYPE"] = "INTEGER"
+		}
+		createFields = append(createFields, strings.Trim(fmt.Sprintf("\t`%s` %s %s %s %s", f["COLUMN_NAME"], strings.ToUpper(f["COLUMN_TYPE"]), notNull, f["EXTRA"], defaultVal), " "))
+	}
+
+	querySQL += strings.Join(createFields, ", \n")
+	querySQL += "\n);"
+
+	querySQL = regexp.MustCompile(" +").ReplaceAllString(querySQL, " ")
+	if exec {
+		// 判断表名是否存在
+		if querySQL != "" {
+			_, err := orm.Transaction(func(sess *xorm.Session) (i interface{}, err error) {
+				exist, err := sess.IsTableExist(tableName)
+				if err != nil {
+					return nil, err
+				}
+				if exist {
+					today := time.Now().Format("20060102150405")
+					backTableName := `_` + tableName + `_old_` + today
+					// 重命名表
+					ret, err := sess.Exec(`ALTER TABLE "` + tableName + `" RENAME TO "` + backTableName + `"`)
+					if err != nil {
+						return nil, err
+					}
+					if af, _ := ret.RowsAffected(); af == 0 {
+						return nil, errors.New("无法重命名表")
+					}
+				}
+				// 判断表是否存在
+				_, err = sess.Exec(querySQL)
+				if err != nil {
+					return nil, err
+				}
+				af, _ := sess.ID(modelID).Table(&tables.DocumentModel{}).Update(map[string]interface{}{"execed": 1})
+				if af == 0 {
+					return nil, errors.New("无法更新模型Execed字段")
+				}
+				return nil, nil
+			})
+			if err != nil {
+				c.Logger().Error("执行SQL错误", err)
+				helper.Ajax("执行SQL失败", 1, c.Ctx())
+				return
+			}
+		}
+		helper.Ajax("执行SQL成功, 创建表:"+tableName+"成功", 0, c.Ctx())
+	} else {
+		helper.Ajax("#SQLite 将原表名备份然后创建一个新的表\n"+querySQL, 0, c.Ctx())
+	}
 }
 
 // 预览模型表单界面

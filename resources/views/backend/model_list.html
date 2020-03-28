@@ -74,7 +74,7 @@
                 return
             }
             if (!exec) {
-                $('#model_edit_gen_sql').html(data.errmsg);
+                $('#model_edit_gen_sql').html("# 建议确定最终模型之前不要发布数据, 因为能数据不兼容导致问题\n" + data.errmsg);
                 $('#model_edit_gen_sql').parent().parent().append("<script> document.querySelectorAll('pre code').forEach((block) => { hljs.highlightBlock(block); });<\/script>")
                 $('#model_edit_gen_sql_dialog').dialog('open');
             } else {
@@ -105,7 +105,7 @@
             <span class="caret"></span>
         </button><ul class="dropdown-menu" role="menu">`
         link += '<li><a href="javascript:;" onclick="getEditModelSQL(' + val + ');">查看SQL</a></li>';
-        link += '<li><a href="javascript:;" onclick="editModelFieldShowInList(' + val + ');">列表显示字段</a></li> ';
+        link += '<li><a href="javascript:;" onclick="editModelFieldShowInList(' + val + ');">后端显示</a></li> ';
         link += '<li><a href="javascript:;" onclick="editModelPreviewPage(' + val + ');">预览页面</a></li> ';
         if (obj.model_type) {
              link +=  '<li><a href="javascript:;" onclick="editModel(' + val + ');" title="系统模型不可删除不可修改">查看</a></li>';
