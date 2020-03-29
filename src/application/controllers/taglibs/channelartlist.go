@@ -4,6 +4,7 @@ import (
 	"github.com/CloudyKit/jet"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"reflect"
@@ -32,7 +33,7 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 	} else {
 		ids = strings.Split(catid.String(), ",")
 	}
-	sess := pine.Make("*xorm.Engine").(*xorm.Engine).Table(&tables.Category{})
+	sess := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(&tables.Category{})
 	var categories []tables.Category
 	err := sess.In("parentid", ids).Where("ismenu = ?", 1).Limit(int(row)).Desc("listorder").Find(&categories)
 	if err != nil {
@@ -51,7 +52,7 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 	// 判断是否有下级菜单
 	son := args.Get(2).Bool()
 	if son {
-		sess := pine.Make("*xorm.Engine").(*xorm.Engine).
+		sess := pine.Make(controllers.ServiceXorm).(*xorm.Engine).
 			Table(&tables.Category{}).
 			In("parentid", catids).GroupBy("parentid").Select("parentid,count(*) as total").Where("ismenu = ?", 1)
 		rest, _ := sess.QueryString()

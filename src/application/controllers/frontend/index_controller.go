@@ -52,21 +52,22 @@ func (c *IndexController) Index() {
 	pageFilePath := controllers.GetStaticFile(indexPage)
 	finfo, err := os.Stat(pageFilePath)
 	if err != nil || finfo.Size() == 0 {
-		f, err := os.OpenFile(pageFilePath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
+		os.MkdirAll(filepath.Dir(pageFilePath), os.ModePerm)
+		f, err := os.OpenFile(pageFilePath, os.O_CREATE|os.O_RDWR, os.ModePerm)
 		if err != nil {
-			c.Ctx().WriteString(err.Error())
+			c.Logger().Error(err)
 			return
 		}
 		defer f.Close()
 		jet := pine.Make(controllers.ServiceJetEngine).(*jet.PineJet)
 		temp, err := jet.GetTemplate(template("index.jet"))
 		if err != nil {
-			c.Ctx().WriteString(err.Error())
+			c.Logger().Error(err)
 			return
 		}
 		err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), nil)
 		if err != nil {
-			c.Ctx().WriteString(err.Error())
+			c.Logger().Error(err)
 			return
 		}
 	}

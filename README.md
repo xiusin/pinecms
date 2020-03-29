@@ -1,17 +1,18 @@
-# 项目描述　#
-```
+# 项目描述 #
 
-```
 
 # 下载部署 #
 
 1. 下载源码
-```
-    git clone 代码
-```
+    ```
+    git clone https://github.com/xiusin/pinecms.git
+    cd pinecms
+    ```
 2. 数据库配置
     > 导入数据库结构`resources/pinecms.sql`
-    > 修改`resources/configs/database.yml.dist`为`resources/configs/database.yml`
+    >
+    >修改`resources/configs/database.yml.dist`为`resources/configs/database.yml`
+    
 
 3. 修改go.mod (由于框架和cms是联动开发,直接本地映射了)
 
@@ -21,7 +22,7 @@
     > `go get -v`
 
 5. 运行项目
-    > `./iris serve start` 
+    > `./pinecms serve start` 
 
 6. 开发期间自动构建
     > `go run main.go serve dev`
