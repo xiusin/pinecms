@@ -70,30 +70,6 @@ var extraFields = []map[string]string{
 		"COLUMN_COMMENT": "模型ID",
 		"COLUMN_DEFAULT": "0",
 	},
-	//{
-	//	"COLUMN_NAME":    "listorder",
-	//	"EXTRA":          "",
-	//	"COLUMN_TYPE":    "int",
-	//	"IS_NULLABLE":    "NO",
-	//	"COLUMN_COMMENT": "排序值",
-	//	"COLUMN_DEFAULT": "0",
-	//},
-	//{
-	//	"COLUMN_NAME":    "visit_count",
-	//	"EXTRA":          "",
-	//	"COLUMN_TYPE":    "int",
-	//	"IS_NULLABLE":    "NO",
-	//	"COLUMN_COMMENT": "访问次数",
-	//	"COLUMN_DEFAULT": "0",
-	//},
-	//{
-	//	"COLUMN_NAME":    "status",
-	//	"EXTRA":          "",
-	//	"COLUMN_TYPE":    "int",
-	//	"IS_NULLABLE":    "NO",
-	//	"COLUMN_COMMENT": "审核状态, 前端检索条件之一",
-	//	"COLUMN_DEFAULT": "0",
-	//},
 	{
 		"COLUMN_NAME":    "created_time",
 		"EXTRA":          "",
@@ -159,10 +135,15 @@ func (c *DocumentController) ModelFieldShowInListPage(icache cache.AbstractCache
 			//if feSearchExists {
 			//	fieldArr = append(fieldArr, field.TableField)
 			//}
+			_, formShowExists := postDatas["form_"+field.TableField]
+			//if feSearchExists {
+			//	formShow = append(formShow, field.TableField)
+			//}
 			showInPage[field.TableField] = controllers.FieldShowInPageList{
 				Show:   showExists,
 				Search: search,
 				//FeSearch:  feSearchExists,
+				FormShow: formShowExists,
 				Formatter: postDatas["formatter_"+field.TableField][0],
 			}
 		}
@@ -186,6 +167,7 @@ func (c *DocumentController) ModelFieldShowInListPage(icache cache.AbstractCache
 	_ = json.Unmarshal([]byte(model.FieldShowInList), &showInPage)
 
 	c.Ctx().Render().ViewData("shows", showInPage)
+	c.Ctx().Render().ViewData("formShow", showInPage)
 	c.Ctx().Render().ViewData("fields", fields)
 	c.Ctx().Render().ViewData("l", len(fields))
 	c.Ctx().Render().ViewData("codeEditorHeight", len(fields)*49)
@@ -212,8 +194,8 @@ func (c *DocumentController) ModelList() {
 		"模型名称":  {"field": "name", "width": "30", "index": "1"},
 		"数据表名称": {"field": "table", "width": "20", "index": "2"},
 		"启用":    {"field": "enabled", "width": "20", "index": "3", "formatter": "enabledFormatter"},
-		"系统模型":  {"field": "model_type", "width": "20", "index": "4", "formatter": "systemFormatter"},
-		"操作":    {"field": "o", "index": "5", "formatter": "optFormatter"},
+		//"系统模型":  {"field": "model_type", "width": "20", "index": "4", "formatter": "systemFormatter"},
+		"操作":    {"field": "o", "index": "4", "formatter": "optFormatter"},
 	})
 	c.Ctx().Render().ViewData("dataGrid", template.HTML(table))
 	c.Ctx().Render().HTML("backend/model_list.html")
@@ -652,9 +634,7 @@ func (c *DocumentController) GenSQLFromSQLite3(orm *xorm.Engine) {
 
 	querySQL := ""
 	tableName := controllers.GetTableName(dm.Table)
-	tableName = "pinecms_demo"
 	querySQL += "CREATE TABLE `" + tableName + "` ( \n"
-
 	var createFields []string
 	createFields = append(createFields, fmt.Sprintf("\t`%s` %s %s %s %s", "id", "INTEGER", "NOT NULL", "PRIMARY KEY AUTOINCREMENT", ""))
 

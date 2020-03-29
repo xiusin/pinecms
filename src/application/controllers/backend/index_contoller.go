@@ -126,7 +126,6 @@ func (c *IndexController) Main(iCache cache.AbstractCache) {
 	c.ViewData("mems", getMems())
 
 	todos ,_ := iCache.Get(controllers.CacheToDo)
-	fmt.Println(string(todos))
 	c.ViewData("todos", template.HTML(string(todos)))
 	
 	c.View("backend/index_main.html")

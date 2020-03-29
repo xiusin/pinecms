@@ -7447,8 +7447,12 @@ ul.inbox {
   position: fixed;
   width: 100%;
   height: 100%;
+  background-size: cover;
+  min-height: 100%;
   padding: 0 !important;
-  background: url(../images/wall.jpg); }
+  background: #6f8489 url(../images/wall.jpg) no-repeat fixed left top;
+  background-size: 100% 100%;
+}
   .full-page .welcome {
     display: block;
     margin: 5% auto;

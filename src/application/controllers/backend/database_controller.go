@@ -3,6 +3,7 @@ package backend
 import (
 	"bytes"
 	"fmt"
+	"github.com/xiusin/pinecms/src/config"
 	"html/template"
 	"io"
 	"path/filepath"
@@ -28,12 +29,22 @@ var baseBackupDir = fmt.Sprintf("%s/%s", "database", "backup")
 
 func (c *DatabaseController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/database/manager", "Manager")
-	b.POST("/database/repair", "Repair")
-	b.POST("/database/optimize", "Optimize")
-	b.POST("/database/backup", "Backup")
+	if config.DBConfig().Db.DbDriver == "sqlite3" {
+		b.POST("/database/repair", "NoSupport")
+		b.POST("/database/optimize", "NoSupport")
+		b.POST("/database/backup", "NoSupport")
+	} else {
+		b.POST("/database/repair", "Repair")
+		b.POST("/database/optimize", "Optimize")
+		b.POST("/database/backup", "Backup")
+	}
 	b.ANY("/database/backup-list", "BackupList")
 	b.POST("/database/backup-delete", "BackupDelete")
 	b.POST("/database/backup-download", "BackupDownload")
+}
+
+func (c *DatabaseController) NoSupport()  {
+	helper.Ajax("SQLITE不支持此功能", 1, c.Ctx())
 }
 
 func (c *DatabaseController) Manager(orm *xorm.Engine) {
@@ -207,6 +218,7 @@ func (c *DatabaseController) backup(settingData map[string]string, auto bool) (m
 	uploadFile := fmt.Sprintf("%s/%s", baseBackupDir, fNameBaseName+".zip")
 	buf := bytes.NewBuffer([]byte{})
 	if err := orm.DumpAll(buf); err != nil {
+		pine.Logger().Error("备份数据表失败", err)
 		return "备份表数据失败: " + err.Error(), 1
 	}
 	zipsc := bytes.NewBuffer([]byte{})

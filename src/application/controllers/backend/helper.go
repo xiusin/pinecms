@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -46,35 +47,28 @@ func buildModelForm(mid int64, data map[string]string) string {
 		buttonTxt = "更新"
 	}
 	fields := models.NewDocumentFieldDslModel().GetList(mid)
+
+	// 判断是否显示
+	var showInPage = map[string]controllers.FieldShowInPageList{}
+	_ = json.Unmarshal([]byte(documentModel.FieldShowInList), &showInPage)
+
 	h := "<form method='POST' id='content_page_form' enctype='multipart/form-data'>" +
 		"<input type='hidden' name='table_name' value='" + documentModel.Table + "'>" +
 		"<input type='hidden' name='mid' value='" + strconv.Itoa(int(mid)) + "'>" +
 		idInput +
 		"<table cellpadding='2' class='dialogtable' style='width: 100%;'>"
 	for _, field := range fields {
-		h += `<tr><td style="width: 100px;text-align:right;">` + field.FormName + `：</td><td>`
-		val, _ := data[field.TableField] // 读取字段值
-		if strings.Contains(field.Html, "easyui-") {
-			h += easyUIComponents(&field, val)
-		} else {
-			h += domOrCustomTagComponents(&field, val)
+		if v, ok := showInPage[field.TableField]; ok && v.FormShow {
+			h += `<tr><td style="width: 100px;text-align:right;">` + field.FormName + `：</td><td>`
+			val, _ := data[field.TableField] // 读取字段值
+			if strings.Contains(field.Html, "easyui-") {
+				h += easyUIComponents(&field, val)
+			} else {
+				h += domOrCustomTagComponents(&field, val)
+			}
+			h += "</td></tr>"
 		}
-		h += "</td></tr>"
 	}
-
-	// 点击次数生成
-	//if data["visit_count"] == "" {
-	//	data["visit_count"] = strconv.Itoa(rand.Intn(1000))
-	//}
-	//
-	//h += "<tr><td style='text-align:right;'>点击次数：</td><td> <input class='easyui-textbox' value='" + data["visit_count"] + "' name='status'></td></tr>"
-
-	//if data["status"] == "1" {
-	//	h += "<tr><td style='text-align:right;'>状态：</td><td> <input class='easyui-switchbutton' checked name='status'></td></tr>"
-	//} else {
-	//	h += "<tr><td style='text-align:right;'>状态：</td><td> <input class='easyui-switchbutton' name='status'></td></tr>"
-	//}
-
 	h += `<tr><td colspan=2><a href="javascript:void(0);" onclick="submitForm()" class="easyui-linkbutton">` + buttonTxt + `</a></td></tr></table></form>`
 	return h
 }
@@ -84,6 +78,7 @@ func domOrCustomTagComponents(field *tables.DocumentModelDsl, val string) string
 	isImageUpload := strings.HasPrefix(field.Html, "<images")
 	isMulImageUpload := strings.HasPrefix(field.Html, "<mul-images")
 	isTags := strings.HasPrefix(field.Html, "<tags")
+	isAttr := strings.HasPrefix(field.Html, "<attr") //文档属性
 	isFileUpload := strings.HasPrefix(field.Html, "<fileupload")
 	if isEditor {
 		field.Html = getEditor(field.TableField, val, strings.Join(attrs, " "), field.Required == 1, field.FormName, field.Default, field.RequiredTips)
@@ -95,6 +90,18 @@ func domOrCustomTagComponents(field *tables.DocumentModelDsl, val string) string
 		field.Html = helper.Tags(field.TableField, val, field.Required == 1, field.FormName, field.Default, field.RequiredTips)
 	} else if isFileUpload {
 		field.Html = helper.FileUpload(field.TableField, val, field.Required == 1, field.FormName, field.Default, field.RequiredTips)
+	} else if isAttr {
+		attrs := strings.Split(val, ",")
+		kvpair := map[string]string{"h": "", "c": "", "a": "", "b": "", "p": ""}
+		for _, v := range attrs {
+			kvpair[v] = "checked"
+		}
+		field.Html = `
+<label><input type="checkbox" name="attrs" value="h" ` + kvpair["h"] + `>头条[h]</label>&nbsp;&nbsp;&nbsp;
+<label><input type="checkbox" name="attrs" value="c" ` + kvpair["c"] + `>推荐[c]</label>&nbsp;&nbsp;&nbsp;
+<label><input type="checkbox" name="attrs" value="a" ` + kvpair["a"] + `>特荐[a]</label>&nbsp;&nbsp;&nbsp;
+<label><input type="checkbox" name="attrs" value="b" ` + kvpair["b"] + `>加粗[b]</label>&nbsp;&nbsp;&nbsp;
+<label><input type="checkbox" name="attrs" value="p" ` + kvpair["p"] + `>图片[p]</label>`
 	} else {
 		field.Html = strings.Replace(field.Html, "{{attr}}", strings.Join(attrs, " "), 1)
 		field.Html = strings.Replace(field.Html, "{{value}}", val, 1)
@@ -116,6 +123,10 @@ func easyUIComponents(field *tables.DocumentModelDsl, val string) string {
 		} else {
 			options = append(options, "missingMessage:'"+field.FormName+"必须填写'")
 		}
+	}
+	if field.TableField == "visit_count" {
+		rand.Seed(time.Now().Unix())
+		val = strconv.Itoa(rand.Intn(5000))
 	}
 	if field.Validator != "" {
 		options = append(options, "validType:"+field.Validator)
@@ -194,7 +205,7 @@ func easyUIComponents(field *tables.DocumentModelDsl, val string) string {
 						htmlTmp = strings.Replace(htmlTmp, "{{default}}", "", 1)
 					}
 				}
-				htm += strings.Replace(htmlTmp, "{{value}}", item.Value, -1) + strings.Repeat("&nbsp;", 3) + item.Label + strings.Repeat("&nbsp;", 8)
+				htm += strings.Replace(htmlTmp, "{{value}}", item.Value, -1) + " " + item.Label + strings.Repeat("&nbsp;", 5)
 			}
 			field.Html = htm
 		} else if field.FieldType == 13 && len(datas) >= 1 { // 单选按钮

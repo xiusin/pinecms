@@ -232,16 +232,16 @@ if (!flag) { $('#` + rid + `_tip').html("` + RequiredTips + `"); return false; }
 	if len(data) > 0 {
 		for _, v := range data {
 			box += `<div class="imgbox">
-					<input class="imgbox_inputBtn" type="image" onclick="return fromUEImageUploader(this)" src="` + v + `" alt="点击上传" onerror='this.src="/assets/backend/static/nopic.jpg"' />
+					<input class="imgbox_inputBtn" type="image" onclick="return fromUEImageUploader(this)" style='height: 95px; width:95px;' src="` + v + `" alt="点击上传" onerror='this.src="/assets/backend/static/nopic.jpg"' />
 					<input type="hidden" value="` + v + `" name="` + field + `" />
-					<span style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer;    position: absolute;left: 92px;top: 10px;'   onclick=''>×</span>
+					<span style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer;    position: absolute;left: 72px;top: 10px;'   onclick=''>×</span>
 				</div>`
 		}
 	}
 
 	str := box + `
-		<div class="imgbox" onclick="return createHtml(this,'` + field + `', ` + strconv.Itoa(maxImgNum) + `)" style="width: 95px; margin: 8px; ">
-			<img style="height: 38px;display: block;border: 1px dashed #888;padding: 30px;" src="/assets/backend/static/plus.png" />
+		<div class="imgbox" onclick="return createHtml(this,'` + field + `', ` + strconv.Itoa(maxImgNum) + `)" style="width: 95px; height: 95px">
+			<img style="height: 93px;display: block;border: 1px dashed #888;padding: 30px;" src="/assets/backend/static/plus.png" />
 		</div>`
 	return str + `<div id='` + rid + `_tip' class='errtips'></div>` + requiredFunc
 }

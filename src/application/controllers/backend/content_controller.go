@@ -259,7 +259,11 @@ func (c *ContentController) AddContent() {
 		var data = customForm{}
 		postData := c.Ctx().PostData()
 		for formName, values := range postData {
-			data[formName] = values[0] //	todo 多项值根据字段类型合并 strings.Join(values, ",")
+			if formName == "attrs" {
+				data[formName] = strings.Join(values, ",")
+			} else {
+				data[formName] = values[0]
+			}
 		}
 		data["catid"] = c.Ctx().GetString("catid")
 		if !data.MustCheck() {
@@ -375,7 +379,11 @@ func (c *ContentController) EditContent() {
 		var data = customForm{}
 		postData := c.Ctx().PostData()
 		for formName, values := range postData {
-			data[formName] = values[0]
+			if formName == "attrs" {
+				data[formName] = strings.Join(values, ",")
+			} else {
+				data[formName] = values[0]
+			}
 		}
 		data["catid"] = c.Ctx().GetString("catid")
 		if !data.MustCheck() {

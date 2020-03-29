@@ -143,9 +143,9 @@
             return false;
         }
         var str = "<div class='imgbox'>\
-                  <input class='imgbox_inputBtn' type='image' onclick='return doUpload(this)' src='/assets/backend/static/img/nopic.png' alt='点击上传'/>\
+                  <input class='imgbox_inputBtn' type='image' onclick='return doUpload(this)' src='/assets/backend/static/nopic.jpg' alt='点击上传'/>\
                   <input type='hidden' name='" + field + "' />\
-                  <span title=\"删除图片框\" style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer;    position: absolute;left: 92px;top: 10px;'  onclick='delImgBox(this)'>×</span>\
+                  <span title=\"删除图片框\" style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer;    position: absolute;left: 72px;top: 10px;'  onclick='delImgBox(this)'>×</span>\
         </div>";
         $(obj).before(str);
         return false;

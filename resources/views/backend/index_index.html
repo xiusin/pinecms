@@ -124,16 +124,16 @@
                     {{range $i,$v := .menus}}
                         <li class="dropdown {{if eq $i 0}}open{{end}}">
                             <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" title="{{$v.name}}">
-                                <i class="fa fa-dashboard">
-                                    <span class="overlay-label red"></span>
-                                </i>
+{{/*                                <i class="fa fa-dashboard">*/}}
+{{/*                                    <span class="overlay-label red"></span>*/}}
+{{/*                                </i>*/}}
                                 {{$v.name}} <b class="fa fa-angle-left dropdown-arrow"></b>
                             </a>
                             <ul class="dropdown-menu">
                                 {{range $i1, $v1 := $v.son}}
                                     <li data-stopPropagation="true">
                                         <a onclick="openUrl('{{$v1.url}}', '{{$v1.text}}')">
-                                            <i class="fa fa-eye"><span class="overlay-label red80"></span></i>
+{{/*                                            <i class="fa fa-eye"><span class="overlay-label red80"></span></i>*/}}
                                             {{$v1.text}}
                                         </a>
                                     </li>
@@ -196,15 +196,11 @@
 <link rel="stylesheet" type="text/css" href="/assets/backend/static/css/icons.css"/>
 <link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/insdep.easyui.min.css" title="metro"/>
 <script type="text/javascript" src="/assets/backend/static/js/easyui/jquery.easyui.min.js"></script>
-<script type="text/javascript" src="/assets/backend/static/js/easyui/insdep.extend.min.js"></script>
+{{/*<script type="text/javascript" src="/assets/backend/static/js/easyui/insdep.extend.min.js"></script>*/}}
 <script type="text/javascript" src="/assets/backend/static/js/easyui/locale/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="/assets/backend/static/js/formvalidator/formValidator.js"></script>
 <script type="text/javascript" src="/assets/backend/static/js/formvalidator/formValidatorRegex.js"></script>
 <script type="text/javascript" src="/assets/backend/static/js/jquery.serializeObject.min.js"></script>
-<script type="text/javascript"
-        src="/assets/backend/static/js/easyui/expand/jquery-easyui-radiobox/radiobox.js"></script>
-<link rel="stylesheet" type="text/css"
-      href="/assets/backend/static/js/easyui/expand/jquery-easyui-radiobox/radiobox.css" title="metro"/>
 
 <script type="text/javascript" src="/assets/lightgallery/js/lightgallery-all.min.js"></script>
 <link rel="stylesheet" type="text/css" href="/assets/lightgallery/css/lightgallery.min.css">
@@ -312,7 +308,7 @@
 
     body #content textarea, body #content input[type="text"], body #content input[type="password"] {
         padding: 7px !important;
-        min-height: 38px;
+        min-height: 30px;
     }
     .datagrid-row {
         height: 40px;

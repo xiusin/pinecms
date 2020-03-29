@@ -12,6 +12,7 @@ type FieldShowInPageList struct {
 	Show      bool   `json:"show"`
 	Search    int    `json:"search"`
 	FeSearch  bool   `json:"fe_search"`
+	FormShow bool 	 `json:"form_show"`
 	Formatter string `json:"formatter"`
 }
 
