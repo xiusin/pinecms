@@ -1,7 +1,7 @@
 package tables
 
 type Admin struct {
-	Userid        int64  `xorm:"pk"`
+	Userid        int64  `xorm:"pk autoincr"`
 	Username      string
 	Password      string
 	Roleid        int64

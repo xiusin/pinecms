@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
@@ -22,7 +21,7 @@ func GetStaticFile(filename string) string {
 
 func GetSetting(xorm *xorm.Engine, cache cache.AbstractCache) (map[string]string, error) {
 	var settingData = map[string]string{}
-	res, err := cache.Get(CacheSetting)
+	err := cache.GetWithUnmarshal(CacheSetting, &settingData)
 	if err != nil {
 		var settings []tables.Setting
 		err := xorm.Find(&settings)
@@ -34,17 +33,11 @@ func GetSetting(xorm *xorm.Engine, cache cache.AbstractCache) (map[string]string
 				settingData[v.Key] = v.Value
 			}
 		}
-		setDataStr, _ := json.Marshal(&settingData)
-		if err := cache.Set(CacheSetting, setDataStr); err != nil {
-			return nil, err
-		}
-
-	} else {
-		err := json.Unmarshal(res, &settingData)
-		if err != nil {
+		if err = cache.SetWithMarshal(CacheSetting, &settingData); err != nil {
 			return nil, err
 		}
 	}
+
 	return settingData, nil
 }
 
@@ -55,6 +48,15 @@ func GetInMap(data map[string]FieldShowInPageList, key string) FieldShowInPageLi
 	} else {
 		return FieldShowInPageList{}
 	}
+}
+
+func InStringArr(data []string, key string) bool {
+	for _,v := range data {
+		if v == key {
+			return true
+		}
+	}
+	return false
 }
 
 func GetTableName(name string) string {

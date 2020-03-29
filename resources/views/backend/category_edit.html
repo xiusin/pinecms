@@ -31,44 +31,6 @@
                 <span style="color:gray;padding-left:15px">设置后不可修改</span>
             </td>
         </tr>
-        <tr id="model_select">
-            <td>文档模型：</td>
-            <td>
-                <select name="model_id" class="easyui-combobox"
-                        data-options="editable:false,panelHeight:'auto'"
-                        style="width:280px"
-                        disabled>
-                    {{if eq $.model_id 0}}
-                        <option value="0">自定义(需要设置路由)</option>
-                    {{else}}
-                        {{range $v := .models}}
-                            {{if eq $v.Id $.model_id}}
-                                <option value="{{$v.Id}}">{{$v.Name}}</option>
-                            {{end}}
-                        {{end}}
-                    {{end}}
-                </select>
-                <span style="color:gray;padding-left:15px">设置后不可修改</span>
-            </td>
-        </tr>
-
-        {{if eq $.model_id 0}}
-        <tr class="custom_manager">
-            <td>列表管理路由：</td>
-            <td><input name="manager_content_router" value="{{.category.ManagerContentRouter}}" type="text" class="easyui-textbox" data-options="required: true"/></td>
-        </tr>
-
-        <tr class="custom_manager">
-            <td>添加内容路由：</td>
-            <td><input name="add_content_router"  value="{{.category.AddContentRouter}}" type="text" class="easyui-textbox"  data-options="required: true"/></td>
-        </tr>
-
-        <tr class="custom_manager">
-            <td>修改内容路由：</td>
-            <td><input name="edit_content_router"  value="{{.category.EditContentRouter}}" type="text" class="easyui-textbox"  data-options="required: true"/></td>
-        </tr>
-        {{end}}
-
         <tr>
             <td>缩略图：</td>
             <td>
@@ -82,13 +44,11 @@
         <tr id="category_category_edit_dialog_form_url" {{if ne .category.Type 2}}style="display:none" {{end}}>
             <td>链接：</td>
             <td><input name="url" value="{{.category.Url}}" type="text" style="width:80%;height:22px"/></td>
-            <td>
         </tr>
 
         <tr >
             <td>栏目目录：</td>
             <td><input name="dir" class="easyui-textbox" value="{{.category.Dir}}" type="text" data-options="required: true"/></td>
-            <td>
         </tr>
 
 

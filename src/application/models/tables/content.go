@@ -1,7 +1,7 @@
 package tables
 
 type Content struct {
-	Id          int64  `xorm:"pk" form:"id" json:"id"`
+	Id          int64  `form:"id" json:"id"`
 	Catid       int64  `form:"catid" json:"catid"`
 	Title       string `form:"title" json:"title"`
 	Thumb       string `form:"thumb" json:"thumb"`

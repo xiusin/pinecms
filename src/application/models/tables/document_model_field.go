@@ -1,7 +1,7 @@
 package tables
 
 type DocumentModelField struct {
-	Id   int64 `xorm:"pk"`
+	Id   int64
 	Name string
 	Type string
 	Desc string
