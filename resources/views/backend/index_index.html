@@ -413,11 +413,14 @@
                 title: title,
                 href: url,
                 closable: true,
-                cache: true
+                cache: false
             }
             if (iframe) {
                 option.href = null
                 option.content = '<iframe src="' + url + '" frameborder="0" fit="true" border="none" width="100%" height="100%"></iframe>'
+            }
+            if (title === "实时日志") {
+                option.cache = true
             }
             $('#pagetabs').tabs('add', option);
         }

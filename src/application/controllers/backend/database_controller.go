@@ -62,7 +62,6 @@ func (c *DatabaseController) Manager(orm *xorm.Engine) {
 				"total":    total,
 				"engine":   mataData.StoreEngine,
 				"name":     mataData.Name,
-				//"charset": mataData.Charset,
 				"comment": mataData.Comment,
 			})
 		}

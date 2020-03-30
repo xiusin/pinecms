@@ -1,10 +1,581 @@
 
 
 <div style="background: rgba(125, 114, 100, 0.05); overflow: auto">
+
+    <section class="tile">
+
+
+
+    <div class="tile-header transparent">
+        <h1><strong>Two-sided</strong> Cards</h1>
+        <span class="note">Tag <strong>div</strong> with class <em>card</em></span>
+    </div>
+
+    <div class="row cards">
+
+        <div class="card-container col-lg-3 col-md-6 col-sm-12">
+            <div class="card card-red hover">
+                <div class="front">
+                    <h1>New Users</h1>
+                    <p id="users-count">0</p>
+                    <span class="fa-stack fa-2x pull-right">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-user fa-stack-1x"></i>
+                            <span class="easypiechart" data-percent="100" data-line-width="4" data-size="80" data-line-cap="butt" data-animate="2000" data-target="#users-count" data-update="3000" data-bar-color="white" data-scale-color="false" data-track-color="rgba(0, 0, 0, 0.15)"></span>
+                          </span>
+                </div>
+                <div class="back">
+                    <ul class="inline divided">
+                        <li>
+                            <h1>Total Users</h1>
+                            <p>3541</p>
+                        </li>
+                        <li>
+                            <h1>Last Month</h1>
+                            <p>698</p>
+                        </li>
+                    </ul>
+                    <div class="summary negative">13% <i class="fa fa-arrow-down"></i> this month</div>
+                    <!-- Button trigger modal -->
+                    <button class="btn show-code" data-toggle="modal" data-target="#codeModal01">
+                        show code
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="codeModal01" tabindex="-1" role="dialog" aria-labelledby="cardCode01" aria-hidden="true">
+            <div class="modal-dialog wide">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="cardCode01">Users Card - Source Code</h4>
+                    </div>
+                    <div class="modal-body">
+
+
+
+                        <!-- Source Code -->
+                        <pre class="prettyprint linenums">
+      //card container
+      &lt;div class="card-container col-lg-3 col-md-6 col-sm-12"&gt;
+
+        //define card color with .card-red
+        &lt;div class="card card-red hover"&gt;
+
+          //front side of card
+          &lt;div class="front"&gt;
+            &lt;h1&gt;New Users&lt;/h1&gt;
+            &lt;p id="users-count"&gt;0&lt;/p&gt;
+
+            //icon circle
+            &lt;span class="fa-stack fa-2x pull-right"&gt;
+              &lt;i class="fa fa-circle fa-stack-2x"&gt;&lt;/i&gt;
+              &lt;i class="fa fa-user fa-stack-1x"&gt;&lt;/i&gt;
+
+              //chart around icon
+              &lt;span class="easypiechart" data-percent="100" data-line-width="4" data-size="80" data-line-cap="butt" data-animate="2000" data-target="#users-count" data-update="3000" data-bar-color="white" data-scale-color="false" data-track-color="rgba(0, 0, 0, 0.15)"&gt;&lt;/span&gt;
+            &lt;/span&gt;
+          &lt;/div&gt;
+
+          //back side of card
+          &lt;div class="back"&gt;
+            &lt;ul class="inline divided"&gt;
+              &lt;li&gt;
+                &lt;h1&gt;Total Users&lt;/h1&gt;
+                &lt;p&gt;3541&lt;/p&gt;
+              &lt;/li&gt;
+              &lt;li&gt;
+                &lt;h1&gt;Last Month&lt;/h1&gt;
+                &lt;p&gt;698&lt;/p&gt;
+              &lt;/li&gt;
+            &lt;/ul&gt;
+            &lt;div class="summary negative"&gt;13% &lt;i class="fa fa-arrow-down"&gt;&lt;/i&gt; this month&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      //****************************//
+      //*********** jquery *********//
+      //****************************//
+
+      // Initialize card flip
+      $('.card.hover').hover(function(){
+        $(this).addClass('flip');
+      },function(){
+        $(this).removeClass('flip');
+      });
+
+      // Make card front & back side same
+      $('.card').each(function() {
+        var front = $('.card .front');
+        var back = $('.card .back');
+        var frontH = front.height();
+        var backH = back.height();
+
+
+
+        if (backH > frontH) {
+          front.height(backH - 8);
+        }
+      });
+
+      //generate pie charts
+      $('.easypiechart').easyPieChart();
+
+      //animate numbers on cards
+      $("#users-count").animateNumbers(Math.round( Math.random() * 1000 ));
+
+      //update instance every 5 sec
+      window.setInterval(function() {
+
+        //animate numbers on cards
+        $( '#users-count' ).animateNumbers( Math.round( Math.random() * 1000 ) );
+
+        //refresh every pie chart
+        $('.easypiechart').each(function() {
+          $(this).data('easyPieChart').update(Math.floor(100*Math.random()));
+        });
+
+      }, 5000);
+      </pre>
+                        <!-- /Source Code -->
+
+
+
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+
+        <div class="card-container col-lg-3 col-md-6 col-sm-12">
+            <div class="card card-cyan hover">
+                <div class="front">
+                    <h1>New Orders</h1>
+                    <p id="orders-count">0</p>
+                    <span class="fa-stack fa-2x pull-right">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-shopping-cart fa-stack-1x"></i>
+                            <span class="easypiechart" data-percent="55" data-line-width="4" data-size="80" data-line-cap="butt" data-animate="2000" data-target="#orders-count" data-update="3000" data-bar-color="white" data-scale-color="false" data-track-color="rgba(0, 0, 0, 0.15)"></span>
+                          </span>
+                </div>
+                <div class="back">
+                    <ul class="inline divided">
+                        <li>
+                            <h1>Total Orders</h1>
+                            <p>842</p>
+                        </li>
+                        <li>
+                            <h1>Last Month</h1>
+                            <p>151</p>
+                        </li>
+                    </ul>
+                    <div class="summary positive">6% <i class="fa fa-arrow-up"></i> this month</div>
+                    <button class="btn show-code" data-toggle="modal" data-target="#codeModal02">
+                        show code
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="codeModal02" tabindex="-1" role="dialog" aria-labelledby="cardCode02" aria-hidden="true">
+            <div class="modal-dialog wide">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="cardCode02">Orders Card - Source Code</h4>
+                    </div>
+                    <div class="modal-body">
+
+
+
+                        <!-- Source Code -->
+                        <pre class="prettyprint linenums">
+      //card container
+      &lt;div class="card-container col-lg-3 col-md-6 col-sm-12"&gt;
+
+        //define card color with .card-cyan
+        &lt;div class="card card-cyan hover"&gt;
+
+          //front side of card
+          &lt;div class="front"&gt;
+            &lt;h1&gt;New Orders&lt;/h1&gt;
+            &lt;p id="orders-count"&gt;0&lt;/p&gt;
+
+            //icon circle
+            &lt;span class="fa-stack fa-2x pull-right"&gt;
+              &lt;i class="fa fa-circle fa-stack-2x"&gt;&lt;/i&gt;
+              &lt;i class="fa fa-shopping-cart fa-stack-1x"&gt;&lt;/i&gt;
+
+              //chart around icon
+              &lt;span class="easypiechart" data-percent="55" data-line-width="4" data-size="80" data-line-cap="butt" data-animate="2000" data-target="#orders-count" data-update="3000" data-bar-color="white" data-scale-color="false" data-track-color="rgba(0, 0, 0, 0.15)"&gt;&lt;/span&gt;
+            &lt;/span&gt;
+          &lt;/div&gt;
+
+          //back side of card
+          &lt;div class="back"&gt;
+            &lt;ul class="inline divided"&gt;
+              &lt;li&gt;
+                &lt;h1&gt;Total Orders&lt;/h1&gt;
+                &lt;p&gt;842&lt;/p&gt;
+              &lt;/li&gt;
+              &lt;li&gt;
+                &lt;h1&gt;Last Month&lt;/h1&gt;
+                &lt;p&gt;151&lt;/p&gt;
+              &lt;/li&gt;
+            &lt;/ul&gt;
+            &lt;div class="summary positive"&gt;6% &lt;i class="fa fa-arrow-up"&gt;&lt;/i&gt; this month&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      //****************************//
+      //*********** jquery *********//
+      //****************************//
+
+      // Initialize card flip
+      $('.card.hover').hover(function(){
+        $(this).addClass('flip');
+      },function(){
+        $(this).removeClass('flip');
+      });
+
+      // Make card front & back side same
+      $('.card').each(function() {
+        var front = $('.card .front');
+        var back = $('.card .back');
+        var frontH = front.height();
+        var backH = back.height();
+
+
+
+        if (backH > frontH) {
+          front.height(backH - 8);
+        }
+      });
+
+      //generate pie charts
+      $('.easypiechart').easyPieChart();
+
+      //animate numbers on cards
+      $("#orders-count").animateNumbers(Math.round( Math.random() * 1000 ));
+
+      //update instance every 5 sec
+      window.setInterval(function() {
+
+        //animate numbers on cards
+        $( '#orders-count' ).animateNumbers( Math.round( Math.random() * 1000 ) );
+
+        //refresh every pie chart
+        $('.easypiechart').each(function() {
+          $(this).data('easyPieChart').update(Math.floor(100*Math.random()));
+        });
+
+      }, 5000);
+      </pre>
+                        <!-- /Source Code -->
+
+
+
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+
+
+        <div class="card-container col-lg-3 col-md-6 col-sm-12">
+            <div class="card card-green hover">
+                <div class="front">
+                    <h1>Sales</h1>
+                    <p id="sales-count">0</p>
+                    <span class="fa-stack fa-2x pull-right">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-usd fa-stack-1x"></i>
+                            <span class="easypiechart" data-percent="30" data-line-width="4" data-size="80" data-line-cap="butt" data-animate="2000" data-target="#sales-count" data-update="3000" data-bar-color="white" data-scale-color="false" data-track-color="rgba(0, 0, 0, 0.15)"></span>
+                          </span>
+                </div>
+                <div class="back">
+                    <ul class="inline divided">
+                        <li>
+                            <h1>Total Sales</h1>
+                            <p>25,165</p>
+                        </li>
+                        <li>
+                            <h1>Last Month</h1>
+                            <p>3,154</p>
+                        </li>
+                    </ul>
+                    <div class="summary positive">18% <i class="fa fa-arrow-up"></i> this month</div>
+                    <button class="btn show-code" data-toggle="modal" data-target="#codeModal03">
+                        show code
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="codeModal03" tabindex="-1" role="dialog" aria-labelledby="cardCode03" aria-hidden="true">
+            <div class="modal-dialog wide">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="cardCode03">Sales Card - Source Code</h4>
+                    </div>
+                    <div class="modal-body">
+
+
+
+                        <!-- Source Code -->
+                        <pre class="prettyprint linenums">
+      //card container
+      &lt;div class="card-container col-lg-3 col-md-6 col-sm-12"&gt;
+
+        //define card color with .card-green
+        &lt;div class="card card-green hover"&gt;
+
+          //front side of card
+          &lt;div class="front"&gt;
+            &lt;h1&gt;Sales&lt;/h1&gt;
+            &lt;p id="sales-count"&gt;0&lt;/p&gt;
+
+            //icon circle
+            &lt;span class="fa-stack fa-2x pull-right"&gt;
+              &lt;i class="fa fa-circle fa-stack-2x"&gt;&lt;/i&gt;
+              &lt;i class="fa fa-usd fa-stack-1x"&gt;&lt;/i&gt;
+
+              //chart around icon
+              &lt;span class="easypiechart" data-percent="30" data-line-width="4" data-size="80" data-line-cap="butt" data-animate="2000" data-target="#sales-count" data-update="3000" data-bar-color="white" data-scale-color="false" data-track-color="rgba(0, 0, 0, 0.15)"&gt;&lt;/span&gt;
+            &lt;/span&gt;
+          &lt;/div&gt;
+
+          //back side of card
+          &lt;div class="back"&gt;
+            &lt;ul class="inline divided"&gt;
+              &lt;li&gt;
+                &lt;h1&gt;Total Sales&lt;/h1&gt;
+                &lt;p&gt;25,165&lt;/p&gt;
+              &lt;/li&gt;
+              &lt;li&gt;
+                &lt;h1&gt;Last Month&lt;/h1&gt;
+                &lt;p&gt;3,154&lt;/p&gt;
+              &lt;/li&gt;
+            &lt;/ul&gt;
+            &lt;div class="summary positive"&gt;18% &lt;i class="fa fa-arrow-up"&gt;&lt;/i&gt; this month&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      //****************************//
+      //*********** jquery *********//
+      //****************************//
+
+      // Initialize card flip
+      $('.card.hover').hover(function(){
+        $(this).addClass('flip');
+      },function(){
+        $(this).removeClass('flip');
+      });
+
+      // Make card front & back side same
+      $('.card').each(function() {
+        var front = $('.card .front');
+        var back = $('.card .back');
+        var frontH = front.height();
+        var backH = back.height();
+
+
+
+        if (backH > frontH) {
+          front.height(backH - 8);
+        }
+      });
+
+      //generate pie charts
+      $('.easypiechart').easyPieChart();
+
+      //animate numbers on cards
+      $("#sales-count").animateNumbers(Math.round( Math.random() * 1000 ));
+
+      //update instance every 5 sec
+      window.setInterval(function() {
+
+        //animate numbers on cards
+        $( '#sales-count' ).animateNumbers( Math.round( Math.random() * 1000 ) );
+
+        //refresh every pie chart
+        $('.easypiechart').each(function() {
+          $(this).data('easyPieChart').update(Math.floor(100*Math.random()));
+        });
+
+      }, 5000);
+      </pre>
+                        <!-- /Source Code -->
+
+
+
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+
+
+        <div class="card-container col-lg-3 col-md-6 col-sm-12">
+            <div class="card card-orange hover">
+                <div class="front">
+                    <h1>Visits</h1>
+                    <p id="visits-count">0</p>
+                    <span class="fa-stack fa-2x pull-right">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-eye fa-stack-1x"></i>
+                            <span class="easypiechart" data-percent="90" data-line-width="4" data-size="80" data-line-cap="butt" data-animate="2000" data-target="#visits-count" data-update="3000" data-bar-color="white" data-scale-color="false" data-track-color="rgba(0, 0, 0, 0.15)"></span>
+                          </span>
+                </div>
+                <div class="back">
+                    <ul class="inline divided">
+                        <li>
+                            <h1>Total Visits</h1>
+                            <p>48,694</p>
+                        </li>
+                        <li>
+                            <h1>Last Month</h1>
+                            <p>9,514</p>
+                        </li>
+                    </ul>
+                    <div class="summary negative">2% <i class="fa fa-arrow-down"></i> this month</div>
+                    <button class="btn show-code" data-toggle="modal" data-target="#codeModal04">
+                        show code
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="codeModal04" tabindex="-1" role="dialog" aria-labelledby="cardCode04" aria-hidden="true">
+            <div class="modal-dialog wide">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="cardCode04">Visits Card - Source Code</h4>
+                    </div>
+                    <div class="modal-body">
+
+
+
+                        <!-- Source Code -->
+                        <pre class="prettyprint linenums">
+      //card container
+      &lt;div class="card-container col-lg-3 col-md-6 col-sm-12"&gt;
+
+        //define card color with .card-orange
+        &lt;div class="card card-orange hover"&gt;
+
+          //front side of card
+          &lt;div class="front"&gt;
+            &lt;h1&gt;Visits&lt;/h1&gt;
+            &lt;p id="visits-count"&gt;0&lt;/p&gt;
+
+            //icon circle
+            &lt;span class="fa-stack fa-2x pull-right"&gt;
+              &lt;i class="fa fa-circle fa-stack-2x"&gt;&lt;/i&gt;
+              &lt;i class="fa fa-eye fa-stack-1x"&gt;&lt;/i&gt;
+
+              //chart around icon
+              &lt;span class="easypiechart" data-percent="90" data-line-width="4" data-size="80" data-line-cap="butt" data-animate="2000" data-target="#visits-count" data-update="3000" data-bar-color="white" data-scale-color="false" data-track-color="rgba(0, 0, 0, 0.15)"&gt;&lt;/span&gt;
+            &lt;/span&gt;
+          &lt;/div&gt;
+
+          //back side of card
+          &lt;div class="back"&gt;
+            &lt;ul class="inline divided"&gt;
+              &lt;li&gt;
+                &lt;h1&gt;Total Visits&lt;/h1&gt;
+                &lt;p&gt;48,694&lt;/p&gt;
+              &lt;/li&gt;
+              &lt;li&gt;
+                &lt;h1&gt;Last Month&lt;/h1&gt;
+                &lt;p&gt;9,514&lt;/p&gt;
+              &lt;/li&gt;
+            &lt;/ul&gt;
+            &lt;div class="summary negative"&gt;2% &lt;i class="fa fa-arrow-down"&gt;&lt;/i&gt; this month&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      //****************************//
+      //*********** jquery *********//
+      //****************************//
+
+      // Initialize card flip
+      $('.card.hover').hover(function(){
+        $(this).addClass('flip');
+      },function(){
+        $(this).removeClass('flip');
+      });
+
+      // Make card front & back side same
+      $('.card').each(function() {
+        var front = $('.card .front');
+        var back = $('.card .back');
+        var frontH = front.height();
+        var backH = back.height();
+
+
+
+        if (backH > frontH) {
+          front.height(backH - 8);
+        }
+      });
+
+      //generate pie charts
+      $('.easypiechart').easyPieChart();
+
+      //animate numbers on cards
+      $("#visits-count").animateNumbers(Math.round( Math.random() * 1000 ));
+
+      //update instance every 5 sec
+      window.setInterval(function() {
+
+        //animate numbers on cards
+        $( '#visits-count' ).animateNumbers( Math.round( Math.random() * 1000 ) );
+
+        //refresh every pie chart
+        $('.easypiechart').each(function() {
+          $(this).data('easyPieChart').update(Math.floor(100*Math.random()));
+        });
+
+      }, 5000);
+      </pre>
+                        <!-- /Source Code -->
+
+
+
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+
+
+
+    </div>
+
+</section>
+
     <div class="col-md-6" >
         <section class="tile" >
 
-            <div class="tile-header color red text-center">
+            <div class="tile-header color greensea text-center">
                 <button class="btn pull-left btn-black-transparent" type="button"><i class="fa fa-caret-square-o-down"></i>
                 </button>
                 <h1 class="small-uppercase">TODOs</h1>
@@ -13,7 +584,10 @@
             <div class="tile-body">
                 <input type="text" placeholder="Type new todo..." id="type_todo" class="grey-bg margin-vertical-15" style="width: 100%">
                 <ul class="nolisttypes" id="todolist">
-                    {{ .todos }}
+                    {{range $index, $val := .todos}}
+                        <li><div class="checkbox check-cyan"><input type="checkbox" id="todo-{{$val.Id}}"><label for="todo-{{$val.Id}}">{{$val.Message}}</label></div></li>
+                    {{end}}
+
                 </ul>
             </div>
 
@@ -24,14 +598,13 @@
 
         <section class="tile" >
 
-            <div class="tile-header color red text-center">
+            <div class="tile-header color greensea text-center">
                 <button class="btn pull-left btn-black-transparent" type="button"><i class="fa fa-caret-square-o-down"></i>
                 </button>
                 <h1 class="small-uppercase">TimeLines</h1>
             </div>
 
             <div class="tile-body">
-{{/*                <h1 class="timeline-heading red-bg">开发线</h1>*/}}
 
                 <ol class="timeline">
 
@@ -143,17 +716,28 @@
 <script>
     //todo's
     $("#type_todo").keyup(function (e) {
-        if (e.keyCode === 13 && $(this).val()) {
-            let idx = Math.ceil(Math.random() * 1000)
-            $("#todolist").append(`<li><div class="checkbox check-cyan"><input type="checkbox" value="1" id="todo-`+idx+`"><label for="todo-`+idx+`">`+$(this).val()+`</label></div></li>`)
-            $(this).val('')
-            $.post("/public/todos",{todos: $("#todolist").html()})
+        let val =  $(this).val();
+        if (e.keyCode === 13 && val) {
+            $.post("/public/todo",{todo: val}, function (data){
+                $(this).val('')
+                $("#todolist").append(`<li><div class="checkbox check-cyan"><input type="checkbox"  id="todo-`+data.errmsg+`"><label for="todo-`+data.errmsg+`">`+val+`</label></div></li>`)
+            })
         }
     })
 
-    $('#todolist li label').click(function () {
-        $(this).toggleClass('done');
-        $.post("/public/todos",{todos: $("#todolist").html()})
+    $('#todolist li label').on('click',function () {
+        var that = $(this)
+        let id = $(this).attr("for").replace("todo-", "")
+        $.messager.confirm("todo提醒", "是否要完成此项任务, 点击后即删除", function (ret) {
+            if (ret) {
+                $.post("/public/todo",{id: id}, function (data) {
+                    if (!data.errcode) {
+                        that.toggleClass('done');
+                        that.parent().remove();
+                    }
+                })
+            }
+        })
     });
 
 </script>

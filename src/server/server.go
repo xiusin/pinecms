@@ -18,7 +18,6 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/taglibs"
 	"io"
-	"net/http"
 	"os"
 	"path/filepath"
 	"time"
@@ -79,11 +78,11 @@ func initApp() {
 	app.Use(middleware.CheckDatabaseBackupDownload())
 	//app.Use(middleware.Demo())
 
-	pine.RegisterErrorCodeHandler(http.StatusNotFound, func(ctx *pine.Context) {
-		// 不同状态码可以显示不同的内容
-		// 自定义页面
-		ctx.WriteString("404 NotFround")
-	})
+	//pine.RegisterErrorCodeHandler(http.StatusNotFound, func(ctx *pine.Context) {
+	//	// 不同状态码可以显示不同的内容
+	//	// 自定义页面
+	//	ctx.WriteString("404 NotFround")
+	//})
 }
 
 func Server() {
@@ -102,7 +101,7 @@ func registerStatic() {
 }
 
 func registerBackendRoutes() {
-	app.Use(middleware.SetGlobalConfigData(XOrmEngine, iCache))
+	app.Use(middleware.SetGlobalConfigData())
 	app.Group(
 		conf.BackendRouteParty,
 		middleware.CheckAdminLoginAndAccess(XOrmEngine, iCache),

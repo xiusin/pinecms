@@ -27,7 +27,7 @@ func ArcList(args jet.Arguments) reflect.Value {
 	}
 	orderBy := args.Get(3).String()
 	if orderBy == "" {
-		orderBy = "listorder desc"
+		orderBy = "listorder asc"
 	}
 	offset := getInt(args.Get(1))
 	limit := getInt(args.Get(2))

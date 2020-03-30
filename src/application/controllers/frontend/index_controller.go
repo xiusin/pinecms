@@ -27,6 +27,8 @@ type IndexController struct {
 	pine.Controller
 }
 
+var debug = true
+
 func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	b.GET("/", "Index")
 	b.GET("/page/:tid:int.html", "Page")
@@ -35,9 +37,6 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	b.GET("/click", "Click")
 	b.GET("/search", "Search")
 }
-
-// 检查静态页面
-
 
 func viewDataToJetMap(binding map[string]interface{}) jet2.VarMap {
 	vars := jet2.VarMap{}
@@ -49,11 +48,11 @@ func viewDataToJetMap(binding map[string]interface{}) jet2.VarMap {
 
 func (c *IndexController) Index() {
 	indexPage := "index.html"
-	pageFilePath := controllers.GetStaticFile(indexPage)
+	pageFilePath := GetStaticFile(indexPage)
 	finfo, err := os.Stat(pageFilePath)
-	if err != nil || finfo.Size() == 0 {
+	if debug == true || err != nil || finfo.Size() == 0 {
 		os.MkdirAll(filepath.Dir(pageFilePath), os.ModePerm)
-		f, err := os.OpenFile(pageFilePath, os.O_CREATE|os.O_RDWR, os.ModePerm)
+		f, err := os.OpenFile(pageFilePath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
 		if err != nil {
 			c.Logger().Error(err)
 			return
@@ -77,23 +76,26 @@ func (c *IndexController) Index() {
 
 func (c *IndexController) List() {
 	pagename := c.Ctx().Request().URL.Path
-	pageFilePath := controllers.GetStaticFile(pagename)
+	pageFilePath := GetStaticFile(pagename)
 	_, err := os.Stat(pageFilePath)
-
-	if os.IsNotExist(err) {
+	if debug == true || os.IsNotExist(err) {
 		queryTid, _ := c.Ctx().GetInt64("tid")
 		tid, _ := c.Ctx().Params().GetInt64("tid", queryTid)
 		if tid < 1 {
 			c.Ctx().Abort(404)
 			return
 		}
-
 		category, err := models.NewCategoryModel().GetCategoryFullWithCache(tid)
 		if err != nil {
-			c.Ctx().Abort(404, "错误:"+err.Error())
+			pine.Logger().Error(err)
+			c.Ctx().Abort(404)
 			return
 		}
-		var globalSize = 10
+		setting, _ := config.SiteConfig()
+		var globalSize,_ = strconv.Atoi(setting["SITE_PAGE_SIZE"])
+		if globalSize == 0 {
+			globalSize = 25
+		}
 		pageNum, _ := c.Ctx().Params().GetInt("page", 1)
 		if pageNum < 1 {
 			pageNum = 1
@@ -140,7 +142,7 @@ func (c *IndexController) List() {
 
 		os.MkdirAll(filepath.Dir(pageFilePath), os.ModePerm)
 
-		f, err := os.OpenFile(pageFilePath, os.O_CREATE|os.O_RDWR, os.ModePerm)
+		f, err := os.OpenFile(pageFilePath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
 		if err != nil {
 			pine.Logger().Error(err)
 			c.Ctx().Abort(http.StatusNotFound)
@@ -167,7 +169,7 @@ func (c *IndexController) List() {
 
 func (c *IndexController) Detail() {
 	pagename := c.Ctx().Request().URL.Path
-	pageFilePath := controllers.GetStaticFile(pagename)
+	pageFilePath := GetStaticFile(pagename)
 	finfo, err := os.Stat(pageFilePath)
 	if err != nil || finfo.Size() == 0 {
 		aid, _ := c.Param().GetInt64("aid")
@@ -341,4 +343,9 @@ func getCategoryPos(tid int64) string {
 		}
 	}
 	return res
+}
+
+func GetStaticFile(filename string) string {
+	setting, _ := config.SiteConfig()
+	return filepath.Join(setting["SITE_STATIC_PAGE_DIR"], filename)
 }

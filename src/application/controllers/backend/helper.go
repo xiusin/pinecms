@@ -124,7 +124,7 @@ func easyUIComponents(field *tables.DocumentModelDsl, val string) string {
 			options = append(options, "missingMessage:'"+field.FormName+"必须填写'")
 		}
 	}
-	if field.TableField == "visit_count" {
+	if field.TableField == "visit_count" && val == "0" {
 		rand.Seed(time.Now().Unix())
 		val = strconv.Itoa(rand.Intn(5000))
 	}
@@ -134,7 +134,6 @@ func easyUIComponents(field *tables.DocumentModelDsl, val string) string {
 	}
 
 	if field.Datasource != "" {
-
 		var datas []struct {
 			Value string `json:"value"`
 			Label string `json:"label"`
@@ -163,7 +162,7 @@ func easyUIComponents(field *tables.DocumentModelDsl, val string) string {
 				panic("解码失败:" + err.Error())
 			}
 		}
-		if field.FieldType == 5 || field.FieldType == 6 {
+		if field.FieldType == 5 || field.FieldType == 6 { // 下拉 联动
 			options = append(options, "valueField:'value'")
 			options = append(options, "textField:'label'")
 			if len(datas) == 0 {
@@ -180,7 +179,7 @@ func easyUIComponents(field *tables.DocumentModelDsl, val string) string {
 					panic("序列化数据失败:" + err.Error())
 				}
 			}
-		} else if field.FieldType == 7 || field.FieldType == 8 {
+		} else if field.FieldType == 7 || field.FieldType == 8 { // 单选 多选
 			options = append(options, "valueField:'value'")
 			options = append(options, "textField:'label'")
 			defaultVals := strings.Split(field.Default, "|")
@@ -190,7 +189,7 @@ func easyUIComponents(field *tables.DocumentModelDsl, val string) string {
 				if field.FieldType == 8 {
 					for _, v := range defaultVals {
 						htmlTmp = field.Html
-						if v == item.Value {
+						if val == item.Value || (val == "" && v == item.Value) {
 							htmlTmp = strings.Replace(htmlTmp, "{{default}}", "checked", 1)
 							break
 						} else {
@@ -199,7 +198,7 @@ func easyUIComponents(field *tables.DocumentModelDsl, val string) string {
 					}
 				} else {
 					htmlTmp = field.Html
-					if item.Value == field.Default {
+					if val == item.Value || (val == "" && item.Value == field.Default) {
 						htmlTmp = strings.Replace(htmlTmp, "{{default}}", "checked", 1)
 					} else {
 						htmlTmp = strings.Replace(htmlTmp, "{{default}}", "", 1)
@@ -208,18 +207,17 @@ func easyUIComponents(field *tables.DocumentModelDsl, val string) string {
 				htm += strings.Replace(htmlTmp, "{{value}}", item.Value, -1) + " " + item.Label + strings.Repeat("&nbsp;", 5)
 			}
 			field.Html = htm
-		} else if field.FieldType == 13 && len(datas) >= 1 { // 单选按钮
-			if field.Default != "" {
-				if field.Default == datas[0].Value {
-					field.Html = strings.Replace(field.Html, "{{default}}", "checked", 1)
-				} else {
-					field.Html = strings.Replace(field.Html, "{{default}}", "", 1)
-				}
-			}
-			options = append(options, "onText: '"+datas[0].Value+"'")
-			options = append(options, "offText: '"+datas[1].Value+"'")
 		}
 	}
+
+	if field.FieldType == 13 { // 单选按钮
+		if val == "1" || field.Default == "1"   {
+			field.Html = strings.Replace(field.Html, "{{default}}", "checked", 1)
+		} else {
+			field.Html = strings.Replace(field.Html, "{{default}}", "", 1)
+		}
+	}
+
 	if len(options) > 0 {
 		attrs = append(attrs, `data-options="`+strings.Join(options, ", ")+`"`)
 	}

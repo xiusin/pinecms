@@ -1,6 +1,11 @@
 package config
 
 import (
+	"github.com/go-xorm/xorm"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -75,4 +80,27 @@ func parseConfig(path string, out interface{}) {
 	if err != nil {
 		panic(err.Error())
 	}
+}
+
+func SiteConfig() (map[string]string, error) {
+	xorm := pine.Make(controllers.ServiceXorm).(*xorm.Engine)
+	cache := pine.Make(controllers.ServiceICache).(cache.AbstractCache)
+	var settingData = map[string]string{}
+	err := cache.GetWithUnmarshal(controllers.CacheSetting, &settingData)
+	if err != nil {
+		var settings []tables.Setting
+		err := xorm.Find(&settings)
+		if err != nil {
+			return nil, err
+		}
+		if len(settings) != 0 {
+			for _, v := range settings {
+				settingData[v.Key] = v.Value
+			}
+		}
+		if err = cache.SetWithMarshal(controllers.CacheSetting, &settingData); err != nil {
+			return nil, err
+		}
+	}
+	return settingData, nil
 }

@@ -35,7 +35,7 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 	}
 	sess := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(&tables.Category{})
 	var categories []tables.Category
-	err := sess.In("parentid", ids).Where("ismenu = ?", 1).Limit(int(row)).Desc("listorder").Find(&categories)
+		err := sess.In("parentid", ids).Where("ismenu = ?", 1).Limit(int(row)).Asc("listorder").Find(&categories)
 	if err != nil {
 		panic(err)
 	}

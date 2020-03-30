@@ -1,15 +1,17 @@
 package helper
 
-import "fmt"
+import (
+	"fmt"
+)
 
-func DetailUrl(tid, aid int) string {
+func DetailUrl(tid, aid int, prefix ...string) string {
 	return fmt.Sprintf("/news/%d-%d.html", tid, aid)
 }
 
-func ListUrl(tid int) string {
+func ListUrl(tid int, prefix ...string) string {
 	return fmt.Sprintf("/list/%d-1.html", tid)
 }
 
-func PageUrl(tid int) string {
+func PageUrl(tid int, prefix ...string) string {
 	return fmt.Sprintf("/page/%d.html", tid)
 }

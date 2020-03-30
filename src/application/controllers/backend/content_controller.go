@@ -281,20 +281,20 @@ func (c *ContentController) AddContent() {
 		model := models.NewDocumentModel().GetByID(int64(mid), )
 		var fields []string
 		var values []interface{}
-		if data["mid"] == "1" { // 只有默认文章模型支持自动提取关键字
-			if val, ok := data["keywords"]; ok && val == "" {
-				x := gojieba.NewJieba()
-				// 自动提取关键字
-				words := x.ExtractWithWeight(bluemonday.NewPolicy().Sanitize(data["content"]), 12)
-				x.Free()
-				data["catid"] = c.Ctx().GetString("catid")
-				var keywords []string
-				for _, w := range words {
-					keywords = append(keywords, w.Word)
-				}
-				data["keywords"] = strings.Join(keywords, ",")
+		//if data["mid"] == "1" { // 只有默认文章模型支持自动提取关键字
+		if val, ok := data["keywords"]; ok && val == "" {
+			x := gojieba.NewJieba()
+			// 自动提取关键字
+			words := x.ExtractWithWeight(bluemonday.NewPolicy().Sanitize(data["content"]), 12)
+			x.Free()
+			data["catid"] = c.Ctx().GetString("catid")
+			var keywords []string
+			for _, w := range words {
+				keywords = append(keywords, w.Word)
 			}
+			data["keywords"] = strings.Join(keywords, ",")
 		}
+		//}
 		for k, v := range data {
 			if k == "table_name" {
 				continue

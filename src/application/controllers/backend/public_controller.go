@@ -3,7 +3,6 @@ package backend
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/xiusin/pine/cache"
 	"image/png"
 	"io/ioutil"
 	"math/rand"
@@ -36,11 +35,11 @@ func (c *PublicController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/attachments", "Attachments")
 	b.ANY("/ueditor", "UEditor")
 	b.ANY("/verify-code", "VerifyCode")
-	b.ANY("/todos", "TODO")
+	b.ANY("/todo", "TODO")
 }
 
 func (c *PublicController) FeDirScan() {
-	c.Ctx().Render().JSON(helper.ScanDir(path.Join(config.AppConfig().View.FeDirname, config.AppConfig().View.Theme) ))
+	c.Ctx().Render().JSON(helper.ScanDir(path.Join(config.AppConfig().View.FeDirname, config.AppConfig().View.Theme)))
 }
 
 //上传图片
@@ -94,7 +93,7 @@ func (c *PublicController) Upload() {
 		size = fs.Size
 		fname = fs.Filename
 	} else {
-		fname = helper.GetRandomString(10) + ".png"		// 涂鸦上传
+		fname = helper.GetRandomString(10) + ".png" // 涂鸦上传
 	}
 
 	info := strings.Split(fname, ".")
@@ -152,7 +151,7 @@ func (c *PublicController) VerifyCode() {
 	cpt := captcha.New()
 	cpt.SetFont(path.Join(helper.GetRootPath(), "resources/fonts/comic.ttf"))
 
-	img, str:= cpt.Create(4, captcha.ALL)
+	img, str := cpt.Create(4, captcha.ALL)
 
 	c.Session().AddFlush("verify", str)
 
@@ -252,11 +251,32 @@ func (c *PublicController) Attachments(attachmentType string) {
 	})
 }
 
-func (c *PublicController) TODO(icache cache.AbstractCache) {
-	todos := c.Ctx().FormValue("todos")
-	err := icache.Set(controllers.CacheToDo, []byte(todos))
+func (c *PublicController) TODO(orm *xorm.Engine) {
+	id, _ := c.Ctx().PostInt64("id")
+	if id > 0 {
+		af, _ := orm.ID(id).MustCols("status").Update(&tables.Todo{
+			Status: false,
+		})
+		if af > 0 {
+			helper.Ajax("success", 0, c.Ctx())
+		} else {
+			helper.Ajax("failed", 1, c.Ctx())
+		}
+		return
+	}
+	todo := c.Ctx().FormValue("todo")
+	if todo == "" {
+		return
+	}
+	userid, _ := strconv.Atoi(c.Session().Get("adminid"))
+	todoObj := &tables.Todo{
+		Message: todo,
+		UserID:  int64(userid),
+		Status:  true,
+	}
+	_, err := orm.InsertOne(todoObj)
 	if err != nil {
 		panic(err)
 	}
-	c.Ctx().Render().JSON("success")
+	helper.Ajax(todoObj.Id, 0, c.Ctx())
 }

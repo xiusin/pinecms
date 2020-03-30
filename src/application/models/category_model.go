@@ -8,6 +8,8 @@ import (
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"log"
+	"path/filepath"
+	"strings"
 
 	"github.com/xiusin/pinecms/src/application/models/tables"
 
@@ -161,12 +163,23 @@ func (c CategoryModel) GetCategoryFullWithCache(id int64) (category *tables.Cate
 			category = nil
 			return
 		}
-		icache.SetWithMarshal(caheKey, category)	// 忽略失败判断
+		// 获取分类的静态路由地址前缀
+		cats := c.GetPosArr(id)
+		for _, v := range cats {
+			v.Dir = strings.Trim(v.Dir, " /")
+			if v.Dir == "" {
+				continue
+			}
+			category.UrlPrefix = filepath.Join(category.UrlPrefix, v.Dir)
+		}
+
+		icache.SetWithMarshal(caheKey, category) // 忽略失败判断
 	}
 	category.Model = NewDocumentModel().GetByIDWithCache(category.ModelId)
 	if category.Model == nil {
 		return nil, ErrCategoryNotExists
 	}
+
 	return category, nil
 }
 

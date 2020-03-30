@@ -3,9 +3,10 @@ package backend
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
-	"html/template"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 	"runtime"
 	"strconv"
 	"strings"
@@ -92,7 +93,7 @@ func (c *IndexController) Index1() {
 
 var us, _ = disk.Usage(helper.GetRootPath())
 
-func (c *IndexController) Main(iCache cache.AbstractCache) {
+func (c *IndexController) Main(iCache cache.AbstractCache, orm *xorm.Engine) {
 
 	formatMem := func(mem uint64) string {
 		fm := map[int64]string{
@@ -125,8 +126,9 @@ func (c *IndexController) Main(iCache cache.AbstractCache) {
 
 	c.ViewData("mems", getMems())
 
-	todos ,_ := iCache.Get(controllers.CacheToDo)
-	c.ViewData("todos", template.HTML(string(todos)))
+	var todos []tables.Todo
+	orm.Where("status = ?", 1).Find(&todos)
+	c.ViewData("todos", todos)
 	
 	c.View("backend/index_main.html")
 }

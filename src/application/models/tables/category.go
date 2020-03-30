@@ -19,6 +19,7 @@ type Category struct {
 	IndexTpl             string         `json:"index_tpl"`
 	ListTpl              string         `json:"list_tpl"`
 	DetailTpl            string         `json:"detail_tpl"`
+	UrlPrefix            string         `xorm:"-" json:"url_prefix"`
 	Sons                 []Category     `xorm:"-"`
 	HasSon               bool           `xorm:"-"`
 	Model                *DocumentModel `xorm:"-" json:"model"`
