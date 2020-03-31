@@ -29,17 +29,7 @@
     <nav>
       <ul id="starlist">
         <li><a href="/">首页</a></li>
-         {{yield channelartlist(typeid=0,son=true) content}}
-             <li {{if field.HasSon }}class="menu" {{end}}>
-                 <a href="{{field.Url}}">{{field.Catname}}</a>
-                {{if field.HasSon }}
-                 <ul class="sub">
-                     {{yield channel(typeid=field.Catid) content}}
-                          <li><a href="{{field.Url}}">{{field.Catname}}</a></li>
-                     {{end}}
-                 </ul><span></span>
-                 {{end}}
-             </li>
+         {{yield channelartlist(typeid=0,son=true) content}}<li {{if field.HasSon }}class="menu" {{end}}><a href="{{field.Url}}">{{field.Catname}}</a>{{if field.HasSon }}<ul class="sub">{{yield channel(typeid=field.Catid) content}}<li><a href="{{field.Url}}">{{field.Catname}}</a></li>{{end}}</ul><span></span>{{end}}</li>
           {{end}}
       </ul>
     </nav>
@@ -68,9 +58,6 @@
             <li><b>建站时间</b>：2020-03-24</li>
             <li><b>网站程序</b>：PineCMS 1.0</li>
             <li><b>主题模板</b>：<a href="http://www.yangqq.com" target="_blank">《今夕何夕》</a></li>
-{*            <li><b>文章统计</b>：299条</li>*}
-{*            <li><b>文章评论</b>：490条</li>*}
-{*            <li><b>统计数据</b>：<a href="/">百度统计</a></li>*}
             <li><b>微信公众号</b>：扫描二维码，关注我们</li>
             {{yield ad(pos="个人二维码") content}}
                 <img src="{{field.Image}}" class="tongji_gzh">
@@ -187,8 +174,8 @@
       <p><b>站点声明：</b></p>
       <p>1、本站个人PINECMS模板案例，主题设计者杨青青</p>
       <p>2、开源CMS项目只求大家的Star和PR。Email：<a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=HHh9cn95b3F1cHVye1xtbTJ-c3E" target="_blank">xiusin.chen@gmail.com</a></p>
-      <p>Copyright © <a href="http://www.xiusin.com" target="_blank">www.xiusin.com</a> All Rights Reserved.
-{*      备案号：<a href="http://www.miitbeian.gov.cn/" target="_blank">蜀ICP备11002373号-1</a>*}
+      <p>{{global["site_copyright"]}}.
+      备案号：<a href="http://www.miitbeian.gov.cn/" target="_blank">{{global["site_icp"]}}-1</a>
       </p>
     </div>
   </div>

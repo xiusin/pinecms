@@ -35,18 +35,14 @@
             <td>缩略图：</td>
             <td>
                 {{.thumbHtml}}
-                {{/*                <input id="content_edit_news_form_thumb_input" type="image" src="{{.category.Thumb}}"*/}}
-{{/*                       onerror="this.src='/assets/backend/static/nopic.jpg'" alt="点击上传缩略图"*/}}
-{{/*                       style="height:100px;display:block;border:1px solid #ddd;padding:2px"/>*/}}
-{{/*                <input type="hidden" name="thumb" value="{{.category.Thumb}}"/>*/}}
             </td>
         </tr>
         <tr id="category_category_edit_dialog_form_url" {{if ne .category.Type 2}}style="display:none" {{end}}>
             <td>链接：</td>
-            <td><input name="url" value="{{.category.Url}}" type="text" style="width:80%;height:22px"/></td>
+            <td><input name="url" value="{{.category.Url}}" class="easyui-textbox" type="text"></td>
         </tr>
 
-        <tr >
+        <tr {{if eq .category.Type 2}} style="display: none" {{end}}>
             <td>栏目目录：</td>
             <td><input name="dir" class="easyui-textbox" value="{{.category.Dir}}" type="text"/></td>
         </tr>

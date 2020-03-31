@@ -52,7 +52,7 @@ func (c CategoryModel) GetTree(categorys []tables.Category, parentid int64) []ma
 		// 筛选
 		models, _ := NewDocumentModel().GetList(1, 1000)
 		var m = map[int64]string{}
-		m[0] = "自定义模型"
+		m[0] = "单页面"
 		for _, model := range models {
 			m[model.Id] = model.Name
 		}
@@ -66,6 +66,7 @@ func (c CategoryModel) GetTree(categorys []tables.Category, parentid int64) []ma
 					"catid":       category.Catid,
 					"catname":     category.Catname,
 					"model_id":    modelName,
+					"dir":         category.Dir,
 					"type":        category.Type,
 					"description": category.Description,
 					"ismenu":      category.Ismenu,
@@ -163,16 +164,7 @@ func (c CategoryModel) GetCategoryFullWithCache(id int64) (category *tables.Cate
 			category = nil
 			return
 		}
-		// 获取分类的静态路由地址前缀
-		cats := c.GetPosArr(id)
-		for _, v := range cats {
-			v.Dir = strings.Trim(v.Dir, " /")
-			if v.Dir == "" {
-				continue
-			}
-			category.UrlPrefix = filepath.Join(category.UrlPrefix, v.Dir)
-		}
-
+		category.UrlPrefix = c.GetUrlPrefix(id)
 		icache.SetWithMarshal(caheKey, category) // 忽略失败判断
 	}
 	category.Model = NewDocumentModel().GetByIDWithCache(category.ModelId)
@@ -183,6 +175,27 @@ func (c CategoryModel) GetCategoryFullWithCache(id int64) (category *tables.Cate
 	return category, nil
 }
 
+func (c CategoryModel)GetUrlPrefix(id int64) string {
+	var urlPrefix = ""
+	cats := c.GetPosArr(id)
+	cur := cats[len(cats) - 1]
+	for _, v := range cats {
+		v.Dir = strings.Trim(v.Dir, " /")
+		if v.Dir == "" {
+			continue
+		}
+		urlPrefix = filepath.Join(urlPrefix, v.Dir)
+	}
+	if cur.Dir == "" {
+		if cur.Type == 0 {
+			model := NewDocumentModel().GetByID(cur.ModelId)
+			urlPrefix = filepath.Join(urlPrefix, fmt.Sprintf("%s_%d", model.Table, id))
+		} else {
+			urlPrefix = filepath.Join(urlPrefix, fmt.Sprintf("page_%d", id))
+		}
+	}
+	return urlPrefix
+}
 func (c CategoryModel) AddCategory(category tables.Category) bool {
 	_, err := c.orm.Insert(&category)
 	if err != nil {

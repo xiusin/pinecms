@@ -1,12 +1,13 @@
 package taglibs
 
 import (
+	"fmt"
 	"github.com/CloudyKit/jet"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"github.com/xiusin/pinecms/src/common/helper"
 	"reflect"
 	"strconv"
 	"strings"
@@ -40,11 +41,12 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 		panic(err)
 	}
 	var catids = []int64{}
+	m := models.NewCategoryModel()
 	for k, v := range categories {
 		if v.Type == 0 {
-			categories[k].Url = "/list?tid=" + strconv.Itoa(int(v.Catid))
-		} else if v.Type == 1 {
-			categories[k].Url = "/page?tid=" + strconv.Itoa(int(v.Catid))
+			categories[k].Url = fmt.Sprintf("/%s/", m.GetUrlPrefix(v.Catid))
+		} else if categories[k].Type == 1 {
+			categories[k].Url = fmt.Sprintf("/%s/", m.GetUrlPrefix(v.Catid))
 		}
 		catids = append(catids, v.Catid)
 	}
@@ -59,6 +61,7 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 		var kvPairs = map[string]string{}
 		for _, v := range rest {
 			kvPairs[v["parentid"]] = v["total"]
+			//todo category Son级联查出. 一次性暴露所有的分类, 无需再次使用channel调用
 		}
 		for k, v := range categories {
 			val, exists := kvPairs[strconv.Itoa(int(v.Catid))]
@@ -66,9 +69,9 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 				categories[k].HasSon = true
 			}
 			if v.Type == 0 {
-				categories[k].Url = helper.ListUrl(int(v.Catid))
+				categories[k].Url = fmt.Sprintf("/%s/", m.GetUrlPrefix(v.Catid))
 			} else if categories[k].Type == 1 {
-				categories[k].Url = helper.PageUrl(int(v.Catid))
+				categories[k].Url = fmt.Sprintf("/%s/", m.GetUrlPrefix(v.Catid))
 			}
 		}
 	}

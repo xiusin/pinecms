@@ -1,11 +1,12 @@
 package taglibs
 
 import (
+	"fmt"
 	"github.com/CloudyKit/jet"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"github.com/xiusin/pinecms/src/common/helper"
 	"reflect"
 )
 
@@ -37,11 +38,12 @@ func Channel(args jet.Arguments) reflect.Value {
 	}
 	var data = []tables.Category{}
 	sess.Find(&data)
+	m := models.NewCategoryModel()
 	for k, v := range data {
 		if v.Type == 0 {
-			data[k].Url = helper.ListUrl(int(v.Catid))
-		} else if data[k].Type == 1 {
-			data[k].Url = helper.PageUrl(int(v.Catid))
+			data[k].Url = fmt.Sprintf("/%s/", m.GetUrlPrefix(v.Catid))
+		} else if v.Type == 1 {
+			data[k].Url = fmt.Sprintf("/%s/", m.GetUrlPrefix(v.Catid))
 		}
 	}
 	return reflect.ValueOf(data)
