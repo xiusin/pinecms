@@ -9,26 +9,26 @@
     <div class="whitebg bloglist">
       <h2 class="htitle">{{field.Catname}}</h2>
       <ul>
-       {{range item := list(10, "")}} {*也可以使用artlist*}
-       {{if item["thumb"] != ""}}
+       {{yield artlist(limit=10) content}}
+       {{if field["thumb"] != ""}}
         <li>
-          <h3 class="blogtitle"><a href="{{detail_url(item["id"])}}" target="_blank">{{item["title"]}}</a></h3>
-          <span class="blogpic imgscale"><a href="{{detail_url(item["id"])}}" title=""><img src="{{assetsDir}}images/b01.jpg" alt=""></a></span>
-          <p class="blogtext">{{item["description"] ? item["description"] : "没有描述"}}</p>
-          <p class="bloginfo"><i class="avatar"><img src="{{assetsDir}}images/avatar.jpg"></i><span>PineCMS</span><span>{{item["pubtime"]}}</span></p>
-          <a href="{{detail_url(item["id"])}}" class="viewmore">阅读更多</a> </li>
+          <h3 class="blogtitle"><a href="{{detail_url(field["id"])}}" target="_blank">{{field["title"]}}</a></h3>
+          <span class="blogpic imgscale"><a href="{{detail_url(field["id"])}}" title=""><img src="{{assetsDir}}images/b01.jpg" alt=""></a></span>
+          <p class="blogtext">{{field["description"] ? field["description"] : "没有描述"}}</p>
+          <p class="bloginfo"><i class="avatar"><img src="{{assetsDir}}images/avatar.jpg"></i><span>PineCMS</span><span>{{field["pubtime"]}}</span></p>
+          <a href="{{detail_url(field["id"])}}" class="viewmore">阅读更多</a> </li>
         {{else}}
         <!--纯文字-->
         <li>
-          <h3 class="blogtitle"><a href="{{detail_url(item["id"])}}" target="_blank">{{item["title"]}}</a></h3>
-          <p class="blogtext">{{item["description"] ? item["description"] : "没有描述"}}</p>
-          <p class="bloginfo"><i class="avatar"><img src="{{assetsDir}}images/avatar.jpg"></i><span>PineCMS</span><span>{{item["pubtime"]}}</span></p>
-          <a href="{{detail_url(item["id"])}}" class="viewmore">阅读更多</a> </li>
+          <h3 class="blogtitle"><a href="{{detail_url(field["id"])}}" target="_blank">{{field["title"]}}</a></h3>
+          <p class="blogtext">{{field["description"] ? field["description"] : "没有描述"}}</p>
+          <p class="bloginfo"><i class="avatar"><img src="{{assetsDir}}images/avatar.jpg"></i><span>PineCMS</span><span>{{field["pubtime"]}}</span></p>
+          <a href="{{detail_url(field["id"])}}" class="viewmore">阅读更多</a> </li>
        {{end}}
        {{end}}
       </ul>
       <!--pagelist-->
-{*      <div class="pagelist"><a title="Total record">&nbsp;<b>67</b> </a>&nbsp;&nbsp;&nbsp;<b>1</b>&nbsp;<a href="/download/index_2.html">2</a>&nbsp;<a href="/download/index_3.html">3</a>&nbsp;<a href="/download/index_2.html">下一页</a>&nbsp;<a href="/download/index_3.html">尾页</a></div>*}
+      <div class="pagelist">{{pagelist(10) | unsafe}}</div>
       <!--pagelist end-->
     </div>
 

@@ -342,7 +342,7 @@ func (c *ContentController) AddContent() {
 }
 
 //修改内容
-func (c *ContentController) EditContent() {
+func (c *ContentController) EditContent(orm *xorm.Engine) {
 	//根据catid读取出相应的添加模板
 	catid, _ := c.Ctx().URLParamInt64("catid")
 	id, _ := c.Ctx().URLParamInt64("id")
@@ -364,9 +364,9 @@ func (c *ContentController) EditContent() {
 		return
 	}
 	sql := []interface{}{fmt.Sprintf("SELECT * FROM `%s` WHERE catid=? and deleted_time IS NULL AND id = ? LIMIT 1", controllers.GetTableName(relationDocumentModel.Table)), catid, id}
-	contents, err := c.Ctx().Value("orm").(*xorm.Engine).QueryString(sql...)
+	contents, err := orm.QueryString(sql...)
 	if err != nil {
-		glog.Error(helper.GetCallerFuncName(), err.Error())
+		c.Logger().Error(err)
 		helper.Ajax("获取文章内容错误", 1, c.Ctx())
 		return
 	}
@@ -448,7 +448,7 @@ func (c *ContentController) EditContent() {
 }
 
 //删除内容
-func (c *ContentController) DeleteContent() {
+func (c *ContentController) DeleteContent(orm *xorm.Engine) {
 	catid, _ := c.Ctx().URLParamInt64("catid")
 	id, _ := c.Ctx().URLParamInt64("id")
 	if catid < 1 || id < 1 {
@@ -469,9 +469,9 @@ func (c *ContentController) DeleteContent() {
 		return
 	}
 	sqlOrArgs := []interface{}{fmt.Sprintf("UPDATE `%s` SET `deleted_time`='"+time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)+"' WHERE id = ? and catid=?", controllers.GetTableName(relationDocumentModel.Table)), id, catid}
-	res, err := c.Ctx().Value("orm").(*xorm.Engine).Exec(sqlOrArgs...)
+	res, err := orm.Exec(sqlOrArgs...)
 	if err != nil {
-		glog.Error(helper.GetCallerFuncName(), err.Error())
+		c.Logger().Error(err.Error())
 		helper.Ajax("删除失败", 1, c.Ctx())
 		return
 	}
@@ -510,7 +510,7 @@ func (c *ContentController) OrderContent() {
 	for artID, orderNum := range order {
 		sqlOrArgs := []interface{}{fmt.Sprintf("UPDATE `%s` SET `listorder`=? , updated_time = '"+time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)+"' WHERE id = ? and catid=?", controllers.GetTableName(relationDocumentModel.Table)), orderNum, artID, id}
 		if _, err := c.Ctx().Value("orm").(*xorm.Engine).Exec(sqlOrArgs...); err != nil {
-			glog.Error(helper.GetCallerFuncName(), err.Error())
+			c.Logger().Error(err)
 			helper.Ajax("更新文档排序失败", 1, c.Ctx())
 			return
 		}

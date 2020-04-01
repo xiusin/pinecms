@@ -1,13 +1,9 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
-	"github.com/xiusin/pinecms/src/application/models"
-	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
-	"strconv"
 	"strings"
 )
 
@@ -24,22 +20,8 @@ func SetGlobalConfigData() pine.Handler {
 		for k, v := range settingData {
 			lower[strings.ToLower(k)] = v
 		}
+
 		ctx.Render().ViewData("global", lower)
-
-		host := ctx.Request().Host
-
-		ctx.Render().ViewData("detail_url", func(aid string, tid ...string) string {
-			if len(tid) == 0 {
-				tid = []string{ctx.Params().Get("tid")}
-			}
-			iaid,_ := strconv.Atoi(aid)
-			itid,_ := strconv.Atoi(tid[0])
-			cat,err := models.NewCategoryModel().GetCategoryFullWithCache(int64(itid))
-			if err != nil {
-				panic(err)
-			}
-			return fmt.Sprintf("//%s%s", host, helper.DetailUrl(itid, iaid,cat.UrlPrefix))
-		})
 		ctx.Next()
 	}
 }

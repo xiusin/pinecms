@@ -31,13 +31,13 @@ func (c *SettingController) RegisterRoute(b pine.IRouterWrapper) {
 	b.POST("/setting/del-cache", "DelCache")
 }
 
-func (c *SettingController) Site(iCache cache.AbstractCache) {
+func (c *SettingController) Site(iCache cache.AbstractCache, orm *xorm.Engine) {
 	if c.Ctx().IsPost() {
 		var setting []*tables.Setting
 		act := c.Ctx().URLParam("dosubmit")
 		var setval []ConfigItem
 		if act == "" {
-			if err := c.Ctx().Value("orm").(*xorm.Engine).Asc("listorder").Find(&setting); err != nil {
+			if err := orm.Asc("listorder").Find(&setting); err != nil {
 				return
 			}
 			//没有值的配置项自动合并

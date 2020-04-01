@@ -124,10 +124,19 @@ func easyUIComponents(field *tables.DocumentModelDsl, val string) string {
 			options = append(options, "missingMessage:'"+field.FormName+"必须填写'")
 		}
 	}
-	if field.TableField == "visit_count" && val == "0" {
+	if field.TableField == "visit_count" && val == "" {
 		rand.Seed(time.Now().Unix())
 		val = strconv.Itoa(rand.Intn(5000))
 	}
+
+	if field.TableField == "pubtime" && val == "" {
+		val = time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)
+	}
+
+	if field.TableField == "listorder" && val == "" {
+		val = "30"
+	}
+
 	if field.Validator != "" {
 		options = append(options, "validType:"+field.Validator)
 		options = append(options, "invalidMessage:'"+field.FormName+"输入数据内容无效'")
@@ -222,6 +231,9 @@ func easyUIComponents(field *tables.DocumentModelDsl, val string) string {
 		attrs = append(attrs, `data-options="`+strings.Join(options, ", ")+`"`)
 	}
 	field.Html = strings.Replace(field.Html, "{{attr}}", strings.Join(attrs, " "), -1)
+	if val == "" {
+		val = field.Default
+	}
 	field.Html = strings.Replace(field.Html, "{{value}}", val, -1)
 	return field.Html
 }

@@ -26,6 +26,9 @@
         <a href="javascript:;" class="easyui-linkbutton" data-options="plain:true,iconCls:'icons-arrow-arrow_down'"
            onclick="contentNewsListOrder()">排序</a>
 
+        <a href="javascript:;" class="easyui-linkbutton" data-options="plain:true,iconCls:'icons-arrow-undo'"
+           onclick="contentNewsListRecycle()">回收站</a>
+
         <a href="javascript:;" class="easyui-linkbutton" data-options="plain:true,iconCls:'icons-arrow-arrow_refresh'"
            onclick="contentNewListReload()">刷新</a>
     </div>
@@ -54,10 +57,10 @@
 
     //操作格式化
     function contentNewsListOperateFormatter(id) {
-        var btn = [];
-        btn.push('<a href="javascript:;" onclick="contentNewsListEdit(' + id + ')">修改</a>');
-        btn.push('<a href="javascript:;" onclick="contentNewsListDelete(' + id + ')">删除</a>');
-        return btn.join(' | ');
+        return '<div class="btn-group-sm">' +
+            '<button type="button" class="btn btn-info" onclick="contentNewsListEdit('+id+')">修改</button>' +
+            '<button type="button" class="btn btn-danger" onclick="contentNewsListDelete(' + id + ')">删除</button>' +
+            '</div>';
     }
 
     function contentNewListReload() {
@@ -73,6 +76,10 @@
         });
         content_datagrid.datagrid({queryParams: queryParams})
         content_datagrid.datagrid('reload');
+    }
+
+    function contentNewsListRecycle() {
+       alert("回收内容")
     }
 
     //添加

@@ -46,33 +46,30 @@ var catTable = &tables.Category{}
 
 func (c *IndexController) Bootstrap(orm *xorm.Engine) {
 	// todo 拦截存在静态文件的问题, 不过最好交给nginx等服务器转发
+	// todo 开启前端资源缓存 304
 	pageName := strings.Trim(strings.ReplaceAll(c.Ctx().Params().Get("pagename"), "//", "/"), "/") // 必须包含.html
 	switch pageName {
 	case "index.html", "":
 		c.Index()
 	default:
-		// 分两种, 静态地址, 分页地址
-		// 模型为根目录
-		// 自定义静态地址为根目录
-		// 查找dir对应的
-		urlParials := strings.Split(pageName, "/")
+		urlPartials := strings.Split(pageName, "/")
 		var last string
 		var fileName string
+		var isDetail bool
 		// 查找最后一段路由对应的地址
 		if strings.HasSuffix(pageName, ".html") {
-			last = urlParials[len(urlParials)-2]
-			fileName = urlParials[len(urlParials)-1]
+			last = urlPartials[len(urlPartials)-2]
+			fileName = urlPartials[len(urlPartials)-1]
 			// 分析页码
 			if strings.HasPrefix(fileName, "index_") {
 				fileInfo := strings.Split(fileName, "_") // index_2.html => 某个分类的第二页
 				c.Ctx().Params().Set("page", strings.TrimSuffix(fileInfo[1], ".html"))
-			} else {
+			} else if fileName != "index.html" {
+				isDetail = true
 				c.Ctx().Params().Set("aid", strings.TrimSuffix(fileName, ".html")) // 设置文档ID
-				c.Detail(pageName)
-				return
 			}
 		} else {
-			last = urlParials[len(urlParials)-1] // 目录名
+			last = urlPartials[len(urlPartials)-1] // 目录名
 			fileName = "index.html"
 			pageName = filepath.Join(pageName, fileName)
 			c.Ctx().Params().Set("page", "1")
@@ -81,15 +78,15 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine) {
 		exist, _ := orm.Table(catTable).Where("dir = ?", last).Get(&cat)
 		if !exist {
 			// 拆分出来想要的数据 page_{tid}
-			if strings.HasPrefix(last,"page_") {
+			if strings.HasPrefix(last, "page_") {
 				c.Ctx().Params().Set("tid", strings.TrimPrefix(last, "page_"))
 				c.Page()
+				return
 			} else {
-				// 根据模型{model_table}_{tid}拆分信息
-				infos := strings.Split(last,"_")
+				infos := strings.Split(last, "_") // 根据模型{model_table}_{tid}拆分信息
 				modelTable := infos[0]
 				model := &tables.DocumentModel{}
-				exist,_ = orm.Table(model).Where("`table` = ?", modelTable).Get(model)
+				exist, _ = orm.Table(model).Where("`table` = ?", modelTable).Get(model)
 				if exist {
 					c.Ctx().Params().Set("tid", infos[1])
 					c.List(pageName)
@@ -97,16 +94,20 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine) {
 				}
 			}
 			c.Ctx().Abort(http.StatusNotFound)
+			c.Logger().Error("路由地址无法匹配完整内容", pageName)
 			return
 		}
 		// 匹配所有内容
 		prefix := models.NewCategoryModel().GetUrlPrefix(cat.Catid)
 		if !strings.HasPrefix(pageName, prefix) {
+			c.Logger().Error("路由地址无法匹配完整内容", pageName)
 			c.Ctx().Abort(http.StatusNotFound)
 			return
 		}
 		c.Ctx().Params().Set("tid", strconv.Itoa(int(cat.Catid)))
-		if cat.Type == 0 {
+		if isDetail {
+			c.Detail(pageName)
+		} else if cat.Type == 0 {
 			c.List(pageName)
 		} else {
 			c.Page()
@@ -115,6 +116,7 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine) {
 }
 
 func (c *IndexController) Index() {
+	c.setTemplateData()
 	indexPage := "index.html"
 	pageFilePath := GetStaticFile(indexPage)
 	os.MkdirAll(filepath.Dir(pageFilePath), os.ModePerm)
@@ -140,6 +142,8 @@ func (c *IndexController) Index() {
 }
 
 func (c *IndexController) List(pageFilePath string) {
+	c.setTemplateData()
+	pageFilePath = GetStaticFile(pageFilePath)
 	queryTid, _ := c.Ctx().GetInt64("tid")
 	tid, _ := c.Ctx().Params().GetInt64("tid", queryTid)
 	if tid < 1 {
@@ -164,29 +168,8 @@ func (c *IndexController) List(pageFilePath string) {
 	c.ViewData("field", category)
 	c.ViewData("typeid", tid)
 	c.ViewData("__typeid", tid)
-	c.ViewData("list", func(pagesize int, orderby string) []map[string]string {
-		if orderby == "" {
-			orderby = "listorder desc"
-		}
-		if pagesize > 0 {
-			globalSize = pagesize
-		} else {
-			pagesize = globalSize
-		}
-		start := (pageNum - 1) * pagesize
-		list, err := getOrmSess(category.Model).Limit(pagesize, start).Where("catid = ?", tid).OrderBy(orderby).QueryString()
-		if err != nil {
-			panic(err)
-		}
-		if list == nil {
-			list = []map[string]string{}
-		}
-		return list
-	})
-
 	c.ViewData("pagelist", func(listsize int) string {
 		total, _ := getOrmSess(category.Model).Where("catid = ?", tid).Count()
-		// 计算页码
 		totalPage := int(math.Ceil(float64(total) / float64(globalSize)))
 		pagenum, _ := c.Ctx().GetInt("page")
 		if pagenum < 1 {
@@ -194,7 +177,7 @@ func (c *IndexController) List(pageFilePath string) {
 		} else if pagenum > totalPage {
 			pagenum = totalPage
 		}
-		return fmt.Sprintf("总记录数: %d, 总页数: %d, 当前页数: %d, 分页条目数为: %d", total, totalPage, pagenum, globalSize)
+		return helper.NewPage("/"+models.NewCategoryModel().GetUrlPrefix(tid), pageNum, globalSize, int(total)).String()
 	})
 
 	if category.Model.FeTplList == "" {
@@ -228,6 +211,7 @@ func (c *IndexController) List(pageFilePath string) {
 }
 
 func (c *IndexController) Detail(pagename string) {
+	c.setTemplateData()
 	pageFilePath := GetStaticFile(pagename)
 	aid, _ := c.Param().GetInt64("aid")
 	tid, _ := c.Param().GetInt64("tid")
@@ -254,20 +238,17 @@ func (c *IndexController) Detail(pagename string) {
 	article["caturl"] = helper.ListUrl(int(tid))
 	c.ViewData("field", article)
 	c.ViewData("__typeid", tid)
+	detailUrlFunc := c.Ctx().Value("detail_url").(func(string, ...string) string)
 	c.ViewData("prenext", func() string {
 		var str string
 		// aid 根据aid 读取上一篇和下一篇
 		pre, _ := getOrmSess(category.Model).Where("id < ?", aid).Desc("id").Limit(1).QueryString()
 		if len(pre) > 0 {
-			aid, _ := strconv.Atoi(pre[0]["id"])
-			cid, _ := strconv.Atoi(pre[0]["catid"])
-			str += "<p><a href='" + helper.DetailUrl(cid, aid, category.UrlPrefix) + "'>上一篇：" + pre[0]["title"] + "</a></p>"
+			str += "<p><a href='" + detailUrlFunc(pre[0]["id"], pre[0]["catid"]) + "'>上一篇：" + pre[0]["title"] + "</a></p>"
 		}
 		next, _ := getOrmSess(category.Model).Where("id > ?", aid).Asc("id").Limit(1).QueryString()
 		if len(next) > 0 {
-			aid, _ := strconv.Atoi(next[0]["id"])
-			cid, _ := strconv.Atoi(next[0]["catid"])
-			str += "<p><a href='" + helper.DetailUrl(cid, aid, category.UrlPrefix) + "'>下一篇: " + next[0]["title"] + "</a></p>"
+			str += "<p><a href='" + detailUrlFunc(next[0]["id"], next[0]["catid"]) + "'>下一篇: " + next[0]["title"] + "</a></p>"
 		}
 		return str
 	})
@@ -290,6 +271,9 @@ func (c *IndexController) Detail(pagename string) {
 		}
 		sess.And(strings.Join(conds, " OR "), keywords...)
 		articles, _ := sess.Limit(row).Desc("id").QueryString()
+		for k := range articles {
+			articles[k]["url"] = detailUrlFunc(articles[k]["id"], articles[k]["catid"])
+		}
 		return articles
 	})
 	if category.Model.FeTplDetail == "" {
@@ -318,6 +302,7 @@ func (c *IndexController) Detail(pagename string) {
 }
 
 func (c *IndexController) Page() {
+	c.setTemplateData()
 	tid, _ := c.Ctx().Params().GetInt64("tid")
 	if tid < 1 {
 		c.Ctx().Abort(404)
@@ -366,11 +351,30 @@ func (c *IndexController) GetClick() {
 }
 
 func getOrmSess(model *tables.DocumentModel) *xorm.Session {
-	//.Select(model.FeSearchFields)
 	return pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(controllers.GetTableName(model.Table)).Where("status = 1").Where("deleted_time IS NULL")
 }
 
+func (c *IndexController) setTemplateData() {
+	host := c.Ctx().Request().Host
+	var detailUrl = func(aid string, tid ...string) string {
+		if len(tid) == 0 {
+			tid = []string{c.Ctx().Params().Get("tid")}
+		}
+		iaid, _ := strconv.Atoi(aid)
+		itid, _ := strconv.Atoi(tid[0])
+		if itid == 0 {
+			pine.Logger().Error("传入tid参数错误")
+			return ""
+		}
+		urlPrefix := models.NewCategoryModel().GetUrlPrefix(int64(itid))
+		return fmt.Sprintf("//%s/%s/%d.html", host, urlPrefix, iaid)
+	}
+	c.Ctx().Set("detail_url", detailUrl)
+	c.Ctx().Render().ViewData("detail_url", detailUrl)
+}
+
 func template(tpl string) string {
+	//todo 支持mobile pc
 	conf := di.MustGet(controllers.ServiceConfig).(*config.Config)
 	return filepath.Join(conf.View.Theme, tpl)
 }
@@ -383,12 +387,11 @@ func getCategoryPos(tid int64) string {
 	icache := di.MustGet(controllers.ServiceICache).(cache.AbstractCache)
 	err := icache.GetWithUnmarshal(key, &res)
 	if err != nil {
-		arr = models.NewCategoryModel().GetPosArr(tid)
+		m := models.NewCategoryModel()
+		arr = m.GetPosArr(tid)
 		for _, cat := range arr {
-			if cat.Type == 0 {
-				position = append(position, "<a href='"+helper.ListUrl(int(cat.Catid))+"'>"+cat.Catname+"</a>")
-			} else if cat.Type == 1 {
-				position = append(position, "<a href='"+helper.PageUrl(int(cat.Catid))+"'>"+cat.Catname+"</a>")
+			if cat.Type != 2 {
+				position = append(position, "<a href='"+m.GetUrlPrefix(cat.Catid)+"'>"+cat.Catname+"</a>")
 			} else {
 				position = append(position, "<a href='"+cat.Url+"'>"+cat.Catname+"</a>")
 			}

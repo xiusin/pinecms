@@ -2,6 +2,7 @@ package backend
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"image/png"
 	"io/ioutil"
@@ -162,57 +163,68 @@ func (c *PublicController) VerifyCode() {
 
 func (c *PublicController) UEditor() {
 	action := c.Ctx().URLParam("action")
+
 	switch action {
 	case "config":
+		// 读取上传配置文件
+		conf, err := config.SiteConfig()
+		if err != nil {
+			c.Logger().Error(err)
+			return
+		}
+		uploadFileSize, _ := strconv.Atoi(conf["UPLOAD_MAX_SIZE"])
+		if uploadFileSize == 0 {
+			c.Logger().Error("请配置上传文件大小")
+			return
+		}
+
+		imageFileExt := strings.Split(conf["UPLOAD_IMG_TYPES"], "|")
+		for k := range imageFileExt {
+			imageFileExt[k] = "." + strings.Trim(imageFileExt[k], ".")
+		}
+		imageFileExtByte, _ := json.Marshal(imageFileExt)
+		if len(imageFileExtByte) == 0 {
+			imageFileExtByte = []byte("[]")
+		}
+
+		acctFileExt := strings.Split(conf["UPLOAD_ACCT_TYPES"], "|")
+		for k := range acctFileExt {
+			acctFileExt[k] = "." + strings.Trim(acctFileExt[k], ".")
+		}
+		acctFileExtByte, _ := json.Marshal(acctFileExt)
+		if len(acctFileExtByte) == 0 {
+			acctFileExtByte = []byte("[]")
+		}
+
+		uploadSizeByte := uploadFileSize * 1024 * 1000
+
 		c.Ctx().WriteString(`
 {
    "imageActionName": "upload",
    "imageFieldName": "filedata",
-   "imageMaxSize": 2048000,
-   "imageAllowFiles": [".png", ".jpg", ".jpeg", ".gif", ".bmp"],
+   "imageMaxSize": ` + strconv.Itoa(uploadSizeByte) + `,
+   "imageAllowFiles": ` + string(imageFileExtByte) + `,
    "imageCompressEnable": true,
    "imageCompressBorder": 1600,
-   "imageInsertAlign": "none",
    "imageUrlPrefix": "",
    "scrawlActionName": "upload",
    "scrawlFieldName": "filedata",
-   "scrawlMaxSize": 2048000,
+   "scrawlMaxSize": ` + strconv.Itoa(uploadSizeByte) + `,
    "scrawlUrlPrefix": "",
-   "scrawlInsertAlign": "none",
-   "catcherLocalDomain": ["127.0.0.1", "localhost", "img.baidu.com"],
-   "catcherActionName": "catchimage",
-   "catcherFieldName": "source",
-   "catcherPathFormat": "",
-   "catcherUrlPrefix": "",
-   "catcherMaxSize": 2048000,
-   "catcherAllowFiles": [".png", ".jpg", ".jpeg", ".gif", ".bmp"],
    "imageManagerActionName": "attachments-img",
    "imageManagerUrlPrefix": "",
-   "imageManagerInsertAlign": "none",
-   "imageManagerAllowFiles": [".png", ".jpg", ".jpeg", ".gif", ".bmp"],
+   "imageManagerAllowFiles": ` + strconv.Itoa(uploadSizeByte) + `,
    "fileActionName": "upload", 
    "fileFieldName": "filedata", 
    "filePathFormat": "", 
    "fileUrlPrefix": "", 
-   "fileMaxSize": 51200000,
-   "fileAllowFiles": [
-        ".png", ".jpg", ".jpeg", ".gif", ".bmp",
-        ".flv", ".swf", ".mkv", ".avi", ".rm", ".rmvb", ".mpeg", ".mpg",
-        ".ogg", ".ogv", ".mov", ".wmv", ".mp4", ".webm", ".mp3", ".wav", ".mid",
-        ".rar", ".zip", ".tar", ".gz", ".7z", ".bz2", ".cab", ".iso",
-        ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".pdf", ".txt", ".md", ".xml"
-   ],
+   "fileMaxSize": ` + strconv.Itoa(uploadSizeByte) + `,
+   "fileAllowFiles": ` + string(acctFileExtByte) + `,
    "fileManagerActionName": "attachments-file",
    "fileManagerListPath": "",
    "fileManagerUrlPrefix": "",
    "fileManagerListSize": 20,
-   "fileManagerAllowFiles": [
-        ".png", ".jpg", ".jpeg", ".gif", ".bmp",
-        ".flv", ".swf", ".mkv", ".avi", ".rm", ".rmvb", ".mpeg", ".mpg",
-        ".ogg", ".ogv", ".mov", ".wmv", ".mp4", ".webm", ".mp3", ".wav", ".mid",
-        ".rar", ".zip", ".tar", ".gz", ".7z", ".bz2", ".cab", ".iso",
-        ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".pdf", ".txt", ".md", ".xml"
-   ] 
+   "fileManagerAllowFiles": ` + string(acctFileExtByte) + `
 }
 `)
 	case "upload":

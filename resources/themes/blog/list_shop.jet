@@ -7,10 +7,16 @@
     </div>
     <div class="zhuanti whitebg">
       <ul>
-       {{range item := list(10, "")}}
-            <li> <i class="ztpic"><a href="{{detail_url(item["id"])}}" target="_blank"><img src="{{item["thumbs"]}}"></a></i> <b>{{item["title"]}} / <s style="color: red">{{item["price"]}}元</s></b><span>{{item["description"]}}</span><a href="{{detail_url(item["id"])}}" target="_blank" class="readmore">商品详情</a> </li>
+       {{yield artlist(limit=10) content}}
+            <li>
+                 <i class="ztpic"><a href="{{detail_url(field["id"])}}" target="_blank"><img src="{{field["thumbs"]}}"></a></i>
+                 <b>{{field["title"]}} / <s style="color: red">{{field["price"]}}元</s></b>
+                 <span>{{field["description"]}}</span>
+                 <a href="{{detail_url(field["id"])}}" target="_blank" class="readmore">商品详情</a>
+             </li>
         {{end}}
       </ul>
+       <div class="pagelist">{{pagelist(10) | unsafe}}</div>
     </div>
   </div>
 {{ end }}

@@ -43,9 +43,7 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 	var catids = []int64{}
 	m := models.NewCategoryModel()
 	for k, v := range categories {
-		if v.Type == 0 {
-			categories[k].Url = fmt.Sprintf("/%s/", m.GetUrlPrefix(v.Catid))
-		} else if categories[k].Type == 1 {
+		if v.Type != 2 {
 			categories[k].Url = fmt.Sprintf("/%s/", m.GetUrlPrefix(v.Catid))
 		}
 		catids = append(catids, v.Catid)
@@ -68,9 +66,7 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 			if exists && len(val) > 0 && val != "0" {
 				categories[k].HasSon = true
 			}
-			if v.Type == 0 {
-				categories[k].Url = fmt.Sprintf("/%s/", m.GetUrlPrefix(v.Catid))
-			} else if categories[k].Type == 1 {
+			if v.Type != 2 {
 				categories[k].Url = fmt.Sprintf("/%s/", m.GetUrlPrefix(v.Catid))
 			}
 		}

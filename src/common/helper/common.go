@@ -336,10 +336,16 @@ func IsError(args ...error) bool {
 	return false
 }
 
+type EmailOpt struct {
+	Title string
+	UrlOrMessage string
+	Address []string
+}
+
 /**
 1. 配置多个邮箱发送
 */
-func SendEmail(title, urlOrStr string, to []string, conf map[string]string) error {
+func SendEmail(opt *EmailOpt, conf map[string]string) error {
 	port, err := strconv.Atoi(conf["EMAIL_PORT"])
 	if err != nil {
 		port = 25
@@ -349,15 +355,15 @@ func SendEmail(title, urlOrStr string, to []string, conf map[string]string) erro
 		Username:  conf["EMAIL_USER"],
 		Password:  conf["EMAIL_PWD"],
 		Port:      port,
-		FromAlias: "xiusin",
+		FromAlias: conf["EMAIL_SEND_NAME"],
 	})
 
 	str := ""
-	if strings.Contains(urlOrStr, "http") {
-		str = `<a href="` + urlOrStr + `" class="a-link" target="_blank">` + urlOrStr + `</a>
+	if strings.HasPrefix(opt.UrlOrMessage, "http") {
+		str = `<a href="` + opt.UrlOrMessage + `" class="a-link" target="_blank">` + opt.UrlOrMessage + `</a>
             <br/>如果链接点击无效，请将链接复制到您的浏览器中继续访问。`
 	} else {
-		str = urlOrStr
+		str = opt.UrlOrMessage
 	}
 	content := `
 <html>
@@ -376,9 +382,9 @@ func SendEmail(title, urlOrStr string, to []string, conf map[string]string) erro
     .logo-right{float:right;display:inline-block;padding-right:15px;}
 </style>
 <div class="main">
-    <div class="mail-title">` + title + `</div>
+    <div class="mail-title">` + opt.Title + `</div>
     <div class="main-box">
-        <p>` + title + `<br/>
+        <p>` + opt.Title + `<br/>
             ` + str + `</p>
         <p class="csdn csdn-color">by XiuSin</p>
     </div>
@@ -386,7 +392,7 @@ func SendEmail(title, urlOrStr string, to []string, conf map[string]string) erro
 </body>
 </html>
 `
-	return mailService.Send(title, content, to...)
+	return mailService.Send(opt.Title, content, opt.Address...)
 }
 
 func VerifyVCaptcha(token string) bool {

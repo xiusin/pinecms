@@ -41,17 +41,13 @@
     //操作格式化
     function categoryCategoryListOperateFormatter(id, obj) {
         var btn = [`<div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作
+            <button type="button" class="btn btn-default btn-small dropdown-toggle" data-toggle="dropdown">操作(ID:`+id+`)
             <span class="caret"></span>
         </button><ul class="dropdown-menu" role="menu" >`]
 
         btn.push('<li><a href="javascript:;" onclick="categoryCategoryListPreview(' + id + ', \'' + obj.type + '\')">预览</a></li>');
         if (obj.type !== 2) {
-            if (obj.router !== "") {
-                btn.push('<li><a href="javascript:;" onclick="categoryOpenCustomerContentList(\'' + obj.router + '\', ' + id + ')">内容管理</a></li>');
-            } else {
-                btn.push('<li><a href="javascript:;" onclick="categoryOpenContentList(' + obj.type + ',' + id + ')">内容管理</a></li>');
-            }
+            btn.push('<li><a href="javascript:;" onclick="categoryOpenContentList(' + obj.type + ',' + id + ')">内容管理</a></li>');
             btn.push('<li><a href="javascript:;" onclick="categoryCategoryListAdd(' + id + ')">添加子栏目</a></li>');
         }
         btn.push('<li><a href="javascript:;" onclick="categoryCategoryListEdit(' + id + ')">修改</a></li>');
@@ -142,11 +138,6 @@
                 categoryCategoryListRefresh();
             }
         }, 'json');
-    }
-
-    function categoryOpenCustomerContentList(router, id) {
-        router += router.indexOf('?') !== -1 ? '&catid=' + id : '?catid=' + id;
-        openUrl(router, "内容管理");
     }
 
     function categoryOpenContentList(type, id) {
