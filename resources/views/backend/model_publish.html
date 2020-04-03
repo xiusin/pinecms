@@ -191,6 +191,7 @@
             },
             success: function (data) {
                 if (typeof data === "string") {
+                    console.log(data)
                     data = JSON.parse(data)
                 }
                 if (!data.errcode) {

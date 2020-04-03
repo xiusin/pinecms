@@ -1,8 +1,11 @@
-{{block artlist(typeid = -1,offset=0,limit=10, orderby="listorder",field="", modelid = "")  }}
-    {{if typeid == -1 }}
-    {{ if isset(__typeid) }}
-        {{typeid = __typeid}}
+{{block artlist(typeid = 0,offset=0,limit=10, orderby="listorder",field="", modelid = "")  }}
+    {{if typeid == 0 }}
+        {{ if isset(__typeid) }}
+            {{typeid = __typeid }}
+        {{end}}
     {{end}}
+    {{if isset(__refID)}}
+         {{typeid = __refID}}
     {{end}}
     {{ range field = artlist(typeid, offset, limit, orderby, modelid) }}
         {{yield content}}

@@ -10,4 +10,4 @@ node_modules/
 tmp/runner-build
 *.js___jb_tmp___
 go.sum
-resources/pages/
+resources/html/

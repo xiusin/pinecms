@@ -220,7 +220,7 @@ func easyUIComponents(field *tables.DocumentModelDsl, val string) string {
 	}
 
 	if field.FieldType == 13 { // 单选按钮
-		if val == "1" || field.Default == "1"   {
+		if val == "1" || (val == "" && field.Default == "1")   {
 			field.Html = strings.Replace(field.Html, "{{default}}", "checked", 1)
 		} else {
 			field.Html = strings.Replace(field.Html, "{{default}}", "", 1)

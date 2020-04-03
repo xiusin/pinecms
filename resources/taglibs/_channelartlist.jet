@@ -1,11 +1,10 @@
-{{block channelartlist(typeid=-1,row=10,son=false, field="", channellist="")  }}
-    {{if typeid == -1}}
-          {{ if isset(__typeid) }}
-               {{typeid = __typeid}}
-           {{end}}
+{{block channelartlist(typeid=0,row=20)  }}
+    {{if !isset(__typeid)}}
+        {{__typeid = 0}}
     {{end}}
-    {{channellist = channelartlist(typeid, row, son)}}
-    {{ range _,field = channellist }}
+    {{channellist = channelartlist(typeid, row, __typeid)}}
+    {{ range autoindex,field = channellist }}
+        {{__refID = field.Catid }}
         {{yield content}}
     {{end}}
 {{end}}

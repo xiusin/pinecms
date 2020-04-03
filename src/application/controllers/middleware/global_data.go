@@ -22,6 +22,7 @@ func SetGlobalConfigData() pine.Handler {
 		}
 
 		ctx.Render().ViewData("global", lower)
+
 		ctx.Next()
 	}
 }

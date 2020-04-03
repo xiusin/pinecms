@@ -1,49 +1,37 @@
 {{extends "layouts/layout.jet"}}
-{{block body()}}
-  <div class="left">
-        <!--首页最新模板部分-->
-            <div class="list_article_title clearfix">
-                <h3>{{field.Catname}}</h3>
-                <p>{{field.Description}}</p>
-            </div>
+{{ block body() }}
+<div class="lbox">
+    <div class="whitebg lanmu"> <img src="{{field.Thumb}}"
+    onerror="var randnum = Math.ceil(Math.random() * 5);this.src='{{assetsDir}}images/lm0'+randnum+'.jpg'">
+      <h1>{{field.Catname}}</h1>
+      <p>{{field.Description}}</p>
+    </div>
+    <div class="whitebg bloglist">
+      <h2 class="htitle">{{field.Catname}}</h2>
+      <ul>
+       {{yield artlist(limit=10) content}}
+       {{if field["thumb"] != ""}}
+        <li>
+          <h3 class="blogtitle"><a href="{{detail_url(field["id"])}}" target="_blank">{{field["title"]}}</a></h3>
+          <span class="blogpic imgscale"><a href="{{detail_url(field["id"])}}" title=""><img src="{{assetsDir}}images/b01.jpg" alt=""></a></span>
+          <p class="blogtext">{{field["description"] ? field["description"] : "没有描述"}}</p>
+          <p class="bloginfo"><i class="avatar"><img src="{{assetsDir}}images/avatar.jpg"></i><span>PineCMS</span><span>{{field["pubtime"]}}</span></p>
+          <a href="{{detail_url(field["id"])}}" class="viewmore">阅读更多</a> </li>
+        {{else}}
+        <!--纯文字-->
+        <li>
+          <h3 class="blogtitle"><a href="{{detail_url(field["id"])}}" target="_blank">{{field["title"]}}</a></h3>
+          <p class="blogtext">{{field["description"] ? field["description"] : "没有描述"}}</p>
+          <p class="bloginfo"><i class="avatar"><img src="{{assetsDir}}images/avatar.jpg"></i><span>PineCMS</span><span>{{field["pubtime"]}}</span></p>
+          <a href="{{detail_url(field["id"])}}" class="viewmore">阅读更多</a> </li>
+       {{end}}
+       {{end}}
+      </ul>
+      <!--pagelist-->
+      <div class="pagelist">{{pagelist(10) | unsafe}}</div>
+      <!--pagelist end-->
+    </div>
 
-            <div class="article_box_one">
-
-                <ul class="index_article">
-                {{range item := list(10, "")}} {*也可以使用artlist*}
-                    <li class="clearfix article_list">
-
-                        <a href="#" class="article_list_img">
-                            <img src="/assets/frontend/img/article1.png">
-                        </a>
-
-                        <h3>{{item["title"]}}</h3>
-                        <p>{{item["description"] ? item["description"] : "没有描述"}}</p>
-
-                        <div class="article_list_link">
-                            <span class="article_list_count">
-                                <i class="see_count"></i>
-                                查看次数:{{item["visit_count"]}}
-                            </span>
-
-                            <a href="{{detail_url(item["id"])}}">查看详细+</a>
-                        </div>
-
-                    </li>
-                {{end}}
-                </ul>
-
-            </div>
-
-
-            <div class="pagelist">
-                    <a href="#">首页</a>
-                    <a href="#">上一页</a>
-                    <a href="#" class="pagelist_active">1</a>
-                    <a href="#">{{pagelist(10)}}</a>
-                    <a href="#">下一页</a>
-                    <a href="#">尾页</a>
-            </div>
-
-        </div>
-{{end}}
+    <!--bloglist end-->
+  </div>
+{{ end }}

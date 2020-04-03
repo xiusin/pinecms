@@ -2,6 +2,7 @@ package backend
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
@@ -9,6 +10,7 @@ import (
 	"html/template"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -118,12 +120,23 @@ func (c *SettingController) Cache(iCache cache.AbstractCache) {
 				"name":        "单页缓存",
 				"description": "分类信息单页缓存数据,清理后首次访问自动生成",
 			},
-			{
-				"key1":        "log",
-				"key":         "log",
-				"name":        "日志数据",
-				"description": "网站运行过程中会记录各种错误日志，以文件的方式保存, 可删除",
-			},
+			//{
+			//	"key1":        "log",
+			//	"key":         "log",
+			//	"name":        "日志数据",
+			//	"description": "网站运行过程中会记录各种错误日志，以文件的方式保存, 可删除",
+			//},
+		}
+
+		models,_ := models.NewDocumentModel().GetList(1, 1000)
+
+		for _, v := range models {
+			list = append(list, map[string]string{
+				"key1":        fmt.Sprintf("model_%d", v.Id),
+				"key":         fmt.Sprintf("model_%d", v.Id),
+				"name":        fmt.Sprintf("模型 %s 缓存", v.Name),
+				"description": fmt.Sprintf("可直接清理模型 %s 下所有缓存. ", v.Name),
+			})
 		}
 
 		c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": len(list)})
@@ -151,28 +164,47 @@ func (c *SettingController) DelCache() {
 	setting, _ := config.SiteConfig()
 	for _, key := range keys {
 		switch key {
-		case "log":
 		case "index":
 			basePath := filepath.Join(setting["SITE_STATIC_PAGE_DIR"], "index.html")
-			err := os.Remove(basePath)
-			if err != nil {
-				pine.Logger().Error(err)
-			}
+			os.Remove(basePath)
 		case "list":
 			fallthrough
 		case "page":
 			fallthrough
 		case "news":
-			basePath := filepath.Join(setting["SITE_STATIC_PAGE_DIR"], key)
-			err := os.RemoveAll(basePath)
-			if err != nil {
-				pine.Logger().Error(err)
-			}
+			cats := models.NewCategoryModel().GetNextCategory(0)
+			delCacheByCategories(cats, setting["SITE_STATIC_PAGE_DIR"])
 		default:
-			helper.Ajax("错误请求", 1, c.Ctx())
-			return
+			if strings.HasPrefix(key, "model_") {
+				modelid,_ := strconv.Atoi(strings.TrimPrefix(key, "model_"))
+				if modelid == 0 {
+					continue
+				}
+				cats,_ := models.NewCategoryModel().GetCategoryByModelID(int64(modelid))
+				delCacheByCategories(cats, setting["SITE_STATIC_PAGE_DIR"])
+			} else {
+				helper.Ajax("错误请求", 1, c.Ctx())
+				return
+			}
 		}
 	}
 
 	helper.Ajax("清理缓存数据成功", 0, c.Ctx())
+}
+
+func delCacheByCategories(cats []tables.Category, cacheBaseDir string)  {
+	for _, cat := range cats {
+		if cat.Type == 2 {
+			continue
+		}
+		if cat.Dir == "" {
+			cat.Dir = models.NewCategoryModel().GetUrlPrefix(cat.Catid)
+		}
+		basePath := filepath.Join(cacheBaseDir, cat.Dir)
+		pine.Logger().Debugf("remove cache path: %s", basePath)
+		err := os.RemoveAll(basePath)
+		if err != nil {
+			pine.Logger().Error(err)
+		}
+	}
 }

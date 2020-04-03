@@ -1,7 +1,11 @@
-{{block channel(typeid,type = "son",row=8,field = "")  }}
-    {{ categories := channel(typeid, type, row) }}
+{{block channel(typeid=0,reid=0, type="son",row=100, noself=0)  }}
+    {{ if typeid == 0 && isset(__refID)}}
+    {* __refID 继承channelartlist *}
+        {{typeid = __refID}}
+    {{end}}
+    {{ categories := channel(typeid, reid, type, row, noself) }}
     {{if categories}}
-        {{range index,field = categories}}
+        {{range autoindex,field = categories}}
             {{yield content}}
         {{end}}
     {{end}}

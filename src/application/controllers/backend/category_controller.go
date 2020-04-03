@@ -6,6 +6,7 @@ import (
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"html/template"
+	"regexp"
 	"strconv"
 
 	"github.com/xiusin/pinecms/src/application/models"
@@ -144,6 +145,13 @@ func (c *CategoryController) CategoryAdd() {
 			Description:          c.Ctx().FormValue("description"),
 			Ismenu:               ismenu,
 		}
+
+		// 检查dir的合法性
+		if  !regexp.MustCompile("^[A-Za-z0-9_-]+$").MatchString(category.Dir) {
+			helper.Ajax("静态目录参数错误", 1, c.Ctx())
+			return
+		}
+
 		if !models.NewCategoryModel().AddCategory(category) {
 			helper.Ajax("添加分类失败", 1, c.Ctx())
 		} else {
@@ -212,6 +220,13 @@ func (c *CategoryController) CategoryEdit() {
 		category.Thumb = c.Ctx().FormValue("thumb")
 		category.Description = c.Ctx().FormValue("description")
 		category.Dir = c.Ctx().FormValue("dir")
+
+		// 检查dir的合法性
+		if  !regexp.MustCompile("^[A-Za-z0-9_-]+$").MatchString(category.Dir) {
+			helper.Ajax("静态目录参数错误", 1, c.Ctx())
+			return
+		}
+
 		if category.ModelId == 0 && category.Type == 0 {
 			category.AddContentRouter = c.Ctx().FormValue("add_content_router")
 			category.EditContentRouter = c.Ctx().FormValue("edit_content_router")

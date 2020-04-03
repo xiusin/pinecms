@@ -96,8 +96,9 @@
                 defaultTheme = name;
                 $(".tl-card button").removeClass("tl-btn-write").addClass("tl-btn-red").html("设置为主题");
                 $(that).addClass("tl-btn-write").removeClass("tl-btn-red").html("已选中为主题");
+                $.messager.alert("设置提醒", "设置主题成功, 请到缓存管理页面清理页面缓存.", "info")
             } else {
-                $.messager.alert("错误提醒", data.errmsg, "error")
+                $.messager.alert("设置提醒", data.errmsg, "error")
             }
         }, "JSON")
     }

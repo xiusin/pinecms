@@ -6,13 +6,17 @@ import (
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"reflect"
+	"runtime/debug"
 	"strings"
 )
 
 func Flink(args jet.Arguments) reflect.Value {
+	if !checkArgType(&args) {
+		return defaultArrReturnVal
+	}
 	defer func() {
 		if err := recover(); err != nil {
-			pine.Logger().Error("Flink Failed", err)
+			pine.Logger().Error("Flink Failed", string(debug.Stack()))
 		}
 	}()
 	orm := pine.Make("*xorm.Engine").(*xorm.Engine)
@@ -36,7 +40,7 @@ func Flink(args jet.Arguments) reflect.Value {
 	} else {
 		sess.Desc("linkid")
 	}
-	var data []tables.Link
+	data := []tables.Link{}
 	if err := sess.Find(&data); err != nil {
 		panic(err)
 	}

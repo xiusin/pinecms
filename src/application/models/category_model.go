@@ -149,6 +149,12 @@ func (c CategoryModel) GetCategory(id int64) (tables.Category, error) {
 	return category, nil
 }
 
+func (c CategoryModel) GetCategoryByModelID(id int64) ([]tables.Category, error) {
+	category := []tables.Category{}
+	_ = c.orm.Where("model_id = ?", id).Find(&category)
+	return category, nil
+}
+
 func (c CategoryModel) GetCategoryFullWithCache(id int64) (category *tables.Category, err error) {
 	caheKey := fmt.Sprintf(controllers.CacheCategoryInfoPrefix, id)
 	icache := di.MustGet(controllers.ServiceICache).(cache.AbstractCache)
@@ -175,10 +181,9 @@ func (c CategoryModel) GetCategoryFullWithCache(id int64) (category *tables.Cate
 	return category, nil
 }
 
-func (c CategoryModel)GetUrlPrefix(id int64) string {
-	var urlPrefix = ""
-	cats := c.GetPosArr(id)
-	cur := cats[len(cats) - 1]
+func (c CategoryModel) GetUrlPrefixWithCategoryArr(cats []tables.Category) string {
+	var urlPrefix string
+	cur := cats[len(cats)-1]
 	for _, v := range cats {
 		v.Dir = strings.Trim(v.Dir, " /")
 		if v.Dir == "" {
@@ -189,12 +194,16 @@ func (c CategoryModel)GetUrlPrefix(id int64) string {
 	if cur.Dir == "" {
 		if cur.Type == 0 {
 			model := NewDocumentModel().GetByID(cur.ModelId)
-			urlPrefix = filepath.Join(urlPrefix, fmt.Sprintf("%s_%d", model.Table, id))
+			urlPrefix = filepath.Join(urlPrefix, fmt.Sprintf("%s_%d", model.Table, cur.Catid))
 		} else {
-			urlPrefix = filepath.Join(urlPrefix, fmt.Sprintf("page_%d", id))
+			urlPrefix = filepath.Join(urlPrefix, fmt.Sprintf("page_%d", cur.Catid))
 		}
 	}
 	return urlPrefix
+}
+
+func (c CategoryModel) GetUrlPrefix(id int64) string {
+	return c.GetUrlPrefixWithCategoryArr(c.GetPosArr(id))
 }
 func (c CategoryModel) AddCategory(category tables.Category) bool {
 	_, err := c.orm.Insert(&category)
@@ -215,14 +224,11 @@ func (c CategoryModel) UpdateCategory(category tables.Category) bool {
 	return true
 }
 
+
 //判断是否是子分类
 func (c CategoryModel) IsSonCategory(id, parentid int64) bool {
 	cat := []tables.Category{}
-	err := c.orm.Where("parentid=?", id).Find(&cat)
-	if err != nil {
-		pine.Logger().Error("CategoryModel::IsSonCategory", err.Error())
-		return false
-	}
+	c.orm.Where("parentid=?", id).Find(&cat)
 	if len(cat) == 0 {
 		return false
 	}

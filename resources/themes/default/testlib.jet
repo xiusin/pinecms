@@ -1,0 +1,16 @@
+{{ import "_channel.jet" }}
+{{ import "_channelartlist.jet" }}
+
+{{yield channel(type="top", limit=30) content}}
+    <li href="{{field.Url}}">{{field.Catname}}</li>
+{{end}}
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+{{yield channelartlist() content}}
+    <li href="{{field.Url}}">{{field.Catname}}</li>
+{{end}}
+

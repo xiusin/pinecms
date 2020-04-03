@@ -6,6 +6,8 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/go-xorm/xorm"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -118,6 +120,11 @@ func GetMd5(str string) string {
 
 //Ajax Ajax返回数据给前端
 func Ajax(errmsg interface{}, errcode int64, this *pine.Context) {
+	// 添加操作日志
+
+
+
+
 	this.Render().JSON(pine.H{"errcode": errcode, "errmsg": errmsg})
 }
 
@@ -492,4 +499,8 @@ func GetRandomString(l int) string {
 		result = append(result, bytes[r.Intn(len(bytes))])
 	}
 	return string(result)
+}
+
+func GetORM() *xorm.Engine {
+	return pine.Make(controllers.ServiceXorm).(*xorm.Engine)
 }

@@ -19,6 +19,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"strconv"
 	"strings"
 )
@@ -45,6 +46,9 @@ func viewDataToJetMap(binding map[string]interface{}) jet2.VarMap {
 var catTable = &tables.Category{}
 
 func (c *IndexController) Bootstrap(orm *xorm.Engine) {
+	//c.ViewData("__typeid", 2)
+	//c.View(template("testlib.jet"))
+	//return
 	// todo 拦截存在静态文件的问题, 不过最好交给nginx等服务器转发
 	// todo 开启前端资源缓存 304
 	pageName := strings.Trim(strings.ReplaceAll(c.Ctx().Params().Get("pagename"), "//", "/"), "/") // 必须包含.html
@@ -185,7 +189,6 @@ func (c *IndexController) List(pageFilePath string) {
 	}
 
 	os.MkdirAll(filepath.Dir(pageFilePath), os.ModePerm)
-
 	f, err := os.OpenFile(pageFilePath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
 	if err != nil {
 		pine.Logger().Error(err)
@@ -370,13 +373,28 @@ func (c *IndexController) setTemplateData() {
 		return fmt.Sprintf("//%s/%s/%d.html", host, urlPrefix, iaid)
 	}
 	c.Ctx().Set("detail_url", detailUrl)
+	if tid, _ := c.Param().GetInt64("tid"); tid <= 0 {
+		c.ViewData("isActive", func(id int64) bool {
+			treeCats := models.NewCategoryModel().GetPosArr(tid)
+			for _, v := range treeCats {
+				if v.Catid == id {
+					return true
+				}
+			}
+			return false
+		})
+	}
 	c.Ctx().Render().ViewData("detail_url", detailUrl)
 }
 
 func template(tpl string) string {
 	//todo 支持mobile pc
 	conf := di.MustGet(controllers.ServiceConfig).(*config.Config)
-	return filepath.Join(conf.View.Theme, tpl)
+	path := filepath.Join(conf.View.Theme, tpl)
+	if runtime.GOOS == "windows" {
+		path = strings.ReplaceAll(path, "\\", "/")
+	}
+	return path
 }
 
 func getCategoryPos(tid int64) string {

@@ -9,31 +9,34 @@ import (
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"reflect"
+	"runtime/debug"
 	"strconv"
 	"strings"
 )
 
 func ArcList(args jet.Arguments) reflect.Value {
+	if !checkArgType(&args) {
+		return defaultArrReturnVal
+	}
 	defer func() {
 		if err := recover(); err != nil {
-			pine.Logger().Error("ArcList Failed", err)
+			pine.Logger().Error("ArcList Failed", string(debug.Stack()))
 		}
 	}()
 	catid := args.Get(0)
 	var ids []string
-	switch catid.Type().String() {
-	case "string":
+	if isNumber(catid) {
+		ids = append(ids, strconv.Itoa(int(getNumber(catid))))
+	} else {
 		ids = strings.Split(catid.String(), ",")
-	default:
-		ids = append(ids, strconv.Itoa(getInt(catid)))
 	}
 
 	orderBy := args.Get(3).String()
 	if orderBy == "" {
 		orderBy = "listorder asc"
 	}
-	offset := getInt(args.Get(1))
-	limit := getInt(args.Get(2))
+	offset := getNumber(args.Get(1))
+	limit := getNumber(args.Get(2))
 	model := &tables.DocumentModel{}
 	var modelID string
 	// 先不支持多模型调用
@@ -58,7 +61,7 @@ func ArcList(args jet.Arguments) reflect.Value {
 	categoryTable := controllers.GetTableName("category")
 	modelTable := controllers.GetTableName(model.Table)
 	sess := getOrmSess(model.Table).
-		Limit(limit, offset).Select(fmt.Sprintf("%s.*, %s.catname, %s.url as caturl, %s.type ", modelTable, categoryTable, categoryTable, categoryTable)).
+		Limit(int(limit), int(offset)).Select(fmt.Sprintf("%s.*, %s.catname, %s.url as caturl, %s.type ", modelTable, categoryTable, categoryTable, categoryTable)).
 		Join("LEFT", categoryTable, categoryTable + ".catid = " + modelTable + ".catid").
 		Where(modelTable +".deleted_time IS NULL").Where(modelTable +".status = 1").OrderBy(orderBy)
 

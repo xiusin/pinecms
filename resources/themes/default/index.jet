@@ -1,78 +1,101 @@
 {{extends "layouts/layout.jet"}}
 {{ block body() }}
-<div class="left">
-        <!--首页学习笔记部分-->
-            {{yield channelartlist(typeid=0, son=true) content }}
-            {{if field.Type == 0 && field.HasSon}}
-                <div class="article_box_two">
-                <div class="index_article_title clearfix">
-                    <h3>{{field.Catname}}</h3>
-                    <a href="{{field.Url}}">更多></a>
-                </div>
-                <div class="article_btn">
-
-                  <div class="article_btn_nav">
-                        <ul>
-                            {{yield channel(typeid=field.Catid) content}}
-                            <li>{{field.Catname}}</li>
-                            {{end}}
-                        </ul>
-                  </div>
-
-                   <div class="article_btn_box">
-                    {{yield channel(typeid=field.Catid) content}}
-                        <div class="article_btn_box_item clearfix">
-                            <a href="#" class="article_btn_box_item_img">
-                                <img src="">
-                            </a>
-                                <ul>
-                                   {{ curCatid := field.Catid }}
-                                   {{yield artlist(typeid=field.Catid) content}}
-                                     <li>
-                                     <i></i>
-                                     <a href="{{detail_url(field["id"], field["catid"])}}" imgsrc="/assets/frontend/img/notimg.gif">{{field["title"]}}</a>
-                                     <p>{{field["description"] ? field["description"] : "没有描述内容"}}</p>
-                                     </li>
-                                   {{end}}
-
-                                </ul>
-                        </div>
-                    {{end}}
-                    </div>
-
-                </div>
-            </div>
-            {{ end }}
-            {{end}}
-        <!--首页博文推荐部分-->
-            <div class="article_box_one">
-                <div class="index_article_title clearfix">
-                    <h3>推荐博文</h3>
-                    <a href="#">更多></a>
-                </div>
-                <ul class="index_article">
-
-                   {{yield artlist() content}}
-                    <li class="clearfix article_list">
-
-                                           <a href="#" class="article_list_img">
-                                               <img src="/assets/frontend/img/article3.jpg">
-                                           </a>
-
-                                           <h3>{{field["title"]}}</h3>
-                                           <p>{{field["description"] ? field["description"] : "没有描述内容"}}</p>
-
-                                           <div class="article_list_link">
-                                           <span class="article_list_count">
-                                               <i class="see_count"></i>
-                                               查看次数:{{field["visit_count"]}}
-                                           </span>
-                                           <a href="{{detail_url(field["id"], field["catid"])}}">查看详细+</a>
-                                           </div>
-
-                                       </li>
-                    {{end}}
-                </ul>
-            </div>
+<div class="lbox">
+    <!--banbox begin-->
+    <div class="banbox">
+      <div class="banner">
+        <div id="banner" class="fader">
+          {{yield ad(pos="首页banner") content}}<li class="slide" ><a href="/" target="_blank"><img src="{{field.Image}}"></a></li>{{end}}
+          <div class="fader_controls">
+            <div class="page prev" data-target="prev"></div>
+            <div class="page next" data-target="next"></div>
+            <ul class="pager_list">
+            </ul>
+          </div>
         </div>
-{{end}}
+      </div>
+    </div>
+    <!--banbox end-->
+    <!--headline begin-->
+    <div class="headline">
+      <ul>
+        <li><a href="/" title="为什么说10月24日是程序员的节日？"><img src="{{assetsDir}}images/h1.jpg" alt="为什么说10月24日是程序员的节日？"><span>为什么说10月24日是程序员的节日？</span></a></li>
+        <li><a href="/" title="个人网站做好了，百度不收录怎么办？来，看看他们怎么做的"><img src="{{assetsDir}}images/h2.jpg" alt="个人网站做好了，百度不收录怎么办？来，看看他们怎么做的。"><span>个人网站做好了，百度不收录怎么办？来，看看他们怎么做的。</span></a></li>
+      </ul>
+    </div>
+    <!--headline end-->
+    <div class="clearblank"></div>
+
+    {{yield channelartlist(typeid=0, son=true) content }}
+    {{if field.Type == 0 && field.HasSon}}
+    <div class="tab_box whitebg">
+      <div class="tab_buttons">
+        <ul>
+        {{yield channel(typeid=field.Catid) content}}
+            <li {{if index == 0}}class="newscurrent"{{end}}>{{field.Catname}}</li>
+        {{end}}
+        </ul>
+      </div>
+      <div class="newstab">
+       {{yield channel(typeid=field.Catid) content}}
+            <div class="newsitem">
+              <div class="newspic">
+                <ul>
+                  <li><a href="/"><img src="{{assetsDir}}images/2.jpg"><span>个人博客，属于我的小世界！</span></a></li>
+                  <li><a href="/"><img src="{{assetsDir}}images/4.jpg"><span>个人网站做好了，百度不收录怎么办？来，看看他们怎么做的</span></a></li>
+                </ul>
+              </div>
+              <ul class="newslist">
+              {{ curCatid := field.Catid }}
+              {{yield artlist(typeid=field.Catid) content}}
+                <li><i></i><a href="{{detail_url(field["id"], field["catid"])}}">{{field["title"]}}</a>
+                  <p>{{field["description"] ? field["description"] : "作者太懒, 没有提供详细的内容描述"}}</p>
+                </li>
+              {{end}}
+              </ul>
+            </div>
+       {{end}}
+      </div>
+    </div>
+    {{end}}
+    {{end}}
+    <!--tab_box end-->
+    <div class="zhuanti whitebg" style="display: none">
+      <h2 class="htitle"><span class="hnav"><a href="/">原创模板</a><a href="/">古典</a><a href="/">清新</a><a href="/">低调</a></span>精彩专题</h2>
+      <ul>
+        <li> <i class="ztpic"><a href="/" target="_blank"><img src="{{assetsDir}}images/1.jpg"></a></i> <b>个人博客模板《今夕何夕》-响应式个人...</b><span>个人博客模板《今夕何夕》，宽屏响应式个人博客模板，采用冷色系为主，固定导航栏和侧边栏，无缝滚动图片...</span><a href="" target="_blank" class="readmore">文章阅读</a> </li>
+        <li> <i class="ztpic"><a href="/" target="_blank"><img src="{{assetsDir}}images/2.jpg"></a></i> <b>个人博客模板《今夕何夕》-响应式个人...</b><span>个人博客模板《今夕何夕》，宽屏响应式个人博客模板，采用冷色系为主，固定导航栏和侧边栏，无缝滚动图片...</span><a href="" target="_blank" class="readmore">文章阅读</a> </li>
+        <li> <i class="ztpic"><a href="/" target="_blank"><img src="{{assetsDir}}images/3.jpg"></a></i> <b>个人博客模板《今夕何夕》-响应式个人...</b><span>个人博客模板《今夕何夕》，宽屏响应式个人博客模板，采用冷色系为主，固定导航栏和侧边栏，无缝滚动图片...</span><a href="" target="_blank" class="readmore">文章阅读</a> </li>
+        <li> <i class="ztpic"><a href="/" target="_blank"><img src="{{assetsDir}}images/4.jpg"></a></i> <b>个人博客模板《今夕何夕》-响应式个人...</b><span>个人博客模板《今夕何夕》，宽屏响应式个人博客模板，采用冷色系为主，固定导航栏和侧边栏，无缝滚动图片...</span><a href="" target="_blank" class="readmore">文章阅读</a> </li>
+        <li> <i class="ztpic"><a href="/" target="_blank"><img src="{{assetsDir}}images/h2.jpg"></a></i> <b>个人博客模板《今夕何夕》-响应式个人...</b><span>个人博客模板《今夕何夕》，宽屏响应式个人博客模板，采用冷色系为主，固定导航栏和侧边栏，无缝滚动图片...</span><a href="" target="_blank" class="readmore">文章阅读</a> </li>
+        <li> <i class="ztpic"><a href="/" target="_blank"><img src="{{assetsDir}}images/h1.jpg"></a></i> <b>个人博客模板《今夕何夕》-响应式个人...</b><span>个人博客模板《今夕何夕》，宽屏响应式个人博客模板，采用冷色系为主，固定导航栏和侧边栏，无缝滚动图片...</span><a href="" target="_blank" class="readmore">文章阅读</a> </li>
+      </ul>
+    </div>
+    {{yield ad(pos="首页中部位置横幅") content}}
+    <div class="ad whitebg"> <img src="{{field.Image}}"> </div>
+    {{end}}
+    <div class="whitebg bloglist">
+      <h2 class="htitle">最新博文</h2>
+      <ul>
+        <!--多图模式 置顶设计 多图可以使用多图上传组件然后拆分图片字符串-->
+{*        <li>*}
+{*          <h3 class="blogtitle"><a href="/" target="_blank"><b>【顶】</b>别让这些闹心的套路，毁了你的网页设计!</a></h3>*}
+{*          <span class="bplist"><a href="/"> <img src="{{assetsDir}}images/b02.jpg" alt=""></a> <a href="/"><img src="{{assetsDir}}images/b03.jpg" alt=""></a> <a href="/"><img src="{{assetsDir}}images/b04.jpg" alt=""> </a><a href="/"><img src="{{assetsDir}}images/b05.jpg" alt=""> </a></span>*}
+{*          <p class="blogtext">如图，要实现上图效果，我采用如下方法：1、首先在数据库模型，增加字段，分别是图片2，图片3。2、增加标签模板，用if，else if 来判断，输出。思路已打开，样式调用就可以多样化啦！... </p>*}
+{*          <p class="bloginfo"><i class="avatar"><img src="{{assetsDir}}images/avatar.jpg"></i><span>杨青青</span><span>2018-10-28</span><span>【<a href="/">原创模板</a>】</span></p>*}
+{*        </li>*}
+        <!--单图-->
+
+        {{yield artlist(typeid=0) content}}
+        <li>
+                  <h3 class="blogtitle"><a href="{{detail_url(field["id"], field["catid"])}}" target="_blank">{{field["title"]}}</a></h3>
+                  <span class="blogpic imgscale"><i><a href="{{field["caturl"]}}">{{field["catname"]}}</a></i><a href="{{detail_url(field["id"], field["catid"])}}" title=""><img src="{{field["thumb"]}}" onerror="var randnum = Math.ceil(Math.random() * 5);this.src='{{assetsDir}}images/b0'+randnum+'.jpg'" alt=""></a></span>
+                  <p class="blogtext">{{field["description"] ? field["description"] : "作者太懒了, 懒得给予详细描述"}}</p>
+                  <p class="bloginfo"><i class="avatar"><img src="{{assetsDir}}images/avatar.jpg"></i><span>PineCMS</span><span>{{field["pubtime"]}}</span><span>【<a href="/">{{field["catname"]}}</a>】</span></p>
+                  <a href="{{detail_url(field["id"], field["catid"])}}" class="viewmore">阅读更多</a> </li>
+        {{end}}
+      </ul>
+    </div>
+    <!--bloglist end-->
+  </div>
+{{ end }}

@@ -4,7 +4,9 @@ import (
 	"github.com/CloudyKit/jet"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"reflect"
+	"runtime/debug"
 	"strings"
 )
 
@@ -16,12 +18,15 @@ import (
  * 	sql SQL语句，只用于select类型语句
  */
 func Query(args jet.Arguments) reflect.Value {
+	if !checkArgType(&args) {
+		return defaultArrReturnVal
+	}
 	defer func() {
 		if err := recover(); err != nil {
-			pine.Logger().Error("Query Failed", err)
+			pine.Logger().Error("Query Failed", string(debug.Stack()))
 		}
 	}()
-	sess := pine.Make("*xorm.Engine").(*xorm.Engine)
+	sess := pine.Make(controllers.ServiceXorm).(*xorm.Engine)
 	query := strings.Trim(args.Get(0).String(), " ")
 	// 只允许查询操作
 	if strings.HasPrefix(query, "SELECT") || strings.HasPrefix(query, "select") {
