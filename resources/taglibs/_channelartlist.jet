@@ -1,8 +1,8 @@
-{{block channelartlist(typeid=0,row=20)  }}
+{{block channelartlist(typeid=0,row=20, sons=false, active=false)  }}
     {{if !isset(__typeid)}}
         {{__typeid = 0}}
     {{end}}
-    {{channellist = channelartlist(typeid, row, __typeid)}}
+    {{channellist = channelartlist(typeid, row, __typeid, sons, active)}}
     {{ range autoindex,field = channellist }}
         {{__refID = field.Catid }}
         {{yield content}}

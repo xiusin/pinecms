@@ -11,7 +11,10 @@ import (
 )
 
 /**
-{{channellist = channelartlist(typeid, row, topid)}}
+sons 是否附带直属子分类数据, 可用于下级数据的迭代, 可取代channel的sun功能
+active 是否附带当前活动状态逻辑, 一般用于下级菜单激活上级菜单的高亮样式
+topid 记录当前所处页面的tid
+{{channellist = channelartlist(typeid, row, topid, sons, active)}}
  */
 func ChannelArtList(args jet.Arguments) reflect.Value {
 	if !checkArgType(&args) {
@@ -47,14 +50,27 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 	}
 	m := models.NewCategoryModel()
 
+	withSons := args.Get(3).Bool()
+	withActive := args.Get(4).Bool()
+
 	for k,v := range cats {
 		if v.Type != 2 {
-			cat1s := m.GetPosArr(v.Catid)
-			cats[k].Url = fmt.Sprintf("/%s/", m.GetUrlPrefixWithCategoryArr(cat1s))
-			for _, v:= range cat1s {
-				if v.Catid == _topid {
-					cats[k].Active = true
-					break
+			if withSons {
+				var sons []tables.Category
+				getCategoryOrm().Where("parentid = ?", v.Catid).Find(&sons)
+				cats[k].Sons = sons
+				if len(sons) > 0 {
+					cats[k].HasSon = true
+				}
+			}
+			if withActive {
+				cat1s := m.GetPosArr(v.Catid)
+				cats[k].Url = fmt.Sprintf("/%s/", m.GetUrlPrefixWithCategoryArr(cat1s))
+				for _, v:= range cat1s {
+					if v.Catid == _topid {
+						cats[k].Active = true
+						break
+					}
 				}
 			}
 		}

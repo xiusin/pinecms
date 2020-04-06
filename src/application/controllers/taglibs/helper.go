@@ -17,7 +17,7 @@ func checkArgType(args *jet.Arguments) bool {
 	l := args.NumOfArguments()
 	for i := 0; i< l; i++ {
 		t := args.Get(i)
-		if !isNumber(t) && t.Type().String() != "string"  {
+		if !isNumber(t) && t.Type().String() != "string" && t.Type().String() != "bool" {
 			pine.Logger().Errorf("参数类型不支持: idx: %d -> type: %s -> val: %s",i, t, args.Get(i))
 			return false
 		}

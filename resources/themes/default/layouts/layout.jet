@@ -29,9 +29,9 @@
     <nav>
       <ul id="starlist">
         <li><a href="/">首页</a></li>
-         {{yield channelartlist(typeid=0,son=true) content}}<li {{if field.HasSon }} class="menu {{if isActive(field.Catid)}} active {{end}}" {{end}}>
-         <a href="{{field.Url}}">{{field.Catname}}</a>{{if field.HasSon }}
-         <ul class="sub">{{yield channel(typeid=field.Catid) content}}<li><a href="{{field.Url}}">{{field.Catname}}</a></li>{{end}}</ul><span></span>{{end}}</li>
+         {{yield channelartlist(active=true, sons=true) content}}<li {{if field.HasSon}}class="menu"{{end}}>
+         <a href="{{field.Url}}">{{field.Catname}}</a>
+         {{if field.HasSon}}<ul class="sub">{{range son := field.Sons}}<li><a href="{{son.Url}}">{{son.Catname}}</a></li>{{end}}</ul><span></span>{{end}}</li>
           {{end}}
       </ul>
     </nav>

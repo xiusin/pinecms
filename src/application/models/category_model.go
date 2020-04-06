@@ -89,9 +89,9 @@ func (c CategoryModel) GetAll() []tables.Category {
 }
 
 func (c CategoryModel) GetNextCategory(parentid int64) []tables.Category {
-	categorys := new([]tables.Category)
-	c.orm.Where("parentid=?", parentid).Asc("listorder").Desc("catid").Find(categorys)
-	return *categorys
+	var categories []tables.Category
+	c.orm.Where("parentid=?", parentid).Asc("listorder").Desc("catid").Find(&categories)
+	return categories
 }
 
 func (c CategoryModel) GetSelectTree(parentid int64) []map[string]interface{} {
