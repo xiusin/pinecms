@@ -1,13 +1,15 @@
 {{block artlist(typeid = 0,offset=0,limit=10, orderby="listorder",field="", modelid = "")  }}
-    {{if typeid == 0 }}
+    {{if typeid == 0 }} {* 如果没有设置typeid *}
         {{ if isset(__typeid) }}
-            {{typeid = __typeid }}
+            {{typeid = __typeid }} {*读取是否存在全局__typeid, (一般适用与分类页面)*}
+        {{end}}
+        {{if typeid == 0 && isset(__refID) && __refID > -1}} {*判断是否在嵌套标签内*}
+            {{typeid = __refID}}
         {{end}}
     {{end}}
-    {{if isset(__refID)}}
-         {{typeid = __refID}}
+
+    {{if offset == 0 && isset(page) }}
+        {{offset = (page - 1) * limit }}
     {{end}}
-    {{ range field = artlist(typeid, offset, limit, orderby, modelid) }}
-        {{yield content}}
-    {{end}}
+    {{ range field = artlist(typeid, offset, limit, orderby, modelid) }}{{yield content}}{{end}}
 {{end}}

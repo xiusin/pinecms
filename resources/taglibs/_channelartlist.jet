@@ -6,5 +6,6 @@
     {{ range autoindex,field = channellist }}
         {{__refID = field.Catid }}
         {{yield content}}
+        {{__refID = -1}}
     {{end}}
 {{end}}

@@ -58,9 +58,12 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 			if withSons {
 				var sons []tables.Category
 				getCategoryOrm().Where("parentid = ?", v.Catid).Find(&sons)
-				cats[k].Sons = sons
 				if len(sons) > 0 {
 					cats[k].HasSon = true
+					for k1, v1:= range sons {
+						sons[k1].Url = fmt.Sprintf("/%s/", m.GetUrlPrefixWithCategoryArr(m.GetPosArr(v1.Catid)))
+					}
+					cats[k].Sons = sons
 				}
 			}
 			if withActive {

@@ -28,7 +28,10 @@ func NewCategoryModel() *CategoryModel {
 
 func (c CategoryModel) GetPosArr(id int64) []tables.Category {
 	category := tables.Category{Catid: id}
-	c.orm.Get(&category)
+	exists, err := c.orm.Get(&category)
+	if !exists {
+		panic(fmt.Sprintf("分类:%d不存在: %s", id, err) )
+	}
 	var links []tables.Category
 	for category.Parentid != 0 {
 		links = append(links, category)

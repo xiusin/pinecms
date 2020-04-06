@@ -1,15 +1,16 @@
 {{extends "layouts/layout.jet"}}
+
 {{ block body() }}
 <div class="lbox">
-    <div class="whitebg lanmu"> <img src="{{field.Thumb}}"
+    <div class="whitebg lanmu"> <img src="{{.Field.Thumb}}"
     onerror="var randnum = Math.ceil(Math.random() * 5);this.src='{{assetsDir}}images/lm0'+randnum+'.jpg'">
-      <h1>{{field.Catname}}</h1>
-      <p>{{field.Description}}</p>
+      <h1>{{.Field.Catname}}</h1>
+      <p>{{.Field.Description}}</p>
     </div>
     <div class="whitebg bloglist">
-      <h2 class="htitle">{{field.Catname}}</h2>
+      <h2 class="htitle">{{.Field.Catname}}</h2>
       <ul>
-       {{yield artlist(limit=10) content}}
+       {{yield artlist(limit=2) content}}
        {{if field["thumb"] != ""}}
         <li>
           <h3 class="blogtitle"><a href="{{detail_url(field["id"])}}" target="_blank">{{field["title"]}}</a></h3>
@@ -28,7 +29,7 @@
        {{end}}
       </ul>
       <!--pagelist-->
-      <div class="pagelist">{{pagelist(10) | unsafe}}</div>
+      <div class="pagelist">{{pagelist(2) | unsafe}}</div>
       <!--pagelist end-->
     </div>
 

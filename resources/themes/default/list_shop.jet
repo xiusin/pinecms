@@ -2,8 +2,8 @@
 {{ block body() }}
  <div class="lbox">
     <div class="whitebg lanmu"> <img src="{{assetsDir}}images/lm04.jpg">
-      <h1>商品模型展示</h1>
-      <p>自定义商品模型列表展示</p>
+      <h1>{{.Field.Catname}}</h1>
+      <p>{{.Field.Description ? .Field.Description : "没有设置描述内容"}}</p>
     </div>
     <div class="zhuanti whitebg">
       <ul>

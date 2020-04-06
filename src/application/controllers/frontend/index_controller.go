@@ -98,13 +98,13 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine) {
 				}
 			}
 			c.Ctx().Abort(http.StatusNotFound)
-			c.Logger().Error("路由地址无法匹配完整内容", pageName)
+			c.Logger().Error("路由地址无法匹配完整内容", c.Ctx().Request().URL.Path)
 			return
 		}
 		// 匹配所有内容
 		prefix := models.NewCategoryModel().GetUrlPrefix(cat.Catid)
 		if !strings.HasPrefix(pageName, prefix) {
-			c.Logger().Error("路由地址无法匹配完整内容", pageName)
+			c.Logger().Error("路由地址无法匹配完整内容", c.Ctx().Request().URL.Path)
 			c.Ctx().Abort(http.StatusNotFound)
 			return
 		}
@@ -169,19 +169,21 @@ func (c *IndexController) List(pageFilePath string) {
 	if pageNum < 1 {
 		pageNum = 1
 	}
-	c.ViewData("field", category)
 	c.ViewData("typeid", tid)
 	c.ViewData("__typeid", tid)
-	c.ViewData("pagelist", func(listsize int) string {
+	c.ViewData("pagelist", func(listsize ...int) string {
+		if len(listsize) == 0 {
+			listsize = append(listsize, globalSize)
+		}
 		total, _ := getOrmSess(category.Model).Where("catid = ?", tid).Count()
-		totalPage := int(math.Ceil(float64(total) / float64(globalSize)))
+		totalPage := int(math.Ceil(float64(total) / float64(listsize[0])))
 		pagenum, _ := c.Ctx().GetInt("page")
 		if pagenum < 1 {
 			pagenum = 1
 		} else if pagenum > totalPage {
 			pagenum = totalPage
 		}
-		return helper.NewPage("/"+models.NewCategoryModel().GetUrlPrefix(tid), pageNum, globalSize, int(total)).String()
+		return helper.NewPage("/"+models.NewCategoryModel().GetUrlPrefix(tid), pageNum, listsize[0], int(total)).String()
 	})
 
 	if category.Model.FeTplList == "" {
@@ -203,7 +205,7 @@ func (c *IndexController) List(pageFilePath string) {
 		c.Ctx().Abort(http.StatusNotFound)
 		return
 	}
-	err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), nil)
+	err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), struct{ Field *tables.Category }{Field: category})
 	if err != nil {
 		pine.Logger().Error(err)
 		c.Ctx().Abort(http.StatusNotFound)
@@ -239,7 +241,6 @@ func (c *IndexController) Detail(pagename string) {
 	article["catname"] = category.Catname
 	article["position"] = getCategoryPos(tid)
 	article["caturl"] = helper.ListUrl(int(tid))
-	c.ViewData("field", article)
 	c.ViewData("__typeid", tid)
 	detailUrlFunc := c.Ctx().Value("detail_url").(func(string, ...string) string)
 	c.ViewData("prenext", func() string {
@@ -295,7 +296,7 @@ func (c *IndexController) Detail(pagename string) {
 		c.Ctx().WriteString(err.Error())
 		return
 	}
-	err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), nil)
+	err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), struct{ Field map[string]string }{Field: article})
 	if err != nil {
 		c.Ctx().WriteString(err.Error())
 		return
@@ -319,6 +320,8 @@ func (c *IndexController) Page() {
 
 	page.Position = getCategoryPos(tid)
 	c.ViewData("field", page)
+	//data, _ := ioutil.ReadFile(pageFilePath)
+	//c.Ctx().Writer().Write(data)
 	c.View(template("page.jet"))
 }
 
@@ -383,6 +386,10 @@ func (c *IndexController) setTemplateData() {
 			}
 			return false
 		})
+	}
+	if c.Ctx().Params().Get("page") != "" {
+		p,_ := c.Ctx().Params().GetFloat64("page", 1)
+		c.Ctx().Render().ViewData("page", p)
 	}
 	c.Ctx().Render().ViewData("detail_url", detailUrl)
 }

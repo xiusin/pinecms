@@ -2,16 +2,16 @@ package taglibs
 
 import (
 	"fmt"
+	"reflect"
+	"strconv"
+	"strings"
+
 	"github.com/CloudyKit/jet"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"reflect"
-	"runtime/debug"
-	"strconv"
-	"strings"
 )
 
 func ArcList(args jet.Arguments) reflect.Value {
@@ -20,7 +20,7 @@ func ArcList(args jet.Arguments) reflect.Value {
 	}
 	defer func() {
 		if err := recover(); err != nil {
-			pine.Logger().Error("ArcList Failed", string(debug.Stack()))
+			pine.Logger().Errorf("ArcList Failed %s", err)
 		}
 	}()
 	catid := args.Get(0)
@@ -54,10 +54,15 @@ func ArcList(args jet.Arguments) reflect.Value {
 		// 默认一个模型ID
 		modelID = "1"
 	}
-	exists, _ := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(model).ID(modelID).Get(model)
+	exists, err := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(model).ID(modelID).Get(model)
 	if !exists {
-		panic("模型ID" + modelID + "不存在")
+		if err != nil {
+			panic("模型ID" + modelID + "不存在: " + err.Error())
+		} else {
+			panic("模型ID" + modelID + "不存在")
+		}
 	}
+
 	categoryTable := controllers.GetTableName("category")
 	modelTable := controllers.GetTableName(model.Table)
 	sess := getOrmSess(model.Table).
@@ -69,6 +74,8 @@ func ArcList(args jet.Arguments) reflect.Value {
 		sess.In(modelTable + ".catid", ids)
 	}
 	list, err := sess.QueryString()
+
+	fmt.Println(sess.LastSQL())
 
 	if err != nil {
 		pine.Logger().Error(sess.LastSQL())
@@ -82,8 +89,7 @@ func ArcList(args jet.Arguments) reflect.Value {
 			list[i]["caturl"] = fmt.Sprintf("/%s/", m.GetUrlPrefix(int64(catid)))
 		}
 	}
-	if list == nil {
-		list = []map[string]string{}
-	}
+
+
 	return reflect.ValueOf(list)
 }

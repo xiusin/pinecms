@@ -42,7 +42,7 @@ func (p *Page) getUrl(page int) string {
 	if page > 1 {
 		format = fmt.Sprintf("index_%d.html", page)
 	}
-	return filepath.Join(p.urlPrefix, format)
+	return strings.TrimSuffix(filepath.Join(p.urlPrefix, format), "index.html")
 }
 
 func (p *Page) GetPrev() string {
@@ -77,7 +77,11 @@ func (p *Page) String() string {
 		if i > p.totalPage {
 			break
 		}
-		fmt.Fprintf(&page, "<a href='%s'>%d</a>", p.getUrl(i), i)
+		var cur string
+		if p.curPage == i {
+			cur = "class='curPage'"
+		}
+		fmt.Fprintf(&page, "<a href='%s' %s>%d</a>", p.getUrl(i),cur, i)
 	}
 	if p.HasNext() {
 		fmt.Fprintf(&page, "<a href='%s'>下一页</a>", p.GetNext())

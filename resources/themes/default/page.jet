@@ -7,9 +7,9 @@
 {{ block body() }}
   <div class="lbox">
     <div class="content_box whitebg">
-      <h2 class="htitle">{{field.Title}}<span class="con_nav">您现在的位置是：<a href="/">首页</a>>{{field.Position | unsafe}}</h2>
+      <h2 class="htitle">{{.Field.Title}}<span class="con_nav">您现在的位置是：<a href="/">首页</a>>{{.Field.Position | unsafe}}</h2>
       <div class="con_text">
-        {{field.Content | unsafe}}
+        {{.Field.Content | unsafe}}
       </div>
     </div>
   </div>

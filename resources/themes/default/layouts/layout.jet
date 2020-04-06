@@ -25,7 +25,7 @@
 <header id="header">
   <div class="navbox">
     <h2 id="mnavh"><span class="navicon"></span></h2>
-    <div class="logo"><a href="#">PineCMS</a></div>
+    <div class="logo"><a href="#">{{global["site_name"]}}</a></div>
     <nav>
       <ul id="starlist">
         <li><a href="/">首页</a></li>

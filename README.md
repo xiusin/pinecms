@@ -58,7 +58,7 @@
 1. 重新定义一下模型以及使用场景的复杂度
 2. 搜索字段默认设置
 3. 优化前端标签, 可以参考多种CMS的实现, 聚合优点
-	fmt.Println("直接通过Nil反射类型", reflect.TypeOf((*logger.AbstractLogger)(nil)).Elem())
+	fmt.Println("直接通过Nil反射类型", 
 
 # 第二期 #
 - [ ] 数据模块 浏览次数, 搜索引擎来源, 服务器监控, 待审核信息, 会员信息等

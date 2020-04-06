@@ -2,12 +2,12 @@
 {{ block body() }}
   <div class="lbox">
     <div class="content_box whitebg">
-      <h2 class="htitle">{{field["catname"]}}<span class="con_nav">您现在的位置是：<a href="/">首页</a>>{{field["position"] | unsafe}}</h2>
-      <h1 class="con_tilte">{{field["title"]}}</h1>
-      <p class="bloginfo"><i class="avatar"><img src="{{assetsDir}}images/avatar.jpg"></i><span>PineCMS</span><span>{{field["pubtime"]}}</span><span>【<a href="{{field["caturl"]}}">{{field["catname"]}}</a>】</span><span>{{field["visit_count"]}}人已围观</span></p>
-      <p class="con_info"><b>简介</b>{{field["description"]}}</p>
+      <h2 class="htitle">{{.Field["catname"]}}<span class="con_nav">您现在的位置是：<a href="/">首页</a>>{{.Field["position"] | unsafe}}</h2>
+      <h1 class="con_tilte">{{.Field["title"]}}</h1>
+      <p class="bloginfo"><i class="avatar"><img src="{{assetsDir}}images/avatar.jpg"></i><span>PineCMS</span><span>{{.Field["pubtime"]}}</span><span>【<a href="{{.Field["caturl"]}}">{{.Field["catname"]}}</a>】</span><span>{{.Field["visit_count"]}}人已围观</span></p>
+      <p class="con_info"><b>简介</b>{{.Field["description"]}}</p>
       <div class="con_text">
-        {{field["content"] | unsafe}}
+        {{.Field["content"] | unsafe}}
         <div class="nextinfo">
            {{prenext() | unsafe}}
         </div>
@@ -16,8 +16,8 @@
     <div class="whitebg">
       <h2 class="htitle">相关文章</h2>
       <ul class="otherlink">
-       {{range field := likearticle(10)}}
-           <li><a href="{{detail_url(field["id"], field["catid"])}}" title="{{field["title"]}}">{{field["title"]}}</a></li>
+       {{range art := likearticle(10)}}
+           <li><a href="{{detail_url(art["id"], art["catid"])}}" title="{{art["title"]}}">{{art["title"]}}</a></li>
       {{end}}
       </ul>
     </div>
