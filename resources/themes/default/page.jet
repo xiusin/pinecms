@@ -1,8 +1,8 @@
 {{extends "layouts/layout.jet"}}
 
-{{ block seotitle() }}  {{field.Title}} - {{field.Keywords}} - {{field.Description}} {{end}}
-{{ block seokeywords() }} {{field.Keywords}}  {{end}}
-{{ block seodescription() }} {{field.Description}} {{end}}
+{{ block seotitle() }}  {{.Field.Title}} - {{.Field.Keywords}} - {{.Field.Description}} {{end}}
+{{ block seokeywords() }} {{.Field.Keywords}}  {{end}}
+{{ block seodescription() }} {{.Field.Description}} {{end}}
 
 {{ block body() }}
   <div class="lbox">

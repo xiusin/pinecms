@@ -209,12 +209,10 @@ func (c *IndexController) List(pageFilePath string) {
 	err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), struct {
 		Field          *tables.Category
 		Position       string
-		IsDetailPage   bool
-		IsCategoryPage bool
 		TypeID         int64
 		ArtID          int64
 		TopCategory    *tables.Category
-	}{Field: category, Position:posLink , IsCategoryPage: true, TypeID:tid, TopCategory:&treeNextCategories[0]})
+	}{Field: category, Position:posLink , TypeID:tid, TopCategory:&treeNextCategories[0]})
 	if err != nil {
 		pine.Logger().Error(err)
 		c.Ctx().Abort(http.StatusNotFound)
@@ -308,13 +306,11 @@ func (c *IndexController) Detail(pathname string) {
 
 	err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), struct {
 		Field          map[string]string
-		IsDetailPage   bool
-		IsCategoryPage bool
 		Position       string
 		TypeID         int64
 		ArtID          int64
 		TopCategory   *tables.Category
-	}{Field: article, IsDetailPage: true, Position: posLink, TypeID: tid, ArtID: aid, TopCategory:&treeNextCategories[0]})
+	}{Field: article, Position: posLink, TypeID: tid, ArtID: aid, TopCategory:&treeNextCategories[0]})
 	if err != nil {
 		c.Ctx().WriteString(err.Error())
 		return
@@ -352,14 +348,12 @@ func (c *IndexController) Page(pathname string) {
 	posLink, treeNextCategories := getCategoryPos(tid)
 	fmt.Println(treeNextCategories)
 	err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), struct {
-		Field          *tables.Page
-		IsDetailPage   bool
-		IsCategoryPage bool
+		Field          *tables.Page	// 单页信息
 		Position       string
 		TypeID         int64
 		ArtID          int64
-		TopCategory   *tables.Category
-	}{Field: page, IsDetailPage: true, Position: posLink, TypeID: tid, TopCategory:&treeNextCategories[0]})
+		TopCategory   *tables.Category	// 顶级栏目信息
+	}{Field: page, Position: posLink, TypeID: tid, TopCategory:&treeNextCategories[0]})
 	if err != nil {
 		c.Ctx().WriteString(err.Error())
 		return

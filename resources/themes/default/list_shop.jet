@@ -1,7 +1,7 @@
 {{extends "layouts/layout.jet"}}
 {{ block body() }}
  <div class="lbox">
-    <div class="whitebg lanmu"> <img src="{{assetsDir}}images/lm04.jpg">
+    <div class="whitebg lanmu"> <img src="{{.Field.Thumb}}">
       <h1>{{.Field.Catname}}</h1>
       <p>{{.Field.Description ? .Field.Description : "没有设置描述内容"}}</p>
     </div>

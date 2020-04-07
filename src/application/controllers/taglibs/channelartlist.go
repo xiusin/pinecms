@@ -33,7 +33,7 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 
 	var orm *xorm.Session
 	if _typeid == "0" || _typeid == "top" {
-		orm =  getCategoryOrm().Where("parentid = 0").Where("model_id > 0")
+		orm =  getCategoryOrm().Where("parentid = 0")//.Where("model_id > 0")
 	} else if strings.Contains(_typeid, ",") {
 		orm =  getCategoryOrm().In("catid", strings.Split(_typeid, ","))
 	} else {

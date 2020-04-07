@@ -39,6 +39,7 @@ func ArcList(args jet.Arguments) reflect.Value {
 	limit := getNumber(args.Get(2))
 	model := &tables.DocumentModel{}
 	var modelID string
+	
 	// 先不支持多模型调用
 	if len(ids) == 0 {
 		modelID = args.Get(4).String()
@@ -74,8 +75,6 @@ func ArcList(args jet.Arguments) reflect.Value {
 		sess.In(modelTable + ".catid", ids)
 	}
 	list, err := sess.QueryString()
-
-	fmt.Println(sess.LastSQL())
 
 	if err != nil {
 		pine.Logger().Error(sess.LastSQL())

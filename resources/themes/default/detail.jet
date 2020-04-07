@@ -2,7 +2,7 @@
 {{ block body() }}
   <div class="lbox">
     <div class="content_box whitebg">
-      <h2 class="htitle">{{.Field["catname"]}}<span class="con_nav">您现在的位置是：<a href="/">首页</a>>{{.Field["position"] | unsafe}}</h2>
+      <h2 class="htitle">{{.Field["catname"]}}<span class="con_nav">您现在的位置是：<a href="/">首页</a>>{{.Position | unsafe}}</h2>
       <h1 class="con_tilte">{{.Field["title"]}}</h1>
       <p class="bloginfo"><i class="avatar"><img src="{{assetsDir}}images/avatar.jpg"></i><span>PineCMS</span><span>{{.Field["pubtime"]}}</span><span>【<a href="{{.Field["caturl"]}}">{{.Field["catname"]}}</a>】</span><span>{{.Field["visit_count"]}}人已围观</span></p>
       <p class="con_info"><b>简介</b>{{.Field["description"]}}</p>

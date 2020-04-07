@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"html/template"
 	"regexp"
@@ -183,7 +184,7 @@ func (c *CategoryController) CategorySelect() {
 	c.Ctx().Render().JSON(cats)
 }
 
-func (c *CategoryController) CategoryEdit() {
+func (c *CategoryController) CategoryEdit(icache cache.AbstractCache) {
 	id, err := c.Ctx().URLParamInt64("id")
 	if err != nil || id == 0 {
 		c.Ctx().WriteString("参数错误")
@@ -236,6 +237,7 @@ func (c *CategoryController) CategoryEdit() {
 		if !models.NewCategoryModel().UpdateCategory(category) {
 			helper.Ajax("修改分类失败", 1, c.Ctx())
 		} else {
+			icache.Delete(fmt.Sprintf(controllers.CacheCategoryInfoPrefix, id))
 			helper.Ajax("修改分类成功", 0, c.Ctx())
 		}
 		return

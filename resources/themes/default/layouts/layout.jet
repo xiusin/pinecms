@@ -54,9 +54,9 @@
 <article>
   {{yield body()}}
   <div class="rbox">
-  {{if isset(.Field)}}
+  {{if isset(.TopCategory)}}
   <div class="links whitebg">
-      <h2 class="htitle">{{if .IsCategoryPage}}"{{.Field.Catname}}"{{end}}所有分类</h2>
+      <h2 class="htitle">"{{.TopCategory.Catname}}"所有分类</h2>
       <ul>
       {{yield channel() content}}
         <li><a href="{{field.Url}}" target="_blank">{{field.Catname}}</a></li>
