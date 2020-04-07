@@ -3,6 +3,9 @@
     {* __refID 继承channelartlist *}
         {{typeid = __refID}}
     {{end}}
+    {{ if typeid == 0 && isset(.TypeID) }}
+        {{typeid = .TypeID}}
+    {{end}}
     {{ categories := channel(typeid, reid, type, row, noself) }}
     {{if categories}}
         {{range autoindex,field = categories}}

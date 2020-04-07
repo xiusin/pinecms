@@ -84,7 +84,7 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine) {
 			// 拆分出来想要的数据 page_{tid}
 			if strings.HasPrefix(last, "page_") {
 				c.Ctx().Params().Set("tid", strings.TrimPrefix(last, "page_"))
-				c.Page()
+				c.Page(pageName)
 				return
 			} else {
 				infos := strings.Split(last, "_") // 根据模型{model_table}_{tid}拆分信息
@@ -114,7 +114,7 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine) {
 		} else if cat.Type == 0 {
 			c.List(pageName)
 		} else {
-			c.Page()
+			c.Page(pageName)
 		}
 	}
 }
@@ -205,7 +205,16 @@ func (c *IndexController) List(pageFilePath string) {
 		c.Ctx().Abort(http.StatusNotFound)
 		return
 	}
-	err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), struct{ Field *tables.Category }{Field: category})
+	posLink, treeNextCategories := getCategoryPos(tid)
+	err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), struct {
+		Field          *tables.Category
+		Position       string
+		IsDetailPage   bool
+		IsCategoryPage bool
+		TypeID         int64
+		ArtID          int64
+		TopCategory    *tables.Category
+	}{Field: category, Position:posLink , IsCategoryPage: true, TypeID:tid, TopCategory:&treeNextCategories[0]})
 	if err != nil {
 		pine.Logger().Error(err)
 		c.Ctx().Abort(http.StatusNotFound)
@@ -215,9 +224,9 @@ func (c *IndexController) List(pageFilePath string) {
 	c.Ctx().Writer().Write(data)
 }
 
-func (c *IndexController) Detail(pagename string) {
+func (c *IndexController) Detail(pathname string) {
 	c.setTemplateData()
-	pageFilePath := GetStaticFile(pagename)
+	pageFilePath := GetStaticFile(pathname)
 	aid, _ := c.Param().GetInt64("aid")
 	tid, _ := c.Param().GetInt64("tid")
 	var err error
@@ -239,7 +248,6 @@ func (c *IndexController) Detail(pagename string) {
 	}
 	article := rest[0]
 	article["catname"] = category.Catname
-	article["position"] = getCategoryPos(tid)
 	article["caturl"] = helper.ListUrl(int(tid))
 	c.ViewData("__typeid", tid)
 	detailUrlFunc := c.Ctx().Value("detail_url").(func(string, ...string) string)
@@ -296,7 +304,17 @@ func (c *IndexController) Detail(pagename string) {
 		c.Ctx().WriteString(err.Error())
 		return
 	}
-	err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), struct{ Field map[string]string }{Field: article})
+	posLink, treeNextCategories := getCategoryPos(tid)
+
+	err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), struct {
+		Field          map[string]string
+		IsDetailPage   bool
+		IsCategoryPage bool
+		Position       string
+		TypeID         int64
+		ArtID          int64
+		TopCategory   *tables.Category
+	}{Field: article, IsDetailPage: true, Position: posLink, TypeID: tid, ArtID: aid, TopCategory:&treeNextCategories[0]})
 	if err != nil {
 		c.Ctx().WriteString(err.Error())
 		return
@@ -305,8 +323,9 @@ func (c *IndexController) Detail(pagename string) {
 	c.Ctx().Writer().Write(data)
 }
 
-func (c *IndexController) Page() {
+func (c *IndexController) Page(pathname string) {
 	c.setTemplateData()
+	pageFilePath := GetStaticFile(pathname)
 	tid, _ := c.Ctx().Params().GetInt64("tid")
 	if tid < 1 {
 		c.Ctx().Abort(404)
@@ -317,15 +336,40 @@ func (c *IndexController) Page() {
 		c.Ctx().Abort(404)
 		return
 	}
-
-	page.Position = getCategoryPos(tid)
-	c.ViewData("field", page)
-	//data, _ := ioutil.ReadFile(pageFilePath)
-	//c.Ctx().Writer().Write(data)
-	c.View(template("page.jet"))
+	os.MkdirAll(filepath.Dir(pageFilePath), os.ModePerm)
+	f, err := os.OpenFile(pageFilePath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
+	if err != nil {
+		c.Ctx().WriteString(err.Error())
+		return
+	}
+	defer f.Close()
+	jet := pine.Make(controllers.ServiceJetEngine).(*jet.PineJet)
+	temp, err := jet.GetTemplate(template("page.jet"))
+	if err != nil {
+		c.Ctx().WriteString(err.Error())
+		return
+	}
+	posLink, treeNextCategories := getCategoryPos(tid)
+	fmt.Println(treeNextCategories)
+	err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), struct {
+		Field          *tables.Page
+		IsDetailPage   bool
+		IsCategoryPage bool
+		Position       string
+		TypeID         int64
+		ArtID          int64
+		TopCategory   *tables.Category
+	}{Field: page, IsDetailPage: true, Position: posLink, TypeID: tid, TopCategory:&treeNextCategories[0]})
+	if err != nil {
+		c.Ctx().WriteString(err.Error())
+		return
+	}
+	data, _ := ioutil.ReadFile(pageFilePath)
+	c.Ctx().Writer().Write(data)
 }
 
 func (c *IndexController) Click() {
+
 	//aid, _ := c.Ctx().GetInt64("aid")
 	//tid, _ := c.Ctx().GetInt64("tid")
 	//if aid < 1 || tid < 1 {
@@ -388,7 +432,7 @@ func (c *IndexController) setTemplateData() {
 		})
 	}
 	if c.Ctx().Params().Get("page") != "" {
-		p,_ := c.Ctx().Params().GetFloat64("page", 1)
+		p, _ := c.Ctx().Params().GetFloat64("page", 1)
 		c.Ctx().Render().ViewData("page", p)
 	}
 	c.Ctx().Render().ViewData("detail_url", detailUrl)
@@ -404,29 +448,33 @@ func template(tpl string) string {
 	return path
 }
 
-func getCategoryPos(tid int64) string {
+func getCategoryPos(tid int64) (string, []tables.Category) {
 	var position []string
 	var res string
-	var arr []tables.Category
+	var data = struct{
+		Arr []tables.Category
+		Pos string
+	}{}
 	key := fmt.Sprintf(controllers.CacheCategoryPosPrefix, tid)
 	icache := di.MustGet(controllers.ServiceICache).(cache.AbstractCache)
-	err := icache.GetWithUnmarshal(key, &res)
+	err := icache.GetWithUnmarshal(key, &data)
 	if err != nil {
 		m := models.NewCategoryModel()
-		arr = m.GetPosArr(tid)
-		for _, cat := range arr {
+		data.Arr = m.GetPosArr(tid)
+		for _, cat := range data.Arr {
 			if cat.Type != 2 {
 				position = append(position, "<a href='"+m.GetUrlPrefix(cat.Catid)+"'>"+cat.Catname+"</a>")
 			} else {
 				position = append(position, "<a href='"+cat.Url+"'>"+cat.Catname+"</a>")
 			}
 		}
-		if len(arr) > 0 {
+		if len(data.Arr) > 0 {
 			res = strings.Join(position, " > ")
+			data.Pos = res
 			icache.SetWithMarshal(key, res)
 		}
 	}
-	return res
+	return data.Pos, data.Arr
 }
 
 func GetStaticFile(filename string) string {

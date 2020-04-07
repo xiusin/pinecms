@@ -7,7 +7,7 @@ import (
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
-	"github.com/xiusin/pine/cache/providers/badger"
+	"github.com/xiusin/pine/cache/providers/bbolt"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pine/middlewares/cache304"
 	request_log "github.com/xiusin/pine/middlewares/request-log"
@@ -136,13 +136,11 @@ func runServe() {
 
 func diConfig() {
 
-	iCache = badger.New(badger.Option{TTL: int(conf.Session.Expires), Path: conf.CacheDb})
-	//iCache = bbolt.New(bbolt.Option{
-	//	TTL:             int(conf.Session.Expires),
-	//	Path:            conf.CacheDb,
-	//	Prefix:          "",
-	//	CleanupInterval: 0,
-	//})
+	//iCache = badger.New(badger.Option{TTL: int(conf.Session.Expires), Path: conf.CacheDb})
+	iCache = bbolt.New(bbolt.Option{
+		TTL:             int(conf.Session.Expires),
+		Path:            conf.CacheDb,
+	})
 	//redisOpt := redis.DefaultOption()
 	//if runtime.GOOS != "darwin" {
 	//	redisOpt.Port = 6380
@@ -168,7 +166,7 @@ func diConfig() {
 		loggers.SetLogLevel(logger.DebugLevel)
 		loggers.SetOutput(io.MultiWriter(os.Stdout, &lumberjack.Logger{
 			Filename: filepath.Join(conf.LogPath, "pinecms.log"),
-			MaxSize:  500,
+			MaxSize:  5000,
 			Compress: true,
 		}))
 		return loggers, nil

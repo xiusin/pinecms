@@ -1,4 +1,4 @@
-{{block artlist(typeid = 0,offset=0,limit=10, orderby="listorder",field="", modelid = "")  }}
+{{block artlist(typeid=0,offset=0,limit=10, orderby="listorder",field="", modelid = "")  }}
     {{if typeid == 0 }} {* 如果没有设置typeid *}
         {{ if isset(__typeid) }}
             {{typeid = __typeid }} {*读取是否存在全局__typeid, (一般适用与分类页面)*}
@@ -8,6 +8,9 @@
         {{end}}
     {{end}}
 
+    {{if typeid == -1 }}    {*公共位置需要指定typeid*}
+        {{typeid = 0}}
+    {{end}}
     {{if offset == 0 && isset(page) }}
         {{offset = (page - 1) * limit }}
     {{end}}

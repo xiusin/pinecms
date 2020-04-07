@@ -54,6 +54,16 @@
 <article>
   {{yield body()}}
   <div class="rbox">
+  {{if isset(.Field)}}
+  <div class="links whitebg">
+      <h2 class="htitle">{{if .IsCategoryPage}}"{{.Field.Catname}}"{{end}}所有分类</h2>
+      <ul>
+      {{yield channel() content}}
+        <li><a href="{{field.Url}}" target="_blank">{{field.Catname}}</a></li>
+      {{end}}
+      </ul>
+  </div>
+  {{end}}
    <div class="whitebg tongji">
           <h2 class="htitle">站点信息</h2>
           <ul>
@@ -70,7 +80,7 @@
         <h2 class="htitle">点击排行</h2>
         <section class="topnews imgscale"><a href="/"><img src="{{assetsDir}}images/h1.jpg"><span>6条网页设计配色原则,让你秒变配色高手</span></a></section>
         <ul>
-         {{yield artlist(orderby="visit_count desc", typeid=0, limit=5) content}}
+         {{yield artlist(orderby="visit_count desc", typeid=-1, limit=5) content}}
               <li><i></i><a href="{{detail_url(field["id"], field["catid"])}}">{{field["title"]}}</a></li>
          {{end}}
         </ul>
@@ -132,7 +142,7 @@
       </div>
 
       <div class="links whitebg">
-        <h2 class="htitle"><span class="sqlink"><a href="/">申请链接</a></span>友情链接</h2>
+        <h2 class="htitle">友情链接</h2>
         <ul>
           {{yield link() content}}
              <li><a href="{{field.Url}}" target="_blank">{{field.Name}}</a></li>
