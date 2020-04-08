@@ -30,7 +30,7 @@ func (c CategoryModel) GetPosArr(id int64) []tables.Category {
 	category := tables.Category{Catid: id}
 	exists, err := c.orm.Get(&category)
 	if !exists {
-		panic(fmt.Sprintf("分类:%d不存在: %s", id, err) )
+		panic(fmt.Sprintf("分类:%d不存在: %s", id, err))
 	}
 	var links []tables.Category
 	for category.Parentid != 0 {
@@ -65,11 +65,16 @@ func (c CategoryModel) GetTree(categorys []tables.Category, parentid int64) []ma
 				if category.Type > 1 {
 					modelName = ""
 				}
+				var url = category.Url
+				if category.Type != 2 {
+					url = fmt.Sprintf("/%s/", c.GetUrlPrefix(category.Catid))
+				}
 				son := map[string]interface{}{
 					"catid":       category.Catid,
 					"catname":     category.Catname,
 					"model_id":    modelName,
 					"dir":         category.Dir,
+					"url":         url,
 					"type":        category.Type,
 					"description": category.Description,
 					"ismenu":      category.Ismenu,
@@ -226,7 +231,6 @@ func (c CategoryModel) UpdateCategory(category tables.Category) bool {
 	}
 	return true
 }
-
 
 //判断是否是子分类
 func (c CategoryModel) IsSonCategory(id, parentid int64) bool {

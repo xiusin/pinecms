@@ -148,7 +148,7 @@ func (c *CategoryController) CategoryAdd() {
 		}
 
 		// 检查dir的合法性
-		if  !regexp.MustCompile("^[A-Za-z0-9_-]+$").MatchString(category.Dir) {
+		if category.Dir != "" && !regexp.MustCompile("^[A-Za-z0-9_-]+$").MatchString(category.Dir) {
 			helper.Ajax("静态目录参数错误", 1, c.Ctx())
 			return
 		}
@@ -223,7 +223,7 @@ func (c *CategoryController) CategoryEdit(icache cache.AbstractCache) {
 		category.Dir = c.Ctx().FormValue("dir")
 
 		// 检查dir的合法性
-		if  !regexp.MustCompile("^[A-Za-z0-9_-]+$").MatchString(category.Dir) {
+		if category.Dir != "" && !regexp.MustCompile("^[A-Za-z0-9_-]+$").MatchString(category.Dir) {
 			helper.Ajax("静态目录参数错误", 1, c.Ctx())
 			return
 		}

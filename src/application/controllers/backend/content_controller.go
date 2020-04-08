@@ -7,7 +7,6 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"github.com/yanyiwu/gojieba"
 	"html/template"
 	"strconv"
 	"strings"
@@ -153,14 +152,7 @@ func (c *ContentController) NewsList(orm *xorm.Engine) {
 	}
 
 	var index = 1
-	// 系统模型需要固定追加标题, 描述等字段
-	//if relationDocumentModel.ModelType == models.SYSTEM_TYPE {
-	//	fields["标题"] = map[string]string{"field": "title", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
-	//	index++
-	//}
-
 	var searchComps []string
-
 	for _, field := range ff {
 		conf := showInPage[field]
 		if conf.Show {
@@ -277,24 +269,19 @@ func (c *ContentController) AddContent() {
 			data["status"] = "0"
 		}
 
+		if data["description"] == "" {
+			cont := bluemonday.NewPolicy().Sanitize(data["content"])
+			if len(cont) > 250 {
+				data["description"] = cont[:250]
+			} else {
+				data["description"] = cont
+			}
+		}
+
 		data["created_time"] = time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)
 		model := models.NewDocumentModel().GetByID(int64(mid), )
 		var fields []string
 		var values []interface{}
-		//if data["mid"] == "1" { // 只有默认文章模型支持自动提取关键字
-		if val, ok := data["keywords"]; ok && val == "" {
-			x := gojieba.NewJieba()
-			// 自动提取关键字
-			words := x.ExtractWithWeight(bluemonday.NewPolicy().Sanitize(data["content"]), 12)
-			x.Free()
-			data["catid"] = c.Ctx().GetString("catid")
-			var keywords []string
-			for _, w := range words {
-				keywords = append(keywords, w.Word)
-			}
-			data["keywords"] = strings.Join(keywords, ",")
-		}
-		//}
 		for k, v := range data {
 			if k == "table_name" {
 				continue
@@ -401,18 +388,13 @@ func (c *ContentController) EditContent(orm *xorm.Engine) {
 		data["updated_time"] = time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)
 		var sets []string
 		var values []interface{}
-		if data["mid"] == "1" {
-			if val, ok := data["keywords"]; ok && val == "" {
-				x := gojieba.NewJieba()
-				// 自动提取关键字
-				words := x.ExtractWithWeight(bluemonday.NewPolicy().Sanitize(data["content"]), 12)
-				x.Free()
-				data["catid"] = c.Ctx().GetString("catid")
-				var keywords []string
-				for _, w := range words {
-					keywords = append(keywords, w.Word)
-				}
-				data["keywords"] = strings.Join(keywords, ",")
+
+		if data["description"] == "" {
+			cont := bluemonday.NewPolicy().Sanitize(data["content"])
+			if len(cont) > 250 {
+				data["description"] = cont[:250]
+			} else {
+				data["description"] = cont
 			}
 		}
 

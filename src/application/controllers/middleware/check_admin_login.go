@@ -16,6 +16,9 @@ import (
 
 func CheckAdminLoginAndAccess(xorm *xorm.Engine, iCache cache.AbstractCache) pine.Handler {
 	return func(this *pine.Context) {
+		this.Render().ViewData("staticDir", "/assets/backend/static")
+		this.Render().ViewData("baseDir", "/assets/backend")
+
 		if strings.Contains(this.Request().URL.Path, "login") {
 			this.Next()
 			return

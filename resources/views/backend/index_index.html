@@ -5,19 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8"/>
 
-    <link rel="icon" type="image/ico" href="/assets/bg/images/favicon.ico"/>
-    <link href="/assets/bg/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/assets/bg/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/bg/css/animate.min.css">
-    <link rel="stylesheet" href="/assets/bg/css/rickshaw.min.css">
-    <link rel="stylesheet" href="/assets/bg/css/bootstrap-checkbox.css">
-    <link rel="stylesheet" href="/assets/bg/css/summernote.css">
-    <link rel="stylesheet" href="/assets/bg/css/summernote-bs3.css">
-    <link rel="stylesheet" href="/assets/bg/css/chosen.min.css">
-    <link rel="stylesheet" href="/assets/bg/css/chosen-bootstrap.css">
-    <link rel="stylesheet" href="/assets/bg/js/plugins/tabdrop/css/tabdrop.css">
-    <link rel="stylesheet" href="/assets/bg/css/morris.css">
-    <link href="/assets/bg/css/minoral.css" rel="stylesheet">
+    <link rel="icon" type="image/ico" href="/assets/favicon.ico"/>
+    <link href="{{.staticDir}}/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{.staticDir}}/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{.staticDir}}/css/animate.min.css">
+    <link rel="stylesheet" href="{{.staticDir}}/css/rickshaw.min.css">
+    <link rel="stylesheet" href="{{.staticDir}}/css/bootstrap-checkbox.css">
+    <link rel="stylesheet" href="{{.staticDir}}/css/summernote.css">
+    <link rel="stylesheet" href="{{.staticDir}}/css/summernote-bs3.css">
+    <link rel="stylesheet" href="{{.staticDir}}/css/chosen.min.css">
+    <link rel="stylesheet" href="{{.staticDir}}/css/chosen-bootstrap.css">
+    <link rel="stylesheet" href="{{.staticDir}}/js/plugins/tabdrop/css/tabdrop.css">
+    <link rel="stylesheet" href="{{.staticDir}}/css/morris.css">
+    <link href="{{.staticDir}}/css/minoral.css" rel="stylesheet">
 
 </head>
 <body class="lightgrey-scheme">
@@ -64,7 +64,7 @@
 
 
                             <li class="dropdown messages">
-                                <img src="/assets/pinecms.png" height="35px"/>
+                                <img src="{{.staticDir}}/images/pinecms.png" height="35px"/>
                             </li>
 
                             <li class="dropdown settings">
@@ -75,7 +75,7 @@
                                 <ul class="dropdown-menu arrow">
 
                                     <li>
-                                        <h3>Color schemes:</h3>
+                                        <h3>颜色主题:</h3>
                                         <ul id="color-schemes">
                                             <li><a href="#" class="brownish-scheme" title="Brownish"></a></li>
                                             <li><a href="#" class="darkgrey-scheme" title="Dark Grey"></a></li>
@@ -107,7 +107,7 @@
                     </li>
                     <li class="user-status status-online" id="user-status">
                         <div class="profile-photo">
-                            <img src="/assets/default.png" alt/>
+                            <img src="{{.staticDir}}/images/default.png" alt/>
                         </div>
                         <div class="user">
                             {{.username}}
@@ -169,41 +169,27 @@
 
 </div>
 
-<script src="/assets/bg/js/jquery.js"></script>
-<script src="/assets/bg/js/bootstrap.min.js"></script>
+<script src="{{.staticDir}}/js/jquery.js"></script>
+<script src="{{.staticDir}}/js/bootstrap.min.js"></script>
 
-<script src="/assets/bg/js/plugins/jquery.nicescroll.min.js"></script>
-
-{{/*<script src="/assets/bg/js/plugins/blockui/jquery.blockUI.js"></script>*/}}
-
-{{/*<script src="/assets/bg/js/plugins/jquery.easypiechart.min.js"></script>*/}}
-
-{{/*<script src="/assets/bg/js/plugins/jquery.animateNumbers.js"></script>*/}}
-
-{{/*<script src="/assets/bg/js/plugins/rickshaw/raphael-min.js"></script>*/}}
-{{/*<script src="/assets/bg/js/plugins/rickshaw/d3.v2.js"></script>*/}}
-
-{{/*<script src="/assets/bg/js/plugins/skycons/skycons.js"></script>*/}}
-
-{{/*<script src="/assets/bg/js/plugins/jquery.sparkline.min.js"></script>*/}}
-
-<script src="/assets/bg/js/plugins/summernote/summernote.min.js"></script>
-<script src="/assets/bg/js/plugins/chosen/chosen.jquery.min.js"></script>
-<script src="/assets/bg/js/plugins/tabdrop/bootstrap-tabdrop.min.js"></script>
-<script src="/assets/bg/js/minoral.js"></script>
-<link rel="stylesheet" type="text/css" href="/assets/backend/static/css/metro.css" title="metro"/>
-<script type="text/javascript" src="/assets/backend/static/js/jquery.json.min.js"></script>
-<link rel="stylesheet" type="text/css" href="/assets/backend/static/css/icons.css"/>
-<link rel="stylesheet" type="text/css" href="/assets/backend/static/js/easyui/insdep.easyui.min.css" title="metro"/>
-<script type="text/javascript" src="/assets/backend/static/js/easyui/jquery.easyui.min.js"></script>
+<script src="{{.staticDir}}/js/plugins/jquery.nicescroll.min.js"></script>
+<script src="{{.staticDir}}/js/plugins/summernote/summernote.min.js"></script>
+{{/*<script src="{{.staticDir}}/js/plugins/chosen/chosen.jquery.min.js"></script>*/}}
+<script src="{{.staticDir}}/js/plugins/tabdrop/bootstrap-tabdrop.min.js"></script>
+<script src="{{.staticDir}}/js/minoral.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{.staticDir}}/static/css/metro.css" title="metro"/>
+<script type="text/javascript" src="{{.staticDir}}/js/jquery.json.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{.staticDir}}/css/icons.css"/>
+<link rel="stylesheet" type="text/css" href="{{.staticDir}}/js/easyui/insdep.easyui.min.css" title="metro"/>
+<script type="text/javascript" src="{{.staticDir}}/js/easyui/jquery.easyui.min.js"></script>
 {{/*<script type="text/javascript" src="/assets/backend/static/js/easyui/insdep.extend.min.js"></script>*/}}
-<script type="text/javascript" src="/assets/backend/static/js/easyui/locale/easyui-lang-zh_CN.js"></script>
-<script type="text/javascript" src="/assets/backend/static/js/formvalidator/formValidator.js"></script>
-<script type="text/javascript" src="/assets/backend/static/js/formvalidator/formValidatorRegex.js"></script>
-<script type="text/javascript" src="/assets/backend/static/js/jquery.serializeObject.min.js"></script>
+<script type="text/javascript" src="{{.staticDir}}/js/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="{{.staticDir}}js/formvalidator/formValidator.js"></script>
+<script type="text/javascript" src="{{.staticDir}}/js/formvalidator/formValidatorRegex.js"></script>
+<script type="text/javascript" src="{{.staticDir}}/js/jquery.serializeObject.min.js"></script>
 
-<script type="text/javascript" src="/assets/lightgallery/js/lightgallery-all.min.js"></script>
-<link rel="stylesheet" type="text/css" href="/assets/lightgallery/css/lightgallery.min.css">
+<script type="text/javascript" src="{{.baseDir}}/lightgallery/js/lightgallery-all.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{.baseDir}}/lightgallery/css/lightgallery.min.css">
 
 {{template "backend/public_umeditor.html"}}
 <style>

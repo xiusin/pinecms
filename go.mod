@@ -23,7 +23,6 @@ require (
 	github.com/imroc/req v0.2.4
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/go-mailer v0.1.0
-	github.com/kataras/golog v0.0.10
 	github.com/kataras/iris/v12 v12.1.4
 	github.com/kataras/tablewriter v0.0.0-20180708051242-e063d29b7c23 // indirect
 	github.com/landoop/tableprinter v0.0.0-20180806200924-8bd8c2576d27
@@ -38,7 +37,6 @@ require (
 	github.com/valyala/fasthttp v1.9.0 // indirect
 	github.com/xiusin/logger v0.0.1
 	github.com/xiusin/pine v0.0.0-20200301045755-d3e2bba0b14b
-	github.com/yanyiwu/gojieba v1.1.1
 	github.com/yudai/pp v2.0.1+incompatible // indirect
 	golang.org/x/image v0.0.0-20191214001246-9130b4cfad52
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
