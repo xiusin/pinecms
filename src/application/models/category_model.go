@@ -55,16 +55,23 @@ func (c CategoryModel) GetTree(categorys []tables.Category, parentid int64) []ma
 		// 筛选
 		models, _ := NewDocumentModel().GetList(1, 1000)
 		var m = map[int64]string{}
+		var modelMap = map[int64]string{}
 		m[0] = "单页面"
 		for _, model := range models {
 			m[model.Id] = model.Name
+			modelMap[model.Id] = model.Table
 		}
 		for _, category := range categorys {
 			if category.Parentid == parentid {
 				modelName := m[category.ModelId]
-				if category.Type > 1 {
+				var total int64 = 0
+				if category.Type == 2 {
 					modelName = ""
+				} else if category.Type == 0 {
+					tableName, _ := modelMap[category.ModelId]
+					total, _ = c.orm.Table(controllers.GetTableName(tableName)).Where("catid = ?", category.Catid).Where("deleted_time IS NULL").Count()
 				}
+
 				var url = category.Url
 				if category.Type != 2 {
 					url = fmt.Sprintf("/%s/", c.GetUrlPrefix(category.Catid))
@@ -80,6 +87,7 @@ func (c CategoryModel) GetTree(categorys []tables.Category, parentid int64) []ma
 					"ismenu":      category.Ismenu,
 					"listorder":   category.Listorder,
 					"operateid":   category.Catid,
+					"total":       total,
 					"router":      category.ManagerContentRouter,
 				}
 				son["children"] = c.GetTree(categorys, category.Catid)

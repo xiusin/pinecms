@@ -507,7 +507,7 @@ $.formValidator =
 			var li_pos = data.indexOf("=");	
 			if(li_pos >0){
 				var name = data.substring(0,li_pos);
-				var value = escape(decodeURIComponent(data.substr(li_pos+1)));
+				var value = decodeURIComponent(data.substr(li_pos+1));
 				var parm = name+"="+value;
 				parmStringNew = parmStringNew=="" ? parm : parmStringNew + '&' + parm;
 			}

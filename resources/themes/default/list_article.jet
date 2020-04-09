@@ -10,7 +10,7 @@
     <div class="whitebg bloglist">
       <h2 class="htitle">{{.Position | unsafe}}</h2>
       <ul>
-       {{yield artlist(limit=2) content}}
+       {{yield artlist() content}}
        {{if field["thumb"] != ""}}
         <li>
           <h3 class="blogtitle"><a href="{{detail_url(field["id"])}}" target="_blank">{{field["title"]}}</a></h3>

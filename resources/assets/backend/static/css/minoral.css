@@ -4559,7 +4559,7 @@ dl.filled {
 /************* TABLES *************/
 /**********************************/
 table {
-  font-size: 13px; }
+  font-size: 12px; }
   table.table > thead > tr > .cyan, table.table > tbody > tr > .cyan, table.table > tfoot > tr > .cyan, table.table > thead > .cyan > td, table.table > tbody > .cyan > td, table.table > tfoot > .cyan > td, table.table > thead > .cyan > th, table.table > tbody > .cyan > th, table.table > tfoot > .cyan > th {
     background-color: #eaf9fe; }
   table.table > thead > tr > .red, table.table > tbody > tr > .red, table.table > tfoot > tr > .red, table.table > thead > .red > td, table.table > tbody > .red > td, table.table > tfoot > .red > td, table.table > thead > .red > th, table.table > tbody > .red > th, table.table > tfoot > .red > th {

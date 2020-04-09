@@ -2,6 +2,7 @@ package taglibs
 
 import (
 	"fmt"
+	"github.com/xiusin/pinecms/src/config"
 	"reflect"
 	"strconv"
 	"strings"
@@ -52,8 +53,7 @@ func ArcList(args jet.Arguments) reflect.Value {
 		modelID = strconv.Itoa(int(catgory.Model.Id))
 	}
 	if modelID == ""  || modelID == "0"{
-		// 默认一个模型ID
-		modelID = "1"
+		modelID = "1"// 默认模型
 	}
 	exists, err := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(model).ID(modelID).Get(model)
 	if !exists {
@@ -64,12 +64,23 @@ func ArcList(args jet.Arguments) reflect.Value {
 		}
 	}
 
+	if limit  == 0 {	// 没有设置分页条数, 使用系统默认分页数目
+		conf,_ := config.SiteConfig()
+		t, _ := strconv.Atoi(conf["SITE_PAGE_SIZE"])
+		limit = int64(t)
+		if offset == 0 { // 如果没传递offset那么就根据系统分页计算偏移量
+			offset = (getNumber(args.Get(5)) - 1) * limit
+		}
+	}
 	categoryTable := controllers.GetTableName("category")
 	modelTable := controllers.GetTableName(model.Table)
-	sess := getOrmSess(model.Table).
-		Limit(int(limit), int(offset)).Select(fmt.Sprintf("%s.*, %s.catname, %s.url as caturl, %s.type ", modelTable, categoryTable, categoryTable, categoryTable)).
+	sess := getOrmSess(model.Table).Select(fmt.Sprintf("%s.*, %s.catname, %s.url as caturl, %s.type ", modelTable, categoryTable, categoryTable, categoryTable)).
 		Join("LEFT", categoryTable, categoryTable + ".catid = " + modelTable + ".catid").
 		Where(modelTable +".deleted_time IS NULL").Where(modelTable +".status = 1").OrderBy(orderBy)
+
+	if limit > 0 {
+		sess.Limit(int(limit), int(offset))
+	}
 
 	if ids[0] != "0" && ids[0] != "-1" {
 		sess.In(modelTable + ".catid", ids)
@@ -88,7 +99,6 @@ func ArcList(args jet.Arguments) reflect.Value {
 			list[i]["caturl"] = fmt.Sprintf("/%s/", m.GetUrlPrefix(int64(catid)))
 		}
 	}
-
 
 	return reflect.ValueOf(list)
 }

@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8"/>
 
-    <link rel="icon" type="image/ico" href="/assets/bg/images/favicon.ico"/>
+    <link rel="icon" type="image/ico" href="{{.staticDir}}/images/favicon.ico"/>
     <!-- Bootstrap -->
-    <link href="/assets/bg/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/assets/bg/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/bg/css/animate.min.css">
-    <link rel="stylesheet" href="/assets/bg/css/bootstrap-checkbox.css">
+    <link href="{{.staticDir}}/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{.staticDir}}/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{.staticDir}}/css/animate.min.css">
+    <link rel="stylesheet" href="{{.staticDir}}/css/bootstrap-checkbox.css">
 
-    <link href="/assets/bg/css/minoral.css" rel="stylesheet">
+    <link href="{{.staticDir}}/css/minoral.css" rel="stylesheet">
 
 </head>
 <body class="brownish-scheme">
@@ -30,7 +30,7 @@
         <!-- Page content -->
         <div id="content" class="col-md-12 full-page login">
             <div class="welcome" style="background-color: rgba(255,255,255, 0.7); padding: 30px;">
-                <img src="/assets/new_logo.png" alt class="logo" style="width: 100%;">
+                <img src="{{.staticDir}}/images/new_logo.png" alt class="logo" style="width: 100%;">
 
                 <form id="form-signin" class="form-signin">
                     <section>
@@ -47,7 +47,7 @@
                         <div class="input-group">
                             <input type="text" id="codeid" name="code" class="form-control" placeholder="Captcha">
                             <div class="input-group-addon">
-                                <img src="/assets/logincode.png" style="height: 20px;" id="code_img" alt="点击刷新"
+                                <img src="{{.staticDir}}/images/logincode.png" style="height: 20px;" id="code_img" alt="点击刷新"
                                      onclick="changeCode()">
                             </div>
                         </div>
@@ -72,11 +72,10 @@
 </div>
 <!-- Wrap all page content end -->
 
-<script src="/assets/bg/js/jquery.js"></script>
-<script src="/assets/bg/js/bootstrap.min.js"></script>
-<script src="/assets/bg/js/plugins/jquery.nicescroll.min.js"></script>
-<script src="/assets/bg/js/plugins/blockui/jquery.blockUI.js"></script>
-<script src="/assets/bg/js/minoral.min.js"></script>
+<script src="{{.staticDir}}/js/jquery.js"></script>
+<script src="{{.staticDir}}/js/bootstrap.min.js"></script>
+<script src="{{.staticDir}}/js/plugins/jquery.nicescroll.min.js"></script>
+<script src="{{.staticDir}}/js/minoral.min.js"></script>
 
 <script>
     var showCpt = false;

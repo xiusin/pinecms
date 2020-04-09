@@ -40,7 +40,7 @@
 
     function attachmentsListSizeOptFormatter(id, obj) {
         var btn = ["<div class=\"btn-group-sm\">"];
-        isImage = /png|jpg|bmp|gif/.test(obj.url)
+        isImage = /png|jpg|jpeg|bmp|gif/.test(obj.url)
         if (obj.type === "img" || isImage) {
             btn.push("<a class='btn btn-info' href=\"javascript:;\" onclick=\"previewPic('" + obj.url + "', this)\">查看</a>");
         }

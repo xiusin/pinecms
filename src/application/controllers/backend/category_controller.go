@@ -42,12 +42,12 @@ func (c *CategoryController) CategoryList() {
 		"treeField": "catname",
 	}, helper.EasyuiGridfields{
 		"排序":   {"field": "listorder", "width": "10", "align": "center", "formatter": "categoryCategoryListOrderFormatter", "index": "0"},
-		"栏目名称": {"field": "catname", "width": "20", "index": "1"},
+		"栏目名称": {"field": "catname", "width": "20", "index": "1", "formatter": "categoryCategoryCatnameFormatter"},
 		"静态目录": {"field": "dir", "width": "20", "index": "2"},
 		"栏目类型": {"field": "type", "width": "10", "formatter": "categoryCategoryListTypeFormatter", "index": "3"},
 		"栏目模型": {"field": "model_id", "width": "10", "index": "4"},
 		"状态":   {"field": "ismenu", "width": "10", "formatter": "categoryCategoryListStateFormatter", "index": "5"},
-		"管理操作": {"field": "catid", "width": "40",  "formatter": "categoryCategoryListOperateFormatter", "index": "6"},
+		"管理操作": {"field": "catid", "width": "40", "formatter": "categoryCategoryListOperateFormatter", "index": "6"},
 	})
 	c.Ctx().Render().ViewData("TreeGrid", template.HTML(table))
 	c.Ctx().Render().HTML("backend/category_list.html")

@@ -24,6 +24,7 @@ func (c *AdminController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/admin/public-editinfo", "PublicEditInfo")
 	b.POST("/admin/public-checkEmail", "PublicCheckEmail")
 	b.POST("/admin/public-checkName", "PubicCheckName")
+	b.POST("/admin/check-rolename", "PublicCheckRoleName")
 	b.POST("/admin/check-password", "PublicCheckPassword")
 	b.ANY("/admin/member-add", "MemberAdd")
 	b.ANY("/admin/member-edit", "MemberEdit")

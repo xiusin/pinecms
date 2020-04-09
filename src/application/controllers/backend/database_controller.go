@@ -133,7 +133,7 @@ func (c *DatabaseController) BackupList() {
 		uploader := getStorageEngine(settingData)
 		list, prefix, err := uploader.List(baseBackupDir)
 		if err != nil {
-			helper.Ajax("获取列表失败: "+err.Error(), 0, c.Ctx())
+			helper.Ajax("获取列表失败: "+err.Error(), 1, c.Ctx())
 			return
 		}
 
@@ -210,9 +210,6 @@ func (c *DatabaseController) backup(settingData map[string]string, auto bool) (m
 	}
 	fNameBaseName := strings.Replace(time.Now().In(helper.GetLocation()).Format(helper.TimeFormat), " ", "-", 1)
 	fNameBaseName = strings.Replace(fNameBaseName, ":", "", 3)
-	if auto {
-		fNameBaseName = fmt.Sprintf("auto-%s", fNameBaseName)
-	}
 	uploader := getStorageEngine(settingData)
 	uploadFile := fmt.Sprintf("%s/%s", baseBackupDir, fNameBaseName+".zip")
 	buf := bytes.NewBuffer([]byte{})
