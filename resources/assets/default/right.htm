@@ -1,0 +1,91 @@
+        <li class="sb_list">        
+<div class="bx">
+<!-- 右侧广告位1 -->
+{dede:myad name='right1'/}
+</div>        
+</li>        <li class="sb_list">
+<div class="right_con post_right_con">     <div class="hotnews_list">        <div class="hidden_line"></div>        <div class="hn_title">本类最热新闻</div>        <ul class="ulcl">
+      {dede:arclist limit='0,2' orderby=click}
+      <li class="list_pic"><a href="[field:arcurl/]" target="_blank" class="hn_img"><img src="[field:litpic/]" /></a><a title="[field:fulltitle/]" target="_blank" href="[field:arcurl/]" class="list_title">[field:title/]</a>      </li>            
+      {/dede:arclist}
+      {dede:arclist limit='2,10' orderby=click}
+   <li class="hn_li"><a title="[field:fulltitle/]" target="_blank" href="[field:arcurl/]">&bull; [field:fulltitle/]</a></li>                 
+      {/dede:arclist}     
+      </ul>    </div></div>      
+      </li>        <li class="sb_list">        
+      <div class="bx">
+<!-- 右侧广告位2 -->
+{dede:myad name='right2'/}
+      </div>        </li>        <li class="sb_list">
+<div class="right_con post_right_con ">
+	<div class="top_news">
+      	<div class="bar">
+                <ul>
+                     <li id="must" class="current" onMouseMove="must()">48小时最热</li>
+                    <li id="hot7"  onmousemove="hot7()">7天最热</li>
+                    <li id="comm7" onMouseMove="comm7()" class="">7天热评</li>
+                    <li id="month" onMouseMove="month()" class="">月榜</li>
+
+                </ul>
+            </div>
+            <!-- 7天最热 -->
+            <div id="con1" class="list" style="display: none; ">
+            	<ul> 
+      {dede:arclist typeid='top' sort='hot' subday='7' titlelen=42 row=12}
+                    <li><span>[field:global runphp='yes' name=autoindex] $b="0";if(@me<=9) @me = $b.@me;if (@me >= 10) @me = @me; [/field:global]</span><a title="[field:fulltitle/]" target="_blank" href="[field:arcurl/]">[field:fulltitle/]</a></li>                          
+      {/dede:arclist}
+
+                </ul>
+            </div>
+            
+            <!-- 7天热评 -->
+            <div id="con2" class="list" style="display: none; ">
+            	<ul>   
+ {dede:php}
+$dsql->SetQuery("select aid,arctitle from dede_feedback group by aid order by count(id) desc limit 12");
+$dsql->Execute();
+$i=0;
+while($arr = $dsql->getArray()){
+$i++;
+if($i<9) $i='0'.$i;
+$arcurl = GetOneArchive($arr['aid']);
+
+echo '<li><span>'.$i.'</span>';
+echo '<a title="'.$arr['arctitle'].'" target="_blank" href="'.$arcurl['arcurl'].'">'.$arr['arctitle'].'</a></li>';
+}
+{/dede:php}                       
+                    
+                </ul>
+            </div>
+            
+            <!-- 月榜 -->
+            <div id="con3" class="list" style="display: none; ">
+            	<ul>
+      {dede:arclist typeid='top' sort='hot' subday='30' titlelen=42 row=12}
+                    <li><span>[field:global runphp='yes' name=autoindex] $b="0";if(@me<=9) @me = $b.@me;if (@me >= 10) @me = @me; [/field:global]</span><a title="[field:fulltitle/]" target="_blank" href="[field:arcurl/]">[field:fulltitle/]</a></li>                          
+      {/dede:arclist}                                          
+                </ul>
+            </div>
+            
+            <!-- 48小时最热 -->
+            <div id="con4" class="list" >
+            	<ul>
+                      {dede:arclist typeid='top' sort='hot' subday='2' titlelen=42 row=12}
+                    <li><span>[field:global runphp='yes' name=autoindex] $b="0";if(@me<=9) @me = $b.@me;if (@me >= 10) @me = @me; [/field:global]</span><a title="[field:fulltitle/]" target="_blank" href="[field:arcurl/]">[field:fulltitle/]</a></li>                          
+      {/dede:arclist}
+
+
+                </ul>
+            </div>
+        </div>
+ </div>
+      
+</li>     </ul>      <ul id="crf1"><li class="sb_list">    <div class="bx" >
+<!-- 右侧悬浮广告位1 -->
+{dede:myad name='right3'/}
+</div></li>          <li class="sb_list">        
+<div class="bx">
+<!-- 右侧悬浮广告位2 -->
+{dede:myad name='right4'/}
+
+               </div>    </li>                        </ul>    </div>

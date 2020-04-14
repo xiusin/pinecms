@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE">
+<title>{dede:field.title/}_{dede:global.cfg_webname/}</title>
+<meta name="keywords" content="{dede:field name='keywords'/}" />
+<meta name="description" content="{dede:field name='description' function='html2text(@me)'/}" />
+<link href="/dedemao/css/stylev2.1.css" rel="stylesheet" type="text/css">
+<link href="/dedemao/css/block.css" rel="stylesheet" type="text/css" />
+<link rel="shortcut icon" href="/favicon.ico"/>
+<script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script> 
+<script src="/dedemao/js/v2/jquery-cookie.js"></script>
+<script type="text/javascript" src="/dedemao/js/7hot.js"></script>
+</head>
+<body class="category">
+{dede:include filename="head.htm"/}
+<div id="wrapper">    <div class="content fl">      <div class="current_nav"><span class="cate_current">当前分类：</span><h1>{dede:field name='position'/}</h1> </div>      <div class="cate_list">        <ul class="ulcl">                                     
+
+    {dede:list pagesize='20'}
+
+<li><a href="[field:arcurl/]" target="_blank" class="list_thumbnail"><img src="[field:litpic/]" width="100" height="100"></a>            <div class="block">                <h2><a href="[field:arcurl/]" target="_blank">[field:fulltitle/]</a><span class="state other">[field:pubdate function="MyDate('m月d日',@me)"/]</span></h2>                <div class="memo"><p>[field:description/]</p></div>                <span class="tags"><strong>Tags：</strong>[field:id runphp='yes']
+global $cfg_cmspath;
+$tags = GetTags(@me);
+$revalue = '';
+$tags = explode(',', $tags);
+foreach($tags as $key => $value){
+            if($value){
+                $revalue .= '<a href="'.$cfg_cmspath.'/tags.php?/'.$value.'/">'.$value.'</a>, ';
+   }
+  }
+@me = substr($revalue,0,-2);
+[/field:id]</span></div>          </li>    
+    {/dede:list}
+                    
+                  </ul>      </div>      <div class="page_nav"> <span class="page_num">                  <div id="Pager" class="pagenew"><div></div><div class="pagenew">
+    {dede:pagelist listitem="info,index,end,pre,next,pageno,option" listsize="5"/}
+ &nbsp;&nbsp;<input type="text" value="1" name="Pager_input" id="Pager_input" onkeydown="ANP_keydown(event,&#39;Pager_btn&#39;);" />
+    <input type="Button" name="Pager" id="Pager_btn" value="  " onclick="if(ANP_checkInput(&#39;Pager_input&#39;,259)){ANP_goToPage(document.getElementById(&#39;Pager_input&#39;));}" />
+</div></div> </span></div>    </div>    <!-- content End -->
+ <!-- 侧边区域 -->
+<div class="sidebar">
+      <ul>        <li class="sb_list sbb">   
+     
+      <div class="tags_title"> "{dede:field.title runphp='yes'}list($toptype,$sontype)=split('/',@me);@me=$toptype;{/dede:field.title}"所有分类
+      </div>
+           
+                  <ul class="side_tags sub_ul">                                                             {dede:channel type='son'}
+                <li><a href="[field:typeurl/]">[field:typename/] ([field:id runphp='yes']global $dsql;
+$sql='SELECT count(*) as nums FROM dede_archives WHERE typeid='.@me;
+$arcnum = $dsql->GetOne($sql);@me=$arcnum['nums'];
+[/field:id])</a></li>
+                {/dede:channel}
+    </ul>        </li>
+    
+{dede:include filename="right.htm"/}    
+            <!-- sidebar End -->   </div>  <!-- wrapper End --> </div><!-- con End --> <!-- 头部区域 结束 --> 
+            </div>
+            <div id="ft">
+            <!-- 页脚 -->
+{dede:include filename="footer.htm"/}
+<script src="/dedemao/js/v2/common.js"></script> 
+</body>
+</html>
+

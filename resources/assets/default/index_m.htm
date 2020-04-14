@@ -1,0 +1,103 @@
+<!doctype html>
+<html class="no-js">
+	<head>
+		<meta charset="{dede:global.cfg_soft_lang/}">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>{dede:global.cfg_webname/}移动版</title>
+		<meta name="description" content="{dede:global.cfg_description/}" />
+		<meta name="keywords" content="{dede:global.cfg_keywords/}" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<link rel="icon" type="image/png" href="assets/i/favicon.png">
+		<link rel="stylesheet" href="assets/css/amazeui.min.css">
+		<link rel="stylesheet" href="assets/css/app.css">
+		<style>
+			@media only screen and (min-width: 1200px) {
+			      .blog-g-fixed {
+			        max-width: 1200px;
+			      }
+			    }
+			
+			    @media only screen and (min-width: 641px) {
+			      .blog-sidebar {
+			        font-size: 1.4rem;
+			      }
+			    }
+
+			    .blog-footer {
+			      padding: 10px 0;
+			      text-align: center;
+			    }
+		</style>
+	</head>
+	<body>
+		<!-- Header -->
+		<header data-am-widget="header" class="am-header am-header-default">
+			 <h1 class="am-header-title"><a href="index.php">{dede:global.cfg_webname/}移动版</a></h1>
+		</header>
+		<!-- Menu -->
+		<nav data-am-widget="menu" class="am-menu  am-menu-offcanvas1" data-am-menu-offcanvas>
+			<a href="javascript: void(0)" class="am-menu-toggle"> <i class="am-menu-toggle-icon am-icon-bars"></i>
+			</a>
+			<div class="am-offcanvas">
+				<div class="am-offcanvas-bar">
+					<ul class="am-menu-nav sm-block-grid-1">
+						<li> <a href="index.php">首页</a>
+						</li>{dede:channel type='top' row='10'}
+						<li> <a href="list.php?tid=[field:id/]">[field:typename/]</a>
+						</li>{/dede:channel}</ul>
+				</div>
+			</div>
+		</nav>
+		{dede:mda name='468x60'/}
+		<!-- Slider -->
+		<div data-am-widget="slider" class="am-slider am-slider-a1" data-am-slider='{"directionNav":false}'>
+			<ul class="am-slides">{dede:arclist flag='f' row='5'}
+				<li>
+					<a href="view.php?aid=[field:id/]">
+						<img src="[field:litpic/]">
+					</a>
+				</li>{/dede:arclist}</ul>
+		</div>
+		<!-- List -->
+		<div data-am-widget="list_news" class="am-list-news am-list-news-default">
+			<!--列表标题-->
+			<div class="am-list-news-hd am-cf">
+				<!--带更多链接-->
+				 <h2>图文资讯</h2>
+			</div>
+			<div class="am-list-news-bd">
+				<ul class="am-list">{dede:arclist row=10 orderby=pubdate type='image.' imgwidth='150' imgheight='150'}
+					<li class="am-g am-list-item-desced am-list-item-thumbed am-list-item-thumb-left">
+						<div class="am-u-sm-4 am-list-thumb">	<a href="[field:arcurl/]">[field:image/]</a>
+						</div>
+						<div class="am-u-sm-8 am-list-main">
+							 <h3 class="am-list-item-hd"><a href="[field:arcurl/]">[field:title/]</a></h3>
+							<div class="am-list-item-text">[field:description/]</div>
+						</div>
+					</li>{/dede:arclist}</ul>
+			</div>
+		</div>{dede:channelartlist}
+		<div data-am-widget="list_news" class="am-list-news am-list-news-default">
+			<!--列表标题-->
+			<div class="am-list-news-hd am-cf">
+				<!--带更多链接-->
+				<a href="list.php?tid={dede:field name='id'/}">
+					 <h2>{dede:field name='typename'/}</h2>
+				</a>
+			</div>
+			<div class="am-list-news-bd">
+				<ul class="am-list">{dede:arclist titlelen='60' row='8'}
+					<li class="am-g"> <a href="view.php?aid=[field:id/]" class="am-list-item-hd">[field:title /]</a>
+					</li>{/dede:arclist}</ul>
+			</div>
+			<!--更多在底部-->
+			<div class="am-list-news-ft"> <a class="am-list-news-more am-btn am-btn-default" href="list.php?tid={dede:field name='id'/}">查看更多 &raquo;</a>
+			</div>
+		</div>{/dede:channelartlist}{dede:include filename="footer_m.htm"/}
+		<script src="assets/js/jquery.min.js"></script>
+		<script src="assets/js/amazeui.min.js"></script>
+	</body>
+
+</html>

@@ -1,4 +1,0 @@
-{{extends "layouts/layout.jet"}}
-{{ block body() }}
-下载专区模板
-{{ end }}

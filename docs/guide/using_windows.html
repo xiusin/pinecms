@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>在 Windows 中运行 PINECMS | PineCMS内容管理系统</title>
+    <meta name="description" content="一个GO + Sqlite/Mysql开发的CMS管理系统">
+    <meta name="generator" content="VuePress 1.4.0">
+    
+    
+    <link rel="preload" href="/assets/css/0.styles.c35d3856.css" as="style"><link rel="preload" href="/assets/js/app.18a4708e.js" as="script"><link rel="preload" href="/assets/js/2.45adcc29.js" as="script"><link rel="preload" href="/assets/js/10.c7e40ce7.js" as="script"><link rel="prefetch" href="/assets/js/11.c50a48f2.js"><link rel="prefetch" href="/assets/js/12.6f7247a5.js"><link rel="prefetch" href="/assets/js/13.fde07632.js"><link rel="prefetch" href="/assets/js/14.030ca14b.js"><link rel="prefetch" href="/assets/js/15.5ad2e0d9.js"><link rel="prefetch" href="/assets/js/16.9c976185.js"><link rel="prefetch" href="/assets/js/17.0779f275.js"><link rel="prefetch" href="/assets/js/18.27412ebc.js"><link rel="prefetch" href="/assets/js/19.c5737f7e.js"><link rel="prefetch" href="/assets/js/20.238e91fc.js"><link rel="prefetch" href="/assets/js/21.3a75d09d.js"><link rel="prefetch" href="/assets/js/22.91a78379.js"><link rel="prefetch" href="/assets/js/3.2abd2214.js"><link rel="prefetch" href="/assets/js/4.361c0a82.js"><link rel="prefetch" href="/assets/js/5.9e9c43a6.js"><link rel="prefetch" href="/assets/js/6.a7f38517.js"><link rel="prefetch" href="/assets/js/7.6533fbe7.js"><link rel="prefetch" href="/assets/js/8.b0408886.js"><link rel="prefetch" href="/assets/js/9.5620af5f.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.c35d3856.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">PineCMS内容管理系统</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/guide/" class="nav-link router-link-active">
+  快速上手
+</a></div><div class="nav-item"><a href="/develop/" class="nav-link">
+  二次开发
+</a></div><div class="nav-item"><a href="/taglibs/" class="nav-link">
+  标签系统
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="github" class="dropdown-title"><span class="title">github</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="https://github.com/xiusin/pinecms.git" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  PineCMS
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></li><li class="dropdown-item"><!----> <a href="https://github.com/xiusin/pine.git" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Pine
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></li></ul></div></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/guide/" class="nav-link router-link-active">
+  快速上手
+</a></div><div class="nav-item"><a href="/develop/" class="nav-link">
+  二次开发
+</a></div><div class="nav-item"><a href="/taglibs/" class="nav-link">
+  标签系统
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="github" class="dropdown-title"><span class="title">github</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="https://github.com/xiusin/pinecms.git" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  PineCMS
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></li><li class="dropdown-item"><!----> <a href="https://github.com/xiusin/pine.git" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Pine
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></li></ul></div></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading open"><span>安装部署</span> <span class="arrow down"></span></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/using_unix.html" class="sidebar-link">在linux / macos 中运行 PINECMS</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/using_unix.html#_1-直接下载编译好的安装包" class="sidebar-link">1. 直接下载编译好的安装包</a></li><li class="sidebar-sub-header"><a href="/guide/using_unix.html#_2-修改配置文件" class="sidebar-link">2. 修改配置文件</a></li><li class="sidebar-sub-header"><a href="/guide/using_unix.html#运行系统" class="sidebar-link">运行系统</a></li><li class="sidebar-sub-header"><a href="/guide/using_unix.html#进入后台" class="sidebar-link">进入后台</a></li><li class="sidebar-sub-header"><a href="/guide/using_unix.html#其他" class="sidebar-link">其他</a></li></ul></li><li><a href="/guide/using_windows.html" class="active sidebar-link">在 Windows 中运行 PINECMS</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/using_windows.html#_1-直接下载编译好的安装包" class="sidebar-link">1. 直接下载编译好的安装包</a></li><li class="sidebar-sub-header"><a href="/guide/using_windows.html#_2-修改配置文件" class="sidebar-link">2. 修改配置文件</a></li><li class="sidebar-sub-header"><a href="/guide/using_windows.html#运行系统" class="sidebar-link">运行系统</a></li><li class="sidebar-sub-header"><a href="/guide/using_windows.html#进入后台" class="sidebar-link">进入后台</a></li><li class="sidebar-sub-header"><a href="/guide/using_windows.html#其他" class="sidebar-link">其他</a></li></ul></li></ul></section></li><li><a href="/guide/directory-structure.html" class="sidebar-link">目录结构</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/directory-structure.html#系统目录结构" class="sidebar-link">系统目录结构</a></li><li class="sidebar-sub-header"><a href="/guide/directory-structure.html#素材目录" class="sidebar-link">素材目录</a></li></ul></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>文档系统</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>二次开发</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>特殊页面</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>标签系统</span> <span class="arrow right"></span></p> <!----></section></li><li><a href="https://github.com/CloudyKit/jet/wiki" target="_blank" rel="noopener noreferrer" class="sidebar-link">JetTemplate Wiki<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></li><li><a href="https://github.com/xiusin/pine" target="_blank" rel="noopener noreferrer" class="sidebar-link">Pine<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="在-windows-中运行-pinecms"><a href="#在-windows-中运行-pinecms" class="header-anchor">#</a> 在 Windows 中运行 PINECMS</h1> <div class="custom-block warning"><p class="custom-block-title">注意</p> <p>如果需要使用<code>SQLITE</code>作为数据库， 需要安装gcc的命令。 这里推荐<code>mattn/go-sqlite3</code>推荐的包<a href="https://sourceforge.net/projects/tdm-gcc/" target="_blank" rel="noopener noreferrer">TDM-GCC<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>, 就此可以支持<code>CGO</code> 相关的包。</p></div> <h2 id="_1-直接下载编译好的安装包"><a href="#_1-直接下载编译好的安装包" class="header-anchor">#</a> 1. 直接下载编译好的安装包</h2> <p>如果您不打算对代码进行任何修改， 可以直接<a href="https://github.com/xiusin/pinecms" target="_blank" rel="noopener noreferrer">下载<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>编译好的安装包， 达到一键部署的目的。</p> <h2 id="_2-修改配置文件"><a href="#_2-修改配置文件" class="header-anchor">#</a> 2. 修改配置文件</h2> <h3 id="配置数据库信息"><a href="#配置数据库信息" class="header-anchor">#</a> 配置数据库信息</h3> <p>请复制<code>$project/resources/configs/database.yml.dist</code> 并且命名为：<code>database.yml</code></p> <p>在复制好的文件内修改如下配置:</p> <div class="language-yaml extra-class"><pre class="language-yaml"><code><span class="token key atrule">db</span><span class="token punctuation">:</span>
+  <span class="token comment">#dsn: &quot;debian-sys-maint:3Av7BK8pUOaxn0Or@tcp(127.0.0.1:3306)/pinecms?charset=utf8&quot;  mysql链接方式</span>
+  <span class="token key atrule">dsn</span><span class="token punctuation">:</span> <span class="token string">&quot;./data.db&quot;</span>    <span class="token comment"># sqlite的链接方式</span>
+  <span class="token key atrule">db_prefix</span><span class="token punctuation">:</span> <span class="token string">&quot;pinecms_&quot;</span> 
+  <span class="token key atrule">db_driver</span><span class="token punctuation">:</span> <span class="token string">&quot;sqlite3&quot;</span>  <span class="token comment"># 设置数据库驱动 sqlite3 或者 mysql</span>
+
+<span class="token key atrule">orm</span><span class="token punctuation">:</span> <span class="token comment"># 配置orm信息</span>
+  <span class="token key atrule">show_sql</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+  <span class="token key atrule">show_exec_time</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+  <span class="token key atrule">max_open_conns</span><span class="token punctuation">:</span> <span class="token number">10</span>
+  <span class="token key atrule">max_idle_conns</span><span class="token punctuation">:</span> <span class="token number">10</span>
+</code></pre></div><h3 id="配置application-yml"><a href="#配置application-yml" class="header-anchor">#</a> 配置application.yml</h3> <div class="language-yaml extra-class"><pre class="language-yaml"><code><span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">2019</span>  <span class="token comment">#运行端口号</span>
+
+<span class="token key atrule">view</span><span class="token punctuation">:</span>
+  <span class="token key atrule">reload</span><span class="token punctuation">:</span> true　<span class="token comment">#非开发时期，关闭reload提升性能</span>
+  <span class="token key atrule">fedirname</span><span class="token punctuation">:</span> <span class="token string">&quot;./resources/themes/&quot;</span> <span class="token comment">#前端模板目录地址</span>
+  <span class="token key atrule">bedirname</span><span class="token punctuation">:</span> <span class="token string">&quot;./resources/views/&quot;</span>　<span class="token comment">#后端模板地址</span>
+
+<span class="token key atrule">session</span><span class="token punctuation">:</span>　<span class="token comment">#session相关</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">&quot;gosessionid&quot;</span>
+  <span class="token key atrule">expires</span><span class="token punctuation">:</span> <span class="token number">0</span>
+
+<span class="token key atrule">cache_db</span><span class="token punctuation">:</span> <span class="token string">&quot;./runtime/cache.db&quot;</span>  <span class="token comment"># 全局缓存数据保存地址 (bbolt)</span>
+<span class="token key atrule">log_path</span><span class="token punctuation">:</span> <span class="token string">&quot;./runtime/logs/&quot;</span> <span class="token comment">#日志目录，　包括运行日志和数据库日志</span>
+
+<span class="token key atrule">favicon</span><span class="token punctuation">:</span> &quot;./resources/assets/favicon.ico&quot;　
+<span class="token key atrule">charset</span><span class="token punctuation">:</span> <span class="token string">&quot;UTF-8&quot;</span>
+<span class="token key atrule">hashkey</span><span class="token punctuation">:</span> <span class="token string">&quot;the-big-and-secret-fash-key-here&quot;</span>  <span class="token comment"># bug AES only supports key sizes of 16, 24 or 32 bytes.</span>
+<span class="token key atrule">blockkey</span><span class="token punctuation">:</span> <span class="token string">&quot;lot-secret-of-characters-big-too&quot;</span>
+<span class="token key atrule">backend_route_party</span><span class="token punctuation">:</span> <span class="token string">&quot;/b&quot;</span>
+
+<span class="token key atrule">max_bodysize</span><span class="token punctuation">:</span> <span class="token number">32</span> <span class="token comment"># MB</span>
+
+<span class="token key atrule">upload</span><span class="token punctuation">:</span>
+  <span class="token key atrule">engine</span><span class="token punctuation">:</span> <span class="token string">&quot;oss&quot;</span> <span class="token comment">#oss or file</span>
+  <span class="token key atrule">base_path</span><span class="token punctuation">:</span> <span class="token string">&quot;assets&quot;</span> <span class="token comment"># 基本路径</span>
+
+<span class="token key atrule">statics</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token punctuation">{</span><span class="token key atrule">route</span><span class="token punctuation">:</span> <span class="token string">&quot;/assets&quot;</span><span class="token punctuation">,</span> <span class="token key atrule">path</span><span class="token punctuation">:</span> <span class="token string">&quot;./resources/assets&quot;</span><span class="token punctuation">}</span>
+  <span class="token punctuation">-</span> <span class="token punctuation">{</span><span class="token key atrule">route</span><span class="token punctuation">:</span> <span class="token string">&quot;/upload&quot;</span><span class="token punctuation">,</span> <span class="token key atrule">path</span><span class="token punctuation">:</span> <span class="token string">&quot;./resources/assets/upload&quot;</span><span class="token punctuation">}</span>
+</code></pre></div><h2 id="运行系统"><a href="#运行系统" class="header-anchor">#</a> 运行系统</h2> <div class="language-shell extra-class"><pre class="language-shell"><code>pinecms.exe serve start
+</code></pre></div><p>运行后显示如下信息(关于个人信息部分可以选择删除)：</p> <div class="language-shell extra-class"><pre class="language-shell"><code>│─────────────│────────────────────────│
+│ KEY <span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span>     │ VAL                    │
+│─────────────│────────────────────────│
+│ Name        │ xiusin                 │
+│ Version     │ Development            │
+│ Author      │ xiusin                 │
+│ WebSite     │ http://www.xiusin.com/ │
+│ PineVersion │ dev <span class="token number">0.2</span>.1              │
+│ Version     │ dev <span class="token number">0.1</span>.2              │
+│ GoVersion   │ go1.14                 │
+│─────────────│────────────────────────│
+   ___  _         
+  / _ <span class="token punctuation">\</span><span class="token punctuation">(</span>_<span class="token punctuation">)</span>__  ___ 
+ / ___/ / _ <span class="token punctuation">\</span>/ -_<span class="token punctuation">)</span>
+/_/  /_/_//_/<span class="token punctuation">\</span>__/ 
+
+Server now listening on: http://0.0.0.0:2019/ 
+</code></pre></div><p>至此, 我们到这里算是已经完全启动了服务.</p> <h2 id="进入后台"><a href="#进入后台" class="header-anchor">#</a> 进入后台</h2> <p>在浏览器上输入地址: <code>http://localhost:2019/b/login/index</code> 然后登录界面管理自己的网站内容.</p> <h2 id="其他"><a href="#其他" class="header-anchor">#</a> 其他</h2> <p>这里并没有像其他CMS一样启动install 安装配置目录.</p></div> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/guide/using_unix.html" class="prev">
+        在linux / macos 中运行 PINECMS
+      </a></span> <span class="next"><a href="/guide/directory-structure.html">
+        目录结构
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.18a4708e.js" defer></script><script src="/assets/js/2.45adcc29.js" defer></script><script src="/assets/js/10.c7e40ce7.js" defer></script>
+  </body>
+</html>

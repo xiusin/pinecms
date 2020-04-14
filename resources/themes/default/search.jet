@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>{{global["site_name"]}}</title>
+<meta name="keywords" content="{dede:field.keywords/}" />
+<meta name="description" content="{dede:field.description function='html2text(@me)'/}" />
+
+<link href="/assets/dedemao/css/stylev2.1.css" rel="stylesheet" type="text/css">
+<link href="/assets/dedemao/css/style_list.css" rel="stylesheet" type="text/css" />
+
+<link rel="shortcut icon" href="/favicon.ico"/>
+<script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+<script src="/assets/dedemao/js/v2/jquery-cookie.js"></script>
+
+<style>
+<!--
+.s_page{padding-top:20px;font-size:14px;}
+    .s_page h2{padding:20px 0;font-size:20px;}
+    .s_page p{line-height:26px;margin:10px 0;}
+body,td,th {
+	font-family: "Microsoft Yahei";
+}
+-->
+</style>
+</head>
+
+<body>
+{{include "head2.jet"}}
+
+<div style="width: 100%; height: 800px; font-size: 30px; line-height: 800px;text-align: center">
+您访问的页面不存在或功能未开发
+</div>
+</div>
+</div>
+
+<div id="ft">
+  <!-- 链接 -->
+  <!-- 页脚 -->
+  {{include "footer.jet"}}
+<script src="/assets/dedemao/js/v2/common.js"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{{block flink(row=10, ids="", sort="", field="")  }}
+    {{ range field = flink(row, ids, sort) }}
+        {{yield content }}
+    {{end}}
+{{end}}

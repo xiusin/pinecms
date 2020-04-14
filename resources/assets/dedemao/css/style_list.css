@@ -1,0 +1,41 @@
+/* Home List Style */		
+.home_list #wrapper .content .post_list .block{margin-bottom:10px;}			
+	.home_list .content .post_list ul li{position:relative;float:left;width:455px;margin:0 0 11px 0;padding-left:145px;font-size:14px;background:url(../images/list_title_icon.gif) left center no-repeat;overflow:hidden;}
+		.home_list .content .post_list ul li.hr{width:600px;height:1px;padding:1px 0;margin:10px 0 20px 0;background:url(../images/line.gif) top repeat-x;}
+			.home_list .content .post_list ul li span.cate{position:absolute;top:0;right:0;color:#999;font-size:12px;}
+			.home_list .content .post_list ul li span.today{color:#be0028;}
+			.home_list .content .post_list ul li strong{position:absolute;top:0;left:15px;font-size:12px;color:#999;}
+				.home_list .content .post_list ul li strong a{color:#be0028;}
+				.home_list .content .post_list ul li strong a:hover{text-decoration:underline;}
+				.home_list .content .post_list ul li strong a:active{color:#8f001e}
+				
+/* Calendar Style */
+.CalendarWrapper{width:314px;margin:0 auto;padding-bottom:7px;color:#3c3c3c;font-size:12px;border:3px #be0028 solid;overflow:hidden;}
+	.CalendarWrapper a{color:#3c3c3c;text-decoration:none;}
+	.CalendarWrapper a:hover{color:#c00;text-decoration:none;}
+	.CalendarWrapper .CalendarHead{height:19px;overflow:hidden;margin:0 auto;padding:7px 0 10px 0;line-height:21px;color:#fff;border-bottom:1px solid #e8e8e8;background:#be0028;}
+	.CalendarWrapper .CalendarHead h3{font-size:14px;text-align:center;font-weight:bold}
+	.CalendarWrapper .CalendarHead .btn{display:block;width:19px;height:17px;padding-top:2px;overflow:hidden;line-height:17px;text-align:center;color:#dcdcdc;}
+	.CalendarWrapper .CalendarHead .btn:hover{color:#fff;}
+	.CalendarWrapper .CalendarHead .btn:active{color:#bbb;}
+	.CalendarWrapper .CalendarCon table{border-collapse:collapse;}
+	.CalendarWrapper .CalendarCon div table{border-collapse:collapse;background-color:#f7f7f7;}
+	.CalendarWrapper .CalendarCon th{width:36px;text-align:center;line-height:30px;font-weight:normal;font-size:14px;}
+	.CalendarWrapper .CalendarCon td{width:41px;text-align:center;font-weight:normal;border:1px solid #fff;overflow:hidden;}
+	.CalendarWrapper .CalendarCon th.saturday,.CalendarWrapper .CalendarCon th.sunday{color:#be0028;}
+	.CalendarWrapper .CalendarCon a,.CalendarWrapper .CalendarCon em,.CalendarWrapper .CalendarCon span{display:block;height:29px;overflow:hidden;color:#3c3c3c;line-height:29px;background:#f7f7f7;border:1px solid #f7f7f7;}
+	.CalendarWrapper .CalendarCon span{color:#c3c3c3;}/* 今天日期后的标签 */
+	.CalendarWrapper .CalendarCon em{background:#1189bd; font-style:normal;}/* 选中日期的标签 */
+	.CalendarWrapper .CalendarCon a.today,.CalendarWrapper .CalendarCon em.today{font-size:14px;font-weight:bold;background:#be0028;color:#fff;}/* 今天日期在标签中加class=&quot;today&quot; */	
+	.CalendarWrapper .CalendarCon a:hover{background:#ccc;color:#3c3c3c;text-decoration:none;border:1px solid #fff;}
+	.CalendarWrapper .CalendarCon a:active{color:#fff;background:#be0028;}
+	
+/* Sitemap Style */
+.sitemap{width:960px;overflow:hidden;}
+	.sitemap .sm_title{padding:5px 0 20px 0;font-size:17px;}
+	.sitemap .map_block{padding:15px 0 0 0;}
+	.sitemap .odd{background:#f2f3f4;}
+		.sitemap .map_block span{float:left;display:block;padding-left:5px;width:130px;border-left:3px #be0028 solid;}	
+			.sitemap .map_block span a{line-height:17px;padding-left:6px;color:#be0028;}
+		.sitemap .map_block ul{list-style:none;overflow:hidden;}	
+			.sitemap .map_block ul li{float:left;margin:0 0 5px 10px;padding:0 0 0 10px;line-height:17px;border-left:1px #bbb dotted;white-space:nowrap;}

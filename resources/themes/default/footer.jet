@@ -1,0 +1,48 @@
+{*{{ import "_flink.jet" }}*}
+{{ import "_channelartlist.jet" }}
+{{ import "_channel.jet" }}
+{{ import "_artlist.jet" }}
+{*{{ import "_query.jet" }}*}
+{{ import "_ad.jet" }}
+<div id="hd">
+   <!-- 导航区域 -->
+<div id="nav">
+    <a href="/" title="{dede:global.cfg_webname/}" class="logo">
+        <img src="/assets/dedemao/images/logo.png" alt="{dede:global.cfg_webname/}" width="140" height="28" />
+    </a>    <!-- 主导航 -->
+      <ul class="nav_list">
+      <li>
+      <a href="/" class="nav-item nav-item-2 current">首页</a></li>
+      </ul>
+    {{yield channelartlist(typeid="top", sons=true) content}}
+    <div class="tb-item dm">
+        <a href="{{field.Url}}" class="{{if field.HasSon}}item-link item-link-2{{else}}nav-item nav-item-2{{end}}">{{field.Catname}}</a>
+        <div id="dy" class="menu feed">
+            <ul class="mn_con">
+            {{yield channel(type="son") content}}<li><a href="{{typelink}}">{{typename}}</a></li>{{end}}
+            </ul>
+        </div>
+     </div>
+     {{end}}
+    <!-- an End --> <div class="tb-nav">         <div class="tb-item">                <!-- 搜索 -->                <div class="sc">
+      <form  name="formsearch" action="{dede:global.cfg_cmsurl/}/plus/search.php">
+      <input type="hidden" name="kwtype" value="0" />
+    <input id="searchTextbox" class="focus" size="24" name="q" />
+    <button type="submit" name="sa">搜索</button>
+    </form>
+    <div class="extra_sc">                        精准搜索请尝试：<a href="/plus/heightsearch.php" target="_blank" class="js" title="精确搜索">精确搜索</a>
+    </div>
+    </div>
+    </div>                                <div class="tb-item"><a href="javascript:;" class="item-link item-link-5">阅读设置</a></div>      </div>      <!-- tb-nav End -->   </div>
+</div>
+<div class="view view_setting">
+<div class="set_con">    <p class="c_st"><span class="set_op">内容字号：</span><a href="javascript:;" id="fs1">默认</a><span class="v"></span><a href="javascript:;" id="fs2">大号</a><span class="v"></span><a href="javascript:;" id="fs3">超大号</a></p>    <p class="c_st"><span class="set_op">段落设置：</span><a href="javascript:;" id="indt">段首缩进</a><a href="javascript:;" id="noindt" class="hide">取消段首缩进</a></p>    <p class="g_st"><span class="set_op">字体设置：</span><a href="javascript:;" id="yahei">切换到微软雅黑</a><a href="javascript:;" id="song" class="hide">切换到宋体</a></p>    </div></div>
+<script src="/assets/dedemao/js/v2/global_set.js"></script>
+<div id="con">
+<div id="hl">
+{{yield artlist(flag="h", limit=1, orderby="created_time") content}}
+    <div><h2><a target="_blank" href="{{detail_url(field["id"], field["catid"])}}">{{field["title"]}}</a></h2></div>
+{{end}}
+
+<div id="hl960">{{yield ad(pos="top_all") content}}<img src="{{field.Image}}"/>{{end}}</div>
+</div>

@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE">
+<title>{dede:field.title/}_{dede:global.cfg_webname/}</title>
+<meta name="keywords" content="{dede:field.keywords/}" />
+<meta name="description" content="{dede:field.description function='html2text(@me)'/}" />
+<meta name="MobileOptimized" content="240"/>
+<link rel="shortcut icon" href="/favicon.ico"/>
+<link href="/dedemao/css/stylev2.1.css" rel="stylesheet" type="text/css">
+<link href="/dedemao/css/block.css" rel="stylesheet" type="text/css" />
+<script src="/dedemao/js/ua.js" type="text/javascript"></script>
+<script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+<script src="/dedemao/js/v2/jquery-cookie.js"></script>
+<script type="text/javascript" src="/dedemao/js/7hot.js"></script>
+<script language="javascript" type="text/javascript" src="{dede:global.cfg_cmsurl/}/include/dedeajax2.js"></script>
+<script language="javascript" type="text/javascript">
+<!--
+
+function postBadGood(ftype,fid)
+{
+	var taget_obj = document.getElementById(ftype+fid);
+	var saveid = GetCookie('badgoodid');
+	if(saveid != null)
+	{
+		var saveids = saveid.split(',');
+		var hasid = false;
+		saveid = '';
+		j = 1;
+		for(i=saveids.length-1;i>=0;i--)
+		{
+			if(saveids[i]==fid && hasid) continue;
+			else {
+				if(saveids[i]==fid && !hasid) hasid = true;
+				saveid += (saveid=='' ? saveids[i] : ','+saveids[i]);
+				j++;
+				if(j==10 && hasid) break;
+				if(j==9 && !hasid) break;
+			}
+		}
+		if(hasid) { alert('您刚才已表决过了喔！'); return false;}
+		else saveid += ','+fid;
+		SetCookie('badgoodid',saveid,1);
+	}
+	else
+	{
+		SetCookie('badgoodid',fid,1);
+	}
+	myajax = new DedeAjax(taget_obj,false,false,'','','');
+	myajax.SendGet2("{dede:field name='phpurl'/}/feedback.php?aid="+fid+"&action="+ftype+"&fid="+fid);
+}
+
+function getDigg(aid)
+{
+	var taget_obj = document.getElementById('newdigg');
+	myajax = new DedeAjax(taget_obj,false,false,'','','');
+	myajax.SendGet2("{dede:global.cfg_phpurl/}/digg_ajax.php?id="+aid);
+	DedeXHTTP = null;
+}
+-->
+</script>
+</head>
+<body class="single win8">
+{dede:include filename="head.htm"/}
+  
+<div id="wrapper">    <div class="content fl">      <div class="current_nav">{dede:field name='position'/} </div>      <div class="post_title">        <h1>{dede:field.title/}</h1>        <span class="pt_info pre1">{dede:field.pubdate function="MyDate('Y-m-d H:i',@me)"/}　出处：{dede:field.source/}　<span id="hitcount">人气：<script src="{dede:field name='phpurl'/}/count.php?view=yes&aid={dede:field name='id'/}&mid={dede:field name='mid'/}" type='text/javascript' language="javascript"></script></span>　<a href="#commentDiv" class="pti_comm">评论（<span id="commentnum">0</span>）</a></span> </div>      <div class="con-recom">
+<!-- 文章内容页广告位1 -->
+{dede:myad name='article1'/}
+	  </div>            <div class="post_content" id="paragraph">            <script src="/dedemao/js/v2/content_set.js"></script>            <p class="content_copyright"><a class="s_tag" href="{dede:global.cfg_basehost/}" target="_blank">{dede:global.cfg_webname/}</a>（<a class="s_tag" href="{dede:global.cfg_basehost/}" target="_blank">{dede:global.cfg_basehost/}</a>）：{dede:field.title/}</p>
+{dede:field.body/}
+      </div>      <div class="con-recom">        <div class="bx-recom4"></div>        <div class="bx-recom4">
+<!-- 文章内容页广告位2 -->
+{dede:myad name='article2'/}
+      </div>      </div>      <div class="shareto"> <span>分享给小伙伴们：</span>             
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"32"},"share":{},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>     
+      </div>      <div class="hot_tags"> <span>本文标签：
+
+{dede:field.id runphp='yes'}
+global $cfg_cmspath;
+$tags = GetTags(@me);
+$revalue = '';
+$tags = explode(',', $tags);
+foreach($tags as $key => $value){
+            if($value){
+                $revalue .= '<a href="'.$cfg_cmspath.'/tags.php?/'.$value.'/">'.$value.'</a>, ';
+   }
+  }
+@me = substr($revalue,0,-2);
+{/dede:field.id}
+</div>         
+<!-- 相关文章 -->        
+<div class="related_post"><h2>相关文章</h2>
+<ul class="list_1">
+{dede:likearticle row='10' titlelen='80'}
+
+<li><a target="_blank" href="[field:arcurl/]" title="[field:fulltitle/]">[field:title/]</a><span class="date">[field:pubdate function="MyDate('m.d',@me)"/]</li>
+	
+{/dede:likearticle} 
+	</ul>
+
+</div>             
+
+
+ {dede:include file='ajaxfeedback.htm' /}
+</div>    <!-- content End -->        
+<!-- 侧边区域 -->
+<div class="sidebar">      <ul>        
+ {dede:php}
+ $thisid = $refObj->Fields['id'];
+$dsql->SetQuery("SELECT id,aid,username,arctitle,msg,good,bad FROM dede_feedback where aid = '$thisid' ORDER BY good DESC LIMIT 5
+");
+$dsql->Execute();
+$i=0;
+while($arr = $dsql->getArray()){
+$i = $i +1;
+$str = implode(',',$arr);
+if(!empty($str) && $i==1){
+ echo '<li class="sb_list sbb"><div class="rm_hot">最热评论</div><ul id="hotcomment" class="side_comm sub_ul">'; 
+}
+	
+$arcurl = GetOneArchive($arr['aid']);
+$msg =  $arr['msg'];  
+$patterns = "/{quote}+.+{\/quote}/";  
+$replacements = "";   
+$msg = preg_replace($patterns, $replacements, $msg); 
+echo '<li><p><span class="nick">'.$arr['username'].'</span></p>';
+echo '<p>'.$msg.'</p>';
+echo '<span class="comm_reply"><a onClick="postBadGood(\'goodfb\','.$arr['id'].');" id="goodfb'.$arr['id'].'" style="cursor:pointer">支持('.$arr['good'].')</a><span class="v">|</span><a onClick="postBadGood(\'badfb\','.$arr['id'].');" id="badfb'.$arr['id'].'" style="cursor:pointer">反对('.$arr['bad'].')</a></span></li>';
+}
+if(!empty($str)) echo '</ul></li>';
+{/dede:php}
+
+           
+{dede:include filename="right.htm"/}
+<!-- sidebar End -->
+  </div>  <!-- wrapper End -->   <div class="bx-recom">
+<!-- 内容页底部广告位 -->
+{dede:myad name='footer'/}
+</div></div><div id="ft">   <!-- 链接 -->    
+<!-- 页脚 -->  
+{dede:include filename="footer.htm"/}
+<script src="/dedemao/js/v2/common.js"></script> 
+<script src="/plus/pls.php?aid={dede:field.id/}" language="javascript"></script>
+</body></html>

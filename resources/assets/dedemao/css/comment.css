@@ -1,0 +1,176 @@
+.ios_iphone,.ios_ipad,.wp_phone,h1,p,video,ul,li,input,textarea{margin:0;padding:0;}
+input,textarea{border-radius:0;-webkit-appearance:none;font-family:'Microsoft Yahei';}
+.ipad_night,.iphone_night{color:#999;background:none;}
+.ios_ipad{padding:18px 33px;}
+a{color:#111;text-decoration:none;-webkit-tap-highlight-color:rgba(255,255,255,0);} .ipad_night a,.iphone_night a{color:#888;} 
+a:hover{color:#be0028;}
+a:active{color:#8f001e;}
+
+/************* Default Comment Style *************/
+
+	/* 评论区域 */
+	.post_comment{width:600px;font-size:14px;font-family:'Microsoft Yahei';overflow:hidden}
+		.post_comment p.c_alt{padding:0 0 10px 0;}
+		.post_comment h3{position:relative;margin:10px 0 0 0;padding:10px 0;font-size:14px;font-weight:bold;color:#be0028;border-bottom:5px #be0028 solid;}
+			.post_comment h3 span{position:absolute;top:10px;right:0;font-size:12px;font-weight:normal;color:#888;line-height:22px;}
+			.comm_list h3 a.showall{float:right;font-size:12px;}
+	
+		/* 添加评论 */
+		.add_comm{position:relative;width:598px;height:191px;border:1px #ccc solid;border-top-width:0;background:#fafafa;}
+			.add_comm textarea{position:absolute;left:15px;top:10px;width:568px;height:120px;border:0;resize:none;outline:none;font-size:14px;line-height:22px;background:none;}
+			.add_comm .comm-con{position:absolute;left:inherit;right:105px;bottom:12px;}
+				.add_comm .comm-con span{vertical-align:bottom;color:#ba141d;}
+				.add_comm .comm-con input.ipt-txt{width:200px;height:34px;border:none;border-bottom:1px #ba141d solid;outline:none;background:none;line-height:40px;text-align:center;font-size:16px;}
+			.add_comm input#btnComment{position:absolute;right:12px;bottom:12px;width:79px;height:37px;border:0;background:url(/img.ithome.com/images/v2.1/button_bg.png) no-repeat;text-indent:-10000px;cursor:pointer;}
+			.add_comm input#btnComment:hover{background-position:-79px 0;}
+			.add_comm input#btnComment:active{background-position:-158px 0;}
+	
+		#divValidate{float:left;margin-right:5px;}
+		#randomNoImg{height:26px;margin:0 0 0 4px;cursor:pointer;}
+		#commentMessage{position:absolute;left:15px;bottom:12px;}
+		
+	/* 评论列表 */
+	.comm_list h3{border-bottom:1px #be0028 solid;overflow:hidden;}
+	.comm_list ul{list-style:none;}
+		.comm_list ul.list li.entry{width:600px;padding:0 0 12px 0;border-top:1px #fff solid;border-bottom:1px #e7e7e7 solid;overflow:hidden;*float:left;*display:inline;}
+			.comm_list ul.list li.entry .info,.comm_list ul.list li.entry .re_info{padding:12px 0 0 0;font-size:12px;color:#888;}
+				/*.wap .comm_list ul.list li.entry .info,.comm_list ul.list li.entry .re_info{padding:0;}*/
+				li .mobile{padding-right: 6px;}
+					li .mobile a{color:#6f9811;display: inline-block;background: url(/img.ithome.com/images/v2.1/dev_icon.png) left 0 no-repeat;padding-left: 15px;}
+						ul li .iphone a,ul li .itouch a{color:#496fcb;background-position:left -38px;}
+						ul li .ipad a{padding-left:18px;color:#496fcb;background-position:left -76px;}
+						ul li .wp a{color:#bd3e9f;background-position:left -19px;}
+						ul li .wap a{color:#444;background-position:left -57px;}
+						ul li .windows8 a{padding-left:18px;color:#bd3e9f;background-position:left -95px;}
+				.comm_list ul.list li strong{color:#be0028;padding-right:6px;}
+				.comm_list ul.list li strong.nick{font-size:14px;}
+				.comm_list ul.list li.entry .re_info strong{font-weight:normal;}
+				.comm_list ul.list li.entry p{padding:10px 0;line-height:24px;word-wrap:break-word;}
+				.comm_list ul.list li.entry span.comm_reply{color:#aaa;float:right;}
+				.comm_list ul.list li.entry ul.reply{clear:both;margin:10px 0 0 0;padding:0 8px;border:1px #fcbb90 solid;background:#fefcf4;zoom:1;}
+					.comm_list ul.list li.entry ul.reply li{*width:100%;}
+
+	.comm_list .more_comm{width:100%;height:43px;border-top:1px #be0028 solid;}
+		.comm_list .more_comm a{display:block;width:130px;height:38px;margin:0 auto;line-height:38px;background:#be0028 url(/img.ithome.com/images/v2.1/more_comm_icon.gif) 33px 10px no-repeat;padding-left:66px;color:#fff;border-top:5px #a20022 solid;}
+		.comm_list .more_comm a:hover{background-color:#a20022;border-color:#a20022;}
+		.comm_list .more_comm a:active{background-color:#8f001e;border-color:#8f001e;}
+					
+	/* 回复评论 */
+	.reply_post_comment{clear:both;position:relative;padding-top:10px;}
+		.reply_post_comment .add_comm{border-top-width:1px;}
+		.reply_post_comment .close_comm{display:block;width:30px;height:30px;background:red;position:absolute;top:-20px;right:0;background:#be0028 url(/img.ithome.com/images/v2.1/close_comm.png) center center no-repeat;overflow:hidden;}
+
+	/* 评论翻页样式 */
+	.page_nav{position:relative;clear:both;}
+		.page_nav .page_num{display:block;width:600px;height:28px;padding:30px 0 10px 0;overflow:hidden;}
+			.index .page_nav{width:690px;}
+				.index .page_nav .page_num{position:relative;left:50%;width:124px;margin-left:-62px;}
+			.home_list .content .page_num{padding:15px 0 10px 0;}	
+			.page_nav .page_num a,.page_nav .page_num span.current{float:left;display:block;width:28px;height:28px;margin-right:10px;text-align:center;line-height:28px;font-size:14px;color:#fff;overflow:hidden;background:url(/img.ithome.com/images/v2.1/page_nav.png) 0 -56px;}
+			.page_nav .page_num a:hover{background-position:-28px -56px;}
+			.page_nav .page_num a:active{background-position:-56px -56px;}
+			.page_nav .page_num a.current,.page_nav .page_num span.current{background-position:0 -28px;color:#be0028;}
+			.page_nav .page_num a.current:hover{background-position:-28px -28px;}
+			.page_nav .page_num a.current:active{background-position:-56px -28px;}
+			.page_nav .page_num a.pt{background-position:0 0;text-indent:-100px;}
+			.page_nav .page_num a.pt:hover{background-position:-28px 0;}
+			.page_nav .page_num a.pt:active{background-position:-56px 0;}
+			.page_nav .page_num a.next{background-position:0 -84px;}
+			.page_nav .page_num a.next:hover{background-position:-28px -84px;}
+			.page_nav .page_num a.next:active{background-position:-56px -84px;}
+		.page_nav .all_news{position:absolute;top:4px;right:0;font-size:14px;}
+		
+		.ipad_night .page_nav .page_num a,.ipad_night .page_nav .page_num span.current,.iphone_night .page_nav .page_num a,.iphone_night .page_nav .page_num span.current,.wp_night .page_nav .page_num a,.wp_night .page_nav .page_num span.current{background-image:url(/img.ithome.com/images/v2.1/page_nav_night.png);color:#666;}
+		span.v {display:inline-block;width:2px;height:13px;margin:0 7px 0 8px;color:#d5d5d5;text-indent:-100px;vertical-align:-2px;background:url(/img.ithome.com/images/v2.1/split.png) left top no-repeat;overflow:hidden;}
+
+/************* iPhone Comment Style *************/
+.ios_iphone #post_comm{width:300px;padding:0 10px;font-size:14px;-webkit-text-size-adjust:none;}
+.ios_iphone #post_comm h3,.ios_iphone .c_alt{display:none;}
+.ios_iphone .add_comm{display:none;}
+body.iphone_night{background:#000;}
+.ios_iphone .comm_list ul{list-style:none;}
+	.ios_iphone .comm_list ul.list li.entry{width:300px;padding:12px 0;}
+	.iphone_night .comm_list ul.list li.entry{border-top:none;border-bottom:1px #222 solid;}
+	.ios_iphone .comm_list ul.list li.entry:first-child{border-top:0;}
+	.ios_iphone .comm_list ul.list li.entry:last-child{border-bottom:0;}
+	.ios_iphone .comm_list ul.list li.entry .info,.ios_iphone .comm_list ul.list li.entry .re_info{padding-bottom:5px;color:#555;}
+	.iphone_night .comm_list ul.list li.entry .info,.iphone_night .comm_list ul.list li.entry .re_info{color:#999;}
+		.ios_iphone .comm_list ul.list li.entry .info strong,.ios_iphone .comm_list ul.list li.entry .re_info strong{color:#ba141d;}
+		.ios_iphone .comm_list ul.list li.entry span.comm_reply{display:block;text-align:center;color:#aaa;}
+		.iphone_night .comm_list ul.list li.entry span.comm_reply{color:#555;}
+			.ios_iphone .comm_list ul.list li.entry span.comm_reply a{padding:0 5px;}
+		.ios_iphone .comm_list ul.list li.entry ul.reply{margin-bottom:5px;padding:8px 8px 0 8px;border:1px #ffd38e solid;background:#ffffe5;}
+		.iphone_night .comm_list ul.list li.entry ul.reply{border:1px #333 solid;background:#111;}
+		.iphobe_night .post_comment{color:#999;}
+		.iphone_night .comm_list ul.list li.entry p{color:#bbb;}
+		.iphone_night span.v{color:#333;}
+
+/************* iPad Comment Style *************/
+
+.ios_ipad .post_comment{zoom:1.172;}
+.ipad_night .post_comment h3,.ipad_night .add_comm .comm-con span{ color:#770019;border-color:#770019;}
+.ipad_night .add_comm{position:relative;width:598px;height:191px;border:1px #333 solid;border-top-width:0;background:#111;}
+	.ipad_night .add_comm textarea{color:#aaa;}
+	.ipad_night .add_comm input#btnComment{background-image:url(/img.ithome.com/images/v2.1/button_night_bg.png);background-color:#111;}
+		.ipad_night .add_comm .comm-con input.ipt-txt{color:#aaa;border-bottom-color:#770019;}
+
+.new_ios_ipad .add_comm,.new_ios_ipad #post_comment{display:none;}
+		
+.ipad_night .reply_post_comment .add_comm{border-top:1px solid #333;zoom:0.852;}
+
+.ios_ipad .comm_list ul{list-style:none;}
+	.ios_ipad .comm_list ul.list li.entry{border-top:1px #fff solid;border-bottom:1px #d5d5d5 dotted;}
+	.ipad_night .comm_list ul.list li.entry{border-top:none;border-bottom:1px #222 solid;}
+	.ios_ipad .comm_list ul.list li.entry:first-child{border-top:0;}
+	.ios_ipad .comm_list ul.list li.entry:last-child{border-bottom:0;}
+	.ios_ipad .comm_list ul.list li.entry .info,.ios_ipad .comm_list ul.list li.entry .re_info,.ios_ipad .comm_list ul.list li.entry .re_info{padding-bottom:10px;color:#555;font-size:14px;text-decoration:none;}
+		.ios_ipad .comm_list ul.list li.entry .info strong,.ios_ipad .comm_list ul.list li.entry .re_info strong,.ios_ipad .comm_list ul.list li.entry .re_info strong{color:#770019;font-size:16px;}
+		.ios_ipad .comm_list ul.list li.entry span.comm_reply{display:block;padding-top:10px;text-align:right;color:#aaa;} 
+		.ipad_night .comm_list ul.list li.entry span.comm_reply{color:#555;}
+			.ios_ipad .comm_list ul.list li.entry span.comm_reply a{padding:0 5px;}
+		.ios_ipad .comm_list ul.list li.entry ul.reply{margin:0 0 10px 0;padding:8px 8px 0 8px;border:1px #ffd38e solid;background:#ffffe5;}
+		.ipad_night .comm_list ul.list li.entry ul.reply{border:1px #333 solid;background:#111;}
+		.ipad_night .post_comment{color:#999;}
+		
+/************* WP Comment Style *************/
+.wp_phone #post_comm{width:300px;padding:15px 10px 60px 10px;font-size:14px;}
+.wp_phone #post_comm h3,.ios_iphone .c_alt{display:none;}
+.wp_phone .add_comm{width:298px;display:none;}
+.wp_phone .add_comm .post_comment{width:300px;}
+.wp_phone .add_comm .comm-con input.ipt-txt {width:140px;}
+.wp_phone .add_comm .comm-con{right:100px;}
+.wp_phone .add_comm textarea {width:268px;}
+.wp_phone .comm_list ul{list-style:none;}
+	.wp_phone .comm_list ul.list li.entry{width:300px;padding:12px 0;}
+	.wp_phone .comm_list ul.list li.entry:first-child{border-top:0;}
+	.wp_phone .comm_list ul.list li.entry:last-child{border-bottom:0;}
+	.wp_phone .comm_list ul.list li.entry .info,.wp_phone .comm_list ul.list li.entry .re_info{padding-bottom:5px;color:#555;}
+		.wp_phone .comm_list ul.list li.entry .info strong,.wp_phone .comm_list ul.list li.entry .re_info strong{color:#ba141d;}
+		.wp_phone .comm_list ul.list li.entry span.comm_reply{display:block;text-align:center;color:#aaa;}
+			.wp_phone .comm_list ul.list li.entry span.comm_reply a{padding:0 5px;}
+		.wp_phone .comm_list ul.list li.entry ul.reply{margin-bottom:5px;padding:8px 8px 0 8px;border:1px #ffd38e solid;background:#ffffe5;}
+			
+body.wp_night{background:#000;}
+.wp_night .post_comment{color:#767b7c;}
+.wp_night .comm_list ul.list li.entry{border-top-color:#393b3c;border-bottom-color:#000;}
+	.wp_night .comm_list ul.list li.entry span.comm_reply{color:#393b3c;}
+	.wp_night .comm_list ul.list li.entry span.comm_reply a{color:#393b3c;}
+	.wp_night .comm_list ul.list li.entry .info strong,.wp_phone .comm_list ul.list li.entry .re_info strong{color:#4b0b15}
+	.wp_night .comm_list ul.list li.entry ul.reply{border-color:#393b3c;background:#222;}
+
+/************* Android Comment Style *************/
+.android_phone #post_comm{width:auto;margin:0 auto;font-size:14px;-webkit-text-size-adjust:none;}
+.android_phone #post_comm h3,.android_phone .c_alt{display:none;}
+.android_phone .add_comm{display:none;}
+.android_phone .comm_list ul{list-style:none;}
+	.android_phone .comm_list ul.list li.entry{width:100%;padding:12px 0;}
+	.android_phone .comm_list ul.list li.entry:first-child{border-top:0;}
+	.android_phone .comm_list ul.list li.entry:last-child{border-bottom:0;}
+	.android_phone .comm_list ul.list li.entry .info,.android_phone .comm_list ul.list li.entry .re_info{padding-bottom:5px;color:#555;}
+		.android_phone .comm_list ul.list li.entry .info strong,.android_phone .comm_list ul.list li.entry .re_info strong{color:#ba141d;}
+		.android_phone .comm_list ul.list li.entry span.comm_reply{display:block;text-align:center;color:#aaa;}
+			.android_phone .comm_list ul.list li.entry span.comm_reply a{padding:0 5px;}
+		.android_phone .comm_list ul.list li.entry ul.reply{margin-bottom:5px;padding:8px 8px 0 8px;border:1px #ffd38e solid;background:#ffffe5;}
+
+/************* Android Comment Style *************/
+.win8_metro .add_comm,.win8_metro #post_comm h3,.win8_metro .c_alt{display:none;}
