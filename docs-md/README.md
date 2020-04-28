@@ -15,12 +15,9 @@ footerColumn: 2
 footerWrap: 
 - headline: 案例
   items:
-  - title: Item 1
-    link: https://github.com/zpfz/vuepress-theme-antdocs
-    details: details
-  - title: Item 2
-    link: https://github.com/zpfz/vuepress-theme-antdocs
-    details: details
+  - title: 素材网
+    link: https://github.com/xiusin/pinecms.git
+    details: 开发中
 
 - headline: 其他项目
   items:
@@ -31,7 +28,7 @@ footerWrap:
     link: https://github.com/xiusin/pine
     details: Web框架
     
-footer: MIT Licensed | Copyright © 2020-present
+footer: Apache-2.0 Licensed | Copyright © 2020-present
 ---
 
 
@@ -51,7 +48,7 @@ git clone https://github.com/xiusin/pinecms.git
 ```shell
 cd pinecms
 go get -v -u
-go build -O pinecms main.go
+go build -o pinecms main.go
 ```
 
 配置文件操作步骤请查看[安装](/guide/installation)
@@ -64,10 +61,10 @@ go build -O pinecms main.go
 │─────────────│────────────────────────│
 │ KEY (7)     │ VAL                    │
 │─────────────│────────────────────────│
-│ Name        │ xiusin                 │
+│ Name        │ PineCMS                │
 │ Version     │ Development            │
 │ Author      │ xiusin                 │
-│ WebSite     │ http://www.xiusin.com/ │
+│ WebSite     │ http://pinecms.xyz/    │
 │ PineVersion │ dev 0.2.1              │
 │ Version     │ dev 0.1.2              │
 │ GoVersion   │ go1.14                 │
@@ -94,3 +91,8 @@ Server now listening on: http://0.0.0.0:2019/
 
 Server now listening on: http://0.0.0.0:2019/
 ```
+
+# 进入后台管理
+在浏览器地址栏输入: `http://localhost:2019/b/index/index` 即进入后端管理页面
+- 默认账号: `admin`
+- 默认密码: `123456`

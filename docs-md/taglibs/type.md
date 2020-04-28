@@ -19,6 +19,6 @@
 ### 查询指定分类
 ```jettemplatelanguage
 {{ yield type(typeid=3) content}}
-   {{typename}} -- {{typelink}}
+   {{field.Catname}} -- {{field.Url}}
 {{end}}
 ```
