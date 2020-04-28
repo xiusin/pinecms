@@ -44,6 +44,7 @@ module.exports = {
                 "/develop/controller",
                 "/develop/view",
                 "/develop/model",
+                "/develop/example",
             ],
         },
         sidebarDepth: 0,

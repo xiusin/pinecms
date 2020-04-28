@@ -78,19 +78,9 @@ Server now listening on: http://0.0.0.0:2019/
 ```
 
 ::: tip 提示
-如不喜欢烦人的`banner`, 在启动命令后添加参数 `--banner false`
+您可以通过执行`./pinecms example` 或 `go run main.go example`获取`演示案例`的数据库文件 、 模板文件、 素材文件。 
+里面包含大部分模板标签的使用可以用来学习。
 :::
-
-```shell 
-./pinecms serve start --banner false
-
-   ___  _
-  / _ \(_)__  ___
- / ___/ / _ \/ -_)
-/_/  /_/_//_/\__/
-
-Server now listening on: http://0.0.0.0:2019/
-```
 
 # 进入后台管理
 在浏览器地址栏输入: `http://localhost:2019/b/index/index` 即进入后端管理页面
