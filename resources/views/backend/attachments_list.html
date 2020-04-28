@@ -1,0 +1,87 @@
+{{ .dataGrid }}
+
+<div id="attachments_list_datagrid_toolbar" style="padding:1px;height:auto">
+    <form style="border-bottom:1px solid #ddd;margin-bottom:1px;padding:5px;" id="attachments_list_search_form">
+        <div class="search-div">名称: <input name="keywords" class="easyui-textbox">
+            <a href="javascript:;" onclick="attachmentsListDatagridSearch(this)" class="easyui-linkbutton"
+               iconCls="icons-map-magnifier">搜索</a></div>
+    </form>
+
+    <div>
+        <a href="javascript:;" class="easyui-linkbutton" data-options="plain:true,iconCls:'icons-arrow-add'"
+           onclick="uploadAttachmentsImage()">上传图片</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var content_datagrid = $('#attachments_list_datagrid');
+    function attachmentsListDatagridSearch(that) {
+        var queryParams = content_datagrid.datagrid('options').queryParams;
+        $.each($("#attachments_list_search_form").serializeArray(), function () {
+            queryParams[this['name']] = this['value'];
+        });
+        content_datagrid.datagrid({queryParams: queryParams})
+        content_datagrid.datagrid('reload');
+    }
+
+    function attachmentsListUrlFormatter(url) {
+        return "<img src='" + url + "' style='height: 30px; max-width: 100px;' />"
+    }
+
+    function attachmentsListSizeFormatter(size) {
+        if (size < 1024) {
+            return size + "B"
+        } else if (size / 1024 < 1024) {
+            return (size / 1024).toFixed(2) + "K"
+        } else {
+            return (size / (1024 ** 2)).toFixed(2) + "M"
+        }
+    }
+
+    function attachmentsListSizeOptFormatter(id, obj) {
+        var btn = ["<div class=\"btn-group-sm\">"];
+        isImage = /png|jpg|jpeg|bmp|gif/.test(obj.url)
+        if (obj.type === "img" || isImage) {
+            btn.push("<a class='btn btn-info' href=\"javascript:;\" onclick=\"previewPic('" + obj.original + "','" + obj.url + "', this)\">查看</a>");
+        }
+        btn.push("<a class='btn btn-danger' href=\"javascript:;\" onclick=\"deleteAttachments(" + id + ")\">删除</a>");
+        btn.push("</div>");
+
+        return btn.join('');
+    }
+
+
+    function uploadAttachmentsImage() {
+        fromUEImageUploader(this, 1)
+    }
+
+    function downloadAttachments(url) {
+        $.messager.confirm("下载成功", "确定要下载该附件吗？", function (result) {
+            if (!result) return false;
+            var a = document.createElement('a');
+            a.href = url;
+            a.target = '_blank';
+            a.id = 'download_attachments';
+            document.body.appendChild(a);
+            var alink = document.getElementById('download_attachments');
+            alink.click();
+            alink.parentNode.removeChild(a);
+        });
+    }
+
+    function deleteAttachments(id) {
+        $.messager.confirm("删除提醒", "确定要删除该附件吗？如果有在使用将会无法找到该资源！", function (result) {
+            if (!result) return false;
+            $.post("/b/attachments/delete", {id: id}, function (res) {
+                if (res.errcode) {
+                    $.messager.alert('提示信息', res.errmsg, 'error');
+                } else {
+                    $.messager.alert('提示信息', res.errmsg, 'info');
+                    $('#attachments_list_datagrid').datagrid('reload');
+                }
+            });
+        })
+    }
+</script>
+
+

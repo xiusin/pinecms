@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="author" content="wangdong">
+    <title>单页内容发布</title>
+    <style>
+        .dialogtable {
+            width: 100%;
+        }
+        .dialogtable td {
+            border-width: 0 1px 1px 0;
+            border-style: dotted;
+            border-color: #ccc;
+            padding: 15px;
+        }
+        input[type='text'] {
+            height: 20px;
+            width: 200px;
+        }
+    </style>
+    {{template "backend/public_javascript.html" .}}
+    {{template "backend/public_umeditor.html" .}}
+</head>
+<body>
+<form id="content_page_form" onsubmit="return contentPageFormSubmit()">
+    <table width="100%" cellpadding="2" class="dialogtable">
+        <tr>
+            <td width="60">标题：</td>
+            <td>
+                <input type="text" class="easyui-textbox" data-options="required: true" name="title" value="{{.info.Title}}" />
+            </td>
+        </tr>
+        <tr>
+            <td>关键字：</td>
+            <td><input type="text" class="easyui-textbox" name="keywords" value="{{.info.Keywords}}"/></td>
+        </tr>
+
+        <tr>
+            <td>描述：</td>
+            <td><input type="text" class="easyui-textbox" data-options="multiline: true" style="width: 400px; height: 100px;" name="description" value="{{.info.Description}}"/></td>
+        </tr>
+
+        <tr>
+            <td>内容：</td>
+            <td >
+                <textarea id="content_page_form_textarea_editor" name="content" style="width:98%;height:360px">{{.info.Content}}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><a class="easyui-linkbutton" onclick="$('#content_page_form').submit()">提交</a></td>
+        </tr>
+    </table>
+</form>
+<script type="text/javascript">
+    UE.getEditor('content_page_form_textarea_editor');
+    function contentPageFormSubmit() {
+        $.post('/b/content/page?catid={{.catid}}', $("#content_page_form").serialize(), function (res) {
+            if (res.errcode) {
+                parent.$.messager.alert('提示信息', res.errmsg, 'error');
+            } else {
+                parent.$.messager.alert('提示信息', res.errmsg, 'info');
+            }
+        });
+        return false;
+    }
+</script>
+
+</body>
+</html>

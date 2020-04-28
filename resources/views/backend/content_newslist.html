@@ -1,0 +1,156 @@
+<div style="width: 100%; height: 100%">
+    {{.DataGrid}}
+</div>
+
+<style>
+    .search-div {
+        display: inline-block; padding: 2px 7px;
+    }
+</style>
+
+<div id="content_newslist_datagrid_toolbar" style="padding:1px;height:auto">
+    <form style="border-bottom:1px solid #ddd;margin-bottom:1px;padding:5px;" id="newslist_content_search_form">
+        {{ .searchComps }}
+        <div class="search-div">时 间:<input name="search_begin" class="easyui-datebox">
+            -
+            <input name="search_end" class="easyui-datebox">
+
+            <a href="javascript:;" onclick="contentNewsListDatagridSearch(this)" class="easyui-linkbutton"
+               iconCls="icons-map-magnifier">搜索</a></div>
+    </form>
+
+    <div>
+        <a href="javascript:;" class="easyui-linkbutton" data-options="plain:true,iconCls:'icons-arrow-add'"
+           onclick="contentNewsListAdd()">添加</a>
+
+        <a href="javascript:;" class="easyui-linkbutton" data-options="plain:true,iconCls:'icons-arrow-arrow_down'"
+           onclick="contentNewsListOrder()">排序</a>
+
+        <a href="javascript:;" class="easyui-linkbutton" data-options="plain:true,iconCls:'icons-arrow-undo'"
+           onclick="contentNewsListRecycle()">回收站</a>
+
+        <a href="javascript:;" class="easyui-linkbutton" data-options="plain:true,iconCls:'icons-arrow-arrow_refresh'"
+           onclick="contentNewListReload()">刷新</a>
+    </div>
+</div>
+
+
+<div id="publish_content" class="easyui-dialog"
+     data-options="title:'内容编辑', modal:true, closed:true"
+     style="width: 100%; height: 100%; overflow: hidden">
+    <iframe id="publish_content_box" src="/b/content/public-welcome"
+            style="width: 100%; height: 100%;border: none"></iframe>
+</div>
+
+
+<script type="text/javascript">
+    var content_newslist_datagrid_id = 'category_newslist_datagrid';
+    //排序格式化
+    function contentNewsListOrderFormatter(val, arr) {
+        return '<input class="content_gridlist_order_input" type="text" name="order[' + arr['id'] + ']" value="' + val + '" size="4" style="text-align:center">';
+    }
+
+    //时间格式化
+    function contentNewsListTimeFormatter(val, arr) {
+        return val === '1970-01-01 08:00:00' ? arr['inputtime'] : val;
+    }
+
+    //操作格式化
+    function contentNewsListOperateFormatter(id) {
+        return '<div class="btn-group-sm">' +
+            '<button type="button" class="btn btn-info" onclick="contentNewsListEdit('+id+')">修改</button>' +
+            '<button type="button" class="btn btn-danger" onclick="contentNewsListDelete(' + id + ')">删除</button>' +
+            '</div>';
+    }
+
+    function contentNewListReload() {
+        $('#' + content_newslist_datagrid_id).datagrid('reload')
+    }
+
+    //搜索
+    function contentNewsListDatagridSearch() {
+        var content_datagrid = $('#' + content_newslist_datagrid_id);
+        var queryParams = content_datagrid.datagrid('options').queryParams;
+        $.each($("#newslist_content_search_form").serializeArray(), function () {
+            queryParams[this['name']] = this['value'];
+        });
+        content_datagrid.datagrid({queryParams: queryParams})
+        content_datagrid.datagrid('reload');
+    }
+
+    function contentNewsListRecycle() {
+       alert("回收内容")
+    }
+
+    //添加
+    function contentNewsListAdd() {
+        var url = "/b/content/add?catid={{.catid}}";
+        ajaxLoading()
+        $("#publish_content").dialog({title: "添加内容"})
+        $("#publish_content_box").attr("src", url);
+        $("#publish_content").dialog("open");
+    }
+
+    //编辑
+    function contentNewsListEdit(id) {
+        if (typeof (id) !== 'number') {
+            $.messager.alert('提示信息', '未选择数据', 'error');
+            return false;
+        }
+        var url = "/b/content/edit?catid={{.catid}}";
+        url += '&id=' + id;
+        ajaxLoading()
+        $("#publish_content_box").attr("src", url);
+        $("#publish_content").dialog({title: "编辑内容"})
+        $("#publish_content").dialog("open");
+    }
+
+    //中间内容区域打开
+    function contentMainOpenUrl(url, iframe) {
+
+        var data = iframe ? {
+            href: null,
+            content: '<iframe src="' + url + '" frameborder="0" fit="true" border="none" width="100%" height="100%"></iframe>'
+        } : {href: url};
+        $('#content_index_center_panel').panel(data);
+    }
+
+    //删除
+    function contentNewsListDelete(id) {
+        var ids = [];
+        if (!id) {
+            var obj = $('#' + content_newslist_datagrid_id).datagrid('getSelections');
+            if (obj) for (var i = 0; i < obj.length; i++) ids.push(obj[i].id);
+        } else {
+            if (typeof (id) === 'number') ids.push(id);
+        }
+        if (ids.length === 0) {
+            $.messager.alert('提示信息', '未选择数据', 'error');
+            return false;
+        }
+        $.messager.confirm('提示信息', '确定要删除吗？', function (result) {
+            if (!result) return false;
+            $.post("/b/content/delete?catid={{.catid}}&id=" + ids[0], {}, function (res) {
+                if (res.errcode) {
+                    $.messager.alert('提示信息', res.errmsg, 'error');
+                } else {
+                    $.messager.alert('提示信息', res.errmsg, 'info');
+                }
+                $('#' + content_newslist_datagrid_id).datagrid('reload');
+            }, 'json');
+        });
+    }
+
+    //排序
+    function contentNewsListOrder() {
+        $.post("/b/content/order?catid={{.catid}}", $('.content_gridlist_order_input').serialize(), function (res) {
+            if (res.errcode) {
+                $.messager.alert('提示信息', res.errmsg, 'error');
+            } else {
+                $.messager.alert('提示信息', res.errmsg, 'info');
+                $('#' + content_newslist_datagrid_id).datagrid('reload');
+            }
+        }, 'json');
+    }
+    {{ .formatters }}
+</script>

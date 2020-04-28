@@ -1,0 +1,370 @@
+<div class="easyui-panel" data-options="fit:true,title:'{{.title}}',border:false">
+    <form id="ff" method="post">
+        <table cellspacing="10" class="mdoutable">
+            <tr>
+                <td width="130">模型名称：</td>
+                <td colspan="2"><input class="easyui-textbox" type="text" name="name" style="width: 300px"
+                                       data-options="required:true"/></td>
+            </tr>
+            <tr>
+                <td>模型Table：</td>
+                <td colspan="2"><input class="easyui-textbox" type="text" name="table" style="width: 300px"
+                                       data-options="required:true"/></td>
+            </tr>
+
+            <tr>
+                <td>是否启用：</td>
+                <td colspan="2">
+                    <input class="easyui-switchbutton" checked name="enabled" tabindex="1">
+                </td>
+            </tr>
+
+            <tr>
+                <td>模型定义：</td>
+                <td colspan="2" id="mode-definition">
+                    <div id="tab-tools">
+                        <a href="javascript:void(0)" class="easyui-linkbutton"
+                           data-options="plain:true,iconCls:'icons-arrow-add'"
+                           onclick="addPanel()"></a>
+                    </div>
+
+                    <div id="tt" class="easyui-tabs" style="width:750px;height:720px;">
+                        {{range $i, $field := .fields}}
+                            <div title="{{$field.FormName}}">
+                                <table cellpadding="5" style="width: 100%;">
+                                    <tr>
+                                        <td style="width: 150px;">表单名称:</td>
+                                        <td><input class="easyui-textbox" type="text" name="field_name"
+                                                   value="{{$field.FormName}}" style="width: 300px"
+                                                   data-options="required:true, onChange: textBoxOnChange"/></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="width: 150px;">字段名称:</td>
+                                        <td><input class="easyui-textbox" type="text" name="field_field"
+                                                   style="width: 300px"
+                                                   data-options="required:true" value="{{$field.TableField}}" readonly/></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="width: 150px;">字段排序:</td>
+                                        <td><input class="easyui-numberbox" type="text" name="field_sort"
+                                                   style="width: 300px" data-options="required: true" value="{{$field.ListOrder}}"/></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>是否必填:</td>
+                                        <td>
+                                            <select class="easyui-combobox" name="field_required" style="width: 300px;">
+                                                <option value="off" {{if eq $field.Required 1}} selected {{end}}>非必填
+                                                </option>
+                                                <option value="on" {{if eq $field.Required 1}} selected {{end}}>必填
+                                                </option>
+                                            </select>
+                                        </td>
+                                    </tr>
+
+                                    <tr style="blocdisplay: k">
+                                        <td>必填提醒内容:</td>
+                                        <td>
+                                            <input class="easyui-textbox" type="text" name="field_required_tips"
+                                                   style="width: 300px;" value="{{$field.RequiredTips}}"/>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>字段类型:</td>
+                                        <td>
+                                            <select class="easyui-combobox" name="field_type" style="width: 300px;"
+                                                    data-options="onSelect: onSelectChange">
+                                                {{range $index,$ele := $.list}}
+                                                    {{if eq $field.FieldType $ele.Id}}
+                                                        <option value="{{$ele.Id}}" selected>{{$ele.Name}}</option>
+                                                    {{else}}
+                                                        <option value="{{$ele.Id}}">{{$ele.Name}}</option>
+                                                    {{end}}
+                                                {{end}}
+                                            </select>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>数据源:</td>
+                                        <td><input class="easyui-textbox" name="field_datasource"
+                                                   data-options="multiline:true, prompt: '组件数据源, 写入Json或者接口地址'"
+                                                   style="height:150px; width: 500px;" value="{{$field.Datasource}}"/>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>默认值:</td>
+                                        <td><input class="easyui-textbox" name="field_default"
+                                                   data-options="prompt: '数据源选项, 仅对单选,多选,开关按钮,多个用|分割'"
+                                                   style="width:300px; " value="{{$field.Default}}"/>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>类型描述:</td>
+                                        <td>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>字段验证器:</td>
+                                        <td>
+                                            <input class="easyui-textbox html" name="field_validator"
+                                                   data-options="multiline:true, prompt: '遵循easyui的验证规则或自定义'"
+                                                   style="height:119px; width: 500px;" value="{{$field.Validator}}"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        {{end}}
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>列表页面</td>
+                <td colspan="2"><input class="easyui-combotreegrid" name="tpl_list" data-options="
+					method:'get',
+					width: 500,
+					panelWidth:750,
+					url:'/public/fedir-scan',
+					idField: 'id',
+					treeField:'name',
+					columns:[[
+						{field:'name',title:'Name',width:550},
+					]]"></td>
+            </tr>
+
+            <tr>
+                <td>详情页面</td>
+                <td colspan="2"><input class="easyui-combotreegrid" name="tpl_detail" data-options="
+					method:'get',
+					width: 500,
+					panelWidth:750,
+					url:'/public/fedir-scan',
+					idField: 'id',
+					treeField:'name',
+					columns:[[
+						{field:'name',title:'Name',width:550},
+					]]"></td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <a id="model_form_submit" class="easyui-linkbutton">提交</a>
+                    <a id="model_form_cancel" class="easyui-linkbutton">取消</a>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<script style="display: none" id="tpl" type="text/template">
+    <table cellpadding="5" style="width: 100%;">
+        <tr>
+            <td style="width: 150px;">表单名称:</td>
+            <td><input class="easyui-textbox" type="text" name="field_name" style="width: 300px"
+                       data-options="required:true, onChange: textBoxOnChange"/></td>
+        </tr>
+
+        <tr>
+            <td style="width: 150px;">字段名称:</td>
+            <td><input class="easyui-textbox" type="text" name="field_field" style="width: 300px"
+                       data-options="required:true"/></td>
+        </tr>
+
+        <tr>
+            <td style="width: 150px;">字段排序:</td>
+            <td><input class="easyui-numberbox" type="text" name="field_sort"
+                       style="width: 300px"  data-options="required: true" value="1"/></td>
+        </tr>
+
+        <tr>
+            <td>是否必填:</td>
+            <td>
+                <select class="easyui-combobox" name="field_required" style="width: 300px;">
+                    <option value="off" selected>非必填</option>
+                    <option value="on">必填</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr style="blocdisplay: k">
+            <td>必填提醒内容:</td>
+            <td>
+                <input class="easyui-textbox" type="text" name="field_required_tips"
+                       style="width: 300px;"/>
+            </td>
+        </tr>
+
+        <tr>
+            <td>字段类型:</td>
+            <td>
+                <select class="easyui-combobox" name="field_type" style="width: 300px;"
+                        data-options="onSelect: onSelectChange">
+                    {{range $index,$ele := .list}}
+                        <option value="{{$ele.Id}}">{{$ele.Name}}</option>
+                    {{end}}
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td>数据源:</td>
+            <td><input class="easyui-textbox" name="field_datasource"
+                       data-options="multiline:true, prompt: '请填写如json/数组格式或者url接口地址, 如不能解析,导致页面无法渲染. json支持key为string格式. 其他格式可能无法达到预期'"
+                       style="height:150px; width: 500px;"/>
+            </td>
+        </tr>
+
+        <tr>
+            <td>默认值:</td>
+            <td><input class="easyui-textbox" name="field_default"
+                       data-options="prompt: '数据源选项, 仅对单选,多选,开关按钮,多个用|分割'"
+                       style="width:300px; "/>
+            </td>
+        </tr>
+
+        <tr>
+            <td>类型描述:</td>
+            <td>
+            </td>
+        </tr>
+
+        <tr>
+            <td>字段验证器:</td>
+            <td>
+                <input class="easyui-textbox html" name="field_validator"
+                       data-options="multiline:true, prompt: 'easyui标准验证器'"
+                       style="height:119px; width: 500px;"/>
+            </td>
+        </tr>
+    </table>
+</script>
+
+<script>
+    var htmlObjects = new Set();
+    var tt = $('#tt');
+    tt.width($("#mode-definition").width()).tabs({
+        tools: '#tab-tools',
+        onBeforeClose: function (title, index) {
+            $.messager.confirm('删除字段', '确定要删除: "' + title + '" 吗, 如果字段已经存在表字段内,将不会删除表字段?', function (r) {
+                if (r) {
+                    var opts = tt.tabs('options');
+                    var bc = opts.onBeforeClose;
+                    opts.onBeforeClose = function () {
+                    };
+                    tt.tabs('close', index);
+                    title = title.replace("未命名字段", "")
+                    htmlObjects.delete("#html_" + title)
+                    opts.onBeforeClose = bc;  // restore the event function
+                }
+            });
+            return false;	// prevent from closing
+        },
+        onSelect: function (title, index) {
+
+        }
+    }).tabs({tabPosition: "top"});
+    let index = 1;
+    var creating = -1;
+
+    function addPanel() {
+        index++;
+        creating = index
+        tt.tabs('add', {title: '未命名字段' + index, content: $("#tpl").html().replace("{$index$}", index), closable: true});
+        htmlObjects.add("#html_" + index)
+    }
+
+    let fields = JSON.parse({{.listJson}});
+    let hash = new Map();
+    fields.forEach(function (v, i) {
+        hash.set(Number(v.Id), v);
+    });
+
+    function onSelectChange(rc) {
+        if (rc === undefined || !hash.has(Number(rc.value))) {
+            return
+        }
+        var idx = getTabIndex("tt");
+        if (creating !== -1 && creating !== idx) {
+            console.log(creating, idx)
+            idx = creating;
+            creating = -1;
+        }
+        const field = hash.get(Number(rc.value));
+        // 填充当前tab里的内容
+        const that = $(this);
+        const desc = that.parents("tr").next().next().next();
+        desc.find("td").eq(1).html(field.Desc);
+        // 获取当前tab的索引
+        $("#html_" + idx).textbox("setValue", field.Html);
+    }
+
+    function textBoxOnChange(newValue, oldValue) {
+        if (newValue !== "") {
+            tt.find('.tabs-selected').find(".tabs-title").html(newValue);
+            return
+        }
+        $(this).textbox("setValue", oldValue)
+    }
+
+    var locker = false;
+    $('#ff').form({
+        url: "/b/model/add",
+        onSubmit: function () {
+            if (locker) return false;
+            $.messager.progress();
+            let v = $(this).form('validate');
+            if (!v) {
+                $.messager.progress('close');
+            } else {
+                locker = true;
+                let data = $('#ff').serializeObject();
+                for (let i in data) {
+                    if (i.indexOf("field_") > -1 && typeof data[i] == "string") {
+                        data[i] = [data[i]];
+                    }
+                }
+                $.ajax({
+                    url: "/b/model/add",
+                    method: "POST",
+                    data: JSON.stringify(data),
+                    contentType: "application/json",  //缺失会出现URL编码，无法转成json对象
+                    dataType: "json",
+                    success: function (data) {
+                        locker = false;
+                        $.messager.progress('close');
+                        if (data.errcode) {
+                            $.messager.alert('提示信息', data.errmsg, 'error');
+                        } else {
+                            $.messager.alert('提示信息', data.errmsg, 'info', function () {
+                                $('#model_list_datagrid').datagrid('reload');
+                                $('#pagetabs').tabs('close', "添加模型");
+                            })
+                        }
+                    }
+                });
+            }
+            return false;
+        },
+    });
+
+    $("#model_form_submit").click(function () {
+        $('#ff').submit();
+    });
+
+    // 关闭窗口
+    $("#model_form_cancel").click(function () {
+        $('#pagetabs').tabs('close', getTabIndex("pagetabs"));
+    });
+
+    function getTabIndex(tabsID) {
+        let tabs = $("#" + tabsID);
+        return tabs.tabs('getTabIndex', tabs.tabs('getSelected'));
+    }
+
+</script>

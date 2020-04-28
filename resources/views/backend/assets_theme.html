@@ -1,0 +1,105 @@
+<style>
+    .pull-left{
+        float: left;
+        cursor: pointer;
+    }
+    .tl-h32{
+        height: 32px;
+
+    }
+    .tl-p-left-10 {
+        display: inline-block;
+        /* padding-left: 10px; */
+        position: relative;
+        top: -35px;
+        width: 100%;
+        text-align: center;
+        background: rgba(0,0,0,0.5);
+        color: #fff;
+        padding: 7px 0px;
+    }
+    .tl-btn-red{
+        padding: 5px 15px;
+        background-color: #ff5d49;
+        border: 1px solid #ff5d49;
+        color: #fff;
+        width: 100%;
+        font-size:12px;
+        transition: box-shadow .2s;
+    }
+
+    .tl-btn-write{
+        padding: 5px 15px;
+        background-color: #fff;
+        border: 1px solid #000;
+        color: #000;
+        width: 100%;
+        font-size:12px;
+        transition: box-shadow .2s;
+    }
+    .tl-card{
+        width:20%;
+        height:250px;
+        float: left;
+        margin-right: 17px;
+        margin-bottom: 20px;
+        position: relative;
+    }
+    .tl-p10{
+        padding: 10px;
+    }
+    .tl-img{
+        width: 100%;
+        height: 170px;
+        display: inline-block;
+    }
+    .tl-color-0{
+        background: linear-gradient(to left, #FAD0C4 , #FF9A9E);
+    }
+
+</style>
+
+  <div style="padding: 20px;">
+     {{range $v := .dirs}}
+      <div class="tl-card tl-color-0">
+          <div class="tl-p10">
+              <img src="{{$v.thumb}}" alt="" class="tl-img">
+              <span class="tl-p-left-10">{{$v.name}}</span>
+              <div class="tl-title">
+                  <div class="tl-font-16 tl-h32">
+                      <div>
+                          {{if eq $v.name $.theme}}
+                                <button class="tl-btn-write pull-left"  onclick="setDefaultTheme(this,'{{$v.name}}')">已选中为主题</button>
+                          {{else}}
+                                <button class="tl-btn-red pull-left" onclick="setDefaultTheme(this,'{{$v.name}}')">设置为主题</button>
+                          {{end}}
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      {{end}}
+
+
+      <div class="clearfix"></div>
+  </div>
+
+
+<script>
+    var defaultTheme = "{{.theme}}";
+    function setDefaultTheme(that, name) {
+        if (name == defaultTheme) {
+            return;
+        }
+        $.post("/b/assets-manager/set-theme", {theme: name}, function (data) {
+            if (!data.errcode) {
+                defaultTheme = name;
+                $(".tl-card button").removeClass("tl-btn-write").addClass("tl-btn-red").html("设置为主题");
+                $(that).addClass("tl-btn-write").removeClass("tl-btn-red").html("已选中为主题");
+                $.messager.alert("设置提醒", "设置主题成功, 请到缓存管理页面清理页面缓存.", "info")
+            } else {
+                $.messager.alert("设置提醒", data.errmsg, "error")
+            }
+        }, "JSON")
+    }
+</script>

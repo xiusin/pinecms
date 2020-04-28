@@ -1,0 +1,137 @@
+{{ .dataGrid }}
+<link rel="stylesheet" href="/assets/backend/highlight/styles/xcode.css">
+<script src="/assets/backend/highlight/highlight.pack.js"></script>
+<style>
+    #model_preview_page_iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    #model_edit_gen_sql_dialog pre {
+        padding: 0;
+        border: none;
+    }
+
+</style>
+<div id="model_list_datagrid_toolbar" style="padding:5px;height:auto">
+    <a href="javascript:;" onclick="addModel();" class="easyui-linkbutton" iconCls="icons-arrow-add">添加模型</a>
+</div>
+
+<div id="model_field_list_dialog" class="easyui-dialog" title="编辑列表页显示字段"
+     data-options="modal:true,closed:true,iconCls:'icons-application-application_edit',buttons:[{text:'确定',iconCls:'icons-other-tick',handler:function(){modelFieldShowInListPageFormSubmit();}},{text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#model_field_list_dialog').dialog('close');}}]"
+     style="width:100%;height:100%;"></div>
+
+
+<div id="model_preview_page_dialog" class="easyui-dialog" title="预览模型页面"
+     data-options="modal:false,closed:true,iconCls:'icons-application-application_edit',buttons:[{text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#model_preview_page_dialog').dialog('close');}}]"
+     style="width:100%;height:100%;overflow: hidden">
+    <iframe id="model_preview_page_iframe" src=""></iframe>
+</div>
+
+<div id="model_edit_gen_sql_dialog" class="easyui-dialog" style="width:800px;height:500px"
+     data-options="title:'模型建表SQL',closed:true,modal:true, buttons:[{text:'执行SQL',iconCls:'icons-other-tick',handler:function(){getEditModelSQL();}}, {text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#model_edit_gen_sql_dialog').dialog('close');}}]">
+    <pre><code class="sql" id="model_edit_gen_sql"></code></pre>
+</div>
+
+<!-- 查看详细信息 -->
+
+<script type="text/javascript">
+    const member_list = $('#model_list_datagrid');
+    var curMid = 0;
+
+    function editModelFieldShowInList(mid) {
+        if (typeof (mid) !== 'number') mid = 0;
+        var url = "/b/model/list-field-show";
+        url += '?mid=' + mid;
+        $('#model_field_list_dialog').dialog({href: url});
+        $('#model_field_list_dialog').dialog('open');
+    }
+
+
+    function editModelPreviewPage(mid) {
+        if (typeof (mid) !== 'number') mid = 0;
+        var url = "/b/model/preview-page";
+        url += '?mid=' + mid + "&preview=true";
+        $('#model_preview_page_iframe').attr("src", url);
+        $('#model_preview_page_dialog').dialog('open');
+    }
+
+
+    function getEditModelSQL(mid) {
+        var url = "/b/model/gen-sql";
+        var exec = false
+        if (typeof mid === "undefined") {
+            url += '?mid=' + curMid + '&exec=true';
+            mid = curMid
+            exec = true
+        } else {
+            url += '?mid=' + mid;
+        }
+        curMid = mid
+        $.get(url, function (data) {
+            if (data.errcode == 1) {
+                $.messager.alert('提示信息', data.errmsg, 'error');
+                return
+            }
+            if (!exec) {
+                $('#model_edit_gen_sql').html("# 建议确定最终模型之前不要发布数据, 因为能数据不兼容导致问题\n" + data.errmsg);
+                $('#model_edit_gen_sql').parent().parent().append("<script> document.querySelectorAll('pre code').forEach((block) => { hljs.highlightBlock(block); });<\/script>")
+                $('#model_edit_gen_sql_dialog').dialog('open');
+            } else {
+                $.messager.alert('提示信息', data.errmsg, 'info');
+            }
+        }, "json");
+    }
+
+    //添加模型
+    function addModel() {
+        $("#pagetabs").tabs("close", "修改模型");
+        var url = "/b/model/add";
+        openUrl(url, "添加模型");
+    }
+
+    var curIsSystemModel = false
+
+    function systemFormatter(isSystem) {
+        curIsSystemModel = isSystem == 1
+        return curIsSystemModel ? '是' : '否';
+    }
+
+    //参数格式化
+    function optFormatter(val, obj) {
+        val = obj.id;
+        var link = `<div class="btn-group btn-group-xs">`
+        link += '<button class="btn btn-default" href="javascript:;" onclick="getEditModelSQL(' + val + ');">查看SQL</button>';
+        link += '<a  class="btn btn-default" href="javascript:;" onclick="editModelFieldShowInList(' + val + ');">显示</a> ';
+        link += '<a  class="btn btn-default" href="javascript:;" onclick="editModelPreviewPage(' + val + ');">预览</a> ';
+        link += '<a  class="btn btn-default" href="javascript:;" onclick="editModel(' + val + ');" >编辑</a>';
+
+        return link + '</div>';
+    }
+
+    function enabledFormatter(val) {
+        return val == 1 ? '<span class="label label-success">启用</span>' : '<span class="label label-danger">关闭</span>';
+    }
+
+    function editModel(id) {
+        $("#pagetabs").tabs("close", "添加模型");
+        var url = "/b/model/edit?mid=" + id;
+        openUrl(url, "修改模型");
+    }
+
+    function delModel(id) {
+        $.messager.confirm("Confirm", "确定要删除模型吗, 删除以后数据表不会被删除,只是一种隐藏状态.", function (r) {
+            if (r) {
+                $.get('/b/model/delete', {id: id}, function (res) {
+                    if (res.errcode) {
+                        $.messager.alert('提示信息', res.errmsg, 'error');
+                    } else {
+                        $('#model_list_datagrid').datagrid('reload');
+                        $.messager.alert('提示信息', res.errmsg, 'info');
+                    }
+                }, 'json');
+            }
+        })
+    }
+</script>

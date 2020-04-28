@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@vuepress/plugin-nprogress": "^1.4.1",
+    "@vuepress/plugin-search": "^1.4.1",
+    "vuepress": "^1.4.1",
+    "vuepress-theme-antdocs": "^1.0.1"
+  },
+  "devDependencies": {
+    "vuepress-plugin-homebadge": "^0.1.0"
+  }
+}

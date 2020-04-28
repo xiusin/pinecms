@@ -1,0 +1,73 @@
+{{ .dataGrid }}
+
+<div id="adspace_list_add_dialog" class="easyui-dialog" title="添加广告位"
+     data-options="modal:true,closed:true,iconCls:'icons-application-application_add',buttons:[{text:'确定',iconCls:'icons-other-tick',handler:function(){adspaceListAddDialogFormSubmit();}},{text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#adspace_list_add_dialog').dialog('close');}}]"
+     style="width:600px;height:140px;"></div>
+
+<!-- 编辑管理员 -->
+<div id="adspace_list_edit_dialog" class="easyui-dialog" title="编辑广告位"
+     data-options="modal:true,closed:true,iconCls:'icons-application-application_edit',buttons:[{text:'确定',iconCls:'icons-other-tick',handler:function(){adspaceListEditDialogFormSubmit();}},{text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#adspace_list_edit_dialog').dialog('close');}}]"
+     style="width:600px;height:140px;"></div>
+
+<script type="text/javascript">
+    var adspace_list_datagrid_toolbar = [
+        {text: '添加', iconCls: 'icons-arrow-add', handler: adspaceListAdd},
+        {text: '刷新', iconCls: 'icons-arrow-arrow_refresh', handler: adspaceListRefresh},
+    ];
+
+    function adspaceListEnabledFormatter(val) {
+        return val == 1 ? "是" : "否"
+    }
+
+    //操作格式化
+    function adspaceListOptFormatter(val) {
+        return '<div class="btn-group-sm">' +
+            '<button type="button" class="btn btn-default" onclick="adspaceListEdit(' + val + ')">编辑</button>' +
+            '<button type="button" class="btn btn-danger" onclick="adspaceListDelete(' + val + ')">删除</button>' +
+            '</div>';
+    }
+
+    //刷新
+    function adspaceListRefresh() {
+        $('#adspace_list_datagrid').datagrid('reload');
+    }
+    //添加
+    function adspaceListAdd() {
+        $('#adspace_list_add_dialog').dialog({href: '/b/ad-space/add'});
+        $('#adspace_list_add_dialog').dialog('open');
+    }
+    //编辑
+    function adspaceListEdit(id) {
+        if (typeof(id) !== 'number') {
+            $.messager.alert('提示信息', '未选择管理员', 'error');
+            return false;
+        }
+        var url = '/b/ad-space/edit?id=' + id;
+        $('#adspace_list_edit_dialog').dialog({href: url});
+        $('#adspace_list_edit_dialog').dialog('open');
+    }
+
+    function adspaceListLogoFormatter(val) {
+        return val ? '<img src="'+val+'" style="width: 20px;height: 20px;"/>' : ''
+    }
+
+
+    //删除
+    function adspaceListDelete(id) {
+        if (typeof(id) !== 'number') {
+            $.messager.alert('提示信息', '未选择管理员', 'error');
+            return false;
+        }
+        $.messager.confirm('提示信息', '确定要删除吗？', function (result) {
+            if (!result) return false;
+            $.get('/b/ad-space/delete', {id: id}, function (res) {
+                if (res.errcode) {
+                    $.messager.alert('提示信息', res.errmsg, 'error');
+                } else {
+                    $.messager.alert('提示信息', res.errmsg, 'info');
+                    adspaceListRefresh();
+                }
+            }, 'json');
+        });
+    }
+</script>

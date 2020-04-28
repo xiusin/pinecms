@@ -1,0 +1,142 @@
+{{ .TreeGrid }}
+<!-- 添加栏目 -->
+<div id="category_category_add_dialog" class="easyui-dialog" title="添加栏目"
+     data-options="modal:true,closed:true,iconCls:'icons-application-application_add',buttons:[{text:'确定',iconCls:'icons-other-tick',handler:function(){
+     categoryCategoryAddDialogFormSubmit();
+     }},{text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#category_category_add_dialog').dialog('close');}}]"
+     style="width:800px;height:640px;"></div>
+
+<!-- 编辑栏目 -->
+<div id="category_category_edit_dialog" class="easyui-dialog" title="编辑栏目"
+     data-options="modal:true,closed:true,iconCls:'icons-application-application_edit',buttons:[{text:'确定',iconCls:'icons-other-tick',handler:function(){
+     categoryCategoryAddDialogFormSubmit();
+     }},{text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#category_category_edit_dialog').dialog('close');}}]"
+     style="width:800px;height:640px;"></div>
+
+<script type="text/javascript">
+    var category_categorylist_treegrid_toolbar = [
+        {text: '添加栏目', iconCls: 'icons-arrow-add', handler: categoryCategoryListAdd},
+        {text: '刷新', iconCls: 'icons-arrow-arrow_refresh', handler: categoryCategoryListRefresh},
+        {text: '排序', iconCls: 'icons-arrow-arrow_down', handler: categoryCategoryListOrder}
+    ];
+
+    //排序格式化
+    function categoryCategoryListOrderFormatter(val, arr) {
+        return '<input class="category_categorylist_order_input easyui-textbox" type="text" name="order" value="' + val + '" size="2" style="text-align:center">' +
+            '<input class="category_categorylist_order_input" type="hidden" name="id" value="' + arr['catid'] + '"/>';
+    }
+
+    //类型格式化
+    function categoryCategoryListTypeFormatter(key) {
+        var list = ["栏目", "单页", "链接"];
+        return list[key] || null;
+    }
+
+    //状态格式化
+    function categoryCategoryListStateFormatter(val) {
+        return val === 1 ? '<span class="label label-success ">显示</span>' : '<span class="label label-danger ">隐藏</span>';
+    }
+
+    function categoryCategoryCatnameFormatter(val, obj) {
+        if (obj.type == 0) {
+            return val + "(" + obj.total + ")"
+        } else {
+            return val
+        }
+    }
+
+    //操作格式化
+    function categoryCategoryListOperateFormatter(id, obj) {
+        id = obj.catid
+        var btn = [`<div class="btn-group btn-group-xs">`]
+
+        btn.push('<button class="btn btn-small btn-default" href="javascript:;" onclick="categoryCategoryListPreview(' + id + ', \'' + obj.url + '\')">预览</button>');
+        if (obj.type == 0) {
+            btn.push('<button class="btn btn-small btn-default" href="javascript:;" onclick="categoryOpenContentList(' + obj.type + ',' + id + ', \'' + obj.catname + '\')">文档列表</button>');
+        }
+        btn.push('<button class="btn btn-small btn-default" href="javascript:;" onclick="categoryOpenContentPage(' + obj.type + ',' + id + ', \'' + obj.catname + '\')">栏目内容</button>');
+        btn.push('<button class="btn btn-small btn-default" href="javascript:;" onclick="categoryCategoryListEdit(' + id + ')">修改</button>');
+        btn.push('<button class="btn btn-small btn-default btn-danger" href="javascript:;" onclick="categoryCategoryListDelete(' + id + ')">删除</button>');
+        btn.push('</div>');
+        return btn.join('');
+    }
+
+    //刷新
+    function categoryCategoryListRefresh() {
+        $('#category_categorylist_treegrid').treegrid('reload');
+    }
+
+    function categoryCategoryListAdd(id) {
+        if (typeof (parentid) !== 'number') parentid = 0;
+        var url = "/b/category/category-add";
+        url += url.indexOf('?') !== -1 ? '&parentid=' + parentid : '?parentid=' + parentid;
+        $('#category_category_add_dialog').dialog({href: url});
+        $('#category_category_add_dialog').dialog('open');
+
+    }
+
+    //添加
+    function categoryCategoryListPreview(id, url) {
+        openUrl(url, "菜单预览", true);
+    }
+
+    //编辑
+    function categoryCategoryListEdit(id) {
+        if (typeof (id) !== 'number') {
+            $.messager.alert('提示信息', '未选择栏目', 'error');
+            return false;
+        }
+        var url = "/b/category/category-edit";
+        url += url.indexOf('?') !== -1 ? '&id=' + id : '?id=' + id;
+        $('#category_category_edit_dialog').dialog({href: url});
+        $('#category_category_edit_dialog').dialog('open');
+    }
+
+    //删除
+    function categoryCategoryListDelete(id) {
+        if (typeof (id) !== 'number') {
+            $.messager.alert('提示信息', '未选择菜单', 'error');
+            return false;
+        }
+        $.messager.confirm('提示信息', '确定要删除吗？', function (result) {
+            if (!result) return false;
+            $.post("/b/category/category-delete", {id: id}, function (res) {
+                if (res.errcode) {
+                    $.messager.alert('提示信息', res.errmsg, 'error');
+                } else {
+                    $.messager.alert('提示信息', res.errmsg, 'info');
+                    categoryCategoryListRefresh();
+                }
+            }, 'json');
+        });
+    }
+
+    //排序
+    function categoryCategoryListOrder() {
+        var data = $('.category_categorylist_order_input').serialize();
+        if (!data) {
+            return;
+        }
+        $.post("/b/category/category-order", data, function (res) {
+            if (res.errcode) {
+                $.messager.alert('提示信息', res.errmsg, 'error');
+            } else {
+                $.messager.alert('提示信息', res.errmsg, 'info');
+                categoryCategoryListRefresh();
+            }
+        }, 'json');
+    }
+
+    function categoryOpenContentPage(type, id, title) {
+        var url = '/b/content/page';
+        url += url.indexOf('?') !== -1 ? '&catid=' + id : '?catid=' + id;
+        openUrl(url, "页面内容(" + title + ")", true);
+    }
+
+    function categoryOpenContentList(type, id, title) {
+        var url = '/b/content/news-list';
+        url += url.indexOf('?') !== -1 ? '&catid=' + id : '?catid=' + id;
+        openUrl(url, "文档管理:(" + title + ")");
+    }
+
+</script>

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PINECMS 后台管理系统 - 管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8"/>
+
+    <link rel="icon" type="image/ico" href="/assets/favicon.ico"/>
+    <link href="{{.staticDir}}/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{.staticDir}}/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{.staticDir}}/css/animate.min.css">
+    <link rel="stylesheet" href="{{.staticDir}}/css/rickshaw.min.css">
+    <link rel="stylesheet" href="{{.staticDir}}/css/bootstrap-checkbox.css">
+    <link rel="stylesheet" href="{{.staticDir}}/css/summernote.css">
+    <link rel="stylesheet" href="{{.staticDir}}/css/summernote-bs3.css">
+    <link rel="stylesheet" href="{{.staticDir}}/css/chosen.min.css">
+    <link rel="stylesheet" href="{{.staticDir}}/css/chosen-bootstrap.css">
+    <link rel="stylesheet" href="{{.staticDir}}/js/plugins/tabdrop/css/tabdrop.css">
+    <link rel="stylesheet" href="{{.staticDir}}/css/morris.css">
+    <link href="{{.staticDir}}/css/minoral.css" rel="stylesheet">
+
+</head>
+<body class="darkgrey-scheme">
+<div class="mask">
+    <div id="loader"></div>
+</div>
+
+<div id="wrap">
+
+    <!-- Make page fluid -->
+    <div class="row">
+
+        <!-- Fixed navbar -->
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+
+            <!-- Branding -->
+            <div class="navbar-header col-md-2">
+                <a class="navbar-brand" href="/b/index/index">
+                    <strong>PINE</strong> <span class="divider vertical"></span> CMS
+                </a>
+                <div class="sidebar-collapse">
+                    <a href="#">
+                        <i class="fa fa-bars"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- Branding end -->
+
+
+            <!-- .nav-collapse -->
+            <div class="navbar-collapse">
+                <!-- Content collapsing at 768px to sidebar -->
+                <div class="collapsing-content">
+                    <!-- Quick Actions -->
+                    <ul class="nav navbar-nav">
+                        <li class="divided">
+                            <a href="#" class="page-refresh"><i class="fa fa-refresh"></i></a>
+                        </li>
+                    </ul>
+                    <!-- Quick Actions end -->
+                    <!-- User Controls -->
+                    <div class="user-controls">
+                        <ul>
+
+
+                            <li class="dropdown messages">
+                                <img src="{{.staticDir}}/images/pinecms.png" height="35px"/>
+                            </li>
+
+                            <li class="dropdown settings">
+                                <a class="dropdown-toggle options" data-toggle="dropdown" href="#">
+                                    <i class="fa fa-cog"></i>
+                                </a>
+
+                                <ul class="dropdown-menu arrow">
+
+                                    <li>
+                                        <h3>颜色主题:</h3>
+                                        <ul id="color-schemes">
+                                            <li><a href="#" class="brownish-scheme" title="Brownish"></a></li>
+                                            <li><a href="#" class="darkgrey-scheme" title="Dark Grey"></a></li>
+                                            <li><a href="#" class="lightgrey-scheme" title="Light Grey"></a></li>
+                                            <li><a href="#" class="cyan-scheme" title="Cyan"></a></li>
+                                            <li><a href="#" class="red-scheme" title="Red"></a></li>
+                                            <li><a href="#" class="orange-scheme" title="Orange"></a></li>
+                                            <li><a href="#" class="green-scheme" title="Green"></a></li>
+                                            <li><a href="#" class="amethyst-scheme" title="Amethyst"></a></li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:logout();"><i class="fa fa-power-off"></i> 退出登录</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <!-- User Controls end -->
+                </div>
+                <!-- /Content collapsing at 768px to sidebar -->
+
+
+                <!-- Sidebar -->
+                <ul class="nav navbar-nav side-nav" id="navigation">
+                    <li class="collapsed-content">
+                        <!-- Collapsed content pasting here at 768px -->
+                    </li>
+                    <li class="user-status status-online" id="user-status">
+                        <div class="profile-photo">
+                            <img src="{{.staticDir}}/images/avatar.jpg" alt/>
+                        </div>
+                        <div class="user">
+                            {{.username}}
+                            <span class="role" style="margin-top:7px;">{{.rolename}}</span>
+                            <div class="status" style="margin-top: 0px;">
+                                <ul>
+                                    <li class="change-status">
+                                        <a class="my-status">在线</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    {{range $i,$v := .menus}}
+                        <li class="dropdown {{if eq $i 0}}open{{end}}">
+                            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" title="{{$v.name}}">
+                                {{/*                                <i class="fa fa-dashboard">*/}}
+                                {{/*                                    <span class="overlay-label red"></span>*/}}
+                                {{/*                                </i>*/}}
+                                {{$v.name}} <b class="fa fa-angle-left dropdown-arrow"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                {{range $i1, $v1 := $v.son}}
+                                    <li data-stopPropagation="true">
+                                        <a onclick="openUrl('{{$v1.url}}', '{{$v1.text}}')">
+                                            {{/*                                            <i class="fa fa-eye"><span class="overlay-label red80"></span></i>*/}}
+                                            {{$v1.text}}
+                                        </a>
+                                    </li>
+                                {{end}}
+                            </ul>
+                        </li>
+                    {{end}}
+                </ul>
+                <!-- Sidebar end -->
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+        <!-- Fixed navbar end -->
+        <!-- Page content -->
+        <div id="content" style="padding-right: 0" class="col-md-12">
+            <!-- content main container -->
+            <div class="main">
+                <div id="pagetabs" class="easyui-tabs"
+                     data-options="tabPosition:'top',fit:true,border:false,plain:false">
+                    <div title="后台首页" href="main" data-options="cache:true,title:'后台首页'"></div>
+                </div>
+            </div>
+            <!-- /content container -->
+
+
+        </div>
+        <!-- Page content end -->
+
+
+    </div>
+    <!-- Make page fluid-->
+
+
+</div>
+
+<script src="{{.staticDir}}/js/jquery.js"></script>
+<script src="{{.staticDir}}/js/bootstrap.min.js"></script>
+
+<script src="{{.staticDir}}/js/plugins/jquery.nicescroll.min.js"></script>
+<script src="{{.staticDir}}/js/plugins/summernote/summernote.min.js"></script>
+{{/*<script src="{{.staticDir}}/js/plugins/chosen/chosen.jquery.min.js"></script>*/}}
+<script src="{{.staticDir}}/js/plugins/tabdrop/bootstrap-tabdrop.min.js"></script>
+<script src="{{.staticDir}}/js/minoral.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{.staticDir}}/css/metro.css" title="metro"/>
+<script type="text/javascript" src="{{.staticDir}}/js/jquery.json.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{.staticDir}}/css/icons.css"/>
+<link rel="stylesheet" type="text/css" href="{{.staticDir}}/js/easyui/insdep.easyui.min.css" title="metro"/>
+<link rel="stylesheet" type="text/css" href="{{.staticDir}}/js/easyui/insdep.theme_default.css" title="metro"/>
+<script type="text/javascript" src="{{.staticDir}}/js/easyui/jquery.easyui.min.js"></script>
+{{/*<script type="text/javascript" src="/assets/backend/static/js/easyui/insdep.extend.min.js"></script>*/}}
+<script type="text/javascript" src="{{.staticDir}}/js/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="{{.staticDir}}/js/formvalidator/formValidator.js"></script>
+<script type="text/javascript" src="{{.staticDir}}/js/formvalidator/formValidatorRegex.js"></script>
+<script type="text/javascript" src="{{.staticDir}}/js/jquery.serializeObject.min.js"></script>
+
+<script type="text/javascript" src="{{.baseDir}}/lightgallery/js/lightgallery-all.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{.baseDir}}/lightgallery/css/lightgallery.min.css">
+
+{{template "backend/public_umeditor.html" . }}
+<style>
+    #wrap #content .main {
+        margin: 0;
+        height: 100%;
+    }
+
+    table.mdoutable {
+        width: 100%;
+        color: #333333;
+        border-width: 1px;
+        border-color: #666666;
+        border-collapse: collapse;
+    }
+
+    table.mdoutable th {
+        border-width: 1px;
+        padding: 15px;
+        border-style: dotted;
+        border-color: rgb(204, 204, 204);
+        background-color: #dedede;
+    }
+
+    table.mdoutable td {
+        border-width: 1px;
+        padding: 8px;
+        border-style: dotted;
+        border-color: rgb(204, 204, 204);
+        background-color: #ffffff;
+    }
+
+    table.mdoutable td input[type='text'], table.mdoutable td select, table.mdoutable td .easyui-combotree {
+        width: 280px;
+    }
+
+    #content .tabs-inner {
+        border: none;
+        border-radius: 0;
+        font-weight: normal;
+        background: white;
+    }
+
+    #content .tabs-inner:hover {
+        font-weight: bold;
+    }
+
+    #content .tabs li {
+        margin-right: 0px;
+    }
+
+    #content .tabs li.tabs-selected a.tabs-inner {
+        background: #e7e7e7;
+
+    }
+
+    #content .tabs li.tabs-selected a.tabs-inner:hover {
+        font-weight: normal;
+    }
+
+    #content .tabs {
+        padding-left: 0px;
+        border: none;
+        background: white;
+    }
+
+    #content .datagrid-header, #content .datagrid-td-rownumber {
+        background: #fff;
+    }
+
+    #content .datagrid-header td, #content .datagrid-body td, #content .datagrid-footer td {
+        border-width: 0 1px 1px 0;
+        border-style: solid;
+        border-color: #eee;
+        margin: 0;
+        padding: 0;
+        line-height: 1.428571429;
+    }
+
+    #content .datagrid-htable {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    #content .panel-title {
+        font-size: 12px;
+        font-weight: normal;
+        height: inherit;
+    }
+
+    #content .panel-header {
+        padding: 5px 15px;
+    }
+
+    #content .panel-header, #content .panel-body, #content .accordion {
+        border: none;
+    }
+
+    #content .datagrid-body .datagrid-cell {
+        overflow: visible;
+    }
+
+    body #content textarea, body #content input[type="text"], body #content input[type="password"] {
+        padding: 7px !important;
+        min-height: 30px;
+    }
+
+    /*.datagrid-row {*/
+    /*    height: 40px;*/
+    /*    line-height: 40px;*/
+    /*}*/
+</style>
+<div id="myEditorImage" style="display: none"></div>
+<script>
+    wsConn = null;
+
+    function previewPic(title ,url, that) {
+        $(that).lightGallery({
+            dynamic: true,
+            dynamicEl: [{
+                "src": url,
+                'thumb': url,
+                'subHtml': '<h4>'+title+'</h4>'
+            }]
+        })
+
+    }
+
+    $(function () {
+        $("ul.dropdown-menu").on("click", "[data-stopPropagation]", function (e) {
+            e.stopPropagation();
+        });
+        $("#navigation .dropdown-menu li").click(function (e) {
+            $("#navigation .dropdown-menu li").removeClass("active");
+            $(this).addClass("active");
+        });
+    });
+
+    function fromUEImageUploader(that, mode, callback) {
+        event.preventDefault();
+        var myEditorImage = UE.getEditor('myEditorImage', {autoHeightEnabled: false, isShow: false});
+        if (!mode) {
+            mode = 0
+        } else {
+            mode = 1
+        }
+        currentUploaderMode = mode;
+        myEditorImage.ready(function () {
+            myEditorImage.addListener('beforeInsertImage', function (t, args) {
+                if (currentUploaderMode === 1) {
+                    callback && callback(args)  // 多图上传使用回调
+                } else {
+                    $(that).attr("src", args[0].src)
+                    $(that).next().val(args[0].src)
+                }
+                currentUploaderMode = !mode;
+            });
+            setTimeout(function () {
+                var d = myEditorImage.getDialog("insertimage");
+                d.render();
+                d.open();
+            }, 200)
+        });
+        return false
+    }
+
+    function fromUEFileUploader(that, mode, callback) {
+        var myEditorImage = UE.getEditor('myEditorImage', {autoHeightEnabled: false, isShow: false});
+        if (!mode) {
+            mode = 0
+        } else {
+            mode = 1
+        }
+        currentUploaderMode = mode;
+        myEditorImage.ready(function () {
+            myEditorImage.addListener('afterUpfile', function (t, args) {
+                if (currentUploaderMode === 1) {
+                    callback && callback(args)  // 多图上传使用回调
+                } else {
+                    $(that).attr("src", args[0].src)
+                    $(that).next().val(args[0].src)
+                }
+                currentUploaderMode = !mode;
+            });
+            setTimeout(function () {
+                var d = myEditorImage.getDialog("attachment");
+                d.render();
+                d.open();
+            }, 200)
+        });
+        return false
+    }
+
+    //退出登录
+    function logout() {
+        $.messager.confirm('提示信息', '确定要退出登录吗？', function (result) {
+            if (result) window.location.href = '/b/login/logout';
+        });
+    }
+
+    //显示打开内容
+    function openUrl(url, title, iframe) {
+        if ($('#pagetabs').tabs('exists', title)) {
+            $('#pagetabs').tabs('close', title);
+        }
+        var option = {
+            title: title,
+            href: url,
+            closable: true,
+            cache: false
+        }
+        if (title === "后台首页" || title === "实时日志") {
+            option.cache = true
+        }
+        if (iframe) {
+            option.href = null
+            option.content = '<iframe src="' + url + '" frameborder="0" fit="true" border="none" width="100%" height="100%"></iframe>'
+        }
+        $('#pagetabs').tabs('add', option);
+    }
+
+    function ajaxLoading() {
+        $("<div class=\"datagrid-mask\"></div>").css({
+            display: "block",
+            width: "100%",
+            height: $(window).height()
+        }).appendTo("body");
+        $("<div class=\"datagrid-mask-msg\"></div>").html("正在处理，请稍候。。。").appendTo("body").css({
+            display: "block",
+            left: ($(document.body).outerWidth(true) - 190) / 2,
+            top: ($(window).height() - 45) / 2
+        });
+    }
+
+
+    function ajaxLoadEnd() {
+        $(".datagrid-mask").remove();
+        $(".datagrid-mask-msg").remove();
+    }
+
+</script>
+</body>
+</html>

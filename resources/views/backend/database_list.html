@@ -1,0 +1,68 @@
+{{ .dataGrid }}
+
+<script type="text/javascript">
+    var database_list_datagrid_toolbar = [
+        {text: '备份', iconCls: 'icons-arrow-add', handler: databaseBackup},
+        {text: '优化', iconCls: 'icons-arrow-arrow_refresh', handler: databaseOptimize},
+        {text: '修复', iconCls: 'icons-arrow-arrow_down', handler: databaseRepair}
+    ];
+
+
+    //刷新
+    function databaseRepair() {
+        let tables = getSelectedTables()
+        if (tables.length > 0) {
+            $.messager.confirm("提醒", "确定要修复表: "+tables.join(',')+"吗？", function (result) {
+                if (!result) return false;
+                $.post("/b/database/repair", {tables: tables.join(',')}, function (res) {
+                    if (res.errcode) {
+                        $.messager.alert('提示信息', res.errmsg, 'error');
+                    } else {
+                        $.messager.alert('提示信息', res.errmsg, 'info');
+                    }
+                })
+            })
+        }
+    }
+
+    //添加
+    function databaseBackup() {
+        $.messager.confirm("提醒", "确定要备份数据库吗？这可能需要几分钟", function (result) {
+            if (!result) return false;
+            $.post("/b/database/backup", function (res) {
+                if (res.errcode) {
+                    $.messager.alert('提示信息', res.errmsg, 'error');
+                } else {
+                    $.messager.alert('提示信息', res.errmsg, 'info');
+                }
+            })
+        })
+    }
+
+    //编辑
+    function databaseOptimize() {
+        let tables = getSelectedTables()
+        if (tables.length > 0) {
+            $.messager.confirm("提醒", "确定要优化表: "+tables.join(',')+"吗？", function (result) {
+                if (!result) return false;
+                $.post("/b/database/optimize", {tables: tables.join(',')}, function (res) {
+                    if (res.errcode) {
+                        $.messager.alert('提示信息', res.errmsg, 'error');
+                    } else {
+                        $.messager.alert('提示信息', res.errmsg, 'info');
+                    }
+                })
+            })
+        }
+    }
+
+
+    function getSelectedTables() {
+        var objs = $("#database_list_datagrid").datagrid("getChecked");
+        var tableNames = [];
+        objs.forEach((value) => {
+            tableNames.push(value.table_id)
+        })
+        return tableNames
+    }
+</script>

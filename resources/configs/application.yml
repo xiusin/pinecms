@@ -1,0 +1,30 @@
+port: 2019
+
+view:
+  reload: true
+  fedirname: "./resources/themes/"
+  bedirname: "./resources/views/"
+  theme: "default"
+session:
+  name: "gosessionid"
+  expires: 0
+
+cache_db: "./runtime/cache.db"  # 包括session
+log_path: "./runtime/logs/"
+
+favicon: "./resources/assets/favicon.ico"
+charset: "UTF-8"
+hashkey: "the-big-and-secret-fash-key-here"  # 只支持固定大小到字节, AES only supports key sizes of 16, 24 or 32 bytes.
+blockkey: "lot-secret-of-characters-big-too"
+backend_route_party: "/b"
+
+max_bodysize: 32 # MB
+
+upload:
+  engine: "oss" #oss or file
+  base_path: "assets" # 基本路径
+
+
+statics:
+  - {route: "/assets", path: "./resources/assets"}
+  - {route: "/uploads", path: "./resources/assets/uploads"}

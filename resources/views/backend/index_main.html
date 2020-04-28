@@ -1,0 +1,293 @@
+<link rel="stylesheet" href="{{.staticDir}}/js/plugins/rickshaw/rickshaw.min.css">
+
+<div class="main" style="background: rgba(125, 114, 100, 0.05); overflow-x: hidden; overflow-y:auto; padding-left: 15px;margin-top: 20px;">
+    <div class="row">
+
+
+        <!-- col 8 -->
+        <div class="col-lg-8 col-md-12">
+            <section class="tile cornered">
+                <div class="tile-header color greensea">
+                    <h1 class="big-thin">{{.month}}月访问统计</h1>
+                </div>
+                <div class="tile-widget color greensea">
+                    <div id="statistics-chart" class="chart statistics" style="height: 250px;"></div>
+                </div>
+                <div class="tile-body">
+                    <div class="row">
+                        <ul class="inline">
+                            <li class="col-md-4 col-sm-12 col-xs-12 text-center">
+                                <h5 class="underline text-left">访问数据</h5>
+
+                                <div class="inner-container inline">
+                                    <div data-percent="100" data-size="140" class="pie-chart inline"
+                                         data-scale-color="false" data-track-color="#ffffff" data-bar-color="#ffc100"
+                                         data-line-width="5">
+                                        <div class="text-center">
+                                            <span><i class="fa fa-eye fa-5x orange-text"></i></span>
+                                        </div>
+                                    </div>
+                                    <p class="chart-overall text-center medium-thin uppercase nomargin"><span
+                                                class="orange-text big-thin animate-number" data-value="{{.totalVisits}}"
+                                                data-animation-duration="2500">0</span> 访问数</p>
+                                    <p class="chart-overall text-center little-thin uppercase"><span class="red-text">2% <i
+                                                    class="fa fa-arrow-down"></i></span> 本月</p>
+                                </div>
+
+                            </li>
+                            <li class="col-md-8 col-sm-12 col-xs-12">
+                                <h5 class="underline">具体来源</h5>
+                                <ul class="progress-list">
+                                    {{range $k, $v := .refers}}
+                                    <li>
+                                        <div class="details">
+                                            <div class="title">{{$k}} ({{$v.Total}})</div>
+                                        </div>
+                                        <div class="status pull-right">
+                                            <span class="animate-number" data-value="{{$v.Present}}" data-animation-duration="1500">0</span>%
+                                        </div>
+                                        <div class="clearfix"></div>
+                                        <div class="progress progress-little no-radius">
+                                            <div class="progress-bar progress-bar-green animate-progress-bar"
+                                                 data-percentage="{{$v.Present}}%" style="width: 0%;"></div>
+                                        </div>
+                                    </li>
+                                    {{end}}
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+            <section class="tile color grey">
+                <div class="tile-header">
+                    <h1 class="big-thin">服务器信息</h1>
+                </div>
+                <div class="tile-widget">
+                    <h2><span class="animate-number" data-value="{{.usedSize}}" data-animation-duration="1600">0</span>
+                        GB</h2>
+                    <div class="progress progress-little no-radius nomargin">
+                        <div class="progress-bar progress-bar-dutch animate-progress-bar"
+                             data-percentage="{{.usedPercent}}%" style="width: 0%;"></div>
+                    </div>
+                    <p class="description">已使用总容量<strong
+                                class="white-text">{{.FullSize}}GB</strong>的<strong class="white-text">{{.usedSize}}GB</strong></p>
+                </div>
+                <div class="tile-body paddingtop">
+                    <div id="serverload-chart"></div>
+                </div>
+            </section>
+
+            <section class="tile cornered">
+                <!-- tile header -->
+                <div class="tile-header color orange text-center">
+                    <button class="btn pull-left btn-black-transparent" type="button"><i
+                                class="fa fa-caret-square-o-down"></i></button>
+                    <h1 class="small-uppercase">计划列表</h1>
+                </div>
+                <!-- /tile header -->
+                <!-- tile body -->
+                <div class="tile-body">
+                    <input type="text" placeholder="Type new todo..." id="type_todo"
+                           class="grey-bg w100p margin-vertical-15">
+                    <ul class="nolisttypes" id="todolist">
+                        {{range $index, $val := .todos}}
+                            <li>
+                                <div class="checkbox check-cyan"><input type="checkbox" id="todo-{{$val.Id}}"><label
+                                            for="todo-{{$val.Id}}">{{$val.Message}}</label></div>
+                            </li>
+                        {{end}}
+                    </ul>
+                </div>
+                <!-- /tile body -->
+            </section>
+            <!-- /tile -->
+        </div>
+        <!-- /col 4 -->
+    </div>
+</div>
+<script src="{{.staticDir}}/js/plugins/rickshaw/raphael-min.js"></script>
+<script src="{{.staticDir}}/js/plugins/rickshaw/d3.v2.js"></script>
+<script src="{{.staticDir}}/js/plugins/rickshaw/rickshaw.min.js"></script>
+<script src="{{.staticDir}}/js/plugins/jquery.animateNumbers.js"></script>
+<script src="{{.staticDir}}/js/plugins/jquery.easypiechart.min.js"></script>
+<script src="{{.staticDir}}/js/plugins/flot/jquery.flot.min.js"></script>
+<script src="{{.staticDir}}/js/plugins/flot/jquery.flot.animator.min.js"></script>
+<script src="{{.staticDir}}/js/plugins/flot/jquery.flot.tooltip.min.js"></script>
+<script>
+    //todo's
+    $("#type_todo").keyup(function (e) {
+        let val = $(this).val();
+        if (e.keyCode === 13 && val) {
+            $.post("/public/todo", {todo: val}, function (data) {
+                $(this).val('')
+                $("#todolist").append(`<li><div class="checkbox check-cyan"><input type="checkbox"  id="todo-` + data.errmsg + `"><label for="todo-` + data.errmsg + `">` + val + `</label></div></li>`)
+            })
+        }
+    })
+
+    $('#todolist li label').on('click', function () {
+        var that = $(this)
+        let id = $(this).attr("for").replace("todo-", "")
+        $.messager.confirm("todo提醒", "是否要完成此项任务, 点击后即删除", function (ret) {
+            if (ret) {
+                $.post("/public/todo", {id: id}, function (data) {
+                    if (!data.errcode) {
+                        that.toggleClass('done');
+                        that.parent().remove();
+                    }
+                })
+            }
+        })
+    });
+
+    {
+
+        //server load rickshaw chart
+        var graph;
+
+        var seriesData = [{{ .mems }}];
+        // var random = new Rickshaw.Fixtures.RandomData(50);
+        //
+        // for (var i = 0; i < 50; i++) {
+        //     random.addData(seriesData);
+        // }
+
+        graph = new Rickshaw.Graph({
+            element: document.querySelector("#serverload-chart"),
+            height: 150,
+            renderer: 'area',
+            series: [
+                {
+                    data: seriesData[0],
+                    color: '#1693A5',
+                    name: '内存使用率'
+                }
+            ]
+        });
+
+        var hoverDetail = new Rickshaw.Graph.HoverDetail({
+            graph: graph,
+        });
+        graph.update();
+        // setInterval( function() {
+        //     random.removeData(seriesData);
+        //     console.log(seriesData)
+        //     random.addData(seriesData);
+        //     graph.update();
+        // },1000);
+
+        //animate numbers with class .animate-number with data-value attribute
+        $(".animate-number").each(function () {
+            var value = $(this).data('value');
+            var duration = $(this).data('animation-duration');
+
+            $(this).animateNumbers(value, true, duration, "linear");
+        });
+
+        //animate progress bars
+        $('.animate-progress-bar').each(function () {
+            var progress = $(this).data('percentage');
+            $(this).css('width', progress);
+        })
+    }
+
+    {
+        var dayData = {{.statiData}};
+        var d2 = [];
+        for (var i = 0; i < dayData.length; i++) {
+            d2.push([i + 1, dayData[i]]);
+        }
+
+        // flot chart generate
+        var plot = $.plotAnimator($("#statistics-chart"),
+            [
+                {
+                    label: "独立访问",
+                    data: d2,
+                    animator: {steps: 99, duration: 1500, start: 200, direction: "right"},
+                    lines: {
+                        fill: .3,
+                        lineWidth: 0
+                    },
+                    color: ['#ffffff']
+                },
+                {
+                    label: "独立访问",
+                    data: d2,
+                    points: {show: true, fill: true, radius: 6, fillColor: "rgba(255,255,255,.5)", lineWidth: 3},
+                    color: '#fff',
+                    shadowSize: 0
+                }
+            ], {
+                xaxis: {
+                    tickLength: 0,
+                    tickDecimals: 0,
+                    min: 1,
+                    font: {
+                        lineHeight: 24,
+                        weight: "300",
+                        color: "#ffffff",
+                        size: 14
+                    }
+                },
+                yaxis: {
+                    ticks: 4,
+                    tickDecimals: 0,
+                    tickColor: "rgba(255,255,255,.3)",
+
+                    font: {
+                        lineHeight: 13,
+                        weight: "300",
+                        color: "#ffffff"
+                    }
+                },
+
+                grid: {
+                    borderWidth: {
+                        top: 0,
+                        right: 0,
+                        bottom: 1,
+                        left: 1
+                    },
+                    borderColor: 'rgba(255,255,255,.3)',
+                    margin: 0,
+                    minBorderMargin: 0,
+                    labelMargin: 20,
+                    hoverable: true,
+                    clickable: true,
+                    mouseActiveRadius: 6
+                },
+
+                legend: {show: false}
+            });
+
+
+        // tooltips showing
+        $("#statistics-chart").bind("plothover", function (event, pos, item) {
+            if (item) {
+                var x = item.datapoint[0], y = item.datapoint[1];
+                $("#tooltip").html('<h1 style="color: #16a085">' + {{.month}} + "月" + parseInt(x) + '日</h1><strong>' + parseInt(y) + '</strong>' + '个' + item.series.label)
+                    .css({top: item.pageY + 5, left: item.pageX + 5})
+                    .fadeIn(200);
+            } else {
+                $("#tooltip").hide();
+            }
+        });
+//tooltips options
+        $("<div id='tooltip'></div>").css({
+            position: "absolute",
+            padding: "10px",
+            "background-color": "#ffffff",
+            "z-index": "99999"
+        }).appendTo("body");
+
+        //generate actual pie charts
+        $('.pie-chart').easyPieChart();
+
+        //animate progress bars
+        $('.animate-progress-bar').css('width',  function(){ return ($(this).attr('data-percentage')+'%')});
+    }
+</script>

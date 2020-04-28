@@ -1,0 +1,67 @@
+{* artlist *}
+{{block artlist(typeid=0, offset=0, row=0,orderby="listorder", orderway="desc", keyword="", modelid ="", channelid="",flag="",noflag="", titlelen=0, getall=false, subday=0)  }}
+    {{if typeid == 0 }} {* 如果没有设置typeid *}
+        {{ if isset(.TypeID) }}{{typeid = .TypeID }}{{end}} {*读取是否存在全局.Typeid, (一般适用与分类页面)*}
+        {{if typeid == 0 && isset(__refID) && __refID > -1}}{{typeid = __refID}}{{end}}{*判断是否在嵌套标签内*}
+    {{end}}
+    {{if typeid == -1 }}{{typeid = 0}}{{end}} {*公共位置需要指定typeid*}
+    {{if !isset(page)}}{{page = 1}}{{end}} {*默认设置页码*}
+    {{if isset(__refModelID) && __refModelID > -1}} {{modelid = __refModelID}} {{end}}
+    {{if (!isset(.TypeID) || .TypeID == 0) && !getall  }}{{getall = true}}{{end}}  {* 在非列表页和详情页 getall设置为true, 读取所有分类信息 *}
+    {{if channelid != ""}}{{modelid=channelid}}{{end}}
+    {{ range field = artlist(typeid, offset, row, orderby, modelid, page, keyword, flag, noflag, titlelen, getall, orderway, subday) }}{{yield content}}{{end}}
+    {{if isset(field)}}{{ field=nil}}{{end}}
+{{end}}
+
+
+{* channel *}
+{{block channel(typeid=0,reid=0, type="son",row=100,noself = "yes", currentstyle="")  }}
+    {{ if typeid == 0 && isset(__refID) && __refID > -1}}{* __refID 继承channelartlist *}{{typeid = __refID}}{{end}}
+    {{ if typeid == 0 && isset(.TypeID) }}{{typeid = .TypeID}}{{end}}
+    {{ categories := channel(typeid, reid, type, row, noself) }}
+    {{if categories}}{{range autoindex,field = categories}}{{yield content}}{{__refID = -1}}{{end}}{{end}}
+    {{field=nil}}
+{{end}}
+
+{{block list(pagesize=0, titlelen=0, orderby="", orderway="")  }}
+       {{if !isset(.ArtID)}}
+           {{if isset(__pagesize) && pagesize == 0}}{{pagesize=__pagesize}}{{end}}
+               {{__pagesize=pagesize}}{{if !isset(.ListFunc)}}{{ range field = list(.TypeID, .PageNum, pagesize, .ModelName, titlelen, orderby, orderway) }}{{yield content}}{{end}}{{else}}{{ range field = .ListFunc(pagesize) }}{{yield content}}{{end}}{{end}}
+       {{end}}
+       {{if isset(field)}}{{ field=nil}}{{end}}
+{{end}}
+
+{* channelartlist *}{{block channelartlist(typeid=0,row=20, sons=false, active=false)  }}{{__typeid = !isset(.Typeid) ? 0 : .TypeID}}{{channellist := channelartlist(typeid, row, __typeid, sons, active)}}{{ range autoindex,field = channellist }}{{__refID = field.Catid }} {{__refModelID = field.ModelId}} {{yield content}} {{__refID = -1}}{{end}}{{field=nil}}{{end}}
+{* likearticle *}{{block likearticle(row=10, kws="", titlelen=0)  }}{{if isset(.ArtID)}}{{ range field = likearticle(row, kws, .Field["keywords"], .Field["tags"], .Field["catid"], .ArtID, titlelen) }}{{yield content}}{{end}}{{end}}{{field=nil}}{{end}}
+{* pagelist *}{{block pagelist(row=0) }}{{if !isset(.ArtID)}}{{if isset(__pagesize)}}{{row=__pagesize}}{{end}}{{__pagesize=row}}{{tid = isset(.TypeID) ? .TypeID : 0}}{{pagelist(row, tid, .ArtCount, .PageNum, .QP) | unsafe}}{{end}}{{end}}
+{* myad *}{{block myad(id=0,name="", f="")}}{{if id > 0 || name != ""}}{{f = myad(id, name) }}<a href="{{f.LinkUrl}}"><img src="{{f.Image}}"/></a>{{end}}{{end}}
+{* type *}{{block type(typeid)  }}{{if typeid}}{{ field = type(typeid) }}{{if field != nil }}{{yield content}}{{end}}{{end}}{{if isset(field)}}{{ field=nil}}{{end}}{{end}}
+{* adlist *}{{block adlist(id="", pos="", orderby="")}}{{ range field = adlist(id, pos, orderby) }}{{yield content}}{{end}}{{if isset(field)}}{{ field=nil}}{{end}}{{end}}
+{* flink *}{{block flink(row=10, ids="", sort="")  }}{{ range field = flink(row, ids, sort) }}{{yield content }}{{end}}{{if isset(field)}}{{ field=nil}}{{end}}{{end}}
+{* prenext *}{{block prenext(get="pre,next", tpl="") }}{{if isset(.PrevNext)}}{{.PrevNext(get, tpl) | unsafe}}{{end}}{{end}}
+{* query *}{{block query(sql)}}{{if sql}}{{ range field = query(sql) }}{{yield content }}{{end}}{{end}}{{if isset(field)}}{{ field=nil}}{{end}}{{end}}
+{* hotwords *}{{block hotwords() }}{{range _word = hotwords() }}<a href="/search.go?keywords={{_word}}">{{_word}}</a> {{end}}{{end}}
+{* arcclick *}{{block arcclick(id=0,tid=0, incr=0) }}
+    {{if id == 0}} {*设置了id则直接判断是否返回内容*}
+        {{if isset(field) && isset(field["id"]) && field["id"] != ""}}
+            {{id = field["id"]}}
+            {{if isset(field["catid"])}}{{tid = field["catid"]}}{{end}}
+        {{else if isset(.ArtID)}}
+            {{id = .ArtID}}
+            {{incr = 1}}
+            {{tid = .TypeID}}
+        {{end}}
+    {{end}}
+    {{if tid > 0}}<script type="application/javascript" src="/arcclick.go?tid={{tid}}&id={{id}}&incr={{incr}}"></script>{{end}}
+{{end}}
+
+{* position *}{{block position() }}{{if isset(.TypeID)}}{{position(.TypeID) | unsafe}}{{end}}{{end}}
+{* toptype *}{{block toptype() }}{{if isset(.TypeID)}}{{if !isset(__topCategory)}}{{__topCategory = toptype(.TypeID)}}{{end}}{{field = __topCategory}}{{yield content}}{{field = nil}}{{end}}{{end}}
+{* tags *}{{block tags() }}
+    {{if (isset(.Field) && isset(.Field["tags"]) && .Field["tags"] != "") || (isset(field) && isset(field["tags"]) && field["tags"] != "")}}
+        {{range _tag = tags(.Field["tags"]) }}
+        <a href="/tag.go?tag={{_tag}}">{{_tag}}</a>
+        {{end}}
+    {{end}}
+{{end}}
+

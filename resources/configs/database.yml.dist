@@ -1,0 +1,11 @@
+db:
+  dsn: "root:root@tcp(127.0.0.1:3306)/pinecms?charset=utf8"
+  dsn: "root:root@tcp(127.0.0.1:3306)/pinecms?charset=utf8"
+  db_prefix: "pinecms_"
+  db_driver: "mysql"
+
+orm:
+  show_sql: true
+  show_exec_time: true
+  max_open_conns: 10
+  max_idle_conns: 10

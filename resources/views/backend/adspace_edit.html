@@ -1,0 +1,50 @@
+<form id="adspace_edit_dialog_form" action="/b/ad-space/edit" method="post">
+    <table width="100%" class="mdoutable">
+        <tr>
+            <td>名称：</td>
+            <td>
+                <input name="name" class="easyui-textbox" type="text" style="width: 250px;" value="{{.adspace.Name}}" data-options="required:true"/>
+                <input type="hidden" name="id" value="{{.adspace.Id}}">
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script type="text/javascript">
+    function adspaceListEditDialogFormSubmit() {
+        $("#adspace_edit_dialog_form").form("submit", {
+            success: function (res) {
+                res = JSON.parse(res)
+                if (res.errcode) {
+                    $.messager.alert('提示信息', res.errmsg, 'error');
+                } else {
+                    $.messager.alert('提示信息', res.errmsg, 'info');
+                    $('#adspace_list_edit_dialog').dialog('close');
+                    adspaceListRefresh();
+                }
+            }
+        })
+    }
+
+    $('#link_edit_news_form_thumb_input').click(function (e) {
+        e.preventDefault();
+        $.upload({
+            url: "/public/upload",
+            fileName: 'filedata',
+            params: {},
+            dataType: 'json',
+            onSend: function () {
+                return true;
+            },
+            onComplate: function (data) {
+                if (0 === Number(data.errcode)) {
+                    $("#link_edit_news_form_thumb_input").attr('src', data.errmsg);
+                    $("#link_edit_news_form_thumb_input").next('input:hidden').val(data.errmsg);
+                } else {
+                    parent.$.messager.alert('提示信息', data.errmsg, 'error');
+                }
+            }
+        });
+        return false;
+    });
+</script>

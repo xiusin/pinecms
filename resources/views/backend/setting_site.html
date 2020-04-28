@@ -1,0 +1,42 @@
+{{ .grid }}
+<script type="text/javascript">
+    var setting_site_propertygrid_id = 'setting_site_propertygrid';
+    var setting_site_propertygrid_toolbar = [
+        { text: '保存', iconCls: 'icons-other-disk', handler: settingSiteSave },
+        { text: '刷新', iconCls: 'icons-arrow-arrow_refresh', handler: settingSiteRefresh },
+        // { text: '恢复默认', iconCls: 'icons-other-cog', handler: settingSiteDefault }
+    ];
+    //保存
+    function settingSiteSave(){
+        var data = {};
+        var rows = $('#'+setting_site_propertygrid_id).propertygrid('getChanges');
+        for(var i=0; i<rows.length; i++){
+            data[rows[i]['key']]= rows[i]['value'];
+        }
+        $.post('/b/setting/site?dosubmit=1', data, function(res){
+            if(res.errcode){
+                $.messager.alert('提示信息', res.errmsg, 'error');
+            }else{
+                $.messager.alert('提示信息', res.errmsg, 'info');
+            }
+        }, 'json');
+    }
+    //刷新
+    function settingSiteRefresh(){
+        $('#'+setting_site_propertygrid_id).propertygrid('reload');
+    }
+    //恢复默认
+    function settingSiteDefault(){
+        $.messager.confirm('提示信息', '确定要恢复出厂设置吗？', function(result){
+            if(!result) return true;
+            $.post('/b/setting/site-default', function(res){
+                if(res.errcode){
+                    $.messager.alert('提示信息', res.errmsg, 'error');
+                }else{
+                    $.messager.alert('提示信息', res.errmsg, 'info');
+                    settingSiteRefresh();
+                }
+            }, 'json');
+        })
+    }
+</script>

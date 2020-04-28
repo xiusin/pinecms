@@ -1,0 +1,52 @@
+<script src="/assets/backend/ueditor/third-party/codemirror/codemirror.js"></script>
+<link rel="stylesheet" href="/assets/backend/ueditor/third-party/codemirror/codemirror.css">
+<link rel="stylesheet" href="/assets/backend/ueditor/third-party/codemirror/xq-light.css">
+
+<style>
+    .CodeMirror {border: 1px solid #eee; min-height: 600px; height: 100%}
+    .CodeMirror-scroll { height: 100%; overflow-y: hidden; overflow-x: auto;}
+</style>
+
+
+<form id="assets_add_form" method="post">
+    <table width="100%" class="mdoutable">
+        <tr>
+            <td width="100px">资源名称</td>
+            <td ><input type="text" style="width: 300px;" class="easyui-textbox" name="name"  value=""></td>
+        </tr>
+
+        <tr>
+            <td width="100px" style="vertical-align: top">资源内容</td>
+            <td ><textarea id="addTemplateCodeEditor" name="content" style="width:99%; height: 99%"></textarea></td>
+        </tr>
+    </table>
+</form>
+
+<script type="text/javascript">
+    var addTemplateCodeEditor = null;
+    var editTemplateCodeMirror = null;
+    var typeList = ["htmlmixed", "javascript", "css"];
+
+    setTimeout(function () {
+        $(".CodeMirror").remove();
+        addTemplateCodeEditor = CodeMirror.fromTextArea(document.getElementById("addTemplateCodeEditor"), {
+            mode: "htmlmixed",
+            lineNumbers: true,
+            theme: "xq-light"
+        });
+        addTemplateCodeEditor.refresh()
+    }, 110)
+
+    function assetsAddForm() {
+        $("#addTemplateCodeEditor").val(addTemplateCodeEditor.getValue());
+        $.post("/b/assets-manager/add", $('#assets_add_form').serializeObject(), function (res) {
+            if (res.errcode) {
+                $.messager.alert('提示信息', res.errmsg, 'error');
+            } else {
+                $.messager.alert('提示信息', res.errmsg, 'info');
+                $('#assets_add_dialog').dialog('close');
+                refreshAssetsList();
+            }
+        })
+    }
+</script>

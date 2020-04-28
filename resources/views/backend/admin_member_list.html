@@ -1,0 +1,71 @@
+{{ .table }}
+
+<!-- 添加管理员 -->
+<div id="admin_memberlist_add_dialog" class="easyui-dialog" title="添加管理员"
+     data-options="modal:true,closed:true,iconCls:'icons-application-application_add',buttons:[{text:'确定',iconCls:'icons-other-tick',handler:function(){$('#admin_memberlist_add_dialog_form').submit();}},{text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#admin_memberlist_add_dialog').dialog('close');}}]"
+     style="width:520px;height:440px;"></div>
+
+<!-- 编辑管理员 -->
+<div id="admin_memberlist_edit_dialog" class="easyui-dialog" title="编辑管理员"
+     data-options="modal:true,closed:true,iconCls:'icons-application-application_edit',buttons:[{text:'确定',iconCls:'icons-other-tick',handler:function(){$('#admin_memberlist_edit_dialog_form').submit();}},{text:'取消',iconCls:'icons-arrow-cross',handler:function(){$('#admin_memberlist_edit_dialog').dialog('close');}}]"
+     style="width:520px;height:440px;"></div>
+
+<script type="text/javascript">
+    var admin_memberlist_datagrid_toolbar = [
+        {text: '添加管理员', iconCls: 'icons-arrow-add', handler: adminMemberAdd},
+        {text: '刷新', iconCls: 'icons-arrow-arrow_refresh', handler: adminMemberRefresh}
+    ];
+    //时间格式化
+    function adminMemberListTimeFormatter(val) {
+        return val != '1970-01-01 08:00:00' ? val : '';
+    }
+    //操作格式化
+    function adminMemberListOperateFormatter(val) {
+        var btn = ["<div class=\"btn-group-sm\">"];
+        if (val !== 1) {
+            btn.push('<a class="btn btn-default" href="javascript:;" onclick="adminMemberEdit(' + val + ')">编辑</a>');
+            btn.push('<a class="btn btn-danger" href="javascript:;" onclick="adminMemberDelete(' + val + ')">删除</a>');
+        }
+        btn.push("</div>")
+        return btn.join('');
+    }
+
+    //刷新
+    function adminMemberRefresh() {
+        $('#admin_member_list_datagrid').datagrid('reload');
+    }
+    //添加
+    function adminMemberAdd() {
+        $('#admin_memberlist_add_dialog').dialog({href: '/b/admin/member-add'});
+        $('#admin_memberlist_add_dialog').dialog('open');
+    }
+    //编辑
+    function adminMemberEdit(id) {
+        if (typeof(id) !== 'number') {
+            $.messager.alert('提示信息', '未选择管理员', 'error');
+            return false;
+        }
+        var url = '/b/admin/member-edit';
+        url += url.indexOf('?') != -1 ? '&id=' + id : '?id=' + id;
+        $('#admin_memberlist_edit_dialog').dialog({href: url});
+        $('#admin_memberlist_edit_dialog').dialog('open');
+    }
+    //删除
+    function adminMemberDelete(id) {
+        if (typeof(id) !== 'number') {
+            $.messager.alert('提示信息', '未选择管理员', 'error');
+            return false;
+        }
+        $.messager.confirm('提示信息', '确定要删除吗？', function (result) {
+            if (!result) return false;
+            $.post('/b/admin/member-delete', {id: id}, function (res) {
+                if (res.errcode) {
+                    $.messager.alert('提示信息', res.errmsg, 'error');
+                } else {
+                    $.messager.alert('提示信息', res.errmsg, 'info');
+                    adminMemberRefresh();
+                }
+            }, 'json');
+        });
+    }
+</script>
