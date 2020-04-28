@@ -30,17 +30,13 @@ gitee仓库: [pinecms](https://gitee.net/xiusin/pinecms/releases)
     >修改`resources/configs/database.yml.dist`为`resources/configs/database.yml`
     
 
-2. 修改go.mod (由于框架和cms是联动开发,直接本地映射了)
+2. 安装依赖
+    > `go build`
 
-    删除掉 `replace github.com/xiusin/pine => ../pine`
-
-3. 安装依赖
-    > `go get -v`
-
-4. 运行项目
+3. 运行项目
     > `./pinecms serve start` 
 
-5. 开发期间自动构建
+4. 开发期间自动构建
     > `go run main.go serve dev`
 
 6. 访问后端登陆页面
