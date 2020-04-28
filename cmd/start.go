@@ -28,7 +28,6 @@ var startCmd = &cobra.Command{
 				{"Name", "PineCMS内容管理系统"},
 				{"Version", "Development"},
 				{"Author", "xiusin"},
-				{"WebSite", "http://www.xiusin.com/"},
 				{"PineVersion", pine.Version},
 				{"Version", Version},
 				{"GoVersion", runtime.Version()},

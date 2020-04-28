@@ -72,7 +72,6 @@ func initApp() {
 	for _, static := range conf.Statics {
 		staticPathPrefix = append(staticPathPrefix, static.Route)
 	}
-	fmt.Println(staticPathPrefix)
 	app.Use(cache304.Cache304(30000*time.Second, staticPathPrefix...))
 	app.Use(middleware.CheckDatabaseBackupDownload())
 	//app.Use(middleware.Demo())
