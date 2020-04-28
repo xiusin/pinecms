@@ -1,8 +1,7 @@
 db:
-  dsn: "root:root@tcp(127.0.0.1:3306)/pinecms?charset=utf8"
-  dsn: "root:root@tcp(127.0.0.1:3306)/pinecms?charset=utf8"
+  dsn: "data.db"
   db_prefix: "pinecms_"
-  db_driver: "mysql"
+  db_driver: "sqlite3"
 
 orm:
   show_sql: true

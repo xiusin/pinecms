@@ -22,5 +22,5 @@ type Category struct {
 	Active      bool           `xorm:"-"`
 	HasSon      bool           `xorm:"-"`
 	Model       *DocumentModel `xorm:"-" json:"model"`
-	*Page       `xorm:"-"`
+	Page        *Page          `xorm:"-"`
 }

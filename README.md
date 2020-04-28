@@ -5,10 +5,11 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 ![](./resources/assets/backend/static/images/1.png)
 
 # 版本 #
-项目目前处于开发阶段, 正在加入新特性, 标签系统可能重构, 其他部分不会再有大的修改. 
+项目目前处于打磨阶段, 每个可能会有小部分修改
 
 # 下载部署 #
 ## 下载编译包 ##
+
 git仓库: [pinecms](https://github.com/xiusin/pinecms/releases)
 
 gitee仓库: [pinecms](https://gitee.net/xiusin/pinecms/releases)
@@ -52,7 +53,7 @@ gitee仓库: [pinecms](https://gitee.net/xiusin/pinecms/releases)
 系统支持多种主题, 可自由切换不同风格的模板. 
 
 # 内置标签系统 #
-支持类似织梦的标签系统, 可以让您在不写任何代码的情况下完成网站建设. (目前正在打磨, 改动比较频繁)
+支持类似织梦的标签系统, 可以让您在不写任何代码的情况下完成网站建设. 
 
 # 内置多种功能 #
 - 个人信息
@@ -67,12 +68,7 @@ gitee仓库: [pinecms](https://gitee.net/xiusin/pinecms/releases)
 - 日志管理
 - 友链管理
 
-# TODO # 
-1. 搜索性能优化.跨模型提取公共字段, 开发者须知. (或后台设置公共字段, 自动提取(分析共有字段))
-2. 模型文档管理
 
 # 文档 #
-由于写作能力不行, 先将就着看吧.  [跪拜]
- 
 [pinecms.xyz](http://pinecms.xyz/)
 

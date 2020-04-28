@@ -132,7 +132,6 @@ func registerFileToWatcher() error {
 		} else {
 			if !file.IsDir {
 				atomic.AddInt32(&counter, 1)
-				fmt.Println(file.Path)
 			}
 		}
 	}
