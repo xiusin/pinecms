@@ -68,3 +68,7 @@ gitee仓库: [pinecms](https://gitee.net/xiusin/pinecms/releases)
 # 文档 #
 [pinecms.xyz](http://pinecms.xyz/)
 
+
+# 演示 # 
+- 首页 http://115.159.71.60:2019
+- 后端 http://115.159.71.60:2019/b/login/index
