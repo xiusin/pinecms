@@ -9,7 +9,6 @@ import (
 	"github.com/xiusin/pine/cache/providers/bbolt"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pine/middlewares/cache304"
-	request_log "github.com/xiusin/pine/middlewares/request-log"
 	"github.com/xiusin/pine/render/engine/jet"
 	"github.com/xiusin/pine/render/engine/template"
 	"github.com/xiusin/pine/sessions"
@@ -67,14 +66,14 @@ func initDatabase() {
 func initApp() {
 	app = pine.New()
 	diConfig()
-	app.Use(request_log.RequestRecorder())
+	app.Use(middleware.Demo())
+	//app.Use(request_log.RequestRecorder())
 	var staticPathPrefix []string
 	for _, static := range conf.Statics {
 		staticPathPrefix = append(staticPathPrefix, static.Route)
 	}
 	app.Use(cache304.Cache304(30000*time.Second, staticPathPrefix...))
 	app.Use(middleware.CheckDatabaseBackupDownload())
-	//app.Use(middleware.Demo())
 	//pine.RegisterErrorCodeHandler(http.StatusNotFound, func(ctx *pine.Context) {
 	//	// 不同状态码可以显示不同的内容
 	//	// 自定义页面
@@ -190,7 +189,7 @@ func diConfig() {
 	jetEngine.AddGlobalFunc("pagelist", taglibs.PageList)
 	jetEngine.AddGlobalFunc("list", taglibs.List)
 	jetEngine.AddGlobalFunc("query", taglibs.Query)
-	jetEngine.AddGlobalFunc("likearticle",taglibs.LikeArticle)
+	jetEngine.AddGlobalFunc("likearticle", taglibs.LikeArticle)
 	jetEngine.AddGlobalFunc("hotwords", taglibs.HotWords)
 	jetEngine.AddGlobalFunc("tags", taglibs.Tags)
 	jetEngine.AddGlobalFunc("position", taglibs.Position)
