@@ -87,7 +87,7 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine, cacheHandler cache.Abstrac
 		// 匹配所有内容
 		prefix := models.NewCategoryModel().GetUrlPrefix(cat.Catid)
 		if !strings.HasPrefix(pageName, prefix) {
-			c.Logger().Error("地址前缀无法匹配", c.Ctx().Request().URL.Path)
+			c.Logger().Error("地址前缀无法匹配", c.Ctx().Request().URL.Path, " ", prefix, " page ", pageName)
 			c.Ctx().Abort(http.StatusNotFound)
 			return
 		}

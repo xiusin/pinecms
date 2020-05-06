@@ -10,6 +10,7 @@ import (
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"log"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/go-xorm/xorm"
@@ -61,7 +62,6 @@ func (c *CategoryModel) GetPosArr(id int64) []tables.Category {
 func (c *CategoryModel) GetTree(categorys []tables.Category, parentid int64) []map[string]interface{} {
 	var res = []map[string]interface{}{}
 	if len(categorys) != 0 {
-		// 筛选
 		models, _ := NewDocumentModel().GetList(1, 1000)
 		var m = map[int64]string{}
 		var modelMap = map[int64]string{}
@@ -234,7 +234,7 @@ func (c *CategoryModel) GetCategoryFByIdForBE(id int64) (category *tables.Catego
 		}
 		category.Page = NewPageModel().GetPage(id)
 		category.UrlPrefix = c.GetUrlPrefix(id)
-		c.cache.SetWithMarshal(caheKey, category) // 忽略失败判断
+		c.cache.SetWithMarshal(caheKey, category)
 	}
 	if category.Type == 0 {
 		category.Model = NewDocumentModel().GetByIDForBE(category.ModelId)
@@ -263,6 +263,9 @@ func (c *CategoryModel) GetUrlPrefixWithCategoryArr(cats []tables.Category) stri
 		} else {
 			urlPrefix = filepath.Join(urlPrefix, fmt.Sprintf("page_%d", cur.Catid))
 		}
+	}
+	if runtime.GOOS == "windows" {
+		urlPrefix = strings.ReplaceAll(urlPrefix, "\\", "/")
 	}
 	return urlPrefix
 }
