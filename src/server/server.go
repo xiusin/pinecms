@@ -66,7 +66,7 @@ func initDatabase() {
 func initApp() {
 	app = pine.New()
 	diConfig()
-	//app.Use(middleware.Demo())
+	app.Use(middleware.Demo())
 	//app.Use(request_log.RequestRecorder())
 	var staticPathPrefix []string
 	for _, static := range conf.Statics {
