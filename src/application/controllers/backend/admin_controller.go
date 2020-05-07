@@ -151,7 +151,7 @@ func (c *AdminController) PublicEditpwd() {
 	info := tables.Admin{Userid: int64(aid)}
 	has, _ := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Get(&info)
 	if !has {
-		c.Ctx().Writer().Write([]byte("没有找到"))
+		c.Ctx().Write([]byte("没有找到"))
 		return
 	}
 	if c.Ctx().IsPost() {
@@ -324,14 +324,14 @@ func (c *AdminController) MemberDelete() {
 }
 
 func (c *AdminController) RoleList() {
-	menuid, _ := c.Ctx().URLParamInt64("menuid")
-	if c.Ctx().URLParam("grid") == "datagrid" {
-		page, err := c.Ctx().URLParamInt("page")
-		orderField := c.Ctx().URLParam("sort")
+	menuid, _ := c.Ctx().GetInt64("menuid")
+	if c.Ctx().GetString("grid") == "datagrid" {
+		page, err := c.Ctx().GetInt("page")
+		orderField := c.Ctx().GetString("sort")
 		if orderField == "" {
 			orderField = "id"
 		}
-		orderType := c.Ctx().URLParam("sort")
+		orderType := c.Ctx().GetString("sort")
 		if orderType == "" {
 			orderType = "desc"
 		}
@@ -379,7 +379,7 @@ func (c *AdminController) RoleAdd() {
 	c.Ctx().Render().HTML("backend/member_role_add.html")
 }
 func (c *AdminController) RoleEdit(icache cache.AbstractCache) {
-	id, err := c.Ctx().URLParamInt64("id")
+	id, err := c.Ctx().GetInt64("id")
 	if err != nil {
 		c.Ctx().WriteString(err.Error())
 		return
@@ -447,14 +447,14 @@ func (c *AdminController) RoleDelete(icache cache.AbstractCache) {
 }
 
 func (c *AdminController) RolePermission(icache cache.AbstractCache, engine *xorm.Engine) {
-	roleid, _ := c.Ctx().URLParamInt64("id")
+	roleid, _ := c.Ctx().GetInt64("id")
 	if roleid == 0 {
 		helper.Ajax("没有选择任何角色", 1, c.Ctx())
 		return
 	}
 	if c.Ctx().IsPost() {
 		//提交权限分配
-		if c.Ctx().URLParam("dosubmit") == "1" {
+		if c.Ctx().GetString("dosubmit") == "1" {
 			_, err := engine.Where("roleid=?", roleid).Delete(&tables.AdminRolePriv{})
 			if err != nil {
 				helper.Ajax("设置权限失败 "+err.Error(), 1, c.Ctx())

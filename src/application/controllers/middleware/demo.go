@@ -8,9 +8,8 @@ import (
 
 func Demo() pine.Handler {
 	return func(ctx *pine.Context) {
-		if !strings.Contains(ctx.Request().URL.Path, "login") {
-			ctx.Request().ParseForm()
-			if len(ctx.Request().PostForm) > 0 {
+		if !strings.Contains(ctx.Path(), "login") {
+			if ctx.PostArgs().Len() > 0 {
 				helper.Ajax("演示数据,无法修改", 1, ctx)
 				ctx.Stop()
 				return

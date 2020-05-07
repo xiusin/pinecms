@@ -24,8 +24,8 @@ func (c *MemberController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *MemberController) List() {
-	page, _ := c.Ctx().URLParamInt64("page")
-	rows, _ := c.Ctx().URLParamInt64("rows")
+	page, _ := c.Ctx().GetInt64("page")
+	rows, _ := c.Ctx().GetInt64("rows")
 
 	if page > 0 {
 		list, total := models.NewMemberModel().GetList(page, rows)
@@ -33,7 +33,7 @@ func (c *MemberController) List() {
 		return
 	}
 
-	menuid, _ := c.Ctx().URLParamInt64("menuid")
+	menuid, _ := c.Ctx().GetInt64("menuid")
 	table := helper.Datagrid("member_list_datagrid", "/b/user/list", helper.EasyuiOptions{
 		"title":   models.NewMenuModel().CurrentPos(menuid),
 		"toolbar": "member_list_datagrid_toolbar",
@@ -51,7 +51,7 @@ func (c *MemberController) List() {
 }
 
 func (c *MemberController) Info() {
-	id, _ := c.Ctx().URLParamInt64("id")
+	id, _ := c.Ctx().GetInt64("id")
 	if id < 0 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
@@ -103,14 +103,14 @@ func (c *MemberController) Edit() {
 
 //微信用户列表(通过关注公众号获取密码的用户)
 func (c *MemberController) WechatMemberList() {
-	page, _ := c.Ctx().URLParamInt64("page")
-	rows, _ := c.Ctx().URLParamInt64("rows")
+	page, _ := c.Ctx().GetInt64("page")
+	rows, _ := c.Ctx().GetInt64("rows")
 	if page > 0 {
 		list, total := models.NewWechatMemberModel().GetList(page, rows)
 		c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": total})
 		return
 	}
-	menuid, _ := c.Ctx().URLParamInt64("menuid")
+	menuid, _ := c.Ctx().GetInt64("menuid")
 	table := helper.Datagrid("wechat_member_list_datagrid", "/b/wechat/userlist", helper.EasyuiOptions{
 		"title":   models.NewMenuModel().CurrentPos(menuid),
 	}, helper.EasyuiGridfields{
@@ -129,7 +129,7 @@ func (c *MemberController) WechatMemberList() {
 
 //微信用户列表(通过关注公众号获取密码的用户)
 func (c *MemberController) WechatMemberInfo() {
-	id, _ := c.Ctx().URLParamInt64("id")
+	id, _ := c.Ctx().GetInt64("id")
 	if id < 0 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return

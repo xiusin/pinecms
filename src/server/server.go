@@ -66,7 +66,7 @@ func initDatabase() {
 func initApp() {
 	app = pine.New()
 	diConfig()
-	app.Use(middleware.Demo())
+	//app.Use(middleware.Demo())
 	//app.Use(request_log.RequestRecorder())
 	var staticPathPrefix []string
 	for _, static := range conf.Statics {
@@ -120,28 +120,25 @@ func registerBackendRoutes() {
 }
 
 func runServe() {
+	//f, _ := os.Create("trace.out")
+	//defer f.Close()
+	//_ = trace.Start(f)
+	//defer trace.Stop()
 	app.Run(
 		pine.Addr(fmt.Sprintf(":%d", conf.Port)),
 		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))),
-		pine.WithCharset(conf.Charset),
 		pine.WithoutStartupLog(false),
 		pine.WithServerName("xiusin/pinecms"),
-		pine.WithAutoParseForm(true),
+		pine.WithCookie(true),
 	)
 }
 
 func diConfig() {
-	//iCache = badger.New(badger.Option{TTL: int(conf.Session.Expires), Path: conf.CacheDb})
 	iCache = bbolt.New(bbolt.Option{
 		TTL:  int(conf.Session.Expires),
 		Path: conf.CacheDb,
 	})
-	//redisOpt := redis.DefaultOption()
-	//if runtime.GOOS != "darwin" {
-	//	redisOpt.Port = 6380
-	//}
 
-	//iCache = redis.New(redisOpt)
 	theme, _ := iCache.Get(controllers.CacheTheme)
 	if len(theme) > 0 {
 		conf.View.Theme = string(theme)

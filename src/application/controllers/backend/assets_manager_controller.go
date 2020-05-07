@@ -33,7 +33,7 @@ func (c *AssetsManagerController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *AssetsManagerController) Manager(orm *xorm.Engine) {
-	if c.Ctx().URLParam("datagrid") == "true" {
+	if c.Ctx().GetString("datagrid") == "true" {
 		conf := di.MustGet("pinecms.config").(*config.Config)
 		fs, err := ioutil.ReadDir(filepath.Join(conf.View.FeDirname, conf.View.Theme))
 		if err != nil {
@@ -56,7 +56,7 @@ func (c *AssetsManagerController) Manager(orm *xorm.Engine) {
 		c.Ctx().Render().JSON(files)
 		return
 	}
-	menuid, _ := c.Ctx().URLParamInt64("menuid")
+	menuid, _ := c.Ctx().GetInt64("menuid")
 	table := helper.Datagrid("assets_list_datagrid", "/b/assets-manager/list?datagrid=true", helper.EasyuiOptions{
 		"title":      models.NewMenuModel().CurrentPos(menuid),
 		"toolbar":    "assets_list_datagrid_toolbar",
@@ -132,8 +132,8 @@ func (c *AssetsManagerController) Edit(orm *xorm.Engine) {
 		helper.Ajax("修改成功", 0, c.Ctx())
 		return
 	}
-	name := c.Ctx().URLParam("name")
-	typeName := c.Ctx().URLParam("type")
+	name := c.Ctx().GetString("name")
+	typeName := c.Ctx().GetString("type")
 	if name == "" || typeName == "" {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
@@ -178,7 +178,7 @@ func (c *AssetsManagerController) ThemeThumb() {
 	conf := di.MustGet("pinecms.config").(*config.Config)
 	themeName := c.Param().Get("theme")
 	dirName := filepath.Join(conf.View.FeDirname, themeName, "thumb.png")
-	c.Ctx().Writer().Header().Set("Content-type", "img/png")
+	c.Ctx().SetContentType("img/png")
 	//todo 打开连接直接显示而不下载
 	c.Ctx().SendFile(dirName)
 }

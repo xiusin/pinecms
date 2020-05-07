@@ -33,9 +33,7 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/index/index", "Index")
 	b.ANY("/index/menu", "Menu")
 	b.ANY("/index/main", "Main")
-
 	go func() {
-		// 每2秒采集一次服务器信息
 		for range time.Tick(2 * time.Second) {
 			vm, err := mem.VirtualMemory()
 			if err != nil {
@@ -94,7 +92,7 @@ func (c *IndexController) Main(orm *xorm.Engine, iCache cache.AbstractCache) {
 	orm.Where("status = ?", 1).Find(&todos)
 	c.ViewData("todos", todos)
 	var statistics = map[string]uint8{}
-	_ = iCache.GetWithUnmarshal("statistics", &statistics)
+	_ = iCache.GetWithUnmarshal(controllers.CacheStatistics, &statistics)
 	curMonth := time.Now().In(helper.GetLocation()).Format("01")
 	// 整合数据
 	currentYear, currentMonth, _ := time.Now().Date()
@@ -133,12 +131,17 @@ func (c *IndexController) collationFormatVisits(iCache cache.AbstractCache) {
 	var referNames = map[string]string{"baidu": "1.百度", "google": "2.谷歌", "so": "3.360搜索", "bing": "4.必应", "sougou": "5.搜狗", "other": "6.其他",}
 	var totalRefer = 0
 	var refers = map[string]int{}
-	iCache.GetWithUnmarshal("statistics_refer", &refers)
+	iCache.GetWithUnmarshal(controllers.CacheRefer, &refers)
 	if len(refers) == 0 {
 		refers = defaultRefers
 	} else {
 		for _, v := range refers {
 			totalRefer += v
+		}
+		for k,v := range defaultRefers {
+			if _, ok := refers[k]; !ok {
+				refers[k] = v
+			}
 		}
 	}
 	var colors = []string{"green", "cyan", "amethyst", "orange", "red", "hotpink"}

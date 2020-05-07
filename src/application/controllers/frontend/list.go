@@ -24,7 +24,7 @@ func (c *IndexController) List(pageFilePath string) {
 	category, err := models.NewCategoryModel().GetCategoryFByIdForBE(tid)
 	if err != nil || category.Model.Enabled == 0 {
 		if err == nil {
-			pine.Logger().Error("模型禁用,无可查看", c.Ctx().Request().URL.Path)
+			pine.Logger().Error("模型禁用,无可查看", c.Ctx().Path())
 		} else {
 			pine.Logger().Error(err)
 		}
@@ -79,5 +79,5 @@ func (c *IndexController) List(pageFilePath string) {
 		return
 	}
 	data, _ := ioutil.ReadFile(pageFilePath)
-	_, _ = c.Ctx().Writer().Write(data)
+	_, _ = c.Ctx().Write(data)
 }

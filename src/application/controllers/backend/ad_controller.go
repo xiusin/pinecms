@@ -31,8 +31,8 @@ func (c *AdController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *AdController) AdList() {
-	page, _ := c.Ctx().URLParamInt64("page")
-	rows, _ := c.Ctx().URLParamInt64("rows")
+	page, _ := c.Ctx().GetInt64("page")
+	rows, _ := c.Ctx().GetInt64("rows")
 	if page > 0 {
 		list, total := models.NewAdModel().GetList(page, rows)
 		spaces := models.NewAdSpaceModel().All()
@@ -46,7 +46,7 @@ func (c *AdController) AdList() {
 		c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": total})
 		return
 	}
-	menuid, _ := c.Ctx().URLParamInt64("menuid")
+	menuid, _ := c.Ctx().GetInt64("menuid")
 	table := helper.Datagrid("ad_list_datagrid", "/b/ad/list", helper.EasyuiOptions{
 		"title":   models.NewMenuModel().CurrentPos(menuid),
 		"toolbar": "ad_list_datagrid_toolbar",
@@ -65,7 +65,7 @@ func (c *AdController) AdList() {
 func (c *AdController) AdAdd() {
 	if c.Ctx().IsPost() {
 		var ad tables.Advert
-		status := c.Ctx().Request().PostForm.Get("status")
+		status := c.Ctx().PostString("status")
 		if status == "" {
 			ad.Status = 0
 		} else {
@@ -101,7 +101,7 @@ func (c *AdController) AdAdd() {
 func (c *AdController) AdEdit() {
 	if c.Ctx().IsPost() {
 		var ad tables.Advert
-		status := c.Ctx().Request().PostForm.Get("status")
+		status := c.Ctx().PostString("status")
 		if status == "" {
 			ad.Status = 0
 		} else {
@@ -192,14 +192,14 @@ func (c *AdController) AdDelete() {
 }
 
 func (c *AdController) AdSpaceList() {
-	page, _ := c.Ctx().URLParamInt64("page")
-	rows, _ := c.Ctx().URLParamInt64("rows")
+	page, _ := c.Ctx().GetInt64("page")
+	rows, _ := c.Ctx().GetInt64("rows")
 	if page > 0 {
 		list, total := models.NewAdSpaceModel().GetList(page, rows)
 		c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": total})
 		return
 	}
-	menuid, _ := c.Ctx().URLParamInt64("menuid")
+	menuid, _ := c.Ctx().GetInt64("menuid")
 	table := helper.Datagrid("adspace_list_datagrid", "/b/ad-space/list", helper.EasyuiOptions{
 		"title":   models.NewMenuModel().CurrentPos(menuid),
 		"toolbar": "adspace_list_datagrid_toolbar",

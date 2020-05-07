@@ -48,7 +48,7 @@ func (c *DatabaseController) NoSupport()  {
 }
 
 func (c *DatabaseController) Manager(orm *xorm.Engine) {
-	if c.Ctx().URLParam("datagrid") != "" {
+	if c.Ctx().GetString("datagrid") != "" {
 		mataDatas, err := orm.DBMetas()
 		if err != nil {
 			pine.Logger().Error("读取数据库元信息失败", err)
@@ -70,7 +70,7 @@ func (c *DatabaseController) Manager(orm *xorm.Engine) {
 		return
 
 	}
-	menuid, _ := c.Ctx().URLParamInt64("menuid")
+	menuid, _ := c.Ctx().GetInt64("menuid")
 	table := helper.Datagrid("database_list_datagrid", "/b/database/manager?datagrid=true", helper.EasyuiOptions{
 		"title":        models.NewMenuModel().CurrentPos(menuid),
 		"toolbar":      "database_list_datagrid_toolbar",
@@ -130,7 +130,7 @@ func (c *DatabaseController) Backup() {
 
 func (c *DatabaseController) BackupList() {
 	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
-	if c.Ctx().URLParam("datagrid") == "true" {
+	if c.Ctx().GetString("datagrid") == "true" {
 		uploader := getStorageEngine(settingData)
 		list, prefix, err := uploader.List(baseBackupDir)
 		if err != nil {
@@ -150,7 +150,7 @@ func (c *DatabaseController) BackupList() {
 		return
 	}
 
-	menuid, _ := c.Ctx().URLParamInt64("menuid")
+	menuid, _ := c.Ctx().GetInt64("menuid")
 	table := helper.Datagrid("database_backup_list_datagrid", "/b/database/backup-list?datagrid=true", helper.EasyuiOptions{
 		"title":      models.NewMenuModel().CurrentPos(menuid),
 		"toolbar":    "database_backup_list_datagrid_toolbar",

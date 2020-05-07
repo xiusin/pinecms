@@ -36,8 +36,8 @@ func (c *SettingController) RegisterRoute(b pine.IRouterWrapper) {
 
 func (c *SettingController) Site(iCache cache.AbstractCache, orm *xorm.Engine) {
 	if c.Ctx().IsPost() {
-		var setting []*tables.Setting
-		act := c.Ctx().URLParam("dosubmit")
+		var setting []tables.Setting
+		act := c.Ctx().GetString("dosubmit")
 		var setval []ConfigItem
 		if act == "" {
 			if err := orm.Asc("listorder").Find(&setting); err != nil {
@@ -79,7 +79,7 @@ func (c *SettingController) Site(iCache cache.AbstractCache, orm *xorm.Engine) {
 		helper.Ajax("更新配置信息成功", 0, c.Ctx())
 		return
 	}
-	menuid, err := c.Ctx().URLParamInt64("menuid")
+	menuid, err := c.Ctx().GetInt64("menuid")
 	if err != nil {
 		menuid = 0
 	}
@@ -123,17 +123,6 @@ func (c *SettingController) Cache(iCache cache.AbstractCache) {
 			},
 		}
 
-		//models, _ := models.NewDocumentModel().GetList(1, 1000)
-		//
-		//for _, v := range models {
-		//	list = append(list, map[string]string{
-		//		"key1":        fmt.Sprintf("model_%d", v.Id),
-		//		"key":         fmt.Sprintf("model_%d", v.Id),
-		//		"name":        fmt.Sprintf("模型 %s 缓存", v.Name),
-		//		"description": fmt.Sprintf("可直接清理模型 %s 下所有缓存", v.Name),
-		//	})
-		//}
-
 		list = append(list, map[string]string{
 			"key1":        "data",
 			"key":         "data",
@@ -145,7 +134,7 @@ func (c *SettingController) Cache(iCache cache.AbstractCache) {
 
 		return
 	}
-	menuid, _ := c.Ctx().URLParamInt64("menuid")
+	menuid, _ := c.Ctx().GetInt64("menuid")
 	table := helper.Datagrid("setting_cache_datagrid", "/b/setting/cache?getlist=true", helper.EasyuiOptions{
 		"title":        models.NewMenuModel().CurrentPos(menuid),
 		"toolbar":      "setting_cache_datagrid_toolbar",
@@ -168,8 +157,8 @@ func (c *SettingController) DelCache(iCache cache.AbstractCache) {
 		switch key {
 		case "data":
 			// todo 如果切换驱动这里切换到对应的缓存逻辑代码. 开发期间更会会有直接的错误提醒
-			cacheHandler := iCache.(*bbolt.PineBoltdb)
-			cacheHandler.GetBoltDB().Update(func(tx *bolt.Tx) error {
+			cacheHandler := iCache.(*bbolt.PineBolt)
+			cacheHandler.BoltDB().Update(func(tx *bolt.Tx) error {
 				b := tx.Bucket([]byte(cacheHandler.BucketName))
 				c := b.Cursor()
 				prefix := []byte("pinecms.")
@@ -183,7 +172,7 @@ func (c *SettingController) DelCache(iCache cache.AbstractCache) {
 			})
 		case "index":
 			basePath := filepath.Join(setting["SITE_STATIC_PAGE_DIR"], "index.html")
-			os.Remove(basePath)
+			_ = os.Remove(basePath)
 		case "list":
 			fallthrough
 		case "page":
@@ -193,7 +182,6 @@ func (c *SettingController) DelCache(iCache cache.AbstractCache) {
 			delCacheByCategories(cats, setting["SITE_STATIC_PAGE_DIR"])
 		}
 	}
-
 	helper.Ajax("清理缓存数据成功", 0, c.Ctx())
 }
 

@@ -36,7 +36,7 @@ func (c *ContentController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *ContentController) Index() {
-	menuid, _ := c.Ctx().URLParamInt64("menuid")
+	menuid, _ := c.Ctx().GetInt64("menuid")
 	c.Ctx().Render().ViewData("currentPos", models.NewMenuModel().CurrentPos(menuid))
 	c.Ctx().Render().HTML("backend/content_index.html")
 }
@@ -55,9 +55,9 @@ func (c *ContentController) Right() {
 }
 
 func (c *ContentController) NewsList(orm *xorm.Engine) {
-	catid, _ := c.Ctx().URLParamInt64("catid")
-	page, _ := c.Ctx().URLParamInt64("page")
-	rows, _ := c.Ctx().URLParamInt64("rows")
+	catid, _ := c.Ctx().GetInt64("catid")
+	page, _ := c.Ctx().GetInt64("page")
+	rows, _ := c.Ctx().GetInt64("rows")
 	catogoryModel := models.NewCategoryModel().GetCategory(catid)
 	if catogoryModel == nil {
 		helper.Ajax("分类不存在", 1, c.Ctx())
@@ -187,7 +187,7 @@ func (c *ContentController) NewsList(orm *xorm.Engine) {
 }
 
 func (c *ContentController) Page() {
-	catid, _ := c.Ctx().URLParamInt64("catid")
+	catid, _ := c.Ctx().GetInt64("catid")
 	if catid == 0 {
 		helper.Ajax("页面错误", 1, c.Ctx())
 		return
@@ -308,7 +308,7 @@ func (c *ContentController) AddContent() {
 		return
 	}
 	//根据catid读取出相应的添加模板
-	catid, _ := c.Ctx().URLParamInt64("catid")
+	catid, _ := c.Ctx().GetInt64("catid")
 	if catid == 0 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
@@ -332,8 +332,8 @@ func (c *ContentController) AddContent() {
 //修改内容
 func (c *ContentController) EditContent(orm *xorm.Engine) {
 	//根据catid读取出相应的添加模板
-	catid, _ := c.Ctx().URLParamInt64("catid")
-	id, _ := c.Ctx().URLParamInt64("id")
+	catid, _ := c.Ctx().GetInt64("catid")
+	id, _ := c.Ctx().GetInt64("id")
 	if catid < 1 || id < 1 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
@@ -433,8 +433,8 @@ func (c *ContentController) EditContent(orm *xorm.Engine) {
 
 //删除内容
 func (c *ContentController) DeleteContent(orm *xorm.Engine) {
-	catid, _ := c.Ctx().URLParamInt64("catid")
-	id, _ := c.Ctx().URLParamInt64("id")
+	catid, _ := c.Ctx().GetInt64("catid")
+	id, _ := c.Ctx().GetInt64("id")
 	if catid < 1 || id < 1 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
@@ -474,7 +474,7 @@ func (c *ContentController) OrderContent() {
 	for k, v := range data {
 		order[strings.ReplaceAll(strings.ReplaceAll(k, "order[", ""), "]", "")] = v[0]
 	}
-	id, _ := c.Ctx().URLParamInt64("catid")
+	id, _ := c.Ctx().GetInt64("catid")
 	if id < 1 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return

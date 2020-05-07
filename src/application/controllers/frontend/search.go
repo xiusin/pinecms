@@ -197,7 +197,7 @@ func (c *IndexController) Search(orm *xorm.Engine) {
 		c.Ctx().Abort(500, err.Error())
 		return
 	}
-	if err := tpl.Execute(c.Ctx().Writer(), viewDataToJetMap(c.Ctx().Render().GetViewData()), struct {
+	if err := tpl.Execute(c.Ctx().Response.BodyWriter(), viewDataToJetMap(c.Ctx().Render().GetViewData()), struct {
 		Field       *tables.Category
 		Position    string
 		ArtCount    int64

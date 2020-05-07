@@ -112,7 +112,7 @@ func (c *DocumentController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *DocumentController) ModelFieldShowInListPage(icache cache.AbstractCache) {
-	mid, _ := c.Ctx().URLParamInt64("mid")
+	mid, _ := c.Ctx().GetInt64("mid")
 	if mid < 1 {
 		return
 	}
@@ -177,15 +177,15 @@ func (c *DocumentController) ModelFieldShowInListPage(icache cache.AbstractCache
 }
 
 func (c *DocumentController) ModelList() {
-	page, _ := c.Ctx().URLParamInt64("page")
-	rows, _ := c.Ctx().URLParamInt64("rows")
+	page, _ := c.Ctx().GetInt64("page")
+	rows, _ := c.Ctx().GetInt64("rows")
 	if page > 0 {
 		list, total := models.NewDocumentModel().GetList(page, rows)
 		c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": total})
 		return
 	}
 
-	menuid, _ := c.Ctx().URLParamInt64("menuid")
+	menuid, _ := c.Ctx().GetInt64("menuid")
 	table := helper.Datagrid("model_list_datagrid", "/b/model/list", helper.EasyuiOptions{
 		"title":   models.NewMenuModel().CurrentPos(menuid),
 		"toolbar": "model_list_datagrid_toolbar",
@@ -443,7 +443,7 @@ func (c *DocumentController) ModelEdit(iCache cache.AbstractCache) {
 		helper.Ajax("更新模型成功", 0, c.Ctx())
 		return
 	}
-	mid, err := c.Ctx().URLParamInt64("mid")
+	mid, err := c.Ctx().GetInt64("mid")
 	if err != nil || mid == 0 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
@@ -475,7 +475,7 @@ func (c *DocumentController) ModelEdit(iCache cache.AbstractCache) {
 }
 
 func (c *DocumentController) ModelDelete() {
-	modelID, _ := c.Ctx().URLParamInt64("id")
+	modelID, _ := c.Ctx().GetInt64("id")
 	//if modelID < 1 {
 	//	helper.Ajax("模型参数错误", 1, c.Ctx())
 	//	return
@@ -506,7 +506,7 @@ var sqlLite3FieldTypeMap = map[string]string{
 
 // 生成SQL 传入模型ID
 func (c *DocumentController) GenSQL(orm *xorm.Engine) {
-	modelID, _ := c.Ctx().URLParamInt64("mid")
+	modelID, _ := c.Ctx().GetInt64("mid")
 	//if modelID < 1 {
 	//	helper.Ajax("模型参数错误", 1, c.Ctx())
 	//	return
@@ -607,7 +607,7 @@ func (c *DocumentController) GenSQL(orm *xorm.Engine) {
 }
 
 func (c *DocumentController) GenSQLFromSQLite3(orm *xorm.Engine) {
-	modelID, _ := c.Ctx().URLParamInt64("mid")
+	modelID, _ := c.Ctx().GetInt64("mid")
 	//if modelID < 1 {
 	//	helper.Ajax("模型参数错误", 1, c.Ctx())
 	//	return
@@ -711,7 +711,7 @@ func (c *DocumentController) GenSQLFromSQLite3(orm *xorm.Engine) {
 
 // 预览模型表单界面
 func (c *DocumentController) PreviewPage() {
-	modelID, _ := c.Ctx().URLParamInt64("mid")
+	modelID, _ := c.Ctx().GetInt64("mid")
 	//if modelID < 1 {
 	//	helper.Ajax("模型参数错误", 1, c.Ctx())
 	//	return

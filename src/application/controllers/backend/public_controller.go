@@ -1,13 +1,9 @@
 package backend
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"image/png"
-	"io/ioutil"
-	"math/rand"
-	"mime/multipart"
 	"os"
 	"path"
 	"strconv"
@@ -62,32 +58,31 @@ func (c *PublicController) Upload() {
 
 	uploader := getStorageEngine(settingData)
 	uploadDir := fmt.Sprintf("%s/%s", mid, helper.NowDate("Ymd"))
-	file, fs, err := c.Ctx().Files("filedata")
+	fs, err := c.Ctx().Files("filedata")
 	if err != nil {
-		if fileData := c.Ctx().FormValue("filedata"); fileData == "" {
-			pine.Logger().Error("上传文件失败", err.Error())
-			uploadAjax(c.Ctx(), map[string]interface{}{"state": "打开上传临时文件失败 : " + err.Error(), "errcode": "1",}, isEditor)
-			return
-		} else {
-			// 涂鸦上传
-			dist, err := base64.StdEncoding.DecodeString(fileData)
-			if err != nil {
-				uploadAjax(c.Ctx(), map[string]interface{}{"state": "解码base64数据失败 : " + err.Error(), "errcode": "1",}, isEditor)
-				return
-			}
-			f, err := ioutil.TempFile("", "tempfile_"+strconv.Itoa(rand.Intn(10000)))
-			if err != nil {
-				uploadAjax(c.Ctx(), map[string]interface{}{"state": "上传失败 : " + err.Error(), "errcode": "1",}, isEditor)
-				return
-			}
-			_, _ = f.Write(dist)
-			_ = f.Close()
-			fo, _ := os.Open(f.Name())
-			file = multipart.File(fo)
-			defer os.Remove(f.Name())
-		}
+		//if fileData := c.Ctx().FormValue("filedata"); fileData == "" {
+		uploadAjax(c.Ctx(), map[string]interface{}{"state": "打开上传临时文件失败 : " + err.Error(), "errcode": "1",}, isEditor)
+		return
+		//} else {
+		//	// 涂鸦上传
+		//	dist, err := base64.StdEncoding.DecodeString(fileData)
+		//	if err != nil {
+		//		uploadAjax(c.Ctx(), map[string]interface{}{"state": "解码base64数据失败 : " + err.Error(), "errcode": "1",}, isEditor)
+		//		return
+		//	}
+		//	f, err := ioutil.TempFile("", "tempfile_"+strconv.Itoa(rand.Intn(10000)))
+		//	if err != nil {
+		//		uploadAjax(c.Ctx(), map[string]interface{}{"state": "上传失败 : " + err.Error(), "errcode": "1",}, isEditor)
+		//		return
+		//	}
+		//	_, _ = f.Write(dist)
+		//	_ = f.Close()
+		//	fo, _ := os.Open(f.Name())
+		//	file = multipart.File(fo)
+		//	defer os.Remove(f.Name())
+		//}
 	}
-	defer file.Close()
+
 	var fname string
 	var size int64
 	if fs != nil {
@@ -117,7 +112,12 @@ func (c *PublicController) Upload() {
 	}
 	filename := string(helper.Krand(10, 3)) + "." + ext
 	storageName := uploadDir + "/" + filename
-	path, err := uploader.Upload(storageName, file)
+	f, err := fs.Open()
+	var path string
+	if err == nil {
+		defer f.Close()
+		path, err = uploader.Upload(storageName, f)
+	}
 	if err != nil {
 		uploadAjax(c.Ctx(), map[string]interface{}{"state": "上传失败:" + err.Error(), "errcode": "1"}, isEditor)
 		return
@@ -157,13 +157,13 @@ func (c *PublicController) VerifyCode() {
 
 	c.Session().AddFlush("verify", str)
 
-	c.Ctx().Writer().Header().Set("Content-type", "img/png")
+	c.Ctx().SetContentType("img/png")
 
-	png.Encode(c.Ctx().Writer(), img)
+	png.Encode(c.Ctx().Response.BodyWriter(), img)
 }
 
 func (c *PublicController) UEditor() {
-	action := c.Ctx().URLParam("action")
+	action := c.Ctx().GetString("action")
 
 	switch action {
 	case "config":
@@ -244,11 +244,11 @@ func uploadAjax(ctx *pine.Context, uploadData map[string]interface{}, isEditor b
 
 // 读取资源列表
 func (c *PublicController) Attachments(attachmentType string) {
-	page, _ := c.Ctx().URLParamInt64("page")
+	page, _ := c.Ctx().GetInt64("page")
 	if page < 1 {
 		page = 1
 	}
-	start, _ := c.Ctx().URLParamInt64("start")
+	start, _ := c.Ctx().GetInt64("start")
 	if start < 0 {
 		start = 0
 	}

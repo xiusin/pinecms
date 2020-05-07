@@ -20,8 +20,8 @@ func (c *AttachmentController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *AttachmentController) List(orm *xorm.Engine) {
-	page, _ := c.Ctx().URLParamInt64("page")
-	rows, _ := c.Ctx().URLParamInt64("rows")
+	page, _ := c.Ctx().GetInt64("page")
+	rows, _ := c.Ctx().GetInt64("rows")
 
 	if page > 0 {
 		keywords := c.Ctx().GetString("keywords")
@@ -30,7 +30,7 @@ func (c *AttachmentController) List(orm *xorm.Engine) {
 		return
 	}
 
-	menuid, _ := c.Ctx().URLParamInt64("menuid")
+	menuid, _ := c.Ctx().GetInt64("menuid")
 	table := helper.Datagrid("attachments_list_datagrid", "/b/attachments/list", helper.EasyuiOptions{
 		"title":   models.NewMenuModel().CurrentPos(menuid),
 		"toolbar": "attachments_list_datagrid_toolbar",

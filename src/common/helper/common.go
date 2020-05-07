@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"image"
 	"image/gif"
@@ -25,17 +26,16 @@ import (
 
 	"golang.org/x/image/bmp"
 
-	"github.com/imroc/req"
 	"github.com/kataras/go-mailer"
 
 	"github.com/nfnt/resize"
 	"golang.org/x/image/draw"
 )
 
-type node struct {
+type Node struct {
 	Id       string `json:"id"`
 	Name     string `json:"name"`
-	Children []node `json:"children"`
+	Children []Node `json:"children"`
 }
 
 //GetRootPath 获取IRIS项目根目录 (即 main.go的所在位置)
@@ -61,25 +61,31 @@ func GetLocation() *time.Location {
 	return location
 }
 
-func ScanDir(dir string) []node {
-	var nodes []node
-	fs, err := ioutil.ReadDir(dir)
-	if err != nil {
-		panic(fmt.Sprintf("打开%s:%s", dir, err.Error()))
-	}
-	for _, f := range fs {
-		if filepath.Ext(f.Name()) != ".jet" {
-			continue
+func ScanDir(dir string) []Node {
+	cacher := pine.Make("cache.AbstractCache").(cache.AbstractCache)
+	var nodes []Node
+	err := cacher.GetWithUnmarshal(controllers.CacheFeTplList, &nodes)
+	if err != nil || len(nodes) == 0 {
+		fs, err := ioutil.ReadDir(dir)
+		if err != nil {
+			panic(fmt.Sprintf("打开%s:%s", dir, err.Error()))
 		}
-		name := f.Name()
-		id := FilePathToEasyUiID(name)
-		node := node{
-			Id:       id,
-			Name:     name,
-			Children: nil,
+		for _, f := range fs {
+			if filepath.Ext(f.Name()) != ".jet" {
+				continue
+			}
+			name := f.Name()
+			id := FilePathToEasyUiID(name)
+			node := Node{
+				Id:       id,
+				Name:     name,
+				Children: nil,
+			}
+			nodes = append(nodes, node)
 		}
-		nodes = append(nodes, node)
+		cacher.SetWithMarshal(controllers.CacheFeTplList, &nodes)
 	}
+
 	return nodes
 }
 
@@ -398,36 +404,13 @@ func SendEmail(opt *EmailOpt, conf map[string]string) error {
     <div class="main-box">
         <p>` + opt.Title + `<br/>
             ` + str + `</p>
-        <p class="csdn csdn-color">by XiuSin</p>
+        <p class="csdn csdn-color">by PineCMS</p>
     </div>
 </div>
 </body>
 </html>
 `
 	return mailService.Send(opt.Title, content, opt.Address...)
-}
-
-func VerifyVCaptcha(token string) bool {
-	//验证vcaptchatoken是否正确
-	vcaptchaData := map[string]interface{}{}
-	res, err := req.Post("http://api.vaptcha.com/v2/validate", req.Param{
-		"id":        "5bbc46c6fc650e3be06e5869",
-		"secretkey": "1d374f7f501a4d2e9ca977dd343ffde8",
-		"token":     token,
-	})
-	if err != nil {
-		return false
-	}
-	err = res.ToJSON(&vcaptchaData)
-	if err != nil {
-		return false
-	}
-	status, _ := vcaptchaData["success"].(int64)
-	if status != 0 { //验证不通过
-		//c.Ctx.JSON(ReturnApiData{false, "validate captcha failed,status: " + strconv.Itoa(int(status)) + " msg:" + vcaptchaData["msg"].(string) + "!", nil})
-		return false
-	}
-	return true
 }
 
 func todayFilename(path string) string {
@@ -437,15 +420,6 @@ func todayFilename(path string) string {
 
 func NewOrmLogFile(path string) *os.File {
 	f, err := os.OpenFile(path+"orm.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		panic(err)
-	}
-	return f
-}
-
-func NewLogFile(path string) *os.File {
-	filename := todayFilename(path)
-	f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
 	}

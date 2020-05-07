@@ -4,6 +4,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
@@ -31,7 +32,8 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine, cacheHandler cache.Abstrac
 			pine.Logger().Error(err)
 			c.Ctx().Abort(http.StatusNotFound)
 		} else {
-			_ = c.Ctx().Render().HtmlBytes(byts)
+			c.Ctx().Render().ContentType(pine.ContentTypeHTML)
+			_ = c.Ctx().Render().Bytes(byts)
 		}
 		return
 	}
@@ -81,13 +83,13 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine, cacheHandler cache.Abstrac
 				}
 			}
 			c.Ctx().Abort(http.StatusNotFound)
-			c.Logger().Error("地址内容无法匹配", c.Ctx().Request().URL.Path)
+			c.Logger().Debug("地址内容无法匹配", c.Ctx().Path())
 			return
 		}
 		// 匹配所有内容
 		prefix := models.NewCategoryModel().GetUrlPrefix(cat.Catid)
 		if !strings.HasPrefix(pageName, prefix) {
-			c.Logger().Error("地址前缀无法匹配", c.Ctx().Request().URL.Path, " ", prefix, " page ", pageName)
+			c.Logger().Debug("地址前缀无法匹配", c.Ctx().Path())
 			c.Ctx().Abort(http.StatusNotFound)
 			return
 		}
@@ -109,23 +111,21 @@ func (c *IndexController) statistics(cacheHandler cache.AbstractCache) {
 
 	today := time.Now().In(helper.GetLocation()).Format("01-02")
 	if len(val) == 0 || val != today {
-		sk := "pinecms_persist.statistics" // 不加入可清理缓存队伍
 		c.Cookie().Set(ck, today, 48*3600)
 		var statistics = map[string]uint8{}
-		_ = cacheHandler.GetWithUnmarshal(sk, &statistics)
+		_ = cacheHandler.GetWithUnmarshal(controllers.CacheStatistics, &statistics)
 		if _, ok := statistics[today]; !ok {
 			statistics[today] = 1
 		} else {
 			statistics[today] += 1
 		}
-		_ = cacheHandler.SetWithMarshal(sk, &statistics, 32*24*3600)
+		_ = cacheHandler.SetWithMarshal(controllers.CacheStatistics, &statistics)
 		var defaultRefers = map[string]int{"baidu": 0, "google": 0, "so": 0, "bing": 0, "sougou": 0, "other": 0,}
 		var refers = map[string]int{}
 		// 访问来源
-		referer := c.Ctx().Request().Header.Get("Referer")
+		referer := string(c.Ctx().Referer())
 		matchs := regexp.MustCompile("^https?://.*(baidu|google|so|bing|sougou).(com|cn)").FindAllStringSubmatch(referer, 1)
-		sk = "statistics_refer"
-		_ = cacheHandler.GetWithUnmarshal(sk, &refers)
+		_ = cacheHandler.GetWithUnmarshal(controllers.CacheRefer, &refers)
 		if len(matchs) > 0 {
 			if len(refers) == 0 {
 				refers = defaultRefers
@@ -134,6 +134,6 @@ func (c *IndexController) statistics(cacheHandler cache.AbstractCache) {
 		} else {
 			refers["other"] += 1
 		}
-		_ = cacheHandler.SetWithMarshal(sk, &refers, 12*30*24*3600)
+		_ = cacheHandler.SetWithMarshal(controllers.CacheRefer, &refers)
 	}
 }

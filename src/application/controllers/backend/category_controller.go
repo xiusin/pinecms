@@ -30,11 +30,11 @@ func (c *CategoryController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *CategoryController) CategoryList() {
-	if c.Ctx().URLParam("grid") == "treegrid" {
+	if c.Ctx().GetString("grid") == "treegrid" {
 		c.Ctx().Render().JSON(models.NewCategoryModel().GetTree(models.NewCategoryModel().GetAll(false), 0))
 		return
 	}
-	menuid, _ := c.Ctx().URLParamInt64("menuid")
+	menuid, _ := c.Ctx().GetInt64("menuid")
 	table := helper.Treegrid("category_categorylist_treegrid", "/b/category/list?grid=treegrid", helper.EasyuiOptions{
 		"title":     models.NewMenuModel().CurrentPos(menuid),
 		"toolbar":   "category_categorylist_treegrid_toolbar",
@@ -169,7 +169,7 @@ func (c *CategoryController) CategoryAdd() {
 		}
 		return
 	}
-	parentid, err = c.Ctx().URLParamInt("parentid")
+	parentid, err = c.Ctx().GetInt("parentid")
 	if err != nil {
 		c.Ctx().WriteString(err.Error())
 		return
@@ -194,7 +194,7 @@ func (c *CategoryController) CategorySelect() {
 }
 
 func (c *CategoryController) CategoryEdit(icache cache.AbstractCache) {
-	id, err := c.Ctx().URLParamInt64("id")
+	id, err := c.Ctx().GetInt64("id")
 	if err != nil || id == 0 {
 		c.Ctx().WriteString("参数错误")
 		return

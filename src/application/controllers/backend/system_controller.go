@@ -2,17 +2,12 @@ package backend
 
 import (
 	"github.com/go-xorm/xorm"
-	"github.com/gorilla/websocket"
-	"github.com/hpcloud/tail"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"github.com/xiusin/pinecms/src/config"
 	"html/template"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -21,7 +16,6 @@ type SystemController struct {
 	pine.Controller
 }
 
-var upgrader = websocket.Upgrader{}
 
 func (c *SystemController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/system/menulist", "MenuList")
@@ -38,11 +32,11 @@ func (c *SystemController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *SystemController) MenuList() {
-	if c.Ctx().URLParam("grid") == "treegrid" {
+	if c.Ctx().GetString("grid") == "treegrid" {
 		c.Ctx().Render().JSON(models.NewMenuModel().GetTree(models.NewMenuModel().GetAll(), 0))
 		return
 	}
-	menuid, _ := c.Ctx().URLParamInt64("menuid")
+	menuid, _ := c.Ctx().GetInt64("menuid")
 	table := helper.Treegrid("system_menu_list", "/b/system/menulist?grid=treegrid", helper.EasyuiOptions{
 		"title":     models.NewMenuModel().CurrentPos(menuid),
 		"toolbar":   "system_menulist_treegrid_toolbar",
@@ -145,7 +139,7 @@ func (c *SystemController) MenuOrder(iCache cache.AbstractCache) {
 }
 
 func (c *SystemController) MenuEdit(iCache cache.AbstractCache) {
-	id, _ := c.Ctx().URLParamInt64("id")
+	id, _ := c.Ctx().GetInt64("id")
 	if id == 0 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
@@ -210,41 +204,41 @@ func (c *SystemController) MenuCheck() {
 }
 
 func (c *SystemController) WsConnection() {
-	if conn, err := upgrader.Upgrade(c.Ctx().Writer(), c.Ctx().Request(), nil); err != nil {
-		//报错了，直接返回底层的websocket链接就会终断掉
-		pine.Logger().Print("连接ws错误", err)
-		return
-	} else {
-		conf := pine.Make("pinecms.config").(*config.Config)
-		logPath := filepath.Join(conf.LogPath, "pinecms.log")
-		fileInfo, err := os.Stat(logPath)
-		if err != nil {
-			return
-		}
-		size := fileInfo.Size()
-		ta, err := tail.TailFile(logPath, tail.Config{
-			ReOpen:      true,
-			MustExist:   true,
-			Poll:        false,
-			Follow:      true,
-			MaxLineSize: 0,
-		})
-		if err != nil {
-			return
-		}
-		for text := range ta.Lines {
-			size -= int64(len(text.Text) + 1) // 添加一个换行符字节
-			if size <= 2048 {
-				if err = conn.WriteMessage(websocket.TextMessage, []byte(text.Text)); err != nil {
-					pine.Logger().Error("tail log failed", err)
-					_ = ta.Stop()
-					ta.Cleanup()
-					ta = nil
-					return
-				}
-			}
-		}
-	}
+	//if conn, err := upgrader.Upgrade(c.Ctx().Writer(), c.Ctx().Request(), nil); err != nil {
+	//	//报错了，直接返回底层的websocket链接就会终断掉
+	//	pine.Logger().Print("连接ws错误", err)
+	//	return
+	//} else {
+	//	conf := pine.Make("pinecms.config").(*config.Config)
+	//	logPath := filepath.Join(conf.LogPath, "pinecms.log")
+	//	fileInfo, err := os.Stat(logPath)
+	//	if err != nil {
+	//		return
+	//	}
+	//	size := fileInfo.Size()
+	//	ta, err := tail.TailFile(logPath, tail.Config{
+	//		ReOpen:      true,
+	//		MustExist:   true,
+	//		Poll:        false,
+	//		Follow:      true,
+	//		MaxLineSize: 0,
+	//	})
+	//	if err != nil {
+	//		return
+	//	}
+	//	for text := range ta.Lines {
+	//		size -= int64(len(text.Text) + 1) // 添加一个换行符字节
+	//		if size <= 2048 {
+	//			if err = conn.WriteMessage(websocket.TextMessage, []byte(text.Text)); err != nil {
+	//				pine.Logger().Error("tail log failed", err)
+	//				_ = ta.Stop()
+	//				ta.Cleanup()
+	//				ta = nil
+	//				return
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 func (c *SystemController) TailList() {
@@ -253,8 +247,8 @@ func (c *SystemController) TailList() {
 }
 
 func (c *SystemController) LogList() {
-	page, _ := c.Ctx().URLParamInt64("page")
-	rows, _ := c.Ctx().URLParamInt64("rows")
+	page, _ := c.Ctx().GetInt64("page")
+	rows, _ := c.Ctx().GetInt64("rows")
 
 	if page > 0 {
 		list, total := models.NewLogModel().GetList(page, rows)
@@ -262,7 +256,7 @@ func (c *SystemController) LogList() {
 		return
 	}
 
-	menuid, _ := c.Ctx().URLParamInt64("menuid")
+	menuid, _ := c.Ctx().GetInt64("menuid")
 	table := helper.Datagrid("system_menu_logList", "/b/system/loglist", helper.EasyuiOptions{
 		"title":   models.NewMenuModel().CurrentPos(menuid),
 		"toolbar": "system_loglist_datagrid_toolbar",

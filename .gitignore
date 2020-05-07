@@ -4,8 +4,10 @@ runtime
 *.js___jb_tmp___
 go.sum
 vendor
+node_modules
 uploads
 data.db.demo
+trace.out
 resources/configs/database.yml
 resources/assets/example/
 resources/themes/example/

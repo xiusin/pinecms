@@ -14,14 +14,14 @@ func SetGlobalConfigData() pine.Handler {
 			pine.Logger().Error("无法读取到配置内容:" + err.Error())
 			return
 		}
-		if !strings.HasPrefix(ctx.Request().URL.Path, "/b/") {
+		if !strings.HasPrefix(ctx.Path(), "/b/") {
 			if settingData["SITE_OPEN"] != "开启"  {
 				ctx.WriteString("系统维护, 暂停访问...")
 				return
 			}
 		}
 
-		settingData["site_url"] = ctx.Request().Host
+		settingData["site_url"] = string(ctx.Host())
 
 		ctx.Set(controllers.CacheSetting, settingData)
 

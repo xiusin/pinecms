@@ -2,11 +2,10 @@ package backend
 
 import (
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris/v12"
+	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"github.com/xiusin/pine"
 	"strconv"
 	"strings"
 )
@@ -63,5 +62,5 @@ func (c *LoginController) Logout() {
 	c.Ctx().RemoveCookie("userid")
 	c.Session().Remove("role_name")
 	c.Session().Remove("username")
-	c.Ctx().Redirect("/b/login/index", iris.StatusFound)
+	c.Ctx().Redirect("/b/login/index")
 }

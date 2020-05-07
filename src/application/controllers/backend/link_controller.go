@@ -26,8 +26,8 @@ func (c *LinkController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *LinkController) List() {
-	page, _ := c.Ctx().URLParamInt64("page")
-	rows, _ := c.Ctx().URLParamInt64("rows")
+	page, _ := c.Ctx().GetInt64("page")
+	rows, _ := c.Ctx().GetInt64("rows")
 
 	if page > 0 {
 		list, total := models.NewLinkModel().GetList(page, rows)
@@ -36,7 +36,7 @@ func (c *LinkController) List() {
 		return
 	}
 
-	menuid, _ := c.Ctx().URLParamInt64("menuid")
+	menuid, _ := c.Ctx().GetInt64("menuid")
 	table := helper.Datagrid("link_list_datagrid", "/b/link/list", helper.EasyuiOptions{
 		"title":   models.NewMenuModel().CurrentPos(menuid),
 		"toolbar": "link_list_datagrid_toolbar",
@@ -55,8 +55,8 @@ func (c *LinkController) List() {
 
 func (c *LinkController) Add() {
 	if c.Ctx().IsPost() {
-		if c.Ctx().Request().PostForm.Get("passed") == "on" {
-			c.Ctx().Request().PostForm.Set("passed", "1")
+		if c.Ctx().PostString("passed") == "on" {
+			c.Ctx().PostArgs().Set("passed", "1")
 		}
 		var d tables.Link
 		if err := c.Ctx().BindForm(&d); err != nil {
@@ -78,8 +78,8 @@ func (c *LinkController) Add() {
 
 func (c *LinkController) Edit() {
 	if c.Ctx().IsPost() {
-		if c.Ctx().Request().PostForm.Get("passed") == "on" {
-			c.Ctx().Request().PostForm.Set("passed", "1")
+		if c.Ctx().PostString("passed") == "on" {
+			c.Ctx().PostArgs().Set("passed", "1")
 		}
 		var d tables.Link
 		if err := c.Ctx().BindForm(&d); err != nil || d.Linkid < 1 {
@@ -94,7 +94,7 @@ func (c *LinkController) Edit() {
 		}
 		return
 	}
-	linkId, _ := c.Ctx().URLParamInt64("id")
+	linkId, _ := c.Ctx().GetInt64("id")
 	if linkId < 1 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
@@ -111,7 +111,7 @@ func (c *LinkController) Edit() {
 }
 
 func (c *LinkController) Delete() {
-	linkId, _ := c.Ctx().URLParamInt64("id")
+	linkId, _ := c.Ctx().GetInt64("id")
 	if linkId < 1 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return

@@ -125,5 +125,5 @@ func (c *IndexController) Detail(pathname string) {
 		return
 	}
 	data, _ := ioutil.ReadFile(pageFilePath)
-	c.Ctx().Writer().Write(data)
+	c.Ctx().Write(data)
 }

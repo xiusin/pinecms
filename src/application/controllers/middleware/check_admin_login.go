@@ -19,7 +19,7 @@ func CheckAdminLoginAndAccess(xorm *xorm.Engine, iCache cache.AbstractCache) pin
 		this.Render().ViewData("staticDir", "/assets/backend/static")
 		this.Render().ViewData("baseDir", "/assets/backend")
 
-		if strings.Contains(this.Request().URL.Path, "login") {
+		if strings.Contains(this.Path(), "login") {
 			this.Next()
 			return
 		}
@@ -31,7 +31,7 @@ func CheckAdminLoginAndAccess(xorm *xorm.Engine, iCache cache.AbstractCache) pin
 			this.Set("roleid", int64(roleId))
 			this.Set("username", this.Session().Get("username"))
 
-			pathString := strings.Split(strings.Trim(this.Request().URL.Path, "/"), "/")
+			pathString := strings.Split(strings.Trim(this.Path(), "/"), "/")
 			//public 或check 开始的路由不检测权限
 			if !(len(pathString) == 3 && (strings.Contains(pathString[2], "public-") ||
 				strings.Contains(pathString[2], "check-") || pathString[1] == "index")) {
@@ -50,7 +50,7 @@ func CheckAdminLoginAndAccess(xorm *xorm.Engine, iCache cache.AbstractCache) pin
 
 //检查权限
 func CheckPriv(this *pine.Context, xorm *xorm.Engine, cache cache.AbstractCache) bool {
-	pathinfo := strings.Split(strings.Trim(this.Request().URL.Path, "/"), "/")
+	pathinfo := strings.Split(strings.Trim(this.Path(), "/"), "/")
 	roleId, err := strconv.Atoi(this.Session().Get("roleid"))
 	if err != nil || len(pathinfo) < 3 {
 		return false
