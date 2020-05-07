@@ -21,6 +21,7 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine, cacheHandler cache.Abstrac
 	conf, _ := config.SiteConfig()
 	// todo 开启前端资源缓存 304
 	// todo 拦截存在静态文件的问题, 不过最好交给nginx等服务器转发
+	c.statistics(cacheHandler)
 	if conf["SITE_DEBUG"] == "" || conf["SITE_DEBUG"] == "关闭" {
 		pageName := c.Ctx().Params().Get("pagename") // 必须包含.html
 		if pageName == "" {
@@ -35,13 +36,12 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine, cacheHandler cache.Abstrac
 			c.Ctx().Abort(http.StatusNotFound)
 		} else {
 			c.Ctx().Render().ContentType(pine.ContentTypeHTML)
+			pine.Logger().Print("render file ",absFilePath)
 			_ = c.Ctx().Render().Bytes(byts)
 		}
 		return
 	}
-
 	pageName := strings.Trim(strings.ReplaceAll(c.Ctx().Params().Get("pagename"), "//", "/"), "/") // 必须包含.html
-	c.statistics(cacheHandler)
 	switch pageName {
 	case "index.html", "":
 		c.Index()
