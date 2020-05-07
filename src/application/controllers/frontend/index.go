@@ -31,6 +31,7 @@ func (c *IndexController) Index() {
 		c.Logger().Error(err)
 		return
 	}
+	c.Ctx().Render().ContentType(pine.ContentTypeHTML)
 	data, _ := ioutil.ReadFile(pageFilePath)
 	c.Ctx().Write(data)
 }

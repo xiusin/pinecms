@@ -124,6 +124,7 @@ func (c *IndexController) Detail(pathname string) {
 		c.Ctx().Abort(http.StatusInternalServerError)
 		return
 	}
+	c.Ctx().Render().ContentType(pine.ContentTypeHTML)
 	data, _ := ioutil.ReadFile(pageFilePath)
 	c.Ctx().Write(data)
 }

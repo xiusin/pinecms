@@ -78,6 +78,7 @@ func (c *IndexController) List(pageFilePath string) {
 		c.Ctx().Abort(http.StatusInternalServerError, "Render template failed")
 		return
 	}
+	c.Ctx().Render().ContentType(pine.ContentTypeHTML)
 	data, _ := ioutil.ReadFile(pageFilePath)
 	_, _ = c.Ctx().Write(data)
 }

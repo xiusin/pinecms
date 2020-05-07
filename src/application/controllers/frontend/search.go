@@ -197,6 +197,7 @@ func (c *IndexController) Search(orm *xorm.Engine) {
 		c.Ctx().Abort(500, err.Error())
 		return
 	}
+	c.Ctx().Render().ContentType(pine.ContentTypeHTML)
 	if err := tpl.Execute(c.Ctx().Response.BodyWriter(), viewDataToJetMap(c.Ctx().Render().GetViewData()), struct {
 		Field       *tables.Category
 		Position    string

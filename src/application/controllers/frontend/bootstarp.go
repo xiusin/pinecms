@@ -21,9 +21,11 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine, cacheHandler cache.Abstrac
 	conf, _ := config.SiteConfig()
 	// todo 开启前端资源缓存 304
 	// todo 拦截存在静态文件的问题, 不过最好交给nginx等服务器转发
-
 	if conf["SITE_DEBUG"] == "" || conf["SITE_DEBUG"] == "关闭" {
 		pageName := c.Ctx().Params().Get("pagename") // 必须包含.html
+		if pageName == "" {
+			pageName = "/"
+		}
 		if strings.HasSuffix(pageName, "/") {
 			pageName += "index.html"
 		}
