@@ -1,6 +1,6 @@
 module github.com/xiusin/pinecms
 
-go 1.13
+go 1.14
 
 require (
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
@@ -30,7 +30,7 @@ require (
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/xiusin/logger v0.0.2
-	github.com/xiusin/pine v0.0.4
+	github.com/xiusin/pine v0.0.5
 	go.etcd.io/bbolt v1.3.4
 	golang.org/x/crypto v0.0.0-20200427165652-729f1e841bcc // indirect
 	golang.org/x/image v0.0.0-20200119044424-58c23975cae1

@@ -21,8 +21,6 @@ type IndexController struct {
 	pine.Controller
 }
 
-var debug = true
-
 func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	// 必须放到最后 否则搜索路由时会优先被此路由拦截到
 	b.GET("/search.go", "Search")
@@ -52,7 +50,7 @@ func (c *IndexController) setTemplateData() {
 		return fmt.Sprintf("/%s/%d.html", urlPrefix, iaid)
 	}
 	c.Ctx().Set("detail_url", detailUrl)
-	if tid, _ := c.Param().GetInt64("tid"); tid <= 0 {
+	if tid, _ := c.Ctx().Params().GetInt64("tid"); tid <= 0 {
 		c.ViewData("isActive", func(id int64) bool {
 			treeCats := models.NewCategoryModel().GetPosArr(tid)
 			for _, v := range treeCats {

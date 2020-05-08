@@ -82,8 +82,8 @@ func (c *AssetsManagerController) Theme() {
 	for _, f := range fs {
 		if f.IsDir() {
 			dirs = append(dirs, map[string]interface{}{
-				"name":     f.Name(),
-				"thumb":  "/b/assets-manager/theme-thumb/" + f.Name(),
+				"name":  f.Name(),
+				"thumb": "/b/assets-manager/theme-thumb/" + f.Name(),
 			})
 		}
 	}
@@ -91,7 +91,6 @@ func (c *AssetsManagerController) Theme() {
 	c.Ctx().Render().ViewData("theme", conf.View.Theme)
 	c.Ctx().Render().HTML("backend/assets_theme.html")
 }
-
 
 func (c *AssetsManagerController) SetTheme(cache cache.AbstractCache) {
 	conf := di.MustGet("pinecms.config").(*config.Config)
@@ -105,7 +104,7 @@ func (c *AssetsManagerController) SetTheme(cache cache.AbstractCache) {
 		helper.Ajax("模板主题不存在", 1, c.Ctx())
 		return
 	}
-	if cache.Set(controllers.CacheTheme, []byte(name))	== nil {
+	if cache.Set(controllers.CacheTheme, []byte(name)) == nil {
 		conf.View.Theme = name
 		helper.Ajax("设置主题成功", 0, c.Ctx())
 	} else {
@@ -119,7 +118,7 @@ func (c *AssetsManagerController) Edit(orm *xorm.Engine) {
 		//origin := c.Ctx().URLParam("origin")
 		name := c.Ctx().PostValue("name")
 		content := c.Ctx().PostValue("content")
-		f := filepath.Join(conf.View.FeDirname,conf.View.Theme, name)
+		f := filepath.Join(conf.View.FeDirname, conf.View.Theme, name)
 		_, err := os.Stat(f)
 		if err != nil {
 			helper.Ajax("获取模板状态失败："+err.Error(), 1, c.Ctx())
@@ -176,7 +175,7 @@ func (c *AssetsManagerController) Add(orm *xorm.Engine) {
 
 func (c *AssetsManagerController) ThemeThumb() {
 	conf := di.MustGet("pinecms.config").(*config.Config)
-	themeName := c.Param().Get("theme")
+	themeName := c.Ctx().Params().Get("theme")
 	dirName := filepath.Join(conf.View.FeDirname, themeName, "thumb.png")
 	c.Ctx().SetContentType("img/png")
 	//todo 打开连接直接显示而不下载

@@ -134,7 +134,7 @@ func runServe() {
 }
 
 func diConfig() {
-	iCache = bbolt.New(bbolt.Option{
+	iCache = bbolt.New(&bbolt.Option{
 		TTL:  int(conf.Session.Expires),
 		Path: conf.CacheDb,
 	})

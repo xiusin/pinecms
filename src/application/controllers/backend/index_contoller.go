@@ -218,7 +218,6 @@ func (c *IndexController) GetMenus(iCache cache.AbstractCache) []map[string]inte
 	dataBytes, _ := iCache.Get(cacheKey)
 	data = string(dataBytes)
 	if data == "" || json.Unmarshal([]byte(data), &menujs) != nil {
-		pine.Logger().Debug("目录列表没有走缓存")
 		for _, v := range menus {
 			menu := models.NewMenuModel().GetMenu(v.Id, roleid.(int64))
 			if len(menu) == 0 {

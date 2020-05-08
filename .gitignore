@@ -7,6 +7,7 @@ vendor
 node_modules
 uploads
 data.db.demo
+data.db
 trace.out
 resources/configs/database.yml
 resources/assets/example/

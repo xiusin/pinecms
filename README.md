@@ -4,19 +4,9 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 ![](./resources/assets/backend/static/images/1.png)
 
-# 版本 #
-项目目前处于打磨阶段, 每个可能会有小部分修改
+# 编译部署 #
 
-# 下载部署 #
-## 下载编译包 ##
-
-git仓库: [pinecms](https://github.com/xiusin/pinecms/releases)
-
-gitee仓库: [pinecms](https://gitee.net/xiusin/pinecms/releases)
-
-解压下载包内容, 直接在目录下执行`pinecms(.exe)`
-
-## 自行编译 ##
+## 下载并编译 ##
  ```
  git clone https://github.com/xiusin/pinecms.git
  cd pinecms
@@ -24,11 +14,14 @@ gitee仓库: [pinecms](https://gitee.net/xiusin/pinecms/releases)
 ```
 
 ## 配置 ##
-1. 数据库配置
+1. 拷贝数据库文件 `data.db.dist` 并且命名为 `data.db`
+
+2. 数据库配置
     > 导入数据库结构`resources/pinecms.sql`
     >
     >修改`resources/configs/database.yml.dist`为`resources/configs/database.yml`
-    
+    >
+    > 配置数据源
 
 2. 安装依赖
     > `go build`
@@ -67,7 +60,6 @@ gitee仓库: [pinecms](https://gitee.net/xiusin/pinecms/releases)
 
 # 文档 #
 [pinecms.xyz](http://pinecms.xyz/)
-
 
 # 演示 # 
 - 首页 http://115.159.71.60:2019

@@ -17,14 +17,13 @@ import (
 func (c *IndexController) Detail(pathname string) {
 	c.setTemplateData()
 	pageFilePath := GetStaticFile(pathname)
-	aid, _ := c.Param().GetInt64("aid")
-	tid, _ := c.Param().GetInt64("tid")
+	aid, _ := c.Ctx().Params().GetInt64("aid")
+	tid, _ := c.Ctx().Params().GetInt64("tid")
 	var err error
 	if tid < 1 || aid < 1 {
 		c.Ctx().Abort(http.StatusNotFound)
 		return
 	}
-
 	// 直接读缓存
 	cacher := pine.Make("cache.AbstractCache").(cache.AbstractCache)
 	cacheKey := fmt.Sprintf(controllers.CacheCategoryContentPrefix, tid, aid)
@@ -124,7 +123,6 @@ func (c *IndexController) Detail(pathname string) {
 		c.Ctx().Abort(http.StatusInternalServerError)
 		return
 	}
-	c.Ctx().Render().ContentType(pine.ContentTypeHTML)
 	data, _ := ioutil.ReadFile(pageFilePath)
-	c.Ctx().Write(data)
+	c.Ctx().WriteHTMLBytes(data)
 }

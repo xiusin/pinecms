@@ -23,7 +23,7 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine, cacheHandler cache.Abstrac
 	// todo 拦截存在静态文件的问题, 不过最好交给nginx等服务器转发
 	c.statistics(cacheHandler)
 	if conf["SITE_DEBUG"] == "" || conf["SITE_DEBUG"] == "关闭" {
-		pageName := c.Ctx().Params().Get("pagename") // 必须包含.html
+		pageName := c.Ctx().Params().Get("pagename") // 必须包含.html, 在nginx要注意如果以/结尾的path需要追加index.html
 		if pageName == "" {
 			pageName = "/"
 		}
@@ -109,11 +109,11 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine, cacheHandler cache.Abstrac
 // 统计数据
 func (c *IndexController) statistics(cacheHandler cache.AbstractCache) {
 	ck := "pinecms_statistics"
-	val := c.Cookie().Get(ck)
+	val := c.Ctx().GetCookie(ck)
 
 	today := time.Now().In(helper.GetLocation()).Format("01-02")
 	if len(val) == 0 || val != today {
-		c.Cookie().Set(ck, today, 48*3600)
+		c.Ctx().SetCookie(ck, today, 48*3600)
 		var statistics = map[string]uint8{}
 		_ = cacheHandler.GetWithUnmarshal(controllers.CacheStatistics, &statistics)
 		if _, ok := statistics[today]; !ok {
