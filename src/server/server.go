@@ -9,6 +9,7 @@ import (
 	"github.com/xiusin/pine/cache/providers/bbolt"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pine/middlewares/cache304"
+	request_log "github.com/xiusin/pine/middlewares/request-log"
 	"github.com/xiusin/pine/render/engine/jet"
 	"github.com/xiusin/pine/render/engine/template"
 	"github.com/xiusin/pine/sessions"
@@ -59,7 +60,6 @@ func initDatabase() {
 	_orm.ShowExecTime(o.ShowExecTime)
 	_orm.SetMaxOpenConns(int(o.MaxOpenConns))
 	_orm.SetMaxIdleConns(int(o.MaxIdleConns))
-	// todo 使用xorm缓存适配器
 	XOrmEngine = _orm
 }
 
@@ -67,7 +67,7 @@ func initApp() {
 	app = pine.New()
 	diConfig()
 	app.Use(middleware.Demo())
-	//app.Use(request_log.RequestRecorder())
+	app.Use(request_log.RequestRecorder())
 	var staticPathPrefix []string
 	for _, static := range conf.Statics {
 		staticPathPrefix = append(staticPathPrefix, static.Route)
@@ -85,7 +85,7 @@ func Server() {
 	initDatabase()
 	initApp()
 	registerStatic()
-	registerBackendRoutes()
+	registerV2BackendRoutes()
 	router.InitRouter(app)
 	runServe()
 }
@@ -96,10 +96,22 @@ func registerStatic() {
 	}
 }
 
-func registerBackendRoutes() {
+func registerV2BackendRoutes() {
 	app.Use(middleware.SetGlobalConfigData())
+	app.Use(func(ctx *pine.Context) {
+		ctx.Response.Header.Add("Vary", "Origin")
+		ctx.Response.Header.Add("Vary", "Access-Control-Request-Method")
+		ctx.Response.Header.Add("Vary", "Access-Control-Request-Headers")
+		ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
+		ctx.Response.Header.Set("Access-Control-Allow-Headers", "*")
+		if !ctx.IsOptions() {
+			ctx.Next()
+		}
+	})
+	// 解析参数
+
 	app.Group(
-		conf.BackendRouteParty,
+		"/v2",
 		middleware.CheckAdminLoginAndAccess(XOrmEngine, iCache),
 	).Handle(new(backend.AdminController)).
 		Handle(new(backend.LoginController)).
@@ -116,7 +128,7 @@ func registerBackendRoutes() {
 		Handle(new(backend.AttachmentController)).
 		Handle(new(backend.AdController))
 
-	app.Group("/public").Handle(new(backend.PublicController))
+	app.Group("/v2/public").Handle(new(backend.PublicController))
 }
 
 func runServe() {
