@@ -133,10 +133,11 @@ func GetMd5(str string) string {
 func Ajax(errmsg interface{}, errcode int64, this *pine.Context) {
 	// 添加操作日志
 
-
-
-
 	this.Render().JSON(pine.H{"errcode": errcode, "errmsg": errmsg})
+}
+
+func AjaxV2(data pine.H, errcode int64, this *pine.Context)  {
+	this.Render().JSON(pine.H{"code": errcode,  "data": data})
 }
 
 func Dialog(errmsg interface{}, this *pine.Context) {

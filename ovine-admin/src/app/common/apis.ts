@@ -18,7 +18,7 @@ export const apis = {
     actionDesc: '退出登录',
   },
   getSelfInfo: {
-    url: 'GET ovapi/user/info',
+    url: 'GET admin/info',
     actionDesc: '获取个人信息',
     expired: 1000,
     mockSource,

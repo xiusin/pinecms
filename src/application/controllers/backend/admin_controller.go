@@ -19,6 +19,7 @@ type AdminController struct {
 }
 
 func (c *AdminController) RegisterRoute(b pine.IRouterWrapper) {
+	b.ANY("/admin/info", "AdminInfo")
 	b.ANY("/admin/memberlist", "Memberlist")
 	b.ANY("/admin/public-editpwd", "PublicEditpwd")
 	b.ANY("/admin/public-editinfo", "PublicEditInfo")
@@ -46,6 +47,16 @@ type memberlist struct {
 	Rolename      string
 	Userid        int64
 	Username      string
+}
+
+func (c *AdminController) AdminInfo()   {
+	aid, _ := c.Ctx().Value("adminid").(int64) //检测是否设置过session
+	info, err := models.NewAdminModel().GetUserInfo(aid)
+	if err != nil {
+		helper.Ajax(err.Error(), 1, c.Ctx())
+		return
+	}
+	helper.Ajax(info, 0, c.Ctx())
 }
 
 func (c *AdminController) PublicEditInfo() {

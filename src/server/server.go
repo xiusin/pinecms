@@ -2,6 +2,11 @@ package config
 
 import (
 	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"time"
+
 	"github.com/gorilla/securecookie"
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
@@ -17,10 +22,6 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/taglibs"
 	"github.com/xiusin/pinecms/src/application/controllers/tplfun"
-	"io"
-	"os"
-	"path/filepath"
-	"time"
 	"xorm.io/core"
 
 	"github.com/xiusin/pinecms/src/config"
@@ -74,6 +75,33 @@ func initApp() {
 	}
 	app.Use(cache304.Cache304(30000*time.Second, staticPathPrefix...))
 	app.Use(middleware.CheckDatabaseBackupDownload())
+	//app.Use(func(ctx *pine.Context) {
+	//	// 第二版
+	//	if strings.HasPrefix(ctx.Path(), "/v2") && ctx.IsPost() {
+	//		var m  = map[string]string{}
+	//		err := jsoniter.Unmarshal(ctx.PostBody(), &m)
+	//		if err != nil {
+	//			panic("无法解析PostBody参数: " + err.Error() + ", 原始数据: " + string(ctx.PostBody()))
+	//		}
+	//		//fmt.Printf("%+V", m)
+	//		//for k,v := range m {
+	//		//	switch v.(type) {
+	//		//	case bool:
+	//		//		if v.(bool) {
+	//		//			ctx.RequestCtx.QueryArgs().Add(k,"true")
+	//		//		} else {
+	//		//			ctx.RequestCtx.QueryArgs().Add(k,"false")
+	//		//		}
+	//		//	case float64:
+	//		//		fmt.Println(fmt.Sprint( v), strconv.FormatFloat(v.(float64), 'E', -1, 32))
+	//		//		ctx.PostArgs().Add(k, fmt.Sprintf("%s", v.(float64)))
+	//		//
+	//		//	}
+	//		//}
+	//		m = nil
+	//	}
+	//	ctx.Next()
+	//})
 	//pine.RegisterErrorCodeHandler(http.StatusNotFound, func(ctx *pine.Context) {
 	//	// 不同状态码可以显示不同的内容
 	//	// 自定义页面
@@ -113,6 +141,10 @@ func registerV2BackendRoutes() {
 	app.Group(
 		"/v2",
 		middleware.CheckAdminLoginAndAccess(XOrmEngine, iCache),
+		func(ctx *pine.Context) {
+			ctx.Set("IsV2", true)
+			ctx.Next()
+		},
 	).Handle(new(backend.AdminController)).
 		Handle(new(backend.LoginController)).
 		Handle(new(backend.IndexController)).

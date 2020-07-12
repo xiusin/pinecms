@@ -17,6 +17,7 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/gorilla/securecookie v1.1.1
+	github.com/json-iterator/go v1.1.10
 	github.com/kataras/go-mailer v0.1.0
 	github.com/kataras/tablewriter v0.0.0-20180708051242-e063d29b7c23 // indirect
 	github.com/klauspost/compress v1.10.5 // indirect

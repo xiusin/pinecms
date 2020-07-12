@@ -20,14 +20,18 @@ const log = logger.getLogger('app:request')
 
 export const request = new Request()
 
+
 // 请求准备阶段 回调
 request.onPreRequest = (option) => {
   option.mock = false // 全局控制是否开启 mock， 必须在 ovine cli --mock 选项开启的情况下，才有效
+  option.dataType = "form-data" //todo 调整为 form 表单提交数据
   return option
 }
 
 // 请求发送前 回调
 request.onRequest = (option) => {
+  console.log('onPreRequest option', option)
+
   const { key, token } = getStore(storeKeys.auth) || {}
   const { actionAddr } = option
 
