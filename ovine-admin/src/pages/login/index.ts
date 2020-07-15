@@ -4,6 +4,7 @@
 
 import { publish } from '@core/utils/message'
 import { setStore, clearStore } from '@core/utils/store'
+import { setAppLimits } from '@core/routes/limit/exports'
 
 import { storeKeys, msgKeys } from '~/app/constants'
 
@@ -34,22 +35,26 @@ export const schema = {
   preset: {
     apis: {
       login: {
-        url: 'POST login/index',
+        url: 'POST login',
         mock: false,
         onError: () => {
           publish(msgKeys.updateAuthLoginCode, '')
         },
         onSuccess: (source) => {
-          console.log('登录一次', source)
-          // const { code, msg, data } = source
-          // if (code === 0) {
-          //   setStore(storeKeys.auth, data)
-          //   source.msg = '您已登录登录本系统'
-          // } else {
-          //   clearStore(storeKeys.auth)
-          //   source.msg = msg || '登录异常'
-          // }
-          source.msg = '登录异常'
+          const { code, msg, data } = source
+          if (code === 0) {
+            setStore(storeKeys.auth, data)
+            source.msg = '您已登录登录本系统'
+          } else {
+            clearStore(storeKeys.auth)
+            source.msg = msg || '登录异常'
+          }
+
+          // const userLimitString = source.data.limit
+          // console.log("userLimitString", userLimitString)
+          // setAppLimits(userLimitString) // setAppLimits 设置用户的接口权限
+
+
           return source
         },
       },
@@ -96,6 +101,7 @@ export const schema = {
                 name: 'code',
                 required: true,
                 placeholder: '请输入验证码',
+                value: 'abcd',
                 mode: 'inline',
                 className: 'inline m-b-none',
                 inputClassName: 'code-input',

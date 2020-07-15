@@ -57,7 +57,7 @@ export default {
       code: 0,
     }
   },
-  'POST ovapi/stat/data': () => {
+  'POST stat/data': () => {
     return {
       code: 0,
     }

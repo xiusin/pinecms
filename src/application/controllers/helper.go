@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/gbrlsnchs/jwt/v3"
 	"github.com/xiusin/pine/di"
 )
 
@@ -10,6 +11,11 @@ type FieldShowInPageList struct {
 	FeSearch  bool   `json:"fe_search"`
 	FormShow  bool   `json:"form_show"`
 	Formatter string `json:"formatter"`
+}
+
+type LoginAdminPayload struct {
+	jwt.Payload
+	AdminId int64 `json:"admin_id"`
 }
 
 func GetInMap(data map[string]FieldShowInPageList, key string) FieldShowInPageList {

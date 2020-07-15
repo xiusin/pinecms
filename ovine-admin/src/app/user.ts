@@ -28,16 +28,17 @@ function checkAppLimitStr(limitStr: string): boolean {
    * 1. limitStr 不存在
    * 2. limitStr 不是根权限标示符 并且 limitStr 中不存在 路由权限 （即没有一个展示路由时）。
    */
-  if (
-    !limitStr ||
-    (limitStr !== app.constants.rootLimitFlag && limitStr.indexOf(routeLimitKey) === -1)
-  ) {
-    toast.error('当前用户权限异常', '系统提示')
-    return false
-  }
-
-  // 将检查通过的权限字符串，设置到应用中
-  setAppLimits(limitStr)
+  console.log(limitStr)
+  // if (
+  //   !limitStr ||
+  //   (limitStr !== app.constants.rootLimitFlag && limitStr.indexOf(routeLimitKey) === -1)
+  // ) {
+  //   toast.error('当前用户权限异常', '系统提示')
+  //   return false
+  // }
+  //
+  // // 将检查通过的权限字符串，设置到应用中
+  // setAppLimits(limitStr)
 
   return true
 }

@@ -14,7 +14,7 @@ const prest: PagePreset = {
   },
   apis: {
     chart: {
-      url: 'GET ovapi/stat/data',
+      url: 'GET stat/data',
       cache: 500,
       limits: '$page',
     },

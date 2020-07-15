@@ -6,7 +6,21 @@
  * 由于使用了 文件动态引入，每次新增加页面时，dev server 可能会报 找不到文件错误，重启下 dev server 就好。
  */
 
-import { LimitMenuItem } from '@core/routes/types'
+// import {app} from '@core/app'
+import {LimitMenuItem} from '@core/routes/types'
+
+//
+// app.request({
+//   url: 'POST admin/menu',
+//   data: {
+//     username: '1',
+//     password: '2',
+//   },
+// }).then((source) => {
+//   console.log('你好')
+// }).catch(() => {
+//   console.log('请求发生异常')
+// })
 
 export const menuRoutes: LimitMenuItem = {
   nodePath: '/',

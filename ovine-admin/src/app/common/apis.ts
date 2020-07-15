@@ -38,7 +38,7 @@ export const apis = {
     actionDesc: '上传图片',
   },
   pageStat: {
-    url: 'POST ovapi/stat/data',
+    url: 'POST stat/data',
     actionDesc: '页面数据统计',
     mockSource,
   },

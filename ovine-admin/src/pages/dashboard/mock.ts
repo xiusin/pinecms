@@ -2,7 +2,7 @@
 import { times } from 'lodash'
 
 export default {
-  'GET ovapi/stat/data': () => {
+  'GET stat/data': () => {
     return {
       data: {
         list: times(7, (i) => ({

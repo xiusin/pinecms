@@ -30,7 +30,7 @@ request.onPreRequest = (option) => {
 
 // 请求发送前 回调
 request.onRequest = (option) => {
-  console.log('onPreRequest option', option)
+  // console.log('onPreRequest option', option)
 
   const { key, token } = getStore(storeKeys.auth) || {}
   const { actionAddr } = option

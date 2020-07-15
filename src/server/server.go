@@ -2,16 +2,16 @@ package config
 
 import (
 	"fmt"
+	"github.com/gorilla/securecookie"
+	"github.com/xiusin/pine/cache/providers/bbolt"
 	"io"
 	"os"
 	"path/filepath"
 	"time"
 
-	"github.com/gorilla/securecookie"
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
-	"github.com/xiusin/pine/cache/providers/bbolt"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pine/middlewares/cache304"
 	request_log "github.com/xiusin/pine/middlewares/request-log"
@@ -67,7 +67,7 @@ func initDatabase() {
 func initApp() {
 	app = pine.New()
 	diConfig()
-	app.Use(middleware.Demo())
+	//app.Use(middleware.Demo())
 	app.Use(request_log.RequestRecorder())
 	var staticPathPrefix []string
 	for _, static := range conf.Statics {
@@ -75,38 +75,6 @@ func initApp() {
 	}
 	app.Use(cache304.Cache304(30000*time.Second, staticPathPrefix...))
 	app.Use(middleware.CheckDatabaseBackupDownload())
-	//app.Use(func(ctx *pine.Context) {
-	//	// 第二版
-	//	if strings.HasPrefix(ctx.Path(), "/v2") && ctx.IsPost() {
-	//		var m  = map[string]string{}
-	//		err := jsoniter.Unmarshal(ctx.PostBody(), &m)
-	//		if err != nil {
-	//			panic("无法解析PostBody参数: " + err.Error() + ", 原始数据: " + string(ctx.PostBody()))
-	//		}
-	//		//fmt.Printf("%+V", m)
-	//		//for k,v := range m {
-	//		//	switch v.(type) {
-	//		//	case bool:
-	//		//		if v.(bool) {
-	//		//			ctx.RequestCtx.QueryArgs().Add(k,"true")
-	//		//		} else {
-	//		//			ctx.RequestCtx.QueryArgs().Add(k,"false")
-	//		//		}
-	//		//	case float64:
-	//		//		fmt.Println(fmt.Sprint( v), strconv.FormatFloat(v.(float64), 'E', -1, 32))
-	//		//		ctx.PostArgs().Add(k, fmt.Sprintf("%s", v.(float64)))
-	//		//
-	//		//	}
-	//		//}
-	//		m = nil
-	//	}
-	//	ctx.Next()
-	//})
-	//pine.RegisterErrorCodeHandler(http.StatusNotFound, func(ctx *pine.Context) {
-	//	// 不同状态码可以显示不同的内容
-	//	// 自定义页面
-	//	ctx.WriteString("404 NotFround")
-	//})
 }
 
 func Server() {
@@ -130,21 +98,21 @@ func registerV2BackendRoutes() {
 		ctx.Response.Header.Add("Vary", "Origin")
 		ctx.Response.Header.Add("Vary", "Access-Control-Request-Method")
 		ctx.Response.Header.Add("Vary", "Access-Control-Request-Headers")
-		ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
+		ctx.Response.Header.Add("Vary", "Access-Control-Allow-Credentials")
+
+		ctx.Response.Header.Set("Access-Control-Allow-Origin", "http://localhost:7050")
 		ctx.Response.Header.Set("Access-Control-Allow-Headers", "*")
+		ctx.Response.Header.Set("Access-Control-Allow-Credentials", "true")
+
 		if !ctx.IsOptions() {
 			ctx.Next()
 		}
 	})
 	// 解析参数
-
 	app.Group(
 		"/v2",
-		middleware.CheckAdminLoginAndAccess(XOrmEngine, iCache),
-		func(ctx *pine.Context) {
-			ctx.Set("IsV2", true)
-			ctx.Next()
-		},
+		//middleware.CheckAdminLoginAndAccess(XOrmEngine, iCache),
+		middleware.VerifyJwtToken(),
 	).Handle(new(backend.AdminController)).
 		Handle(new(backend.LoginController)).
 		Handle(new(backend.IndexController)).
@@ -158,19 +126,16 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.DatabaseController)).
 		Handle(new(backend.AssetsManagerController)).
 		Handle(new(backend.AttachmentController)).
-		Handle(new(backend.AdController))
+		Handle(new(backend.AdController)).
+		Handle(new(backend.StatController))
 
 	app.Group("/v2/public").Handle(new(backend.PublicController))
 }
 
 func runServe() {
-	//f, _ := os.Create("trace.out")
-	//defer f.Close()
-	//_ = trace.Start(f)
-	//defer trace.Stop()
 	app.Run(
 		pine.Addr(fmt.Sprintf(":%d", conf.Port)),
-		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))),
+		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))), // 关闭加密cookie
 		pine.WithoutStartupLog(false),
 		pine.WithServerName("xiusin/pinecms"),
 		pine.WithCookie(true),
@@ -182,6 +147,8 @@ func diConfig() {
 		TTL:  int(conf.Session.Expires),
 		Path: conf.CacheDb,
 	})
+
+	//badger.New(int(conf.Session.Expires), conf.CacheDb)
 
 	theme, _ := iCache.Get(controllers.CacheTheme)
 	if len(theme) > 0 {

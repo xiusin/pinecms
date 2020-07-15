@@ -25,6 +25,7 @@ type Config struct {
 		Path  string `yaml:"path"`
 	} `yaml:"statics"`
 	Charset           string `yaml:"charset"`
+	JwtKey            string `yaml:"jwtkey"`
 	HashKey           string `yaml:"hashkey"`
 	BlockKey          string `yaml:"blockkey"`
 	BackendRouteParty string `yaml:"backend_route_party"`
