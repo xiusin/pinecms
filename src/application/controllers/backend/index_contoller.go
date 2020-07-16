@@ -64,12 +64,9 @@ func getMems() []MemPos {
 	return mems
 }
 
-func (c *IndexController) Index(icache cache.AbstractCache) {
+func (c *IndexController) Menu(icache cache.AbstractCache) {
 	menus := c.GetMenus(icache)
-	c.ViewData("menus", menus)
-	c.ViewData("username", c.Session().Get("username"))
-	c.ViewData("rolename", c.Session().Get("role_name"))
-	c.View("backend/index_index.html")
+	helper.Ajax(menus, 1, c.Ctx())
 }
 
 func (c *IndexController) Main(orm *xorm.Engine, iCache cache.AbstractCache) {
@@ -127,8 +124,8 @@ type visitStruct struct {
 func (c *IndexController) collationFormatVisits(iCache cache.AbstractCache) {
 	// 统计访问来源
 	referStruct := map[string]visitStruct{}
-	var defaultRefers = map[string]int{"baidu": 0, "google": 0, "so": 0, "bing": 0, "sougou": 0, "other": 0,}
-	var referNames = map[string]string{"baidu": "1.百度", "google": "2.谷歌", "so": "3.360搜索", "bing": "4.必应", "sougou": "5.搜狗", "other": "6.其他",}
+	var defaultRefers = map[string]int{"baidu": 0, "google": 0, "so": 0, "bing": 0, "sougou": 0, "other": 0}
+	var referNames = map[string]string{"baidu": "1.百度", "google": "2.谷歌", "so": "3.360搜索", "bing": "4.必应", "sougou": "5.搜狗", "other": "6.其他"}
 	var totalRefer = 0
 	var refers = map[string]int{}
 	iCache.GetWithUnmarshal(controllers.CacheRefer, &refers)
@@ -138,7 +135,7 @@ func (c *IndexController) collationFormatVisits(iCache cache.AbstractCache) {
 		for _, v := range refers {
 			totalRefer += v
 		}
-		for k,v := range defaultRefers {
+		for k, v := range defaultRefers {
 			if _, ok := refers[k]; !ok {
 				refers[k] = v
 			}
@@ -161,79 +158,40 @@ func (c *IndexController) collationFormatVisits(iCache cache.AbstractCache) {
 	c.ViewData("refers", referStruct)
 }
 
-func (c *IndexController) Menu(iCache cache.AbstractCache) {
-	meid, _ := c.Ctx().PostInt64("menuid")
-	roleid := c.Ctx().Value("roleid")
-	if roleid == nil {
-		roleid = interface{}(int64(0))
-	}
-	menus := models.NewMenuModel().GetMenu(meid, roleid.(int64)) //获取menuid内容
-	cacheKey := fmt.Sprintf(controllers.CacheAdminMenuByRoleIdAndMenuId, roleid, meid)
-	var menujs []map[string]interface{} //要返回json的对象
-	var data string
-	if meid > 0 {
-		dataBytes, _ := iCache.Get(cacheKey)
-		data = string(dataBytes)
-	} else {
-		data = ""
-	}
-	if data == "" || json.Unmarshal([]byte(data), &menujs) != nil {
-		pine.Logger().Debug("目录列表没有走缓存")
-		for _, v := range menus {
-			menu := models.NewMenuModel().GetMenu(v.Id, roleid.(int64))
-			if len(menu) == 0 {
-				continue
-			}
-			var sonmenu []map[string]interface{}
-			for _, son := range menu {
-				sonmenu = append(sonmenu, map[string]interface{}{
-					"text": son.Name,
-					"id":   son.Id,
-					"url":  "/b/" + son.C + "/" + son.A + "?menuid=" + strconv.Itoa(int(son.Id)) + "&" + son.Data,
-				})
-			}
-			menujs = append(menujs, map[string]interface{}{
-				"name": v.Name,
-				"son":  sonmenu,
-			})
-
-		}
-		strs, _ := json.Marshal(&menujs)
-		if err := iCache.Set(cacheKey, strs); err != nil {
-			pine.Logger().Errorf("save cache %s failed: %s", cacheKey, err.Error())
-		}
-	}
-	c.Render().JSON(menujs)
-}
-
-func (c *IndexController) GetMenus(iCache cache.AbstractCache) []map[string]interface{} {
+func (c *IndexController) GetMenus(iCache cache.AbstractCache) []MenuV2 {
 	roleid := c.Ctx().Value("roleid")
 	if roleid == nil {
 		roleid = interface{}(int64(0))
 	}
 	menus := models.NewMenuModel().GetMenu(1, roleid.(int64)) //获取menuid内容
 	cacheKey := fmt.Sprintf(controllers.CacheAdminMenuByRoleIdAndMenuId, roleid, 1)
-	var menujs []map[string]interface{} //要返回json的对象
+	var menujs []MenuV2 //要返回json的对象
 	var data string
 	dataBytes, _ := iCache.Get(cacheKey)
 	data = string(dataBytes)
+	data = ""
 	if data == "" || json.Unmarshal([]byte(data), &menujs) != nil {
 		for _, v := range menus {
 			menu := models.NewMenuModel().GetMenu(v.Id, roleid.(int64))
 			if len(menu) == 0 {
 				continue
 			}
-			var sonmenu []map[string]interface{}
+			var sonmenu []MenuV2
 			for _, son := range menu {
-				sonmenu = append(sonmenu, map[string]interface{}{
-					"text": son.Name,
-					"id":   son.Id,
-					"url":  "/b/" + son.C + "/" + son.A + "?menuid=" + strconv.Itoa(int(son.Id)) + "&" + son.Data,
+				sonmenu = append(sonmenu, MenuV2{
+					Label:           son.Name,
+					NodePath:        son.A,
+					SideVisible:     true,
+					Icon:            "fa fa-home",
+					PathToComponent: strFirstToUpper(son.C + "/" + son.A), // 指定要路由到的模块， 请注意横线问题
 				})
 			}
-			menujs = append(menujs, map[string]interface{}{
-				"name": v.Name,
-				"son":  sonmenu,
+			menujs = append(menujs, MenuV2{
+				Label:       v.Name,
+				NodePath:    v.C,
+				SideVisible: true,
+				Icon:        "fa fa-home",
+				Children:    sonmenu,
 			})
 
 		}

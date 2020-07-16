@@ -6,34 +6,25 @@
  * 由于使用了 文件动态引入，每次新增加页面时，dev server 可能会报 找不到文件错误，重启下 dev server 就好。
  */
 
-// import {app} from '@core/app'
 import {LimitMenuItem} from '@core/routes/types'
+import {getStore} from "@core/utils/store";
+import {storeKeys} from "~/app/constants";
+import {env} from "~/app/env";
 
-//
-// app.request({
-//   url: 'POST admin/menu',
-//   data: {
-//     username: '1',
-//     password: '2',
-//   },
-// }).then((source) => {
-//   console.log('你好')
-// }).catch(() => {
-//   console.log('请求发生异常')
-// })
 
-export const menuRoutes: LimitMenuItem = {
+let menus: LimitMenuItem = {
   nodePath: '/',
-  limitLabel: '侧边栏目录',
+  limitLabel: '菜单目录',
   label: '',
   children: [
     {
       path: '/',
-      label: 'Dashboard',
+      label: '后台首页',
       nodePath: 'dashboard',
       exact: true,
+      icon: 'fa fa-home',
       pathToComponent: 'dashboard',
-      sideVisible: false, // 不会显示在侧边栏
+      sideVisible: true, // 不会显示在侧边栏
     },
     {
       label: '页面编辑',
@@ -75,4 +66,27 @@ export const menuRoutes: LimitMenuItem = {
       ],
     },
   ],
-}
+};
+
+var xhr = new XMLHttpRequest();
+xhr.open("GET", env.localhost.domains.api + "/index/menu", false);
+const { key, token } = getStore(storeKeys.auth) || {}
+xhr.setRequestHeader(key, token)
+xhr.onload = function (e) {
+  if (xhr.readyState === 4) {
+    if (xhr.status === 200) {
+      const data=JSON.parse(xhr.responseText);
+      // 追加自己的菜单
+      menus.children = menus.children.concat(data.data);
+    } else {
+      console.error(xhr.statusText);
+    }
+  }
+};
+xhr.onerror = function (e) {
+  console.error(xhr.statusText);
+};
+xhr.send(null);
+
+// todo 动态合并主菜单
+export const menuRoutes = menus;

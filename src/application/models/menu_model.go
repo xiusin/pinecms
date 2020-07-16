@@ -19,14 +19,14 @@ func NewMenuModel() *MenuModel {
 
 //根据父级ID获取菜单列表 不递归
 func (m *MenuModel) GetMenu(parentid, roleid int64) []tables.Menu {
-	menus := new([]tables.Menu)
-	m.orm.Where("parentid = ? and display= ?", parentid, 1).Asc("listorder").Find(menus)
+	menus := []tables.Menu{}
+	m.orm.Where("parentid = ? and display= ?", parentid, 1).Asc("listorder").Find(&menus)
 	if roleid == 1 {
-		return *menus
+		return menus
 	}
 	retmenus := []tables.Menu{}
 	//结合角色权限进行菜单返回
-	for _, menu := range *menus {
+	for _, menu := range menus {
 		total, _ := m.orm.Where("c=? and a=? and roleid=?", menu.C, menu.A, roleid).Count(&tables.AdminRolePriv{})
 		//public的操作也要全部暴露
 		if total > 0 || strings.Contains(menu.A, "public-") {

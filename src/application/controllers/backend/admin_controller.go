@@ -35,7 +35,6 @@ func (c *AdminController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/admin/role-edit", "RoleEdit")
 	b.ANY("/admin/role-delete", "RoleDelete")
 	b.ANY("/admin/role-permission", "RolePermission")
-
 }
 
 //用于用户列表数据格式返回
@@ -84,16 +83,12 @@ func (c *AdminController) PublicEditInfo() {
 		}
 		return
 	}
-	menuid, _ := c.Ctx().GetInt64("menuid")
-	currentPos := models.NewMenuModel().CurrentPos(menuid)
 	info, err := models.NewAdminModel().GetUserInfo(aid)
 	if err != nil {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
 	}
-	c.Ctx().Render().ViewData("title", currentPos)
-	c.Ctx().Render().ViewData("info", info)
-	c.Ctx().Render().HTML("backend/admin_editinfo.html")
+	helper.Ajax(info, 0, c.Ctx())
 }
 
 func (c *AdminController) Memberlist() {

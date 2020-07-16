@@ -16,6 +16,7 @@ type FieldShowInPageList struct {
 type LoginAdminPayload struct {
 	jwt.Payload
 	AdminId int64 `json:"admin_id"`
+	RoleID  int64 `json:"role_id"`
 }
 
 func GetInMap(data map[string]FieldShowInPageList, key string) FieldShowInPageList {

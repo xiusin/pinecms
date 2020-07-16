@@ -36,9 +36,9 @@ function checkAppLimitStr(limitStr: string): boolean {
   //   toast.error('当前用户权限异常', '系统提示')
   //   return false
   // }
-  //
-  // // 将检查通过的权限字符串，设置到应用中
-  // setAppLimits(limitStr)
+  limitStr = "*"  // todo 目前不知道limitStr是什么样的数据 先设置为超级管理
+  // 将检查通过的权限字符串，设置到应用中
+  setAppLimits(limitStr)
 
   return true
 }

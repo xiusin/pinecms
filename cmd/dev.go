@@ -87,7 +87,8 @@ func serve() {
 			logger.Error(err)
 		}
 		logger.Print("构建并启动服务成功")
-		if err := currentCMD.Wait(); err != nil && err.Error() != "signal: killed" {
+		excludeErrors := "signal: killed;exit status 1"
+		if err := currentCMD.Wait(); err != nil && !strings.Contains(excludeErrors, err.Error()) {
 			logger.Error(err)
 		}
 		<-nextLoop

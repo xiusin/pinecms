@@ -47,6 +47,7 @@ func (c *LoginController) LoginV2(orm *xorm.Engine, cache cache.AbstractCache) {
 				ExpirationTime: jwt.NumericDate(now.Add(24 * 30 * 12 * time.Hour)),
 			},
 			AdminId: admin.Userid,
+			RoleID:  admin.Roleid,
 		}
 		token, err := jwt.Sign(pl, hs)
 		if err != nil {
@@ -59,8 +60,8 @@ func (c *LoginController) LoginV2(orm *xorm.Engine, cache cache.AbstractCache) {
 			"admin_id":   admin.Userid,
 			"admin_name": admin.Username,
 			//"limit":      []string{}, // 用户权限
-			"token":      string(token),
-			"key":        "X-TOKEN",
+			"token": string(token),
+			"key":   "X-TOKEN",
 		}, 0, c.Ctx())
 
 	}

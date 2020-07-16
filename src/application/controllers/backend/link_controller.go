@@ -31,7 +31,9 @@ func (c *LinkController) List() {
 
 	if page > 0 {
 		list, total := models.NewLinkModel().GetList(page, rows)
-		c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": total})
+		//c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": total})
+
+		helper.Ajax(map[string]interface{}{"rows": list, "total": total},0, c.Ctx())
 
 		return
 	}

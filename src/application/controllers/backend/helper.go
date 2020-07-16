@@ -269,3 +269,22 @@ func getStorageEngine(settingData map[string]string) storage.Uploader {
 	}
 	return uploader
 }
+
+func strFirstToUpper(str string) string {
+	temp :=  strings.Split(strings.ReplaceAll(str, "_", "-"), "-")
+	var upperStr string
+	for y := 0; y < len(temp); y++ {
+		vv := []rune(temp[y])
+		if y != 0 {
+			for i := 0; i < len(vv); i++ {
+				if i == 0 {
+					vv[i] -= 32
+					upperStr += string(vv[i]) // + string(vv[i+1])
+				} else {
+					upperStr += string(vv[i])
+				}
+			}
+		}
+	}
+	return temp[0] + upperStr
+}

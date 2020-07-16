@@ -11,7 +11,8 @@ import (
 func VerifyJwtToken() pine.Handler {
 	return func(ctx *pine.Context) {
 		ctx.Set("IsV2", true)
-		if !strings.Contains(ctx.Path(), "login") && !strings.Contains(ctx.Path(), "public") {
+		if !strings.Contains(ctx.Path(), "login") &&
+			!strings.Contains(ctx.Path(), "/public/") /*public控制器下的不校验Token*/{
 			token := ctx.Header("X-TOKEN")
 			var hs = jwt.NewHS256([]byte(config.AppConfig().JwtKey))
 			// 验证token
@@ -20,6 +21,8 @@ func VerifyJwtToken() pine.Handler {
 			if err != nil {
 				panic(err)
 			}
+			ctx.Set("roleid", pl.RoleID)
+			ctx.Set("adminid", pl.AdminId)
 		}
 		ctx.Next()
 	}
