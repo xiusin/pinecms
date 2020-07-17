@@ -163,7 +163,6 @@ func (c *IndexController) GetMenus(iCache cache.AbstractCache) []MenuV2 {
 	if roleid == nil {
 		roleid = interface{}(int64(0))
 	}
-	menus := models.NewMenuModel().GetMenu(1, roleid.(int64)) //获取menuid内容
 	cacheKey := fmt.Sprintf(controllers.CacheAdminMenuByRoleIdAndMenuId, roleid, 1)
 	var menujs []MenuV2 //要返回json的对象
 	var data string
@@ -171,11 +170,9 @@ func (c *IndexController) GetMenus(iCache cache.AbstractCache) []MenuV2 {
 	data = string(dataBytes)
 	data = ""
 	if data == "" || json.Unmarshal([]byte(data), &menujs) != nil {
+		menus := models.NewMenuModel().GetMenu(1, roleid.(int64)) //获取menuid内容
 		for _, v := range menus {
 			menu := models.NewMenuModel().GetMenu(v.Id, roleid.(int64))
-			if len(menu) == 0 {
-				continue
-			}
 			var sonmenu []MenuV2
 			for _, son := range menu {
 				sonmenu = append(sonmenu, MenuV2{
@@ -186,13 +183,21 @@ func (c *IndexController) GetMenus(iCache cache.AbstractCache) []MenuV2 {
 					PathToComponent: strFirstToUpper(son.C + "/" + son.A), // 指定要路由到的模块， 请注意横线问题
 				})
 			}
-			menujs = append(menujs, MenuV2{
+			var menuv2 = MenuV2{
 				Label:       v.Name,
 				NodePath:    v.C,
 				SideVisible: true,
 				Icon:        "fa fa-home",
-				Children:    sonmenu,
-			})
+			}
+			if len(sonmenu) == 0 {
+				menuv2.PathToComponent = v.C + "/" + v.A
+				menuv2.Path = menuv2.PathToComponent
+				menuv2.NodePath = menuv2.PathToComponent
+			} else {
+				menuv2.Children = sonmenu
+			}
+
+			menujs = append(menujs, menuv2)
 
 		}
 		strs, _ := json.Marshal(&menujs)

@@ -27,7 +27,7 @@ func (s *OssUploader) GetFullUrl(name string) string {
 }
 
 func (s *OssUploader) Exists(name string) (bool, error) {
-	name = strings.TrimLeft(filepath.Join(s.urlPrefix, name), "/")
+	name = strings.TrimLeft(getAvaliableUrl(filepath.Join(s.urlPrefix, name)), "/")
 	return s.bucket.IsObjectExist(name)
 }
 
@@ -55,7 +55,7 @@ func NewOssUploader(config map[string]string) *OssUploader {
 // storageName 云端路径名. 最终上传相对urlPrefix生成地址
 // LocalFile 要上传的文件名
 func (s *OssUploader) Upload(storageName string, LocalFile io.Reader) (string, error) {
-	storageName = filepath.Join(s.urlPrefix, storageName)
+	storageName = getAvaliableUrl(filepath.Join(s.urlPrefix, storageName))
 	if s.client == nil {
 		return "", errors.New("ossClient is error")
 	}
@@ -68,7 +68,7 @@ func (s *OssUploader) Upload(storageName string, LocalFile io.Reader) (string, e
 }
 
 func (s *OssUploader) List(dir string) ([]string, string, error) {
-	list,err := s.bucket.ListObjects(oss.Prefix(strings.TrimLeft(filepath.Join(s.urlPrefix, dir), "/")))
+	list,err := s.bucket.ListObjects(oss.Prefix(strings.TrimLeft(getAvaliableUrl(filepath.Join(s.urlPrefix, dir)), "/")))
 	if err != nil {
 		return nil, "", err
 	}

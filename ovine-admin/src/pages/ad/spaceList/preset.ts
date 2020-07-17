@@ -15,7 +15,7 @@ export default {
   },
   apis: {
     list: {
-      url: 'GET link/list',
+      url: 'GET ad/space-list',
       limits: '$page',
       onPreRequest: (source) => {
         const { dateRange } = source.data
@@ -31,15 +31,15 @@ export default {
       },
     },
     add: {
-      url: 'POST link/add',
+      url: 'POST ad/space-add',
       limits: 'add',
     },
     edit: {
-      url: 'POST link/edit?linkid=$linkid',
+      url: 'POST ad/space-edit?id=$id',
       limits: 'edit',
     },
     del: {
-      url: 'POST link/delete?id=$linkid',
+      url: 'POST ad/space-delete?id=$id',
       limits: 'del',
     },
   },

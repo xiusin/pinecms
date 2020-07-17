@@ -10,6 +10,6 @@ type Link struct {
 	Url       string    `json:"url"`
 	Introduce string    `json:"introduce"`
 	Listorder int64     `json:"listorder"`
-	Passed    int8      `json:"passed"`
+	Passed    bool      `json:"passed"`
 	Addtime   time.Time `json:"addtime"`
 }

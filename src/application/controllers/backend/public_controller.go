@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"image/png"
+	"net/http"
 	"os"
 	"path"
 	"strconv"
@@ -27,11 +28,12 @@ type PublicController struct {
 }
 
 func (c *PublicController) RegisterRoute(b pine.IRouterWrapper) {
-	b.ANY("/upload", "Upload")
+	b.POST("/upload", "Upload")
 	b.ANY("/fedir-scan", "FeDirScan")
 	b.ANY("/attachments", "Attachments")
 	b.ANY("/ueditor", "UEditor")
 	b.ANY("/verify-code", "VerifyCode")
+	b.GET("/select", "Select")
 	b.ANY("/todo", "TODO")
 }
 
@@ -58,29 +60,11 @@ func (c *PublicController) Upload() {
 
 	uploader := getStorageEngine(settingData)
 	uploadDir := fmt.Sprintf("%s/%s", mid, helper.NowDate("Ymd"))
-	fs, err := c.Ctx().Files("filedata")
+
+	fs, err := c.Ctx().Files("file")
 	if err != nil {
-		//if fileData := c.Ctx().FormValue("filedata"); fileData == "" {
-		uploadAjax(c.Ctx(), map[string]interface{}{"state": "打开上传临时文件失败 : " + err.Error(), "errcode": "1",}, isEditor)
+		uploadAjax(c.Ctx(), map[string]interface{}{"state": "打开上传临时文件失败 : " + err.Error(), "errcode": "1"}, isEditor)
 		return
-		//} else {
-		//	// 涂鸦上传
-		//	dist, err := base64.StdEncoding.DecodeString(fileData)
-		//	if err != nil {
-		//		uploadAjax(c.Ctx(), map[string]interface{}{"state": "解码base64数据失败 : " + err.Error(), "errcode": "1",}, isEditor)
-		//		return
-		//	}
-		//	f, err := ioutil.TempFile("", "tempfile_"+strconv.Itoa(rand.Intn(10000)))
-		//	if err != nil {
-		//		uploadAjax(c.Ctx(), map[string]interface{}{"state": "上传失败 : " + err.Error(), "errcode": "1",}, isEditor)
-		//		return
-		//	}
-		//	_, _ = f.Write(dist)
-		//	_ = f.Close()
-		//	fo, _ := os.Open(f.Name())
-		//	file = multipart.File(fo)
-		//	defer os.Remove(f.Name())
-		//}
 	}
 
 	var fname string
@@ -107,7 +91,7 @@ func (c *PublicController) Upload() {
 		flag = true
 	}
 	if !flag {
-		uploadAjax(c.Ctx(), map[string]interface{}{"state": "不支持的文件类型", "errcode": "1",}, isEditor)
+		uploadAjax(c.Ctx(), map[string]interface{}{"state": "不支持的文件类型", "errcode": "1"}, isEditor)
 		return
 	}
 	filename := string(helper.Krand(10, 3)) + "." + ext
@@ -131,6 +115,7 @@ func (c *PublicController) Upload() {
 		"state":        "SUCCESS", //上传状态
 		"errmsg":       path,
 		"errcode":      "0",
+		"value":        path,	// 给amsi使用
 	}
 	if id, _ := c.Ctx().Value("orm").(*xorm.Engine).InsertOne(&tables.Attachments{
 		Name:       filename,
@@ -140,7 +125,7 @@ func (c *PublicController) Upload() {
 		UploadTime: time.Now(),
 		Type:       uploadType,
 	}); id > 0 {
-		uploadAjax(c.Ctx(), resJson, isEditor)
+		helper.Ajax(resJson, 0, c.Ctx())
 	} else {
 		os.Remove(storageName)
 		uploadAjax(c.Ctx(), map[string]interface{}{"state": "保存上传失败", "errcode": "1"}, isEditor)
@@ -262,6 +247,26 @@ func (c *PublicController) Attachments(attachmentType string) {
 		"errmsg":  "读取成功",
 		"errcode": "0",
 	})
+}
+
+// 下拉查询
+func (c *PublicController) Select()  {
+	t := c.Ctx().GetString("type", "")
+	var data = []KV{}
+	switch t {
+	case "ad_space":
+		spaces,_ := models.NewAdSpaceModel().GetList(1, 1000)
+		for _,v := range spaces {
+			data = append(data, KV{
+				Label: v.Name,
+				Value: v.Id,
+			})
+		}
+	default:
+		c.Ctx().Abort(http.StatusNotFound)
+		return
+	}
+	helper.Ajax(data, 0, c.Ctx())
 }
 
 func (c *PublicController) TODO(orm *xorm.Engine) {

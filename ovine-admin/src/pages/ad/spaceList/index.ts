@@ -27,35 +27,14 @@ export const schema = {
     footerToolbar: ['statistics', 'switch-per-page', 'pagination'],
     columns: [
       {
-        name: 'linkid',
+        name: 'id',
         label: 'ID',
-        type: 'text',
-        width: 80,
-      },
-      {
-        name: 'listorder',
-        label: '排序',
         type: 'text',
       },
       {
         name: 'name',
         label: '名称',
         type: 'text',
-      },
-      {
-        name: 'url',
-        label: '网址',
-        type: 'text',
-      },
-      {
-        name: 'logo',
-        label: 'Logo',
-        type: 'image',
-      },
-      {
-        name: 'passed',
-        label: '启用',
-        type: 'switch',
       },
       {
         type: 'operation',
@@ -76,35 +55,6 @@ export const schema = {
           type: 'text',
           required: true,
         },
-        {
-          name: 'logo',
-          label: 'Logo',
-          reciever: 'POST public/upload',
-          type: 'image',
-        },
-        {
-          name: 'url',
-          label: '链接',
-          type: 'url',
-          required: true,
-        },
-        {
-          name: 'introduce',
-          label: '描述',
-          type: 'textarea',
-        },
-        {
-          name: 'passed',
-          value: true,
-          label: '启用',
-          type: 'switch',
-        },
-        {
-          name: 'listorder',
-          value: 30,
-          label: '排序',
-          type: 'text',
-        }
       ],
     },
   },

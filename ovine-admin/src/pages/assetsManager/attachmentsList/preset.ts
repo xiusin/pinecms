@@ -3,19 +3,13 @@ export default {
     $page: {
       label: '查看列表',
     },
-    add: {
-      label: '添加',
-    },
-    edit: {
-      label: '编辑',
-    },
     del: {
       label: '删除',
-    },
+    }
   },
   apis: {
     list: {
-      url: 'GET link/list',
+      url: 'GET assets-manager/attachments-list',
       limits: '$page',
       onPreRequest: (source) => {
         const { dateRange } = source.data
@@ -30,16 +24,8 @@ export default {
         return source
       },
     },
-    add: {
-      url: 'POST link/add',
-      limits: 'add',
-    },
-    edit: {
-      url: 'POST link/edit?linkid=$linkid',
-      limits: 'edit',
-    },
     del: {
-      url: 'POST link/delete?id=$linkid',
+      url: 'POST assets-manager/attachments-delete?id=$linkid',
       limits: 'del',
     },
   },

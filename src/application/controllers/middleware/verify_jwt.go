@@ -10,7 +10,6 @@ import (
 
 func VerifyJwtToken() pine.Handler {
 	return func(ctx *pine.Context) {
-		ctx.Set("IsV2", true)
 		if !strings.Contains(ctx.Path(), "login") &&
 			!strings.Contains(ctx.Path(), "/public/") /*public控制器下的不校验Token*/{
 			token := ctx.Header("X-TOKEN")

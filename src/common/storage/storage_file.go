@@ -44,7 +44,7 @@ func (s *FileUploader) Upload(storageName string, LocalFile io.Reader) (string, 
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(s.fixDir, originName), nil
+	return getAvaliableUrl(filepath.Join(s.fixDir, originName)), nil
 }
 
 func (s *FileUploader) List(dir string) ([]string, string, error) {
@@ -74,7 +74,7 @@ func (s *FileUploader) Exists(name string) (bool, error) {
 }
 
 func (s *FileUploader) GetFullUrl(name string) string {
-	return filepath.Join(s.fixDir, name)
+	return getAvaliableUrl(filepath.Join(s.fixDir, name))
 }
 
 func (s *FileUploader) Remove(name string) error {

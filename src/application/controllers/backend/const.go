@@ -10,3 +10,17 @@ type MenuV2 struct {
 	SideVisible     bool     `json:"sideVisible"`
 	Children        []MenuV2 `json:"children"`
 }
+
+type ThemeConfig struct {
+	Name        string                 `json:"name"`
+	Author      string                 `json:"author"`
+	Description string                 `json:"description"`
+	Extra       map[string]interface{} `json:"extra"`
+	IsDefault   bool                   `json:"is_default"`
+	Dir         string                 `json:"dir"`
+}
+
+type KV struct {
+	Label string      `json:"label"`
+	Value interface{} `json:"value"`
+}

@@ -10,5 +10,5 @@ type Advert struct {
 	ListOrder uint   `xorm:"listorder default 0" json:"listorder" schema:"listorder"`
 	StartTime string `json:"start_time" schema:"-"`  // 展示时间周期开始
 	EndTime   string `json:"end_time" schema:"-"`    // 展示时间周期结束
-	Status    uint   `json:"status" schema:"status"` // 状态
+	Status    bool   `json:"status" schema:"status"` // 状态
 }

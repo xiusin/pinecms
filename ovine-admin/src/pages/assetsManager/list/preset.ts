@@ -9,13 +9,10 @@ export default {
     edit: {
       label: '编辑',
     },
-    del: {
-      label: '删除',
-    },
   },
   apis: {
     list: {
-      url: 'GET link/list',
+      url: 'GET assets-manager/list',
       limits: '$page',
       onPreRequest: (source) => {
         const { dateRange } = source.data
@@ -31,16 +28,12 @@ export default {
       },
     },
     add: {
-      url: 'POST link/add',
+      url: 'POST assets-manager/add',
       limits: 'add',
     },
     edit: {
-      url: 'POST link/edit?linkid=$linkid',
+      url: 'POST assets-manager/edit?name=$name',
       limits: 'edit',
-    },
-    del: {
-      url: 'POST link/delete?id=$linkid',
-      limits: 'del',
-    },
+    }
   },
 }

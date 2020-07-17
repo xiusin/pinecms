@@ -1,8 +1,10 @@
 package backend
 
 import (
+	"encoding/json"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/models"
 	"html/template"
 	"io/ioutil"
 	"os"
@@ -12,7 +14,6 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
-	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
 )
@@ -25,6 +26,8 @@ type AssetsManagerController struct {
 
 func (c *AssetsManagerController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/assets-manager/list", "Manager")
+	b.ANY("/assets-manager/attachments-list", "AttachmentsList")
+	b.ANY("/assets-manager/attachments-delete", "AttachmentsDelete")
 	b.ANY("/assets-manager/edit", "Edit")
 	b.ANY("/assets-manager/add", "Add")
 	b.ANY("/assets-manager/theme", "Theme")
@@ -33,42 +36,31 @@ func (c *AssetsManagerController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *AssetsManagerController) Manager(orm *xorm.Engine) {
-	if c.Ctx().GetString("datagrid") == "true" {
-		conf := di.MustGet("pinecms.config").(*config.Config)
-		fs, err := ioutil.ReadDir(filepath.Join(conf.View.FeDirname, conf.View.Theme))
-		if err != nil {
-			helper.Ajax("读取模板列表错误: "+err.Error(), 1, c.Ctx())
-			return
-		}
-		var files = []map[string]interface{}{}
+	conf := di.MustGet("pinecms.config").(*config.Config)
+	themeDir := filepath.Join(conf.View.FeDirname, conf.View.Theme)
+	fs, err := ioutil.ReadDir(themeDir)
+	var files = []map[string]interface{}{}
+	if err == nil {
 		for _, f := range fs {
 			if !f.IsDir() {
 				if strings.HasSuffix(f.Name(), ".jet") {
+					content, _ := ioutil.ReadFile(filepath.Join(themeDir, f.Name()))
 					files = append(files, map[string]interface{}{
 						"name":    f.Name(),
-						"fname":   f.Name(),
 						"size":    f.Size(),
 						"updated": f.ModTime().In(helper.GetLocation()).Format(helper.TimeFormat),
+						"content": string(content),
 					})
 				}
 			}
 		}
-		c.Ctx().Render().JSON(files)
-		return
+	} else {
+		c.Logger().Error("读取模板列表错误: "+err.Error(), 1, c.Ctx())
 	}
-	menuid, _ := c.Ctx().GetInt64("menuid")
-	table := helper.Datagrid("assets_list_datagrid", "/b/assets-manager/list?datagrid=true", helper.EasyuiOptions{
-		"title":      models.NewMenuModel().CurrentPos(menuid),
-		"toolbar":    "assets_list_datagrid_toolbar",
-		"pagination": "false",
-	}, helper.EasyuiGridfields{
-		"文件名":  {"field": "name", "width": "40", "index": "0"},
-		"文件大小": {"field": "size", "width": "20", "index": "1", "formatter": "fileSizeFormatter"},
-		"修改时间": {"field": "updated", "width": "20", "index": "2"},
-		"操作":   {"field": "fname", "index": "3", "formatter": "assetListOpFormatter"},
-	})
-	c.Ctx().Render().ViewData("dataGrid", template.HTML(table))
-	c.Ctx().Render().HTML("backend/assets_list.html")
+	helper.Ajax(pine.H{
+		"rows":  files,
+		"total": len(files),
+	}, 0, c.Ctx())
 }
 
 func (c *AssetsManagerController) Theme() {
@@ -78,18 +70,27 @@ func (c *AssetsManagerController) Theme() {
 		helper.Ajax("读取模板主题目录失败: "+err.Error(), 1, c.Ctx())
 		return
 	}
-	var dirs = []map[string]interface{}{}
+	var dirs = []*ThemeConfig{}
 	for _, f := range fs {
 		if f.IsDir() {
-			dirs = append(dirs, map[string]interface{}{
-				"name":  f.Name(),
-				"thumb": "/b/assets-manager/theme-thumb/" + f.Name(),
-			})
+			// 读取一个json配置文件
+			contentByts,err := ioutil.ReadFile(filepath.Join(conf.View.FeDirname, f.Name(), "config.json"))
+			if err != nil {
+				continue
+			}
+			var configMap ThemeConfig
+			err = json.Unmarshal(contentByts,&configMap)
+			if err != nil {
+				continue
+			}
+			configMap.Dir = f.Name()
+			if configMap.Name == conf.View.Theme {
+				configMap.IsDefault = true
+			}
+			dirs = append(dirs, &configMap)
 		}
 	}
-	c.Ctx().Render().ViewData("dirs", dirs)
-	c.Ctx().Render().ViewData("theme", conf.View.Theme)
-	c.Ctx().Render().HTML("backend/assets_theme.html")
+	helper.Ajax(dirs, 0 , c.Ctx())
 }
 
 func (c *AssetsManagerController) SetTheme(cache cache.AbstractCache) {
@@ -112,7 +113,7 @@ func (c *AssetsManagerController) SetTheme(cache cache.AbstractCache) {
 	}
 }
 
-func (c *AssetsManagerController) Edit(orm *xorm.Engine) {
+func (c *AssetsManagerController) Edit() {
 	conf := di.MustGet("pinecms.config").(*config.Config)
 	if c.Ctx().IsPost() {
 		//origin := c.Ctx().URLParam("origin")
@@ -180,4 +181,29 @@ func (c *AssetsManagerController) ThemeThumb() {
 	c.Ctx().SetContentType("img/png")
 	//todo 打开连接直接显示而不下载
 	c.Ctx().SendFile(dirName)
+}
+
+func (c *AssetsManagerController) AttachmentsList() {
+	page, _ := c.Ctx().GetInt64("page")
+	rows, _ := c.Ctx().GetInt64("rows")
+
+	keywords := c.Ctx().GetString("keywords")
+	list, total := models.NewAttachmentsModel().GetList(keywords, page, rows)
+	helper.Ajax(pine.H{
+		"rows": list,
+		"total": total,
+	}, 0, c.Ctx())
+}
+
+func (c *AssetsManagerController) AttachmentsDelete() {
+	id, _ := c.Ctx().PostInt64("id")
+	if id < 1 {
+		helper.Ajax("参数错误", 1, c.Ctx())
+		return
+	}
+	if models.NewAttachmentsModel().Delete(id) {
+		helper.Ajax("删除附件成功", 0, c.Ctx())
+	} else {
+		helper.Ajax("删除附件失败", 1, c.Ctx())
+	}
 }

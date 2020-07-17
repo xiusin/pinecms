@@ -1,6 +1,5 @@
 export const schema = {
   type: 'page',
-
   body: {
     type: 'lib-crud',
     api: '$preset.apis.list',
@@ -27,43 +26,27 @@ export const schema = {
     footerToolbar: ['statistics', 'switch-per-page', 'pagination'],
     columns: [
       {
-        name: 'linkid',
-        label: 'ID',
-        type: 'text',
-        width: 80,
-      },
-      {
-        name: 'listorder',
-        label: '排序',
-        type: 'text',
-      },
-      {
         name: 'name',
-        label: '名称',
+        label: '模板名称',
         type: 'text',
       },
       {
-        name: 'url',
-        label: '网址',
+        name: 'size',
+        label: '文件大小',
         type: 'text',
       },
       {
-        name: 'logo',
-        label: 'Logo',
-        type: 'image',
-      },
-      {
-        name: 'passed',
-        label: '启用',
-        type: 'switch',
+        name: 'updated',
+        label: '修改时间',
+        type: 'text',
       },
       {
         type: 'operation',
         label: '操作',
         width: 60,
-        limits: ['edit', 'del'],
+        limits: ['edit'],
         limitsLogic: 'or',
-        buttons: ['$preset.actions.edit', '$preset.actions.del'],
+        buttons: ['$preset.actions.edit'],
       },
     ],
   },
@@ -75,35 +58,12 @@ export const schema = {
           label: '名称',
           type: 'text',
           required: true,
+          disabledOn: "data.name"
         },
         {
-          name: 'logo',
-          label: 'Logo',
-          reciever: 'POST public/upload',
-          type: 'image',
-        },
-        {
-          name: 'url',
-          label: '链接',
-          type: 'url',
-          required: true,
-        },
-        {
-          name: 'introduce',
-          label: '描述',
-          type: 'textarea',
-        },
-        {
-          name: 'passed',
-          value: true,
-          label: '启用',
-          type: 'switch',
-        },
-        {
-          name: 'listorder',
-          value: 30,
-          label: '排序',
-          type: 'text',
+          name: 'content',
+          label: '内容',
+          type: 'html-editor',
         }
       ],
     },
@@ -124,6 +84,7 @@ export const schema = {
           size: 'lg',
           body: {
             type: 'form',
+            // debug: true,  // 调试期可以用来打印表单变量的值
             api: '$preset.apis.add',
             mode: 'normal',
             $ref: 'updateControls',
@@ -147,38 +108,6 @@ export const schema = {
           },
         },
       },
-      del: {
-        limits: 'del',
-        type: 'action',
-        icon: 'fa fa-times text-danger',
-        actionType: 'ajax',
-        tooltip: '删除',
-        confirmText: '您确认要删除?',
-        api: {
-          $preset: 'apis.del',
-        },
-        messages: {
-          success: '删除成功',
-          failed: '删除失败',
-        },
-      },
-    },
-    forms: {
-      filter: {
-        controls: [
-          {
-            type: 'date-range',
-            name: 'dateRange',
-            label: '创建时间范围',
-            format: 'YYYY-MM-DD',
-          },
-          {
-            type: 'submit',
-            className: 'm-l',
-            label: '搜索',
-          },
-        ],
-      },  // 搜索
-    },
+    }
   },
 }

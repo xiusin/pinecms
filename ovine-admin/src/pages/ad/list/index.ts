@@ -27,10 +27,9 @@ export const schema = {
     footerToolbar: ['statistics', 'switch-per-page', 'pagination'],
     columns: [
       {
-        name: 'linkid',
+        name: 'id',
         label: 'ID',
         type: 'text',
-        width: 80,
       },
       {
         name: 'listorder',
@@ -43,17 +42,17 @@ export const schema = {
         type: 'text',
       },
       {
-        name: 'url',
-        label: '网址',
-        type: 'text',
-      },
-      {
-        name: 'logo',
-        label: 'Logo',
+        name: 'image',
+        label: '图片',
         type: 'image',
       },
       {
-        name: 'passed',
+        name: 'space_name',
+        label: '广告位',
+        type: 'text',
+      },
+      {
+        name: 'status',
         label: '启用',
         type: 'switch',
       },
@@ -77,33 +76,48 @@ export const schema = {
           required: true,
         },
         {
-          name: 'logo',
-          label: 'Logo',
+          type: "select",
+          name: "space_id",
+          label: "广告位",
+          // clearable: true,
+          required: true,
+          source: "GET public/select?type=ad_space",
+        },
+        {
+          name: 'image',
+          label: '图片',
           reciever: 'POST public/upload',
           type: 'image',
         },
         {
-          name: 'url',
+          name: 'link_url',
           label: '链接',
           type: 'url',
           required: true,
         },
         {
-          name: 'introduce',
-          label: '描述',
-          type: 'textarea',
+          type: "datetime",
+          name: "start_time",
+          label: "开始日期",
+          maxDate: "$end_time"
         },
         {
-          name: 'passed',
-          value: true,
-          label: '启用',
-          type: 'switch',
+          type: "datetime",
+          name: "end_time",
+          label: "结束日期",
+          minDate: "$start_time"
         },
         {
           name: 'listorder',
           value: 30,
           label: '排序',
           type: 'text',
+        },
+        {
+          name: 'status',
+          value: true,
+          label: '启用',
+          type: 'switch',
         }
       ],
     },

@@ -44,9 +44,9 @@ request.onRequest = (option) => {
   }
 
   // 操作地址
-  if (actionAddr) {
-    option.headers['X-ACTION-ADDR'] = actionAddr
-  }
+  // if (actionAddr) {
+  //   option.headers['X-ACTION-ADDR'] = actionAddr
+  // }
 
   return option
 }

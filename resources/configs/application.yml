@@ -4,7 +4,7 @@ view:
   reload: false
   fedirname: "./resources/themes/"
   bedirname: "./resources/views/"
-  theme: "example"
+  theme: "default"
 session:
   name: "gosessionid"
   expires: 0

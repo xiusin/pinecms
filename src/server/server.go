@@ -95,15 +95,14 @@ func registerStatic() {
 func registerV2BackendRoutes() {
 	app.Use(middleware.SetGlobalConfigData())
 	app.Use(func(ctx *pine.Context) {
-		ctx.Response.Header.Add("Vary", "Origin")
-		ctx.Response.Header.Add("Vary", "Access-Control-Request-Method")
-		ctx.Response.Header.Add("Vary", "Access-Control-Request-Headers")
-		ctx.Response.Header.Add("Vary", "Access-Control-Allow-Credentials")
-
+		//ctx.Response.Header.Add("Vary", "Origin")
+		//ctx.Response.Header.Add("Vary", "Access-Control-Allow-Methods")
+		//ctx.Response.Header.Add("Vary", "Access-Control-Allow-Headers")
+		//ctx.Response.Header.Add("Vary", "Access-Control-Allow-Credentials")
 		ctx.Response.Header.Set("Access-Control-Allow-Origin", "http://localhost:7050")
-		ctx.Response.Header.Set("Access-Control-Allow-Headers", "*")
+		ctx.Response.Header.Set("Access-Control-Allow-Headers", "X-TOKEN, Content-Type, Origin, Referer, Content-Length")
 		ctx.Response.Header.Set("Access-Control-Allow-Credentials", "true")
-
+		ctx.Response.Header.Set("Access-Control-Allow-Methods", "*")
 		if !ctx.IsOptions() {
 			ctx.Next()
 		}
@@ -111,7 +110,6 @@ func registerV2BackendRoutes() {
 	// 解析参数
 	app.Group(
 		"/v2",
-		//middleware.CheckAdminLoginAndAccess(XOrmEngine, iCache),
 		middleware.VerifyJwtToken(),
 	).Handle(new(backend.AdminController)).
 		Handle(new(backend.LoginController)).
@@ -125,7 +123,6 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.LinkController)).
 		Handle(new(backend.DatabaseController)).
 		Handle(new(backend.AssetsManagerController)).
-		Handle(new(backend.AttachmentController)).
 		Handle(new(backend.AdController)).
 		Handle(new(backend.StatController))
 

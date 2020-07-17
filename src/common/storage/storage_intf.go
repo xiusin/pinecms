@@ -1,6 +1,10 @@
 package storage
 
-import "io"
+import (
+	"io"
+	"runtime"
+	"strings"
+)
 
 type Uploader interface {
 	Upload(storageName string, LocalFile io.Reader) (string, error)
@@ -8,4 +12,11 @@ type Uploader interface {
 	Exists(name string) (bool, error)
 	GetFullUrl(name string) string
 	Remove(name string) error
+}
+
+func getAvaliableUrl(path string) string {
+	if runtime.GOOS == "windows" {
+		path = strings.ReplaceAll(path, "\\","/")
+	}
+	return path
 }
