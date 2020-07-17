@@ -17,6 +17,7 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/gorilla/securecookie v1.1.1
+	github.com/json-iterator/go v1.1.9
 	github.com/kataras/go-mailer v0.1.0
 	github.com/kataras/tablewriter v0.0.0-20180708051242-e063d29b7c23 // indirect
 	github.com/klauspost/compress v1.10.5 // indirect
@@ -30,7 +31,7 @@ require (
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/xiusin/logger v0.0.2
-	github.com/xiusin/pine v0.0.5
+	github.com/xiusin/pine v0.0.0-00010101000000-000000000000
 	go.etcd.io/bbolt v1.3.4
 	golang.org/x/crypto v0.0.0-20200427165652-729f1e841bcc // indirect
 	golang.org/x/image v0.0.0-20200119044424-58c23975cae1
@@ -41,3 +42,5 @@ require (
 	xorm.io/builder v0.3.7
 	xorm.io/core v0.7.3
 )
+
+replace github.com/xiusin/pine => ../pine

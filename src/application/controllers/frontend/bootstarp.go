@@ -114,14 +114,7 @@ func (c *IndexController) statistics(cacheHandler cache.AbstractCache) {
 	today := time.Now().In(helper.GetLocation()).Format("01-02")
 	if len(val) == 0 || val != today {
 		c.Ctx().SetCookie(ck, today, 48*3600)
-		var statistics = map[string]uint8{}
-		_ = cacheHandler.GetWithUnmarshal(controllers.CacheStatistics, &statistics)
-		if _, ok := statistics[today]; !ok {
-			statistics[today] = 1
-		} else {
-			statistics[today] += 1
-		}
-		_ = cacheHandler.SetWithMarshal(controllers.CacheStatistics, &statistics)
+		cacheData(cacheHandler, controllers.CacheUV, today)
 		var defaultRefers = map[string]int{"baidu": 0, "google": 0, "so": 0, "bing": 0, "sougou": 0, "other": 0,}
 		var refers = map[string]int{}
 		// 访问来源
@@ -138,4 +131,16 @@ func (c *IndexController) statistics(cacheHandler cache.AbstractCache) {
 		}
 		_ = cacheHandler.SetWithMarshal(controllers.CacheRefer, &refers)
 	}
+	cacheData(cacheHandler, controllers.CachePV, today)
+}
+
+func cacheData(cacher cache.AbstractCache,key string, today string)  {
+	var statistics = map[string]uint8{}
+	_ = cacher.GetWithUnmarshal(key, &statistics)
+	if _, ok := statistics[today]; !ok {
+		statistics[today] = 1
+	} else {
+		statistics[today] += 1
+	}
+	_ = cacher.SetWithMarshal(key, &statistics)
 }

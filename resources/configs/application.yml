@@ -1,10 +1,10 @@
 port: 2019
 
 view:
-  reload: false
+  reload: true
   fedirname: "./resources/themes/"
   bedirname: "./resources/views/"
-  theme: "example"
+  theme: "default"
 session:
   name: "gosessionid"
   expires: 0

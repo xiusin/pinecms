@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/gorilla/securecookie"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
@@ -134,6 +135,8 @@ func runServe() {
 }
 
 func diConfig() {
+	cache.SetTranscoderFunc(jsoniter.Marshal, jsoniter.Unmarshal)
+
 	iCache = bbolt.New(&bbolt.Option{
 		TTL:  int(conf.Session.Expires),
 		Path: conf.CacheDb,
@@ -143,6 +146,7 @@ func diConfig() {
 	if len(theme) > 0 {
 		conf.View.Theme = string(theme)
 	}
+
 	di.Set(controllers.ServiceICache, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return iCache, nil
 	}, true)

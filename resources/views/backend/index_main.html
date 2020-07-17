@@ -66,7 +66,8 @@
                     <h1 class="big-thin">服务器信息</h1>
                 </div>
                 <div class="tile-widget">
-                    <h2><span class="animate-number" data-value="{{.usedSize}}" data-animation-duration="1600">0</span>
+{{/*                    <h2>内存容量<span class="animate-number" data-value="{{.memTotal}}" data-animation-duration="1600">0</span> GB</h2>*/}}
+                    <h2>硬盘容量<span class="animate-number" data-value="{{.usedSize}}" data-animation-duration="1600">0</span>
                         GB</h2>
                     <div class="progress progress-little no-radius nomargin">
                         <div class="progress-bar progress-bar-dutch animate-progress-bar"
@@ -195,32 +196,23 @@
     }
 
     {
-        var dayData = {{.statiData}};
-        var d2 = [];
-        for (var i = 0; i < dayData.length; i++) {
-            d2.push([i + 1, dayData[i]]);
+        var dayUVData = {{.statiData}};
+        var dayPVData = {{.statiPvData}};
+        var gd1 = [];   // uv
+        var gd2 = [];   // pv
+        for (var i = 0; i < dayUVData.length; i++) {
+            gd1.push([i + 1, dayUVData[i]]);
         }
-
+        for (var i = 0; i < dayPVData.length; i++) {
+            gd2.push([i + 1, dayPVData[i]]);
+        }
         // flot chart generate
         var plot = $.plotAnimator($("#statistics-chart"),
             [
-                {
-                    label: "独立访问",
-                    data: d2,
-                    animator: {steps: 99, duration: 1500, start: 200, direction: "right"},
-                    lines: {
-                        fill: .3,
-                        lineWidth: 0
-                    },
-                    color: ['#ffffff']
-                },
-                {
-                    label: "独立访问",
-                    data: d2,
-                    points: {show: true, fill: true, radius: 6, fillColor: "rgba(255,255,255,.5)", lineWidth: 3},
-                    color: '#fff',
-                    shadowSize: 0
-                }
+                {label: "UV", data: gd1, animator: {steps: 99, duration: 1500, start: 200, direction: "right"}, lines: {fill: .3, lineWidth: 0}, color: ['#ffffff']},
+                {label: 'PV', data: gd2, lines: {lineWidth:3}, shadowSize:0, color: '#ffffff'},
+                {label: "UV", data: gd1, points: {show: true, fill: true, radius: 6, fillColor: "rgba(255,255,255,.5)", lineWidth: 3}, color: '#fff', shadowSize: 0},
+                { label: 'PV', data: gd2, points: { show: true, fill: true, radius:6,fillColor:"#078e74",lineWidth:3 }, color: '#fff', shadowSize:0},
             ], {
                 xaxis: {
                     tickLength: 0,
