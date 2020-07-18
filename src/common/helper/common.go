@@ -132,7 +132,11 @@ func GetMd5(str string) string {
 //Ajax Ajax返回数据给前端
 func Ajax(errmsg interface{}, errcode int64, this *pine.Context) {
 	// 添加操作日志
-	this.Render().JSON(pine.H{"code": errcode, "data": errmsg})
+	data := pine.H{"code": errcode, "data": errmsg}
+	if errcode != 0 {
+		data["msg"] = errmsg
+	}
+	this.Render().JSON(data)
 }
 
 func Dialog(errmsg interface{}, this *pine.Context) {
@@ -163,6 +167,9 @@ func format(str string) string {
 
 //FormatTime 时间戳格式化时间
 func FormatTime(timestamp int64) string {
+	if timestamp == 0 {
+		return ""
+	}
 	t := time.Unix(timestamp, 0).In(location)
 	str := TimeFormat
 	return t.Format(str)

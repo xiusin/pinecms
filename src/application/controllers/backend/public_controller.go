@@ -262,6 +262,14 @@ func (c *PublicController) Select()  {
 				Value: v.Id,
 			})
 		}
+	case "role":
+		roles := models.NewAdminModel().GetRoleList("1=1", 1, 100)
+		for _,v := range roles {
+			data = append(data, KV{
+				Label: v.Rolename,
+				Value: v.Roleid,
+			})
+		}
 	default:
 		c.Ctx().Abort(http.StatusNotFound)
 		return

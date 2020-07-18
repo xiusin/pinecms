@@ -43,52 +43,32 @@ func (c *DatabaseController) RegisterRoute(b pine.IRouterWrapper) {
 	b.POST("/database/backup-download", "BackupDownload")
 }
 
-func (c *DatabaseController) NoSupport()  {
+func (c *DatabaseController) NoSupport() {
 	helper.Ajax("SQLITE不支持此功能", 1, c.Ctx())
 }
 
 func (c *DatabaseController) Manager(orm *xorm.Engine) {
-	if c.Ctx().GetString("datagrid") != "" {
-		mataDatas, err := orm.DBMetas()
-		if err != nil {
-			pine.Logger().Error("读取数据库元信息失败", err)
-			c.Ctx().Render().JSON(map[string]interface{}{})
-			return
-		}
-		var data = []map[string]interface{}{}
+
+	mataDatas, err := orm.DBMetas()
+	var data = []map[string]interface{}{}
+	if err != nil {
+		pine.Logger().Error("读取数据库元信息失败", err)
+	} else {
 		for _, mataData := range mataDatas {
 			total, _ := orm.Table(mataData.Name).Count()
 			data = append(data, map[string]interface{}{
-				"table_id": mataData.Name,
-				"total":    total,
-				"engine":   mataData.StoreEngine,
-				"name":     mataData.Name,
+				"id":      mataData.Name,
+				"total":   total,
+				"engine":  mataData.StoreEngine,
 				"comment": mataData.Comment,
 			})
 		}
-		c.Ctx().Render().JSON(data)
-		return
-
 	}
-	menuid, _ := c.Ctx().GetInt64("menuid")
-	table := helper.Datagrid("database_list_datagrid", "/b/database/manager?datagrid=true", helper.EasyuiOptions{
-		"title":        models.NewMenuModel().CurrentPos(menuid),
-		"toolbar":      "database_list_datagrid_toolbar",
-		"singleSelect": "false",
-		"pagination":   "false",
-	}, helper.EasyuiGridfields{
-		"":    {"field": "table_id", "checkbox": "true", "index": "0"},
-		"数据表": {"field": "name", "width": "40", "index": "1"},
-		"记录数": {"field": "total", "width": "10", "index": "2"},
-		"引擎": {"field": "engine", "width": "10", "index": "3"},
-		"备注": {"field": "comment", "width": "70", "index": "4"},
-	})
-	c.Ctx().Render().ViewData("dataGrid", template.HTML(table))
-	c.Ctx().Render().HTML("backend/database_list.html")
+	helper.Ajax(data, 0, c.Ctx())
 }
 
 func (c *DatabaseController) Repair(orm *xorm.Engine) {
-	tables := strings.Split(c.Ctx().FormValue("tables"), ",")
+	tables := strings.Split(c.Ctx().FormValue("ids"), ",")
 	if len(tables) == 0 {
 		helper.Ajax("请选择要修复的表", 1, c.Ctx())
 		return
@@ -106,7 +86,7 @@ func (c *DatabaseController) Repair(orm *xorm.Engine) {
 }
 
 func (c *DatabaseController) Optimize(orm *xorm.Engine) {
-	tables := strings.Split(c.Ctx().FormValue("tables"), ",")
+	tables := strings.Split(c.Ctx().FormValue("ids"), ",")
 	if len(tables) == 0 {
 		helper.Ajax("请选择要优化的表", 1, c.Ctx())
 		return
