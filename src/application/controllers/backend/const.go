@@ -24,3 +24,25 @@ type KV struct {
 	Label string      `json:"label"`
 	Value interface{} `json:"value"`
 }
+
+type TabsSchema struct {
+	Title string         `json:"title"`
+	Hash  string         `json:"hash"`
+	Body  FormController `json:"body"`
+}
+
+type FormController struct {
+	Title    string        `json:"title"`
+	Api      string        `json:"api"`
+	Type     string        `json:"type"`
+	Mode     string        `json:"mode"`
+	Controls []FormControl `json:"controls"`
+}
+
+type FormControl struct {
+	Type    string `json:"type"`
+	Name    string `json:"name"`
+	Label   string `json:"label"`
+	Value   string `json:"value"`
+	Options []KV   `json:"options"`
+}
