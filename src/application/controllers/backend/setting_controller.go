@@ -140,10 +140,9 @@ func (c *SettingController) DelCache(iCache cache.AbstractCache) {
 	for _, key := range keys {
 		switch key {
 		case "data":
-			// todo 如果切换驱动这里切换到对应的缓存逻辑代码. 开发期间更会会有直接的错误提醒
 			cacheHandler := iCache.(*bbolt.PineBolt)
 			cacheHandler.BoltDB().Update(func(tx *bolt.Tx) error {
-				b := tx.Bucket([]byte(cacheHandler.BucketName))
+				b := tx.Bucket(cacheHandler.BucketName)
 				c := b.Cursor()
 				prefix := []byte("pinecms.")
 				for k, _ := c.Seek(prefix); k != nil && bytes.HasPrefix(k, prefix); k, _ = c.Next() {
