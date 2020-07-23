@@ -29,16 +29,11 @@ type PublicController struct {
 
 func (c *PublicController) RegisterRoute(b pine.IRouterWrapper) {
 	b.POST("/upload", "Upload")
-	b.ANY("/fedir-scan", "FeDirScan")
 	b.ANY("/attachments", "Attachments")
 	b.ANY("/ueditor", "UEditor")
 	b.ANY("/verify-code", "VerifyCode")
 	b.GET("/select", "Select")
 	b.ANY("/todo", "TODO")
-}
-
-func (c *PublicController) FeDirScan() {
-	c.Ctx().Render().JSON(helper.ScanDir(path.Join(config.AppConfig().View.FeDirname, config.AppConfig().View.Theme)))
 }
 
 //上传图片
@@ -115,7 +110,7 @@ func (c *PublicController) Upload() {
 		"state":        "SUCCESS", //上传状态
 		"errmsg":       path,
 		"errcode":      "0",
-		"value":        path,	// 给amsi使用
+		"value":        path, // 给amsi使用
 	}
 	if id, _ := c.Ctx().Value("orm").(*xorm.Engine).InsertOne(&tables.Attachments{
 		Name:       filename,
@@ -250,24 +245,49 @@ func (c *PublicController) Attachments(attachmentType string) {
 }
 
 // 下拉查询
-func (c *PublicController) Select()  {
+func (c *PublicController) Select() {
 	t := c.Ctx().GetString("type", "")
 	var data = []KV{}
 	switch t {
-	case "ad_space":
-		spaces,_ := models.NewAdSpaceModel().GetList(1, 1000)
-		for _,v := range spaces {
+	case "ad_space": // 广告位列表
+		spaces, _ := models.NewAdSpaceModel().GetList(1, 1000)
+		for _, v := range spaces {
 			data = append(data, KV{
 				Label: v.Name,
 				Value: v.Id,
 			})
 		}
-	case "role":
-		roles := models.NewAdminModel().GetRoleList("1=1", 1, 100)
-		for _,v := range roles {
+	case "role": // 角色列表
+		roles := models.NewAdminModel().GetRoleList("1=1", 1, 1000)
+		for _, v := range roles {
 			data = append(data, KV{
 				Label: v.Rolename,
 				Value: v.Roleid,
+			})
+		}
+	case "tpl_list": // 模板列表
+		tpls := helper.ScanDir(path.Join(config.AppConfig().View.FeDirname, config.AppConfig().View.Theme))
+		for _, v := range tpls {
+			data = append(data, KV{
+				Label: v.Name,
+				Value: v.Id,
+			})
+		}
+	case "models": // 模型列表
+		list, _ := models.NewDocumentModel().GetList(1, 1000)
+		for _, v := range list {
+			data = append(data, KV{
+				Label: v.Name,
+				Value: v.Id,
+			})
+		}
+
+	case "fields":
+		list, _ := models.NewDocumentModelFieldModel().GetList(1, 1000)
+		for _, v := range list {
+			data = append(data, KV{
+				Label: v.Name,
+				Value: v.Id,
 			})
 		}
 	default:

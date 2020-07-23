@@ -64,3 +64,9 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 # 演示 # 
 - 首页 http://115.159.71.60:2019
 - 后端 http://115.159.71.60:2019/b/login/index
+
+
+
+# TODO  
+- 重写为前后端分离
+- 一键CRUD(view models controllers menus)

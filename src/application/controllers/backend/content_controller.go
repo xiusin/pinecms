@@ -24,9 +24,7 @@ type ContentController struct {
 }
 
 func (c *ContentController) RegisterRoute(b pine.IRouterWrapper) {
-	b.ANY("/content/index", "Index")
-	b.ANY("/content/right", "Right")
-	b.ANY("/content/public-welcome", "Welcome")
+	b.GET("/category/aside-category", "AsideCategory")
 	b.ANY("/content/news-list", "NewsList")
 	b.ANY("/content/page", "Page")
 	b.ANY("/content/add", "AddContent")
@@ -35,23 +33,9 @@ func (c *ContentController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/content/order", "OrderContent")
 }
 
-func (c *ContentController) Index() {
-	menuid, _ := c.Ctx().GetInt64("menuid")
-	c.Ctx().Render().ViewData("currentPos", models.NewMenuModel().CurrentPos(menuid))
-	c.Ctx().Render().HTML("backend/content_index.html")
-}
-
-func (c *ContentController) Welcome() {
-	c.Ctx().Render().HTML("backend/content_welcome.html")
-}
-
-func (c *ContentController) Right() {
-	if c.Ctx().IsPost() {
-		cats := models.NewCategoryModel().GetContentRightCategoryTree(models.NewCategoryModel().GetAll(false), 0)
-		c.Ctx().Render().JSON(cats)
-		return
-	}
-	c.Ctx().Render().HTML("backend/content_right.html")
+func (c *ContentController) AsideCategory() {
+	cats := models.NewCategoryModel().GetContentRightCategoryTree(models.NewCategoryModel().GetAll(false), 0)
+	helper.Ajax(cats, 0, c.Ctx())
 }
 
 func (c *ContentController) NewsList(orm *xorm.Engine) {
@@ -280,7 +264,7 @@ func (c *ContentController) AddContent() {
 		}
 
 		data["created_time"] = time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)
-		model := models.NewDocumentModel().GetByID(int64(mid), )
+		model := models.NewDocumentModel().GetByID(int64(mid))
 		var fields []string
 		var values []interface{}
 		for k, v := range data {

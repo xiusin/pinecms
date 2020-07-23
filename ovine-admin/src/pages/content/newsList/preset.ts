@@ -15,7 +15,7 @@ export default {
   },
   apis: {
     list: {
-      url: 'GET category/list',
+      url: 'GET content/news-list',
       limits: '$page',
       onPreRequest: (source) => {
         const { dateRange } = source.data

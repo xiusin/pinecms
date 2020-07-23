@@ -21,10 +21,9 @@ type CategoryModel struct {
 	cache cache.AbstractCache
 }
 
-
 var ErrCategoryNotExists = errors.New("category not exists")
 
-func init()  {
+func init() {
 	di.Set(&CategoryModel{}, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return &CategoryModel{
 			orm:   builder.MustGet("*xorm.Engine").(*xorm.Engine),
@@ -166,8 +165,8 @@ func (c *CategoryModel) GetSelectTree(parentid int64) []map[string]interface{} {
 	if len(*categorys) > 0 {
 		for _, v := range *categorys {
 			maps = append(maps, map[string]interface{}{
-				"id":       v.Catid,
-				"text":     v.Catname,
+				"value":    v.Catid,
+				"label":    v.Catname,
 				"children": c.GetSelectTree(v.Catid),
 			})
 		}
@@ -182,10 +181,8 @@ func (c *CategoryModel) GetContentRightCategoryTree(categorys []tables.Category,
 		for _, v := range categorys {
 			if v.Parentid == parentid {
 				maps = append(maps, map[string]interface{}{
-					"id":       v.Catid,
-					"text":     v.Catname,
-					"type":     v.Type,
-					"url":      v.Url,
+					"to":       fmt.Sprintf("?catid=%d", v.Catid),
+					"label":    v.Catname,
 					"children": c.GetContentRightCategoryTree(categorys, v.Catid),
 				})
 			}

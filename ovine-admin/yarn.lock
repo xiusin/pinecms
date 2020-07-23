@@ -968,10 +968,10 @@
   resolved "https://registry.npm.taobao.org/@nodelib/fs.stat/download/@nodelib/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha1-K1o6s/kYzKSKjHVMCBaOPwPrphs=
 
-"@ovine/cli@～0.0.3":
-  version "0.0.4-alpha.0"
-  resolved "https://registry.npm.taobao.org/@ovine/cli/download/@ovine/cli-0.0.4-alpha.0.tgz#96a16cae65e32e912b3259ddb1490fdf3fa5fc83"
-  integrity sha1-lqFsrmXjLpErMlndsUkP3z+l/IM=
+"@ovine/cli@*":
+  version "0.0.6"
+  resolved "https://registry.npm.taobao.org/@ovine/cli/download/@ovine/cli-0.0.6.tgz#00bbed8199e6a561792d45e5515329dc7dd6cbce"
+  integrity sha1-ALvtgZnmpWF5LUXlUVMp3H3Wy84=
   dependencies:
     "@babel/core" "^7.7.4"
     "@babel/plugin-syntax-dynamic-import" "^7.7.4"
@@ -1024,10 +1024,10 @@
     webpack-merge "^4.2.2"
     webpackbar "^4.0.0"
 
-"@ovine/core@～0.0.3":
-  version "0.0.4-alpha.0"
-  resolved "https://registry.npm.taobao.org/@ovine/core/download/@ovine/core-0.0.4-alpha.0.tgz#40dd0eab594f9b87ec780cd19ecd749f5df1224b"
-  integrity sha1-QN0Oq1lPm4fseAzRns10n13xIks=
+"@ovine/core@*":
+  version "0.0.6"
+  resolved "https://registry.npm.taobao.org/@ovine/core/download/@ovine/core-0.0.6.tgz#25555093b8e199997bdaea716d15a498bb60dd4b"
+  integrity sha1-JVVQk7jhmZl72upxbRWkmLtg3Us=
   dependencies:
     abortcontroller-polyfill "^1.4.0"
     amis "1.0.14"

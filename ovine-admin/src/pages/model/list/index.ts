@@ -18,34 +18,19 @@ export const schema = {
     ],
     columns: [
       {
-        name: 'catid',
+        name: 'id',
         label: 'ID',
         type: 'text',
       },
       {
-        name: 'listorder',
-        label: '排序',
-        type: 'text',
-      },
-      {
-        name: 'catname',
+        name: 'name',
         label: '栏目名称',
         type: 'text',
       },
       {
-        name: 'dir',
-        label: '静态目录',
-        type: 'text',
-      },
-      {
-        name: 'type',
-        label: '栏目类型',
-        tpl: '<%= ["栏目", "单页", "链接"][data.type] %>',
-      },
-      {
-        name: 'model_id',
-        label: '栏目模型',
-        type: 'text',
+        name: 'enabled',
+        label: '启用',
+        type: 'switch',
       },
       {
         type: 'operation',
@@ -61,104 +46,110 @@ export const schema = {
     updateControls: {
       controls: [
         {
-          name: 'parentid',
-          label: '上级栏目',
-          type: 'tree-select',
-          source: 'GET category/category-select',
-          required: true,
+          name: "name",
+          label: "模型名称",
+          type: "text",
+          require: true,
+          size: "full"
         },
         {
-          name: 'catname',
-          label: '栏目名称',
-          type: 'text',
-          required: true,
+          name: "table",
+          label: "模型Table",
+          type: "text",
+          require: true,
+          size: "full"
         },
         {
-          name: 'type',
-          label: '栏目类型',
-          type: 'select',
-          required: true,
-          options: [
+          name: "enabled",
+          label: "是否启用",
+          type: "switch",
+          require: true,
+          size: "full"
+        },
+        {
+          "type": "combo",
+          "name": "combo101",
+          "multiple": true,
+          "multiLine": true,
+          "label": "模型定义",
+          addButtonText: ' 字段',
+          "value": [],
+          "tabsMode": true,
+          "tabsStyle": "radio",
+          mode: 'horizontal',
+          "maxLength": 40,
+          "tabsLabelTpl": "$name",
+          "controls": [
             {
-              "label": "栏目",
-              "value": "0"
+              name: "name",
+              label: "表单名称",
+              type: "text",
+              require: true,
             },
-
             {
-              "label": "单页",
-              "value": "1"
+              name: "field",
+              label: "字段名称",
+              type: "text",
+              require: true,
             },
-
             {
-              "label": "链接",
-              "value": "2"
+              name: "listorder",
+              label: "字段排序",
+              type: "text",
+              require: true,
+            },
+            {
+              name: "required",
+              label: "是否必填",
+              type: "switch",
+            },
+            {
+              name: "required_tips",
+              label: "必填提醒内容",
+              type: "text",
+            },
+            {
+              name: "type",
+              require: true,
+              label: "字段类型",
+              source: "GET public/select?type=fields",
+              loadDataOnce: true,
+              type: "select",
+            },
+            {
+              name: "datasource",
+              label: "数据源",
+              type: "textarea",
+              placeholder: "组件数据源, 写入Json或者接口地址"
+            },
+            {
+              name: "default",
+              label: "数据源",
+              type: "text",
+              placeholder: "数据源选项, 仅对单选,多选,开关按钮,多个用|分割"
+            },
+            {
+              name: "validator",
+              label: "字段验证器",
+              type: "text",
+              placeholder: "amis验证规则或自定义"
             },
           ]
         },
         {
-          name: 'model_id',
-          label: '文档模型',
-          type: 'select',
-          source: "GET public/select?type=models",
-          required: true,
-          hiddenOn: "data.type != 0"
-        },
-        {
-          name: 'thumb',
-          label: '缩略图',
-          reciever: 'POST public/upload',
-          type: 'image',
-        },
-        {
-          name: 'url',
-          label: '链接',
-          type: 'text',
-          visibleOn: "data.type != 2"
-        },
-        {
-          name: 'dir',
-          label: '栏目目录',
-          type: 'text',
-          hiddenOn: "data.type == 2"
-        },
-        {
-          name: 'list_tpl',
+          name: 'tpl_list',
           label: '列表页面',
           type: 'select',
           source: "GET public/select?type=tpl_list",
           clearable: true,
-          hiddenOn: "data.type != 0"
         },
         {
-          name: 'detail_tpl',
+          name: 'tpl_detail',
           label: '详情页面',
           type: 'select',
           source: "GET public/select?type=tpl_list",
           clearable: true,
-          hiddenOn: "data.type == 2",
         },
-        {
-          name: 'keywords',
-          label: '关键词',
-          type: 'text',
-        },
-        {
-          name: 'description',
-          label: '描述',
-          type: 'textarea',
-        },
-        {
-          name: 'ismenu',
-          value: true,
-          label: '启用',
-          type: 'switch',
-        },
-        {
-          name: 'listorder',
-          value: 30,
-          label: '排序',
-          type: 'number',
-        }
       ],
     },
   },
@@ -174,7 +165,7 @@ export const schema = {
         size: 'sm',
         primary: true,
         dialog: {
-          title: '新增文档',
+          title: '新增模型',
           size: 'lg',
           body: {
             type: 'form',

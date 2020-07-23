@@ -97,11 +97,10 @@ var extraFields = []map[string]string{
 }
 
 func (c *DocumentController) RegisterRoute(b pine.IRouterWrapper) {
-	b.ANY("/model/list", "ModelList")
+	b.GET("/model/list", "ModelList")
 	b.ANY("/model/add", "ModelAdd")
 	b.ANY("/model/edit", "ModelEdit")
 	b.ANY("/model/delete", "ModelDelete")
-
 	b.ANY("/model/list-field-show", "ModelFieldShowInListPage")
 	if config.DBConfig().Db.DbDriver == "mysql" {
 		b.ANY("/model/gen-sql", "GenSQL")
@@ -143,7 +142,7 @@ func (c *DocumentController) ModelFieldShowInListPage(icache cache.AbstractCache
 				Show:   showExists,
 				Search: search,
 				//FeSearch:  feSearchExists,
-				FormShow: formShowExists,
+				FormShow:  formShowExists,
 				Formatter: postDatas["formatter_"+field.TableField][0],
 			}
 		}
@@ -179,25 +178,8 @@ func (c *DocumentController) ModelFieldShowInListPage(icache cache.AbstractCache
 func (c *DocumentController) ModelList() {
 	page, _ := c.Ctx().GetInt64("page")
 	rows, _ := c.Ctx().GetInt64("rows")
-	if page > 0 {
-		list, total := models.NewDocumentModel().GetList(page, rows)
-		c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": total})
-		return
-	}
-
-	menuid, _ := c.Ctx().GetInt64("menuid")
-	table := helper.Datagrid("model_list_datagrid", "/b/model/list", helper.EasyuiOptions{
-		"title":   models.NewMenuModel().CurrentPos(menuid),
-		"toolbar": "model_list_datagrid_toolbar",
-	}, helper.EasyuiGridfields{
-		"模型ID":  {"field": "id", "width": "10", "index": "0"},
-		"模型名称":  {"field": "name", "width": "15", "index": "1"},
-		"数据表名称": {"field": "table", "width": "15", "index": "2"},
-		"启用":    {"field": "enabled", "width": "15", "index": "3", "formatter": "enabledFormatter"},
-		"操作":    {"field": "o","width": "45", "index": "4", "formatter": "optFormatter"},
-	})
-	c.Ctx().Render().ViewData("dataGrid", template.HTML(table))
-	c.Ctx().Render().HTML("backend/model_list.html")
+	list, total := models.NewDocumentModel().GetList(page, rows)
+	helper.Ajax(pine.H{"rows": list, "total": total}, 0, c.Ctx())
 }
 
 func (c *DocumentController) ModelAdd() {

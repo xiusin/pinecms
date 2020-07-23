@@ -2,20 +2,20 @@ package tables
 
 // todo cat 对应的表名字段冗余
 type Category struct {
-	Catid       int64          `xorm:"pk autoincr" json:"Catid"`
-	Parentid    int64          `json:"Parentid"`
+	Catid       int64          `xorm:"pk autoincr" json:"catid"`
+	Parentid    int64          `json:"parentid"`
 	Topid       int64          `json:"topid"`
 	ModelId     int64          `json:"model_id"`
-	Catname     string         `json:"Catname"`
-	Type        int64          `json:"Type"`
-	Keywords    string         `json:"Keywords"`
-	Description string         `json:"Description"`
+	Catname     string         `json:"catname"`
+	Type        int64          `json:"type"`
+	Keywords    string         `json:"keywords"`
+	Description string         `json:"description"`
 	Content     string         `xorm:"-"`
-	Thumb       string         `json:"Thumb"`
+	Thumb       string         `json:"thumb"`
 	Dir         string         `json:"dir"`
-	Url         string         `json:"Url"`
-	Listorder   int64          `json:"Listorder"`
-	Ismenu      int64          `json:"Ismenu"`
+	Url         string         `json:"url"`
+	Listorder   int64          `json:"listorder"`
+	Ismenu      int64          `json:"ismenu"`
 	ListTpl     string         `json:"list_tpl"`
 	DetailTpl   string         `json:"detail_tpl"`
 	UrlPrefix   string         `xorm:"-" json:"url_prefix"`
