@@ -23,8 +23,13 @@ export const schema = {
         type: 'text',
       },
       {
-        name: 'name',
+        name: 'table_name',
         label: '栏目名称',
+        type: 'text',
+      },
+      {
+        name: 'table',
+        label: '数据表名',
         type: 'text',
       },
       {
@@ -46,57 +51,58 @@ export const schema = {
     updateControls: {
       controls: [
         {
-          name: "name",
+          name: "table_name",
           label: "模型名称",
           type: "text",
-          require: true,
+          required: true,
           size: "full"
         },
         {
           name: "table",
           label: "模型Table",
           type: "text",
-          require: true,
+          required: true,
           size: "full"
         },
         {
           name: "enabled",
           label: "是否启用",
           type: "switch",
-          require: true,
           size: "full"
         },
         {
-          "type": "combo",
-          "name": "combo101",
-          "multiple": true,
-          "multiLine": true,
-          "label": "模型定义",
+          type: "combo",
+          name: "fields",
+          multiple: true,
+          multiLine: true,
+          label: "模型定义",
           addButtonText: ' 字段',
-          "value": [],
-          "tabsMode": true,
-          "tabsStyle": "radio",
+          value: [],
+          tabsMode: true,
+          tabsStyle: "radio",
           mode: 'horizontal',
-          "maxLength": 40,
-          "tabsLabelTpl": "$name",
-          "controls": [
+          maxLength: 40,
+          tabsLabelTpl: "$name",
+          controls: [
             {
               name: "name",
               label: "表单名称",
               type: "text",
-              require: true,
+              required: true,
+              value: "字段",
             },
             {
               name: "field",
               label: "字段名称",
               type: "text",
-              require: true,
+              required: true,
             },
             {
-              name: "listorder",
+              name: "sort",
               label: "字段排序",
-              type: "text",
-              require: true,
+              type: "number",
+              required: true,
+              resetValue: 30,
             },
             {
               name: "required",
@@ -110,7 +116,7 @@ export const schema = {
             },
             {
               name: "type",
-              require: true,
+              required: true,
               label: "字段类型",
               source: "GET public/select?type=fields",
               loadDataOnce: true,
@@ -124,9 +130,9 @@ export const schema = {
             },
             {
               name: "default",
-              label: "数据源",
+              label: "默认值",
               type: "text",
-              placeholder: "数据源选项, 仅对单选,多选,开关按钮,多个用|分割"
+              placeholder: "字段默认值"
             },
             {
               name: "validator",

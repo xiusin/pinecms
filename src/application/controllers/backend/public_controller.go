@@ -270,7 +270,7 @@ func (c *PublicController) Select() {
 		for _, v := range tpls {
 			data = append(data, KV{
 				Label: v.Name,
-				Value: v.Id,
+				Value: v.Name,
 			})
 		}
 	case "models": // 模型列表

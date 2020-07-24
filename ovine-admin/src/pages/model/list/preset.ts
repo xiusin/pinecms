@@ -31,15 +31,15 @@ export default {
       },
     },
     add: {
-      url: 'POST category/category-add',
+      url: 'POST model/add',
       limits: 'add',
     },
     edit: {
-      url: 'POST category/category-edit?id=$catid',
+      url: 'POST model/edit?id=$id',
       limits: 'edit',
     },
     del: {
-      url: 'POST category/category-delete?id=$catid',
+      url: 'POST model/delete?id=$id',
       limits: 'del',
     },
   },

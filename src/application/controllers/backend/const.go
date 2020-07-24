@@ -40,9 +40,14 @@ type FormController struct {
 }
 
 type FormControl struct {
-	Type    string `json:"type"`
-	Name    string `json:"name"`
-	Label   string `json:"label"`
-	Value   string `json:"value"`
-	Options []KV   `json:"options"`
+	Type             string `json:"type"`
+	Name             string `json:"name"`
+	Label            string `json:"label"`
+	Value            string `json:"value"`
+	Options          []KV   `json:"options"`
+	Validations      string `json:"validations"`
+	Required         bool   `json:"required"`
+	Description      string `json:"description"`
+	Placeholder      string `json:"placeholder"`
+	ValidationErrors string `json:"validationErrors"`
 }

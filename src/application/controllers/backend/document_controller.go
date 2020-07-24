@@ -29,28 +29,29 @@ type DocumentController struct {
 }
 
 type ModelForm struct {
-	ID                string `form:"id" json:"id"`
-	intID             int64
-	Enabled           string   `form:"enabled" json:"enabled"`
-	ModelType         string   `form:"type" json:"type"`
-	Name              string   `form:"name" json:"name"`
-	Table             string   `form:"table" json:"table"`
-	FeTplIndex        string   `form:"tpl_index" json:"tpl_index"`
-	FeTplList         string   `form:"tpl_list" json:"tpl_list"`
-	FeTplDetail       string   `form:"tpl_detail" json:"tpl_detail"`
-	FieldID           []string `form:"field_id" json:"field_id"`
-	fieldID           []uint
-	FieldDataSource   []string `form:"field_datasource" json:"field_datasource"`
-	FieldField        []string `form:"field_field" json:"field_field"`
-	FieldSort         []string `form:"field_sort" json:"field_sort"`
-	FieldHtml         []string `form:"field_html" json:"field_html"`
-	FieldName         []string `form:"field_name" json:"field_name"`
-	FieldRequired     []string `form:"field_required" json:"field_required"`
-	FieldRequiredTips []string `form:"field_required_tips" json:"field_required_tips"`
-	FieldValidator    []string `form:"field_validator" json:"field_validator"`
-	FieldDefault      []string `form:"field_default" json:"field_default"`
-	FieldType         []string `form:"field_type" json:"field_type"`
-	fieldType         []int64
+	ID          int64        `form:"id" json:"id"`
+	Enabled     bool         `form:"enabled" json:"enabled"`
+	ModelType   int64        `form:"type" json:"type"`
+	Name        string       `form:"table_name" json:"table_name"`
+	Table       string       `form:"table" json:"table"`
+	FeTplIndex  string       `form:"tpl_index" json:"tpl_index"`
+	FeTplList   string       `form:"tpl_list" json:"tpl_list"`
+	FeTplDetail string       `form:"tpl_detail" json:"tpl_detail"`
+	Fields      []ModelField `json:"fields" form:"fields"`
+}
+
+type ModelField struct {
+	FieldID           int64  `form:"id" json:"id"`
+	FieldDataSource   string `form:"datasource" json:"datasource"`
+	FieldField        string `form:"field" json:"field"`
+	FieldSort         int64  `form:"sort" json:"sort"`
+	FieldHtml         string `form:"html" json:"html"`
+	FieldName         string `form:"name" json:"name"`
+	FieldRequired     bool   `form:"required" json:"required"`
+	FieldRequiredTips string `form:"required_tips" json:"required_tips"`
+	FieldValidator    string `form:"validator" json:"validator"`
+	FieldDefault      string `form:"default" json:"default"`
+	FieldType         int64  `form:"type" json:"type"`
 }
 
 var extraFields = []map[string]string{
@@ -110,7 +111,7 @@ func (c *DocumentController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/model/preview-page", "PreviewPage")
 }
 
-func (c *DocumentController) ModelFieldShowInListPage(icache cache.AbstractCache) {
+func (c *DocumentController) ModelFieldShowInListPage() {
 	mid, _ := c.Ctx().GetInt64("mid")
 	if mid < 1 {
 		return
@@ -175,301 +176,271 @@ func (c *DocumentController) ModelFieldShowInListPage(icache cache.AbstractCache
 	c.Ctx().Render().HTML("backend/model_field_show_list_edit.html")
 }
 
-func (c *DocumentController) ModelList() {
+func (c *DocumentController) ModelList(orm *xorm.Engine) {
 	page, _ := c.Ctx().GetInt64("page")
 	rows, _ := c.Ctx().GetInt64("rows")
 	list, total := models.NewDocumentModel().GetList(page, rows)
-	helper.Ajax(pine.H{"rows": list, "total": total}, 0, c.Ctx())
+	var retData []*ModelForm
+	var fieldTable = new(tables.DocumentModelDsl)
+	for _, v := range list {
+		item := &ModelForm{
+			ID:          v.Id,
+			Enabled:     v.Enabled == 1,
+			ModelType:   v.ModelType,
+			Name:        v.Name,
+			Table:       v.Table,
+			FeTplList:   v.FeTplList,
+			FeTplDetail: v.FeTplDetail,
+		}
+
+		var fields []tables.DocumentModelDsl
+		// 查询字段列表
+		err := orm.Table(fieldTable).Where("mid = ?", v.Id).OrderBy("listorder").Find(&fields)
+		if err != nil {
+			pine.Logger().Error(err)
+		}
+		itemFields := make([]ModelField, len(fields))
+		for k, field := range fields {
+			itemFields[k] = ModelField{
+				FieldID:           field.Id,
+				FieldDataSource:   field.Datasource,
+				FieldField:        field.TableField,
+				FieldSort:         field.ListOrder,
+				FieldHtml:         field.Html,
+				FieldName:         field.FormName,
+				FieldRequired:     field.Required != 0,
+				FieldRequiredTips: field.RequiredTips,
+				FieldValidator:    field.Validator,
+				FieldDefault:      field.Default,
+				FieldType:         field.FieldType,
+			}
+		}
+		item.Fields = itemFields
+		retData = append(retData, item)
+	}
+
+	helper.Ajax(pine.H{"rows": retData, "total": total}, 0, c.Ctx())
 }
 
-func (c *DocumentController) ModelAdd() {
-	list, _ := models.NewDocumentModelFieldModel().GetList(1, 1000)
-	if c.Ctx().IsPost() {
-		var data ModelForm
-		if err := c.Ctx().BindJSON(&data); err != nil {
-			helper.Ajax("表单参数错误: "+err.Error(), 1, c.Ctx())
-			return
-		}
-		data.intID, _ = strconv.ParseInt(data.ID, 10, 64)
-		for _, v := range data.FieldType {
-			ty, _ := strconv.ParseInt(v, 10, 64)
-			data.fieldType = append(data.fieldType, ty)
-		}
-
-		//查找重复记录
-		exists, err := c.Ctx().Value("orm").(*xorm.Engine).Where("`name`=? or `table`=?", data.Name, data.Table).Exist(&tables.DocumentModel{})
-		if exists {
-			helper.Ajax("模型名称或者数据表已经存在", 1, c.Ctx())
-			return
-		}
-
-		// 判断后续字段名称是否一致
-		var m = map[string]struct{}{}
-		for _, v := range data.FieldName {
-			if _, ok := m[v]; ok {
-				helper.Ajax("表单名称重复: "+v, 1, c.Ctx())
-				return
-			} else {
-				m[v] = struct{}{}
-			}
-		}
-		m = map[string]struct{}{}
-		for _, v := range data.FieldField {
-			if _, ok := m[v]; ok {
-				helper.Ajax("字段名重复: "+v, 1, c.Ctx())
-				return
-			} else {
-				m[v] = struct{}{}
-			}
-		}
-
-		var enabled = 0
-		if data.Enabled == "on" {
-			enabled = 1
-		}
-		_, err = c.Ctx().Value("orm").(*xorm.Engine).Transaction(func(session *xorm.Session) (i interface{}, err error) {
-			dm := &tables.DocumentModel{
-				Name:        data.Name,
-				Table:       data.Table,
-				Enabled:     enabled,
-				ModelType:   1,
-				FeTplIndex:  helper.EasyUiIDToFilePath(data.FeTplIndex),
-				FeTplList:   helper.EasyUiIDToFilePath(data.FeTplList),
-				FeTplDetail: helper.EasyUiIDToFilePath(data.FeTplDetail),
-			}
-			affected, err := session.Insert(dm)
-			if affected < 1 {
-				if err == nil {
-					err = errors.New("保存模型数据失败")
-				}
-				return nil, err
-			}
-
-			// 查找h
-			var fieldHtmlsMap = map[int64]*tables.DocumentModelField{}
-			for _, field := range list {
-				fieldHtmlsMap[field.Id] = field
-			}
-
-			var fields []tables.DocumentModelDsl
-			for k, name := range data.FieldName {
-				listorder, _ := strconv.Atoi(data.FieldSort[k])
-				f := tables.DocumentModelDsl{
-					Mid:          dm.Id,
-					FormName:     name,
-					TableField:   data.FieldField[k],
-					ListOrder:    int64(listorder),
-					FieldType:    data.fieldType[k],
-					Datasource:   data.FieldDataSource[k],
-					RequiredTips: data.FieldRequiredTips[k],
-					Validator:    data.FieldValidator[k],
-					Default:      data.FieldDefault[k],
-				}
-				f.Html = fieldHtmlsMap[data.fieldType[k]].Html
-				if strings.HasPrefix(f.Datasource, "[") || strings.HasPrefix(f.Datasource, "{") {
-					var dataSourceJson interface{}
-					if err := json.Unmarshal([]byte(f.Datasource), &dataSourceJson); err != nil {
-						fmt.Println("数据源格式错误", f.Datasource, err)
-						return nil, err
-					}
-				}
-				fields = append(fields, f)
-			}
-			rest, err := session.Insert(fields)
-			if rest < int64(len(fields)) {
-				if err == nil {
-					err = errors.New("批量添加模型字段失败")
-				}
-				return nil, err
-			}
-			return true, nil
-		})
-		if err != nil {
-			pine.Logger().Error("添加模型失败", err)
-			helper.Ajax("添加模型失败", 1, c.Ctx())
-			return
-		}
-		helper.Ajax("添加模型成功", 0, c.Ctx())
+func (c *DocumentController) ModelAdd(orm *xorm.Engine) {
+	var data ModelForm
+	if err := c.Ctx().BindJSON(&data); err != nil {
+		helper.Ajax("表单参数错误: "+err.Error(), 1, c.Ctx())
 		return
 	}
-	currentPos := models.NewMenuModel().CurrentPos(64)
+	if len(data.Fields) == 0 {
+		helper.Ajax("请填写必要字段", 1, c.Ctx())
+		return
+	}
+	exists, err := orm.Where("`name`=? or `table`=?", data.Name, data.Table).Exist(&tables.DocumentModel{})
+	if exists {
+		helper.Ajax("模型名称或者数据表已经存在", 1, c.Ctx())
+		return
+	}
+	// 判断后续字段名称是否一致
+	var m = map[string]struct{}{}
+	for _, v := range data.Fields {
+		if _, ok := m[v.FieldName]; ok {
+			helper.Ajax("表单名称重复: "+v.FieldName, 1, c.Ctx())
+			return
+		} else {
+			m[v.FieldName] = struct{}{}
+		}
+	}
+	m = map[string]struct{}{}
+	for _, v := range data.Fields {
+		if _, ok := m[v.FieldField]; ok {
+			helper.Ajax("字段名重复: "+v.FieldField, 1, c.Ctx())
+			return
+		} else {
+			m[v.FieldField] = struct{}{}
+		}
+	}
+	var enabled = 0
+	if data.Enabled {
+		enabled = 1
+	}
+	_, err = orm.Transaction(func(session *xorm.Session) (i interface{}, err error) {
+		dm := &tables.DocumentModel{
+			Name:        data.Name,
+			Table:       data.Table,
+			Enabled:     enabled,
+			ModelType:   1,
+			FeTplIndex:  helper.EasyUiIDToFilePath(data.FeTplIndex),
+			FeTplList:   helper.EasyUiIDToFilePath(data.FeTplList),
+			FeTplDetail: helper.EasyUiIDToFilePath(data.FeTplDetail),
+		}
+		affected, err := session.Insert(dm)
+		if affected < 1 {
+			if err == nil {
+				err = errors.New("保存模型数据失败")
+			}
+			return nil, err
+		}
 
-	// 传递默认字段给modeladd
-
-	fields := models.NewDocumentFieldDslModel().GetList(0)
-	c.Ctx().Render().ViewData("fields", fields)
-	c.Ctx().Render().ViewData("fieldslen", len(fields))
-
-	c.Ctx().Render().ViewData("list", list)
-	c.Ctx().Render().ViewData("title", currentPos)
-	listJson, _ := json.Marshal(list)
-	c.Ctx().Render().ViewData("listJson", string(listJson))
-	c.Ctx().Render().HTML("backend/model_add.html")
+		var fields []tables.DocumentModelDsl
+		for k := range data.Fields {
+			f := tables.DocumentModelDsl{
+				Mid:          dm.Id,
+				FormName:     data.Fields[k].FieldName,
+				TableField:   data.Fields[k].FieldField,
+				ListOrder:    data.Fields[k].FieldSort,
+				FieldType:    data.Fields[k].FieldType,
+				Datasource:   data.Fields[k].FieldDataSource,
+				RequiredTips: data.Fields[k].FieldRequiredTips,
+				Validator:    data.Fields[k].FieldValidator,
+				Default:      data.Fields[k].FieldDefault,
+				Html:         data.Fields[k].FieldHtml,
+			}
+			if data.Fields[k].FieldRequired {
+				f.Required = 1
+			}
+			if strings.HasPrefix(f.Datasource, "[") || strings.HasPrefix(f.Datasource, "{") {
+				var dataSourceJson interface{}
+				if err := json.Unmarshal([]byte(f.Datasource), &dataSourceJson); err != nil {
+					fmt.Println("数据源格式错误", f.Datasource, err)
+					return nil, err
+				}
+			}
+			fields = append(fields, f)
+		}
+		rest, err := session.Insert(fields)
+		if rest < int64(len(fields)) {
+			if err == nil {
+				err = errors.New("批量添加模型字段失败")
+			}
+			return nil, err
+		}
+		return true, nil
+	})
+	if err != nil {
+		pine.Logger().Error("添加模型失败", err)
+		helper.Ajax("添加模型失败", 1, c.Ctx())
+		return
+	}
+	helper.Ajax("添加模型成功", 0, c.Ctx())
 }
 
-func (c *DocumentController) ModelEdit(iCache cache.AbstractCache) {
-	list, _ := models.NewDocumentModelFieldModel().GetList(1, 1000)
-	if c.Ctx().IsPost() {
-		var data ModelForm
-		if err := c.Ctx().BindJSON(&data); err != nil {
-			helper.Ajax("表单参数错误: "+err.Error(), 1, c.Ctx())
-			return
-		}
-
-		data.intID, _ = strconv.ParseInt(data.ID, 10, 64)
-		for _, v := range data.FieldType {
-			ty, _ := strconv.ParseInt(v, 10, 64)
-			data.fieldType = append(data.fieldType, ty)
-		}
-		// 先看模型
-		document := models.NewDocumentModel().GetByID(data.intID)
-		if document == nil {
-			helper.Ajax("模型不存在", 1, c.Ctx())
-			return
-		}
-		//查找重复记录
-		exists, err := c.Ctx().Value("orm").(*xorm.Engine).Where("(`name`=? or `table`=?) and id <> ?", data.Name, data.Table, data.ID).Exist(&tables.DocumentModel{})
-		if exists {
-			helper.Ajax("模型名称或表名已经存在", 1, c.Ctx())
-			return
-		}
-
-		// 判断后续字段名称是否一致
-		var m = map[string]struct{}{}
-		for _, v := range data.FieldName {
-			if _, ok := m[v]; ok {
-				helper.Ajax("表单名称重复: "+v, 1, c.Ctx())
-				return
-			} else {
-				m[v] = struct{}{}
-			}
-		}
-		m = map[string]struct{}{}
-		for _, v := range data.FieldField {
-			if _, ok := m[v]; ok {
-				helper.Ajax("字段名重复: "+v, 1, c.Ctx())
-				return
-			} else {
-				m[v] = struct{}{}
-			}
-		}
-
-		var enabled = 0
-		if data.Enabled == "on" {
-			enabled = 1
-		}
-
-		_, err = c.Ctx().Value("orm").(*xorm.Engine).Transaction(func(session *xorm.Session) (i interface{}, err error) {
-			document.Name = data.Name
-			document.Table = data.Table
-			document.Enabled = enabled
-			document.FeTplIndex = helper.EasyUiIDToFilePath(data.FeTplIndex)
-			document.FeTplList = helper.EasyUiIDToFilePath(data.FeTplList)
-			document.FeTplDetail = helper.EasyUiIDToFilePath(data.FeTplDetail)
-			//document.FieldShowInList = ""
-			document.Execed = 0
-			_, err = session.ID(document.Id).AllCols().Update(document)
-			if err != nil {
-				return nil, err
-			}
-			// 先删除所有字段
-			if af, _ := session.Where("mid=?", document.Id).Delete(&tables.DocumentModelDsl{}); af == 0 {
-				return nil, errors.New("删除表字段失败")
-			}
-			var fieldHtmlsMap = map[int64]*tables.DocumentModelField{}
-			for _, field := range list {
-				fieldHtmlsMap[field.Id] = field
-			}
-
-			var fields []tables.DocumentModelDsl
-			for k, name := range data.FieldName {
-				listorder, _ := strconv.Atoi(data.FieldSort[k])
-				f := tables.DocumentModelDsl{
-					Mid:          document.Id,
-					FormName:     name,
-					TableField:   data.FieldField[k],
-					FieldType:    data.fieldType[k],
-					ListOrder:    int64(listorder),
-					Datasource:   data.FieldDataSource[k],
-					RequiredTips: data.FieldRequiredTips[k],
-					Validator:    data.FieldValidator[k],
-					Default:      data.FieldDefault[k],
-				}
-				f.Html = fieldHtmlsMap[data.fieldType[k]].Html
-				if strings.HasPrefix(f.Datasource, "[") || strings.HasPrefix(f.Datasource, "{") {
-					var dataSourceJson interface{}
-					if err := json.Unmarshal([]byte(f.Datasource), &dataSourceJson); err != nil {
-						return nil, err
-					}
-				}
-				if data.FieldRequired[k] == "on" {
-					f.Required = 1
-				}
-				fields = append(fields, f)
-			}
-			rest, err := session.Insert(fields)
-			if rest < int64(len(fields)) {
-				if err == nil {
-					err = errors.New("批量添加模型字段失败")
-				}
-				pine.Logger().Error("修改模型", err)
-				return nil, err
-			}
-			return true, nil
-		})
-		if err != nil {
-			helper.Ajax("更新模型失败:"+err.Error(), 1, c.Ctx())
-			return
-		}
-		iCache.Delete(fmt.Sprintf(controllers.CacheDocumentModelPrefix, data.intID))
-		helper.Ajax("更新模型成功", 0, c.Ctx())
-		return
-	}
-	mid, err := c.Ctx().GetInt64("mid")
-	if err != nil || mid == 0 {
+func (c *DocumentController) ModelEdit(orm *xorm.Engine, iCache cache.AbstractCache) {
+	id, _ := c.Ctx().GetInt64("id", 0)
+	if id < 1 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	currentPos := models.NewMenuModel().CurrentPos(86)
-	// 查找模型信息
-	document := models.NewDocumentModel().GetByID(mid)
-	if document == nil {
-		helper.Ajax("模型不存在或已删除", 1, c.Ctx())
+	var data ModelForm
+	data.ID = id
+	if err := c.Ctx().BindJSON(&data); err != nil {
+		helper.Ajax("表单参数错误: "+err.Error(), 1, c.Ctx())
 		return
 	}
-	fields := models.NewDocumentFieldDslModel().GetList(mid)
-	c.Ctx().Render().ViewData("fields", fields)
-	// 读取系统默认字段
-	defaultFields := models.NewDocumentFieldDslModel().GetList(0)
-	var conntDelFields []string
-	for _, v := range defaultFields {
-		conntDelFields = append(conntDelFields, v.TableField)
+	document := models.NewDocumentModel().GetByID(data.ID)
+	if document == nil {
+		helper.Ajax("模型不存在", 1, c.Ctx())
+		return
 	}
-	c.Ctx().Render().ViewData("dfs", conntDelFields)
-	c.Ctx().Render().ViewData("fieldslen", len(fields))
-	c.Ctx().Render().ViewData("document", document)
-	c.Ctx().Render().ViewData("list", list)
-	c.Ctx().Render().ViewData("title", currentPos)
-	listJson, _ := json.Marshal(list)
-
-	c.Ctx().Render().ViewData("listJson", string(listJson))
-	c.Ctx().Render().HTML("backend/model_edit.html")
+	//查找重复记录
+	exists, err := orm.Where("(`name`=? or `table`=?) and id <> ?", data.Name, data.Table, data.ID).Exist(&tables.DocumentModel{})
+	if exists {
+		helper.Ajax("模型名称或表名已经存在", 1, c.Ctx())
+		return
+	}
+	// 判断后续字段名称是否一致
+	var m = map[string]struct{}{}
+	for _, v := range data.Fields {
+		if _, ok := m[v.FieldName]; ok {
+			helper.Ajax("表单名称重复: "+v.FieldName, 1, c.Ctx())
+			return
+		} else {
+			m[v.FieldName] = struct{}{}
+		}
+	}
+	m = map[string]struct{}{}
+	for _, v := range data.Fields {
+		if _, ok := m[v.FieldField]; ok {
+			helper.Ajax("字段名重复: "+v.FieldField, 1, c.Ctx())
+			return
+		} else {
+			m[v.FieldField] = struct{}{}
+		}
+	}
+	var enabled = 0
+	if data.Enabled {
+		enabled = 1
+	}
+	_, err = orm.Transaction(func(session *xorm.Session) (i interface{}, err error) {
+		document.Name = data.Name
+		document.Table = data.Table
+		document.Enabled = enabled
+		document.FeTplIndex = helper.EasyUiIDToFilePath(data.FeTplIndex)
+		document.FeTplList = helper.EasyUiIDToFilePath(data.FeTplList)
+		document.FeTplDetail = helper.EasyUiIDToFilePath(data.FeTplDetail)
+		document.Execed = 0
+		_, err = session.ID(document.Id).AllCols().Update(document)
+		if err != nil {
+			return nil, err
+		}
+		if af, _ := session.Where("mid=?", document.Id).Delete(&tables.DocumentModelDsl{}); af == 0 {
+			return nil, errors.New("删除表字段失败")
+		}
+		var fields []tables.DocumentModelDsl
+		for k := range data.Fields {
+			f := tables.DocumentModelDsl{
+				Mid:          document.Id,
+				FormName:     data.Fields[k].FieldName,
+				TableField:   data.Fields[k].FieldField,
+				FieldType:    data.Fields[k].FieldType,
+				ListOrder:    data.Fields[k].FieldSort,
+				Datasource:   data.Fields[k].FieldDataSource,
+				RequiredTips: data.Fields[k].FieldRequiredTips,
+				Validator:    data.Fields[k].FieldValidator,
+				Default:      data.Fields[k].FieldDefault,
+				Html:         data.Fields[k].FieldHtml, // 新版废除此字段吧
+			}
+			if strings.HasPrefix(f.Datasource, "[") || strings.HasPrefix(f.Datasource, "{") {
+				var dataSourceJson interface{}
+				if err := json.Unmarshal([]byte(f.Datasource), &dataSourceJson); err != nil {
+					return nil, err
+				}
+			}
+			if data.Fields[k].FieldRequired {
+				f.Required = 1
+			}
+			fields = append(fields, f)
+		}
+		rest, err := session.Insert(fields)
+		if rest < int64(len(fields)) {
+			if err == nil {
+				err = errors.New("批量添加模型字段失败")
+			}
+			pine.Logger().Error("修改模型", err)
+			return nil, err
+		}
+		return true, nil
+	})
+	if err != nil {
+		helper.Ajax("更新模型失败:"+err.Error(), 1, c.Ctx())
+		return
+	}
+	iCache.Delete(fmt.Sprintf(controllers.CacheDocumentModelPrefix, data.ID))
+	helper.Ajax("更新模型成功", 0, c.Ctx())
 }
 
 func (c *DocumentController) ModelDelete() {
 	modelID, _ := c.Ctx().GetInt64("id")
-	//if modelID < 1 {
-	//	helper.Ajax("模型参数错误", 1, c.Ctx())
-	//	return
-	//}
+	if modelID == 1 {
+		helper.Ajax("默认模型不可删除", 1, c.Ctx())
+		return
+	}
+	if modelID < 1 {
+		helper.Ajax("模型参数错误", 1, c.Ctx())
+		return
+	}
 	model := models.NewDocumentModel()
-	dm := model.GetByID(modelID)
-	if dm == nil {
+	if model.GetByID(modelID) == nil {
 		helper.Ajax("模型不存在", 1, c.Ctx())
 		return
 	}
 	if _, err := model.DeleteByID(modelID); err == nil {
-
 		helper.Ajax("删除模型成功", 0, c.Ctx())
 	} else {
 		helper.Ajax("删除模型失败: "+err.Error(), 1, c.Ctx())

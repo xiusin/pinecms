@@ -4,10 +4,10 @@ import "time"
 
 type DocumentModel struct {
 	Id              int64     `json:"id"`
-	Name            string    `json:"name"`
+	Name            string    `json:"table_name"`
 	Table           string    `json:"table"`
 	Enabled         int       `json:"enabled"`
-	ModelType       int       `json:"model_type"`
+	ModelType       int64     `json:"model_type"`
 	FeTplIndex      string    `json:"fe_tpl_index"`
 	FeTplList       string    `json:"fe_tpl_list"`
 	FeTplDetail     string    `json:"fe_tpl_detail"`

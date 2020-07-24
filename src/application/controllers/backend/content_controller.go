@@ -81,54 +81,97 @@ func (c *ContentController) NewsList(orm *xorm.Engine) {
 		return
 	}
 
-	if page > 0 {
-		querySqlWhere := []string{"catid=?", "deleted_time IS NULL"}
-		var whereHolder = []interface{}{catid}
-		getData := c.Ctx().GetData()
+	querySqlWhere := []string{"catid=?", "deleted_time IS NULL"}
+	var whereHolder = []interface{}{catid}
+	getData := c.Ctx().GetData()
 
-		for param, values := range getData {
-			if (!strings.HasPrefix(param, "search_")) || len(values) == 0 || len(values[0]) == 0 {
-				continue
-			}
-			field := strings.TrimLeft(param, "search_")
-			conf, ok := showInPage[field]
-			if !ok {
-				continue
-			}
-			if conf.Search == 1 {
-				querySqlWhere = append(querySqlWhere, field+"=?")
-				whereHolder = append(whereHolder, values[0])
-			} else {
-				querySqlWhere = append(querySqlWhere, field+" LIKE ?")
-				whereHolder = append(whereHolder, "%"+values[0]+"%")
-			}
+	for param, values := range getData {
+		if (!strings.HasPrefix(param, "search_")) || len(values) == 0 || len(values[0]) == 0 {
+			continue
 		}
-
-		offset := (page - 1) * rows
-		querySql := "SELECT * FROM `%s` WHERE " + strings.Join(querySqlWhere, " AND ") + " ORDER BY listorder DESC, id DESC LIMIT %d,%d"
-		sql := []interface{}{fmt.Sprintf(querySql, controllers.GetTableName(relationDocumentModel.Table), offset, rows)}
-		sql = append(sql, whereHolder...)
-
-		contents, err := orm.QueryString(sql...)
-		if err != nil {
-			pine.Logger().Error("请求列表错误", err)
-			helper.Ajax("获取文档列表错误", 1, c.Ctx())
-			return
+		field := strings.TrimLeft(param, "search_")
+		conf, ok := showInPage[field]
+		if !ok {
+			continue
 		}
-
-		countSql := "SELECT COUNT(*) total FROM `%s` WHERE " + strings.Join(querySqlWhere, " AND ")
-		sql = []interface{}{fmt.Sprintf(countSql, controllers.GetTableName(relationDocumentModel.Table))}
-		sql = append(sql, whereHolder)
-
-		totals, _ := orm.QueryString(sql...)
-		var total = "0"
-		if len(totals) > 0 {
-			total = totals[0]["total"]
+		if conf.Search == 1 {
+			querySqlWhere = append(querySqlWhere, field+"=?")
+			whereHolder = append(whereHolder, values[0])
+		} else {
+			querySqlWhere = append(querySqlWhere, field+" LIKE ?")
+			whereHolder = append(whereHolder, "%"+values[0]+"%")
 		}
-		if contents == nil {
-			contents = []map[string]string{}
-		}
-		c.Ctx().Render().JSON(map[string]interface{}{"rows": contents, "total": total})
+	}
+
+	offset := (page - 1) * rows
+	querySql := "SELECT * FROM `%s` WHERE " + strings.Join(querySqlWhere, " AND ") + " ORDER BY listorder DESC, id DESC LIMIT %d,%d"
+	sql := []interface{}{fmt.Sprintf(querySql, controllers.GetTableName(relationDocumentModel.Table), offset, rows)}
+	sql = append(sql, whereHolder...)
+
+	contents, err := orm.QueryString(sql...)
+	if err != nil {
+		pine.Logger().Error("请求列表错误", err)
+		helper.Ajax("获取文档列表错误", 1, c.Ctx())
+		return
+	}
+
+	countSql := "SELECT COUNT(*) total FROM `%s` WHERE " + strings.Join(querySqlWhere, " AND ")
+	sql = []interface{}{fmt.Sprintf(countSql, controllers.GetTableName(relationDocumentModel.Table))}
+	sql = append(sql, whereHolder)
+
+	totals, _ := orm.QueryString(sql...)
+	var total = "0"
+	if len(totals) > 0 {
+		total = totals[0]["total"]
+	}
+	if contents == nil {
+		contents = []map[string]string{}
+	}
+	c.Ctx().Render().JSON(map[string]interface{}{"rows": contents, "total": total})
+
+	//fields := helper.EasyuiGridfields{
+	//	"排序": {"field": "listorder", "formatter": "contentNewsListOrderFormatter", "index": "0"},
+	//}
+	//
+	//var index = 1
+	//var searchComps []string
+	//for _, field := range ff {
+	//	conf := showInPage[field]
+	//	if conf.Show {
+	//		f := map[string]string{"field": field, "index": strconv.Itoa(index)}
+	//		if conf.Formatter != "" {
+	//			f["formatter"] = conf.Formatter
+	//		}
+	//		fields[tMapF[field]] = f
+	//		index++
+	//	}
+	//	// 需要显示搜索组件
+	//	if conf.Search > 0 {
+	//		searchComps = append(searchComps, "<div class='search-div'>"+tMapF[field]+`: <input type="text" name="search_`+field+`" class="easyui-textbox"/></div>`)
+	//	}
+	//}
+	//fields["创建时间"] = map[string]string{"field": "created_time", "index": strconv.Itoa(index)}
+	//index++
+	//fields["更新时间"] = map[string]string{"field": "updated_time", "index": strconv.Itoa(index)}
+	//index++
+	//fields["管理操作"] = map[string]string{"field": "id", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
+	//table := helper.Datagrid("category_newslist_datagrid", "/b/content/news-list?grid=datagrid&catid="+strconv.Itoa(int(catid)), helper.EasyuiOptions{
+	//	"toolbar":      "content_newslist_datagrid_toolbar",
+	//	"singleSelect": "true",
+	//}, fields)
+	//
+	//c.Ctx().Render().ViewData("searchComps", template.HTML(strings.Join(searchComps, "")))
+	//c.Ctx().Render().ViewData("DataGrid", template.HTML(table))
+	//c.Ctx().Render().ViewData("catid", catid)
+	//c.Ctx().Render().ViewData("formatters", template.JS(relationDocumentModel.Formatters))
+	//c.Ctx().Render().HTML("backend/content_newslist.html")
+}
+
+// 动态json表单
+func (c *ContentController) NewsModelJson()  {
+	catid, _ := c.Ctx().GetInt64("catid")
+	if catid < 1 {
+		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
 
@@ -158,16 +201,9 @@ func (c *ContentController) NewsList(orm *xorm.Engine) {
 	fields["更新时间"] = map[string]string{"field": "updated_time", "index": strconv.Itoa(index)}
 	index++
 	fields["管理操作"] = map[string]string{"field": "id", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
-	table := helper.Datagrid("category_newslist_datagrid", "/b/content/news-list?grid=datagrid&catid="+strconv.Itoa(int(catid)), helper.EasyuiOptions{
-		"toolbar":      "content_newslist_datagrid_toolbar",
-		"singleSelect": "true",
-	}, fields)
 
-	c.Ctx().Render().ViewData("searchComps", template.HTML(strings.Join(searchComps, "")))
-	c.Ctx().Render().ViewData("DataGrid", template.HTML(table))
-	c.Ctx().Render().ViewData("catid", catid)
-	c.Ctx().Render().ViewData("formatters", template.JS(relationDocumentModel.Formatters))
-	c.Ctx().Render().HTML("backend/content_newslist.html")
+
+
 }
 
 func (c *ContentController) Page() {
