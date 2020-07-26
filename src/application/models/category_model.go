@@ -181,8 +181,8 @@ func (c *CategoryModel) GetContentRightCategoryTree(categorys []tables.Category,
 		for _, v := range categorys {
 			if v.Parentid == parentid {
 				maps = append(maps, map[string]interface{}{
-					"to":       fmt.Sprintf("?catid=%d", v.Catid),
 					"label":    v.Catname,
+					"value":    v.Catid,
 					"children": c.GetContentRightCategoryTree(categorys, v.Catid),
 				})
 			}

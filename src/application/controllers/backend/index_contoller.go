@@ -190,7 +190,7 @@ func (c *IndexController) GetMenus(iCache cache.AbstractCache) []MenuV2 {
 				Icon:        "fa fa-home",
 			}
 			if len(sonmenu) == 0 {
-				menuv2.PathToComponent = "/" + v.C + "/" + v.A
+				menuv2.PathToComponent = strFirstToUpper("/" + v.C + "/" + v.A)
 				menuv2.Path = menuv2.PathToComponent
 				menuv2.NodePath = menuv2.PathToComponent
 			} else {

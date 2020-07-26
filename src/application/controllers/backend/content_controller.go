@@ -24,8 +24,10 @@ type ContentController struct {
 }
 
 func (c *ContentController) RegisterRoute(b pine.IRouterWrapper) {
-	b.GET("/category/aside-category", "AsideCategory")
+	b.GET("/content/aside-category", "AsideCategory")
 	b.ANY("/content/news-list", "NewsList")
+	b.ANY("/content/news-crud", "NewsModelJson")
+
 	b.ANY("/content/page", "Page")
 	b.ANY("/content/add", "AddContent")
 	b.ANY("/content/edit", "EditContent")
@@ -128,81 +130,75 @@ func (c *ContentController) NewsList(orm *xorm.Engine) {
 		contents = []map[string]string{}
 	}
 	c.Ctx().Render().JSON(map[string]interface{}{"rows": contents, "total": total})
-
-	//fields := helper.EasyuiGridfields{
-	//	"排序": {"field": "listorder", "formatter": "contentNewsListOrderFormatter", "index": "0"},
-	//}
-	//
-	//var index = 1
-	//var searchComps []string
-	//for _, field := range ff {
-	//	conf := showInPage[field]
-	//	if conf.Show {
-	//		f := map[string]string{"field": field, "index": strconv.Itoa(index)}
-	//		if conf.Formatter != "" {
-	//			f["formatter"] = conf.Formatter
-	//		}
-	//		fields[tMapF[field]] = f
-	//		index++
-	//	}
-	//	// 需要显示搜索组件
-	//	if conf.Search > 0 {
-	//		searchComps = append(searchComps, "<div class='search-div'>"+tMapF[field]+`: <input type="text" name="search_`+field+`" class="easyui-textbox"/></div>`)
-	//	}
-	//}
-	//fields["创建时间"] = map[string]string{"field": "created_time", "index": strconv.Itoa(index)}
-	//index++
-	//fields["更新时间"] = map[string]string{"field": "updated_time", "index": strconv.Itoa(index)}
-	//index++
-	//fields["管理操作"] = map[string]string{"field": "id", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
-	//table := helper.Datagrid("category_newslist_datagrid", "/b/content/news-list?grid=datagrid&catid="+strconv.Itoa(int(catid)), helper.EasyuiOptions{
-	//	"toolbar":      "content_newslist_datagrid_toolbar",
-	//	"singleSelect": "true",
-	//}, fields)
-	//
-	//c.Ctx().Render().ViewData("searchComps", template.HTML(strings.Join(searchComps, "")))
-	//c.Ctx().Render().ViewData("DataGrid", template.HTML(table))
-	//c.Ctx().Render().ViewData("catid", catid)
-	//c.Ctx().Render().ViewData("formatters", template.JS(relationDocumentModel.Formatters))
-	//c.Ctx().Render().HTML("backend/content_newslist.html")
 }
 
 // 动态json表单
-func (c *ContentController) NewsModelJson()  {
+func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 	catid, _ := c.Ctx().GetInt64("catid")
-	if catid < 1 {
-		helper.Ajax("参数错误", 1, c.Ctx())
+	catogoryModel := models.NewCategoryModel().GetCategory(catid)
+	if catogoryModel == nil {
+		helper.Ajax("分类不存在", 1, c.Ctx())
 		return
 	}
-
-	fields := helper.EasyuiGridfields{
-		"排序": {"field": "listorder", "formatter": "contentNewsListOrderFormatter", "index": "0"},
+	rd := models.NewDocumentModel().GetByID(catogoryModel.ModelId)
+	if rd == nil || rd.Id == 0 {
+		helper.Ajax("找不到关联模型", 1, c.Ctx())
+		return
 	}
-
-	var index = 1
-	var searchComps []string
-	for _, field := range ff {
-		conf := showInPage[field]
-		if conf.Show {
-			f := map[string]string{"field": field, "index": strconv.Itoa(index)}
-			if conf.Formatter != "" {
-				f["formatter"] = conf.Formatter
-			}
-			fields[tMapF[field]] = f
-			index++
+	var fields []tables.DocumentModelDsl
+	orm.Table(new(tables.DocumentModelDsl)).Where("mid = ?", catogoryModel.ModelId).OrderBy("listorder").Find(&fields)	// 按排序查字段
+	var forms []FormControl
+	fm := models.NewDocumentModelFieldModel().GetMap()
+	for _, field := range fields {
+		form := FormControl{ // 表单显示
+			Type:  fm[field.FieldType].AmisType,
+			Name:  field.TableField,
+			Label: field.FormName,
 		}
-		// 需要显示搜索组件
-		if conf.Search > 0 {
-			searchComps = append(searchComps, "<div class='search-div'>"+tMapF[field]+`: <input type="text" name="search_`+field+`" class="easyui-textbox"/></div>`)
-		}
+		forms = append(forms, form)
 	}
-	fields["创建时间"] = map[string]string{"field": "created_time", "index": strconv.Itoa(index)}
-	index++
-	fields["更新时间"] = map[string]string{"field": "updated_time", "index": strconv.Itoa(index)}
-	index++
-	fields["管理操作"] = map[string]string{"field": "id", "formatter": "contentNewsListOperateFormatter", "index": strconv.Itoa(index)}
+	// 构建json
+	helper.Ajax(pine.H{
+		"type":            "crud",
+		"columns":         forms,
+		"filterTogglable": true,
+		"headerToolbar": []interface{}{
+			"filter-toggler",
+			map[string]string{
+				"type":  "columns-toggler",
+				"align": "left",
+			},
+			map[string]string{
+				"type":  "pagination",
+				"align": "left",
+			},
+			map[string]interface{}{
+				"type":       "button",
+				"align":      "right",
+				"actionType": "drawer",
+				"label":      "添加",
+				"icon":       "fa fa-plus pull-left",
+				"size":       "sm",
+				"primary":    true,
+				"drawer": map[string]interface{}{
+					"position": "right",
+					"size":     "xl",
+					"title":    "发布内容",
+					"body": map[string]interface{}{
+						"type": "form",
+						"mode": "horizontal",
+						"api":  "$preset.apis.edit",
+						//"$ref": "updateControls",
+						"controls": forms,
+					},
+				},
+			},
+		},
+		"footerToolbar": []string{"statistics", "switch-per-page", "pagination"},
+	}, 0, c.Ctx())
+}
 
-
+func (c *ContentController) contentControls()  {
 
 }
 

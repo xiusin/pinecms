@@ -47,11 +47,6 @@
     "typescript": "^3.9.5"
   },
   "license": "MIT",
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "lint-staged": {
     "*.{md,yml,json,yaml,css}": "yarn pretty",
     "*.{ts,tsx}": "yarn eslint"

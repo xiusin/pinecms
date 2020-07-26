@@ -111,7 +111,7 @@ func (c *DocumentController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/model/preview-page", "PreviewPage")
 }
 
-func (c *DocumentController) ModelFieldShowInListPage() {
+func (c *DocumentController) ModelFieldShowInListPage(orm *xorm.Engine) {
 	mid, _ := c.Ctx().GetInt64("mid")
 	if mid < 1 {
 		return
@@ -155,7 +155,7 @@ func (c *DocumentController) ModelFieldShowInListPage() {
 		//	model.FeSearchFields = "*"
 		//}
 		model.Formatters = c.Ctx().PostString("formatters", " ")
-		_, err := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(&tables.DocumentModel{}).Where("id = ?", mid).Update(model)
+		_, err := orm.Table(&tables.DocumentModel{}).Where("id = ?", mid).Update(model)
 		if err != nil {
 			helper.Ajax("更新失败:"+err.Error(), 1, c.Ctx())
 		} else {

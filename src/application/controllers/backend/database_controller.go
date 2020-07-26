@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/xiusin/pinecms/src/config"
-	"html/template"
 	"io"
 	"path/filepath"
 	"strings"
@@ -15,7 +14,6 @@ import (
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
-	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/common/helper"
 )
 
@@ -110,37 +108,19 @@ func (c *DatabaseController) Backup() {
 
 func (c *DatabaseController) BackupList() {
 	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
-	if c.Ctx().GetString("datagrid") == "true" {
-		uploader := getStorageEngine(settingData)
-		list, prefix, err := uploader.List(baseBackupDir)
-		if err != nil {
-			helper.Ajax("获取列表失败: "+err.Error(), 1, c.Ctx())
-			return
-		}
-
-		var files = []map[string]string{}
-		for _, v := range list {
-			v = strings.TrimLeft(v, filepath.Join(prefix, baseBackupDir))
-			files = append(files, map[string]string{
-				"name":        v,
-				"name_format": v,
-			})
-		}
-		c.Ctx().Render().JSON(files)
-		return
+	uploader := getStorageEngine(settingData)
+	list, prefix, err := uploader.List(baseBackupDir)
+	var files = []map[string]string{}
+	if err != nil {
+		c.Logger().Error(err)
 	}
-
-	menuid, _ := c.Ctx().GetInt64("menuid")
-	table := helper.Datagrid("database_backup_list_datagrid", "/b/database/backup-list?datagrid=true", helper.EasyuiOptions{
-		"title":      models.NewMenuModel().CurrentPos(menuid),
-		"toolbar":    "database_backup_list_datagrid_toolbar",
-		"pagination": "false",
-	}, helper.EasyuiGridfields{
-		"文件名": {"field": "name", "width": "20", "index": "0"},
-		"操作":  {"field": "name_format", "index": "1", "formatter": "backupListOpFormatter"},
-	})
-	c.Ctx().Render().ViewData("dataGrid", template.HTML(table))
-	c.Ctx().Render().HTML("backend/database_backup_list.html")
+	for _, v := range list {
+		v = strings.TrimLeft(v, filepath.Join(prefix, baseBackupDir))
+		files = append(files, map[string]string{
+			"name": v,
+		})
+	}
+	helper.Ajax(files, 0, c.Ctx())
 }
 
 func (c *DatabaseController) BackupDownload() {

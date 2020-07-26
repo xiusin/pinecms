@@ -7,9 +7,9 @@ export const schema = {
     "api": '$preset.apis.editAdminInfo', // 保存表单数据调用
     "mode": "horizontal",
     "autoFocus": false,
-    "horizontal": {
-      "leftFixed": "xs"
-    },
+    // "horizontal": {
+    //   "leftFixed": "xs"
+    // },
     "controls": [
       {
         "type": "text",
