@@ -8,6 +8,7 @@ import (
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"html/template"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -146,7 +147,7 @@ func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 		return
 	}
 	var fields []tables.DocumentModelDsl
-	orm.Table(new(tables.DocumentModelDsl)).Where("mid = ?", catogoryModel.ModelId).OrderBy("listorder").Find(&fields)	// 按排序查字段
+	orm.Table(new(tables.DocumentModelDsl)).Where("mid = ?", catogoryModel.ModelId).OrderBy("listorder").Find(&fields) // 按排序查字段
 	var forms []FormControl
 	fm := models.NewDocumentModelFieldModel().GetMap()
 	for _, field := range fields {
@@ -155,6 +156,33 @@ func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 			Name:  field.TableField,
 			Label: field.FormName,
 		}
+		// todo 反射设置属性内容
+		rf := reflect.ValueOf(form)
+		if fm[field.FieldType].Opt != "" {		// 判断是否需要合并属性
+			opts := strings.SplitN(fm[field.FieldType].Opt, ":", 3)
+			opts[0] = ucwords(opts[0])
+			switch opts[1] {
+			case "bool":
+				v, _ := strconv.ParseBool(opts[2])
+				rf.FieldByName(opts[0]).SetBool(v)
+			case "int":
+				v, _ := strconv.Atoi(opts[2])
+				c.Logger().Debug(rf.FieldByName(opts[0]))
+				rf.FieldByName(opts[0]).Elem().SetInt(int64(v))
+			case "array", "object":
+				var val []KV
+				json.Unmarshal([]byte(opts[2]), &val)
+				switch opts[0] {
+				case "Options":
+					form.Options = val
+					if form.Type == "checkboxes" {
+						form.Multiple = true
+					}
+				}
+			default:
+			}
+		}
+
 		forms = append(forms, form)
 	}
 	// 构建json
@@ -162,6 +190,7 @@ func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 		"type":            "crud",
 		"columns":         forms,
 		"filterTogglable": true,
+		"filter":          "$preset.forms.filter",
 		"headerToolbar": []interface{}{
 			"filter-toggler",
 			map[string]string{
@@ -185,10 +214,9 @@ func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 					"size":     "xl",
 					"title":    "发布内容",
 					"body": map[string]interface{}{
-						"type": "form",
-						"mode": "horizontal",
-						"api":  "$preset.apis.edit",
-						//"$ref": "updateControls",
+						"type":     "form",
+						"mode":     "horizontal",
+						"api":      "$preset.apis.edit",
 						"controls": forms,
 					},
 				},
@@ -196,10 +224,6 @@ func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 		},
 		"footerToolbar": []string{"statistics", "switch-per-page", "pagination"},
 	}, 0, c.Ctx())
-}
-
-func (c *ContentController) contentControls()  {
-
 }
 
 func (c *ContentController) Page() {

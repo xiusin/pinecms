@@ -288,3 +288,14 @@ func strFirstToUpper(str string) string {
 	}
 	return temp[0] + upperStr
 }
+
+func ucwords(str string) string {
+	str = strings.ToLower(str)
+	vv := []rune(str)
+	for i := 0; i < len(str); i++ {
+		if i == 0 {
+			vv[i] -= 32
+		}
+	}
+	return string(vv)
+}

@@ -25,7 +25,7 @@ export const schema = {
       '$preset.actions.add',
     ],
     footerToolbar: ['statistics', 'switch-per-page', 'pagination'],
-    columns: [
+    columns:  [
       {
         name: 'linkid',
         label: 'ID',

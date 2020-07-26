@@ -50,4 +50,6 @@ type FormControl struct {
 	Description      string `json:"description"`
 	Placeholder      string `json:"placeholder"`
 	ValidationErrors string `json:"validationErrors"`
+	Multiple         bool   `json:"multiple"`
+	Precision        int    `json:"precision"`
 }

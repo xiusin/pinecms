@@ -29,7 +29,7 @@ type DocumentController struct {
 }
 
 type ModelForm struct {
-	ID          int64        `form:"id" json:"id"`
+	ID          interface{}  `form:"id" json:"id"`
 	Enabled     bool         `form:"enabled" json:"enabled"`
 	ModelType   int64        `form:"type" json:"type"`
 	Name        string       `form:"table_name" json:"table_name"`
@@ -333,7 +333,15 @@ func (c *DocumentController) ModelEdit(orm *xorm.Engine, iCache cache.AbstractCa
 		helper.Ajax("表单参数错误: "+err.Error(), 1, c.Ctx())
 		return
 	}
-	document := models.NewDocumentModel().GetByID(data.ID)
+	var idi int64
+	switch data.ID.(type) {
+	case int64:
+		idi = data.ID.(int64)
+	case string:
+		idt,_ := strconv.Atoi(data.ID.(string))
+		idi = int64(idt)
+	}
+	document := models.NewDocumentModel().GetByID(idi)
 	if document == nil {
 		helper.Ajax("模型不存在", 1, c.Ctx())
 		return
