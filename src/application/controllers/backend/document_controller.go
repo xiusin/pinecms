@@ -99,8 +99,9 @@ var extraFields = []map[string]string{
 
 func (c *DocumentController) RegisterRoute(b pine.IRouterWrapper) {
 	b.GET("/model/list", "ModelList")
-	b.ANY("/model/add", "ModelAdd")
-	b.ANY("/model/edit", "ModelEdit")
+	b.POST("/model/add", "ModelAdd")
+	b.POST("/model/edit", "ModelEdit")
+	b.GET("/model/matrix", "ModelMatrix")
 	b.ANY("/model/delete", "ModelDelete")
 	b.ANY("/model/list-field-show", "ModelFieldShowInListPage")
 	if config.DBConfig().Db.DbDriver == "mysql" {
@@ -174,6 +175,31 @@ func (c *DocumentController) ModelFieldShowInListPage(orm *xorm.Engine) {
 	c.Ctx().Render().ViewData("mid", mid)
 	c.Ctx().Render().ViewData("model", model)
 	c.Ctx().Render().HTML("backend/model_field_show_list_edit.html")
+}
+
+func (c *DocumentController) ModelMatrix() {
+	mid, _ := c.Ctx().GetInt64("id")
+	if mid < 1 {
+		return
+	}
+	model := models.NewDocumentModel().GetByID(mid)
+	if model == nil || model.Id < 1 {
+		return
+	}
+	fields := models.NewDocumentFieldDslModel().GetList(mid)
+	cols := []KV{
+		{Label: "表单页显示", Name: "form"},
+		{Label: "列表页显示", Name: "list"},
+	}
+	var rows []KV
+
+	for _, field := range fields {
+		rows = append(rows, KV{
+			Label: field.FormName,
+			Name:  field.TableField,
+		})
+	}
+	helper.Ajax(pine.H{"rows": rows, "columns": cols}, 0, c.Ctx())
 }
 
 func (c *DocumentController) ModelList(orm *xorm.Engine) {
@@ -338,7 +364,7 @@ func (c *DocumentController) ModelEdit(orm *xorm.Engine, iCache cache.AbstractCa
 	case int64:
 		idi = data.ID.(int64)
 	case string:
-		idt,_ := strconv.Atoi(data.ID.(string))
+		idt, _ := strconv.Atoi(data.ID.(string))
 		idi = int64(idt)
 	}
 	document := models.NewDocumentModel().GetByID(idi)

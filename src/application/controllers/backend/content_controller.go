@@ -44,7 +44,7 @@ func (c *ContentController) AsideCategory() {
 func (c *ContentController) NewsList(orm *xorm.Engine) {
 	catid, _ := c.Ctx().GetInt64("catid")
 	page, _ := c.Ctx().GetInt64("page")
-	rows, _ := c.Ctx().GetInt64("rows")
+	rows, _ := c.Ctx().GetInt64("perPage")
 	catogoryModel := models.NewCategoryModel().GetCategory(catid)
 	if catogoryModel == nil {
 		helper.Ajax("分类不存在", 1, c.Ctx())
@@ -130,7 +130,7 @@ func (c *ContentController) NewsList(orm *xorm.Engine) {
 	if contents == nil {
 		contents = []map[string]string{}
 	}
-	c.Ctx().Render().JSON(map[string]interface{}{"rows": contents, "total": total})
+	helper.Ajax(pine.H{"rows": contents, "total": total}, 0, c.Ctx())
 }
 
 // 动态json表单
@@ -149,48 +149,111 @@ func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 	var fields []tables.DocumentModelDsl
 	orm.Table(new(tables.DocumentModelDsl)).Where("mid = ?", catogoryModel.ModelId).OrderBy("listorder").Find(&fields) // 按排序查字段
 	var forms []FormControl
+	var formColums []FormControl
 	fm := models.NewDocumentModelFieldModel().GetMap()
 	for _, field := range fields {
-		form := FormControl{ // 表单显示
-			Type:  fm[field.FieldType].AmisType,
-			Name:  field.TableField,
-			Label: field.FormName,
-		}
-		// todo 反射设置属性内容
-		rf := reflect.ValueOf(form)
-		if fm[field.FieldType].Opt != "" {		// 判断是否需要合并属性
-			opts := strings.SplitN(fm[field.FieldType].Opt, ":", 3)
-			opts[0] = ucwords(opts[0])
-			switch opts[1] {
-			case "bool":
-				v, _ := strconv.ParseBool(opts[2])
-				rf.FieldByName(opts[0]).SetBool(v)
-			case "int":
-				v, _ := strconv.Atoi(opts[2])
-				c.Logger().Debug(rf.FieldByName(opts[0]))
-				rf.FieldByName(opts[0]).Elem().SetInt(int64(v))
-			case "array", "object":
-				var val []KV
-				json.Unmarshal([]byte(opts[2]), &val)
-				switch opts[0] {
-				case "Options":
-					form.Options = val
-					if form.Type == "checkboxes" {
-						form.Multiple = true
+		form := FormControl{Type: fm[field.FieldType].AmisType, Name: field.TableField, Label: field.FormName}
+		formColums = append(formColums, FormControl{Type: "text", Name: field.TableField, Label: field.FormName})
+		rf := reflect.ValueOf(&form)
+		if fm[field.FieldType].Opt != "" { // 判断是否需要合并属性
+			optArr := strings.Split(fm[field.FieldType].Opt, "\r\n")
+			for _, v := range optArr {
+				opts := strings.SplitN(v, ":", 3)
+				opts[0] = ucwords(opts[0])
+				switch opts[1] {
+				case "bool":
+					v, _ := strconv.ParseBool(opts[2])
+					rf.Elem().FieldByName(opts[0]).SetBool(v)
+				case "int":
+					v, _ := strconv.Atoi(opts[2])
+					rf.Elem().FieldByName(opts[0]).SetInt(int64(v))
+				case "array", "object":
+					var val []KV
+					json.Unmarshal([]byte(opts[2]), &val)
+					switch opts[0] {
+					case "Options":
+						form.Options = val
+						if form.Type == "checkboxes" {
+							form.Multiple = true
+						}
 					}
+				default:
 				}
-			default:
 			}
 		}
-
+		if field.Required == 1 {
+			form.Required = true
+			form.ValidationErrors = field.RequiredTips
+		}
+		if field.Default != "" {
+			form.Value = field.Default
+		}
 		forms = append(forms, form)
 	}
-	// 构建json
+
+	action := map[string]interface{}{
+		"type":       "button",
+		"align":      "right",
+		"actionType": "drawer",
+		"label":      "添加",
+		"icon":       "fa fa-plus pull-left",
+		"size":       "sm",
+		"primary":    true,
+		"drawer": map[string]interface{}{
+			"position": "right",
+			"size":     "xl",
+			"title":    "发布内容",
+			"body": map[string]interface{}{
+				"type":     "form",
+				"mode":     "horizontal",
+				"api":      fmt.Sprintf("POST content/add?mid=%d&catid=%d&table_name=%s", rd.Id, catogoryModel.Catid, rd.Table),
+				"controls": forms,
+			},
+		},
+	}
+
+	formColums = append(formColums, FormControl{
+		Type:        "operation",
+		Label:       "操作",
+		LimitsLogic: "or",
+		Limits:      []string{"edit", "del"},
+		Buttons: []interface{}{
+			map[string]interface{}{
+				"type":       "action",
+				"limits":     "edit",
+				"actionType": "drawer",
+				"tooltip":    "修改",
+				"icon":       "fa fa-edit text-info",
+				"drawer": map[string]interface{}{
+					"position": "right",
+					"size":     "xl",
+					"title":    "修改内容",
+					"body": map[string]interface{}{
+						"type":     "form",
+						"mode":     "horizontal",
+						"api":      fmt.Sprintf("POST content/edit?mid=%d&catid=%d&table_name=%s", rd.Id, catogoryModel.Catid, rd.Table),
+						"controls": forms,
+					},
+				},
+			},
+			map[string]interface{}{
+				"limits":      "del",
+				"type":        "action",
+				"icon":        "fa fa-times text-danger",
+				"actionType":  "ajax",
+				"api":         fmt.Sprintf("POST content/delete?id=$id&catid=%d", catogoryModel.Catid),
+				"tooltip":     "删除",
+				"confirmText": "您确认要删除?",
+			},
+		},
+	})
+
 	helper.Ajax(pine.H{
 		"type":            "crud",
-		"columns":         forms,
+		"columns":         formColums,
 		"filterTogglable": true,
 		"filter":          "$preset.forms.filter",
+		"api":             fmt.Sprintf("GET content/news-list?catid=%d", catogoryModel.Catid),
 		"headerToolbar": []interface{}{
 			"filter-toggler",
 			map[string]string{
@@ -201,26 +264,7 @@ func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 				"type":  "pagination",
 				"align": "left",
 			},
-			map[string]interface{}{
-				"type":       "button",
-				"align":      "right",
-				"actionType": "drawer",
-				"label":      "添加",
-				"icon":       "fa fa-plus pull-left",
-				"size":       "sm",
-				"primary":    true,
-				"drawer": map[string]interface{}{
-					"position": "right",
-					"size":     "xl",
-					"title":    "发布内容",
-					"body": map[string]interface{}{
-						"type":     "form",
-						"mode":     "horizontal",
-						"api":      "$preset.apis.edit",
-						"controls": forms,
-					},
-				},
-			},
+			action,
 		},
 		"footerToolbar": []string{"statistics", "switch-per-page", "pagination"},
 	}, 0, c.Ctx())
@@ -298,7 +342,10 @@ func (c *ContentController) AddContent() {
 				data[formName] = values[0]
 			}
 		}
-		data["catid"] = c.Ctx().GetString("catid")
+		data["mid"] = c.Ctx().FormValue("mid")
+		data["catid"] = c.Ctx().FormValue("catid")
+		data["table_name"] = c.Ctx().FormValue("table_name")
+
 		if !data.MustCheck() {
 			helper.Ajax("缺少必要参数", 1, c.Ctx())
 			return
@@ -399,7 +446,6 @@ func (c *ContentController) EditContent(orm *xorm.Engine) {
 		helper.Ajax("获取文章内容错误", 1, c.Ctx())
 		return
 	}
-
 	if len(contents) == 0 {
 		helper.Ajax("文章不存在或已删除", 1, c.Ctx())
 		return

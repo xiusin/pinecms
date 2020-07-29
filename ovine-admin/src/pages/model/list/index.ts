@@ -40,10 +40,10 @@ export const schema = {
       {
         type: 'operation',
         label: '操作',
-        width: 60,
-        limits: ['edit', 'del'],
+        width: 100,
+        limits: ['editField', 'edit', 'del'],
         limitsLogic: 'or',
-        buttons: ['$preset.actions.edit', '$preset.actions.del'],
+        buttons: ['$preset.actions.editField', '$preset.actions.edit', '$preset.actions.del'],
       },
     ],
   },
@@ -197,6 +197,32 @@ export const schema = {
             $ref: 'updateControls',
           },
         },
+      },
+      editField: {
+        limits: 'edit',
+        type: 'button',
+        icon: 'fa fa-edit',
+        tooltip: '编辑字段显隐性',
+        actionType: 'dialog',
+        dialog: {
+          title: '编辑字段显隐性',
+          size: 'lg',
+          body: {
+            "type": "form",
+            "api": "POST model/set?id=$id",
+            "mode": "horizontal",
+            "autoFocus": true,
+            "controls": [
+              {
+                "type": "matrix",
+                "name": "matrix",
+                "label":false,
+                "rowLabel": "字段",
+                "source": "GET model/matrix?id=$id",
+              }
+            ]
+          },
+        }
       },
       del: {
         limits: 'del',

@@ -23,6 +23,7 @@ type ThemeConfig struct {
 type KV struct {
 	Label string      `json:"label"`
 	Value interface{} `json:"value"`
+	Name  string      `json:"name"`
 }
 
 type TabsSchema struct {
@@ -40,16 +41,20 @@ type FormController struct {
 }
 
 type FormControl struct {
-	Type             string `json:"type"`
-	Name             string `json:"name"`
-	Label            string `json:"label"`
-	Value            string `json:"value"`
-	Options          []KV   `json:"options"`
-	Validations      string `json:"validations"`
-	Required         bool   `json:"required"`
-	Description      string `json:"description"`
-	Placeholder      string `json:"placeholder"`
-	ValidationErrors string `json:"validationErrors"`
-	Multiple         bool   `json:"multiple"`
-	Precision        int    `json:"precision"`
+	Type             string        `json:"type"`
+	Name             string        `json:"name"`
+	Label            string        `json:"label"`
+	Value            string        `json:"value"`
+	Options          []KV          `json:"options"`
+	Validations      string        `json:"validations"`
+	Required         bool          `json:"required"`
+	Description      string        `json:"description"`
+	Placeholder      string        `json:"placeholder"`
+	ValidationErrors string        `json:"validationErrors"`
+	Multiple         bool          `json:"multiple"`
+	Precision        int           `json:"precision"`
+	Inline           bool          `json:"inline"`
+	Buttons          []interface{} `json:"buttons"`
+	Limits           []string      `json:"limits"`
+	LimitsLogic      string        `json:"limitsLogic"`
 }
