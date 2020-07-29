@@ -70,16 +70,15 @@ func (c *ContentController) NewsList(orm *xorm.Engine) {
 		ff = append(ff, dsl.TableField)
 	}
 
-	var showInPage = map[string]controllers.FieldShowInPageList{}
-	_ = json.Unmarshal([]byte(relationDocumentModel.FieldShowInList), &showInPage)
+	//_ = json.Unmarshal([]byte(relationDocumentModel.FieldShowInList), &showInPage)
 
 	var flag bool
-	for _, fieldInfo := range showInPage {
-		if fieldInfo.Show {
-			flag = true
-			break
-		}
-	}
+	//for _, fieldInfo := range showInPage {
+	//	if fieldInfo.Show {
+	//		flag = true
+	//		break
+	//	}
+	//}
 	if !flag {
 		helper.Dialog("请配置模型字段显隐属性", c.Ctx())
 		return
@@ -94,17 +93,17 @@ func (c *ContentController) NewsList(orm *xorm.Engine) {
 			continue
 		}
 		field := strings.TrimLeft(param, "search_")
-		conf, ok := showInPage[field]
-		if !ok {
-			continue
-		}
-		if conf.Search == 1 {
-			querySqlWhere = append(querySqlWhere, field+"=?")
-			whereHolder = append(whereHolder, values[0])
-		} else {
-			querySqlWhere = append(querySqlWhere, field+" LIKE ?")
-			whereHolder = append(whereHolder, "%"+values[0]+"%")
-		}
+		//conf, ok := showInPage[field]
+		//if !ok {
+		//	continue
+		//}
+		//if conf.Search == 1 {
+		//	querySqlWhere = append(querySqlWhere, field+"=?")
+		//	whereHolder = append(whereHolder, values[0])
+		//} else {
+		querySqlWhere = append(querySqlWhere, field+" LIKE ?")
+		whereHolder = append(whereHolder, "%"+values[0]+"%")
+		//}
 	}
 
 	offset := (page - 1) * rows
@@ -153,8 +152,8 @@ func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 	var formColums []FormControl
 	fm := models.NewDocumentModelFieldModel().GetMap()
 	for _, field := range fields {
-		if rd.FieldShowInList != "" {	// todo 判断字段显隐性
-			
+		if rd.FieldShowInList != "" { // todo 判断字段显隐性
+
 		}
 
 		form := FormControl{Type: fm[field.FieldType].AmisType, Name: field.TableField, Label: field.FormName}
@@ -415,7 +414,6 @@ func (c *ContentController) AddContent() {
 		return
 	}
 	c.Ctx().Render().ViewData("category", cat)
-	c.Ctx().Render().ViewData("form", template.HTML(buildModelForm(cat.ModelId, nil)))
 	c.Ctx().Render().ViewData("submitURL", template.HTML("/b/content/add"))
 	c.Ctx().Render().ViewData("preview", 0)
 	c.Ctx().Render().HTML("backend/model_publish.html")
@@ -515,7 +513,6 @@ func (c *ContentController) EditContent(orm *xorm.Engine) {
 		}
 		return
 	}
-	c.Ctx().Render().ViewData("form", template.HTML(buildModelForm(catogoryModel.ModelId, contents[0])))
 	c.Ctx().Render().ViewData("category", catogoryModel)
 	c.Ctx().Render().ViewData("submitURL", template.HTML("/b/content/edit"))
 	c.Ctx().Render().ViewData("preview", 0)

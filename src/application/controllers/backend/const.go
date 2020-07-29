@@ -21,7 +21,7 @@ type ThemeConfig struct {
 }
 
 type FieldShowInPageList struct {
-	Forms []KV `json:"forms`
+	Forms []KV `json:"forms"`
 	List  []KV `json:"list"`
 }
 

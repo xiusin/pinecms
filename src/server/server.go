@@ -178,7 +178,6 @@ func diConfig() {
 	}, true)
 
 	htmlEngine := template.New(conf.View.BeDirname, ".html", conf.View.Reload)
-	htmlEngine.AddFunc("GetInMap", controllers.GetInMap)
 	htmlEngine.AddFunc("in_array", controllers.InStringArr)
 	pine.RegisterViewEngine(htmlEngine)
 

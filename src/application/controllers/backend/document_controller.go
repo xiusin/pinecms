@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"html/template"
 	"regexp"
 	"strconv"
 	"strings"
@@ -30,15 +29,16 @@ type DocumentController struct {
 }
 
 type ModelForm struct {
-	ID          interface{}  `form:"id" json:"id"`
-	Enabled     bool         `form:"enabled" json:"enabled"`
-	ModelType   int64        `form:"type" json:"type"`
-	Name        string       `form:"table_name" json:"table_name"`
-	Table       string       `form:"table" json:"table"`
-	FeTplIndex  string       `form:"tpl_index" json:"tpl_index"`
-	FeTplList   string       `form:"tpl_list" json:"tpl_list"`
-	FeTplDetail string       `form:"tpl_detail" json:"tpl_detail"`
-	Fields      []ModelField `json:"fields" form:"fields"`
+	ID          interface{}         `form:"id" json:"id"`
+	Enabled     bool                `form:"enabled" json:"enabled"`
+	ModelType   int64               `form:"type" json:"type"`
+	Name        string              `form:"table_name" json:"table_name"`
+	Table       string              `form:"table" json:"table"`
+	FeTplIndex  string              `form:"tpl_index" json:"tpl_index"`
+	FeTplList   string              `form:"tpl_list" json:"tpl_list"`
+	FeTplDetail string              `form:"tpl_detail" json:"tpl_detail"`
+	Fields      []ModelField        `json:"fields" form:"fields"`
+	Matrix      FieldShowInPageList `json:"matrix" form:"-"`
 }
 
 type ModelField struct {
@@ -114,73 +114,13 @@ func (c *DocumentController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/model/preview-page", "PreviewPage")
 }
 
-func (c *DocumentController) ModelFieldShowInListPage(orm *xorm.Engine) {
-	mid, _ := c.Ctx().GetInt64("mid")
-	if mid < 1 {
-		return
-	}
-	model := models.NewDocumentModel().GetByID(mid)
-	if model == nil || model.Id < 1 {
-		return
-	}
-	fields := models.NewDocumentFieldDslModel().GetList(mid)
-	var showInPage = map[string]controllers.FieldShowInPageList{}
-	if c.Ctx().IsPost() {
-		postDatas := c.Ctx().PostData()
-		for _, field := range fields {
-			_, showExists := postDatas["show_"+field.TableField]
-			search := 0
-			if _, exists := postDatas["search_"+field.TableField]; exists {
-				ssearch := postDatas["search_"+field.TableField][0]
-				search, _ = strconv.Atoi(ssearch)
-			}
-			//_, feSearchExists := postDatas["fe_search_"+field.TableField]
-			//if feSearchExists {
-			//	fieldArr = append(fieldArr, field.TableField)
-			//}
-			_, formShowExists := postDatas["form_"+field.TableField]
-			//if feSearchExists {
-			//	formShow = append(formShow, field.TableField)
-			//}
-			showInPage[field.TableField] = controllers.FieldShowInPageList{
-				Show:   showExists,
-				Search: search,
-				//FeSearch:  feSearchExists,
-				FormShow:  formShowExists,
-				Formatter: postDatas["formatter_"+field.TableField][0],
-			}
-		}
-		strs, _ := json.Marshal(showInPage)
-		model.FieldShowInList = string(strs)
-		//if len(fieldArr) != 0 {
-		//	model.FeSearchFields = strings.Join(fieldArr, ",")
-		//} else {
-		//	model.FeSearchFields = "*"
-		//}
-		model.Formatters = c.Ctx().PostString("formatters", " ")
-		_, err := orm.Table(&tables.DocumentModel{}).Where("id = ?", mid).Update(model)
-		if err != nil {
-			helper.Ajax("更新失败:"+err.Error(), 1, c.Ctx())
-		} else {
-			helper.Ajax("更新字段显示列表成功", 0, c.Ctx())
-		}
-		return
-	}
-
-	_ = json.Unmarshal([]byte(model.FieldShowInList), &showInPage)
-
-	c.Ctx().Render().ViewData("shows", showInPage)
-	c.Ctx().Render().ViewData("formShow", showInPage)
-	c.Ctx().Render().ViewData("fields", fields)
-	c.Ctx().Render().ViewData("l", len(fields))
-	c.Ctx().Render().ViewData("codeEditorHeight", len(fields)*49)
-	c.Ctx().Render().ViewData("mid", mid)
-	c.Ctx().Render().ViewData("model", model)
-	c.Ctx().Render().HTML("backend/model_field_show_list_edit.html")
-}
-
 // ModelSet 设置模型字段显示
-func (c *DocumentController) ModelSet() {
+func (c *DocumentController) ModelSet(orm *xorm.Engine) {
+	id, _ := c.Ctx().GetInt64("id")
+	if id < 1 {
+		helper.Ajax("请选择模型", 1, c.Ctx())
+		return
+	}
 	var m = struct {
 		Matrix [][]KV `json:"matrix"`
 	}{}
@@ -188,11 +128,22 @@ func (c *DocumentController) ModelSet() {
 		helper.Ajax("表单参数错误: "+err.Error(), 1, c.Ctx())
 		return
 	}
-
+	if len(m.Matrix) == 0 {
+		helper.Ajax("请选择要显示的字段", 1, c.Ctx())
+		return
+	}
 	// 组合显隐字段结果
 	forms, list := m.Matrix[0], m.Matrix[1]
+	var fieldShow = FieldShowInPageList{Forms: forms, List: list}
 
-	helper.Ajax(m.Matrix, 0, c.Ctx())
+	cc, _ := json.Marshal(&fieldShow)
+	t := &tables.DocumentModel{FieldShowInList: string(cc)}
+	af, _ := orm.Table(t).Where("id = ?", id).Update(t)
+	if af > 0 {
+		helper.Ajax("更新字段显隐成功", 0, c.Ctx())
+	} else {
+		helper.Ajax("设置字段显隐失败", 1, c.Ctx())
+	}
 
 }
 
@@ -207,15 +158,19 @@ func (c *DocumentController) ModelMatrix() {
 	}
 	fields := models.NewDocumentFieldDslModel().GetList(mid)
 	cols := []KV{
-		{Label: "表单页显示", Name: "form"},
+		{Label: "表单页显示", Name: "form", Checked: true},
 		{Label: "列表页显示", Name: "list"},
 	}
 	var rows []KV
+	var f FieldShowInPageList
+	json.Unmarshal([]byte(model.FieldShowInList), &f)
 
 	for _, field := range fields {
 		rows = append(rows, KV{
-			Label: field.FormName,
-			Name:  field.TableField,
+			Label:   field.FormName,
+			Name:    field.TableField,
+			Value:   true,
+			Checked: true,
 		})
 	}
 	helper.Ajax(pine.H{"rows": rows, "columns": cols}, 0, c.Ctx())
@@ -260,6 +215,9 @@ func (c *DocumentController) ModelList(orm *xorm.Engine) {
 				FieldType:         field.FieldType,
 			}
 		}
+		var f FieldShowInPageList
+		json.Unmarshal([]byte(v.FieldShowInList), &f)
+		item.Matrix = f
 		item.Fields = itemFields
 		retData = append(retData, item)
 	}
@@ -717,12 +675,10 @@ func (c *DocumentController) GenSQLFromSQLite3(orm *xorm.Engine) {
 
 // 预览模型表单界面
 func (c *DocumentController) PreviewPage() {
-	modelID, _ := c.Ctx().GetInt64("mid")
 	//if modelID < 1 {
 	//	helper.Ajax("模型参数错误", 1, c.Ctx())
 	//	return
 	//}
-	c.Ctx().Render().ViewData("form", template.HTML(buildModelForm(modelID, nil)))
 	c.Ctx().Render().ViewData("preview", 1)
 	c.Ctx().Render().HTML("backend/model_publish.html")
 }
