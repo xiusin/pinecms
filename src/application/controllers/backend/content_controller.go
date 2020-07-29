@@ -3,15 +3,16 @@ package backend
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-xorm/xorm"
-	"github.com/microcosm-cc/bluemonday"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pinecms/src/application/models/tables"
 	"html/template"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/go-xorm/xorm"
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 
 	"github.com/golang/glog"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -133,7 +134,7 @@ func (c *ContentController) NewsList(orm *xorm.Engine) {
 	helper.Ajax(pine.H{"rows": contents, "total": total}, 0, c.Ctx())
 }
 
-// 动态json表单
+// NewsModelJson 动态json表单
 func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 	catid, _ := c.Ctx().GetInt64("catid")
 	catogoryModel := models.NewCategoryModel().GetCategory(catid)
@@ -152,6 +153,10 @@ func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 	var formColums []FormControl
 	fm := models.NewDocumentModelFieldModel().GetMap()
 	for _, field := range fields {
+		if rd.FieldShowInList != "" {	// todo 判断字段显隐性
+			
+		}
+
 		form := FormControl{Type: fm[field.FieldType].AmisType, Name: field.TableField, Label: field.FormName}
 		formColums = append(formColums, FormControl{Type: "text", Name: field.TableField, Label: field.FormName})
 		rf := reflect.ValueOf(&form)
@@ -325,7 +330,7 @@ func (c customForm) MustCheck() bool {
 	return true
 }
 
-//添加内容
+//AddContent 添加内容
 func (c *ContentController) AddContent() {
 	if c.Ctx().IsPost() {
 		mid, _ := strconv.Atoi(c.Ctx().FormValue("mid"))
@@ -416,7 +421,7 @@ func (c *ContentController) AddContent() {
 	c.Ctx().Render().HTML("backend/model_publish.html")
 }
 
-//修改内容
+//EditContent 修改内容
 func (c *ContentController) EditContent(orm *xorm.Engine) {
 	//根据catid读取出相应的添加模板
 	catid, _ := c.Ctx().GetInt64("catid")
@@ -517,7 +522,7 @@ func (c *ContentController) EditContent(orm *xorm.Engine) {
 	c.Ctx().Render().HTML("backend/model_publish.html")
 }
 
-//删除内容
+//DeleteContent 删除内容
 func (c *ContentController) DeleteContent(orm *xorm.Engine) {
 	catid, _ := c.Ctx().GetInt64("catid")
 	id, _ := c.Ctx().GetInt64("id")

@@ -4,14 +4,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
-	"github.com/xiusin/pinecms/src/config"
 	"html/template"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pinecms/src/config"
 
 	"github.com/xiusin/pinecms/src/application/controllers"
 
@@ -102,6 +103,7 @@ func (c *DocumentController) RegisterRoute(b pine.IRouterWrapper) {
 	b.POST("/model/add", "ModelAdd")
 	b.POST("/model/edit", "ModelEdit")
 	b.GET("/model/matrix", "ModelMatrix")
+	b.POST("/model/set", "ModelSet")
 	b.ANY("/model/delete", "ModelDelete")
 	b.ANY("/model/list-field-show", "ModelFieldShowInListPage")
 	if config.DBConfig().Db.DbDriver == "mysql" {
@@ -175,6 +177,23 @@ func (c *DocumentController) ModelFieldShowInListPage(orm *xorm.Engine) {
 	c.Ctx().Render().ViewData("mid", mid)
 	c.Ctx().Render().ViewData("model", model)
 	c.Ctx().Render().HTML("backend/model_field_show_list_edit.html")
+}
+
+// ModelSet 设置模型字段显示
+func (c *DocumentController) ModelSet() {
+	var m = struct {
+		Matrix [][]KV `json:"matrix"`
+	}{}
+	if err := c.Ctx().BindJSON(&m); err != nil {
+		helper.Ajax("表单参数错误: "+err.Error(), 1, c.Ctx())
+		return
+	}
+
+	// 组合显隐字段结果
+	forms, list := m.Matrix[0], m.Matrix[1]
+
+	helper.Ajax(m.Matrix, 0, c.Ctx())
+
 }
 
 func (c *DocumentController) ModelMatrix() {

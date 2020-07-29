@@ -2,12 +2,13 @@ package config
 
 import (
 	"fmt"
-	"github.com/gorilla/securecookie"
-	"github.com/xiusin/pine/cache/providers/bbolt"
 	"io"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/gorilla/securecookie"
+	"github.com/xiusin/pine/cache/providers/bbolt"
 
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"

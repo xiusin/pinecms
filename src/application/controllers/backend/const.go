@@ -20,10 +20,16 @@ type ThemeConfig struct {
 	Dir         string                 `json:"dir"`
 }
 
+type FieldShowInPageList struct {
+	Forms []KV `json:"forms`
+	List  []KV `json:"list"`
+}
+
 type KV struct {
-	Label string      `json:"label"`
-	Value interface{} `json:"value"`
-	Name  string      `json:"name"`
+	Label   string      `json:"label"`
+	Value   interface{} `json:"value"`
+	Name    string      `json:"name"`
+	Checked bool        `json:"checked"`
 }
 
 type TabsSchema struct {
