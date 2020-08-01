@@ -5,6 +5,7 @@ import (
 	"github.com/xiusin/pine/di"
 )
 
+//LoginAdminPayload 登录JWT载体
 type LoginAdminPayload struct {
 	jwt.Payload
 	AdminId int64 `json:"admin_id"`
