@@ -70,20 +70,6 @@ func (c *ContentController) NewsList(orm *xorm.Engine) {
 		ff = append(ff, dsl.TableField)
 	}
 
-	//_ = json.Unmarshal([]byte(relationDocumentModel.FieldShowInList), &showInPage)
-
-	var flag bool
-	//for _, fieldInfo := range showInPage {
-	//	if fieldInfo.Show {
-	//		flag = true
-	//		break
-	//	}
-	//}
-	if !flag {
-		helper.Dialog("请配置模型字段显隐属性", c.Ctx())
-		return
-	}
-
 	querySqlWhere := []string{"catid=?", "deleted_time IS NULL"}
 	var whereHolder = []interface{}{catid}
 	getData := c.Ctx().GetData()
@@ -93,17 +79,8 @@ func (c *ContentController) NewsList(orm *xorm.Engine) {
 			continue
 		}
 		field := strings.TrimLeft(param, "search_")
-		//conf, ok := showInPage[field]
-		//if !ok {
-		//	continue
-		//}
-		//if conf.Search == 1 {
-		//	querySqlWhere = append(querySqlWhere, field+"=?")
-		//	whereHolder = append(whereHolder, values[0])
-		//} else {
 		querySqlWhere = append(querySqlWhere, field+" LIKE ?")
 		whereHolder = append(whereHolder, "%"+values[0]+"%")
-		//}
 	}
 
 	offset := (page - 1) * rows
@@ -235,7 +212,7 @@ func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 					"body": map[string]interface{}{
 						"type":     "form",
 						"mode":     "horizontal",
-						"api":      fmt.Sprintf("POST content/edit?mid=%d&catid=%d&table_name=%s", rd.Id, catogoryModel.Catid, rd.Table),
+						"api":      fmt.Sprintf("POST content/edit?id=$id&mid=%d&catid=%d&table_name=%s", rd.Id, catogoryModel.Catid, rd.Table),
 						"controls": forms,
 					},
 				},

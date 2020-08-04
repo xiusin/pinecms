@@ -27,26 +27,6 @@ let menus: LimitMenuItem = {
       sideVisible: true, // 不会显示在侧边栏
     },
     {
-      label: '页面编辑',
-      icon: 'fa fa-coffee',
-      nodePath: 'start',
-    },
-    {
-      label: 'DEMO应用',
-      icon: 'fa fa-paint-brush',
-      nodePath: 'application',
-      children: [
-        {
-          label: '热更新管理',
-          nodePath: 'hot', // 对应 src/pages/application/hot
-        },
-        {
-          label: '文档管理',
-          nodePath: 'doc', // 对应 src/pages/application/doc
-        },
-      ],
-    },
-    {
       label: '系统管理',
       icon: 'fa fa-wrench',
       nodePath: 'system',

@@ -169,8 +169,6 @@ func (c *DocumentController) ModelMatrix() {
 		rows = append(rows, KV{
 			Label:   field.FormName,
 			Name:    field.TableField,
-			Value:   true,
-			Checked: true,
 		})
 	}
 	helper.Ajax(pine.H{"rows": rows, "columns": cols}, 0, c.Ctx())

@@ -43,7 +43,7 @@ export const schema = {
         width: 100,
         limits: ['editField', 'edit', 'del'],
         limitsLogic: 'or',
-        buttons: ['$preset.actions.editField', '$preset.actions.edit', '$preset.actions.del'],
+        buttons: ['$preset.actions.edit', '$preset.actions.del'], //'$preset.actions.editField',
       },
     ],
   },
