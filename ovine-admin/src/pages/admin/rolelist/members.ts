@@ -37,9 +37,6 @@ const members = {
           placeholder: 'ID/登录账号/名称',
         },
         {
-          $ref: 'sysRoleIdPicker',
-        },
-        {
           type: 'submit',
           className: 'm-l',
           label: '搜索',

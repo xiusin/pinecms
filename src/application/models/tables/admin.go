@@ -10,4 +10,5 @@ type Admin struct {
 	Lastlogintime int64  `json:"lastlogintime"`
 	Email         string `json:"email"`
 	Realname      string `json:"realname"`
+	Avatar        string `json:"avatar"`
 }

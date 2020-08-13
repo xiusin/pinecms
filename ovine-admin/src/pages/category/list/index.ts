@@ -3,8 +3,8 @@ export const schema = {
   body: {
     type: 'lib-crud',
     api: '$preset.apis.list',
-    filter: '$preset.forms.filter',
-    filterTogglable: true,
+    draggable: true,
+    saveOrderApi: 'POST /category/category-order',
     expandConfig: {
       accordion: true
     },
@@ -39,13 +39,15 @@ export const schema = {
       },
       {
         name: 'type',
-        label: '栏目类型',
-        tpl: '<%= ["栏目", "单页", "链接"][data.type] %>',
+        type: 'tpl',
+        label: '类型',
+        tpl: '<div class="<%= ["text-success", "text-info", "text-primary"][data.type] %>"><%=["列表栏目", "频道单页", "外部链接"][data.type] %> </div>',
       },
       {
         name: 'model_id',
-        label: '栏目模型',
-        type: 'text',
+        label: '模型',
+        type: 'tpl',
+        tpl: '<div class="text-info">${model_id}</div>',
       },
       {
         type: 'operation',

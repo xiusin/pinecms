@@ -58,19 +58,20 @@ func (c *AdminController) AdminInfo() {
 	helper.Ajax(info, 0, c.Ctx())
 }
 
-func (c *AdminController) PublicEditInfo() {
+func (c *AdminController) PublicEditInfo(orm *xorm.Engine) {
 	aid, _ := c.Ctx().Value("adminid").(int64) //检测是否设置过session
 	if c.Ctx().IsPost() {
 		info := tables.Admin{
 			Userid: aid,
 		}
-		has, _ := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Get(&info) //读取用户资料
+		has, _ := orm.Get(&info) //读取用户资料
 		if !has {
 			helper.Ajax("用户资料已经不存在", 1, c.Ctx())
 		} else {
 			info.Realname = c.Ctx().PostString("realname")
 			info.Email = c.Ctx().PostString("email")
-			res, err := c.Ctx().Value("orm").(*xorm.Engine).Id(aid).Update(info)
+			info.Avatar = c.Ctx().PostString("avatar")
+			res, err := orm.Id(aid).MustCols("avatar", "email", "realname").Update(info)
 			if err != nil {
 				helper.Ajax("修改资料失败"+err.Error(), 1, c.Ctx())
 			} else {

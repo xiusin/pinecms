@@ -9,7 +9,6 @@ require (
 	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0
 	github.com/aliyun/aliyun-oss-go-sdk v2.1.0+incompatible
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
-	github.com/fatih/color v1.9.0
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gbrlsnchs/jwt/v3 v3.0.0-rc.2
 	github.com/go-ole/go-ole v1.2.4 // indirect
@@ -17,6 +16,7 @@ require (
 	github.com/go-xorm/xorm v0.7.9
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+	github.com/gookit/color v1.2.3
 	github.com/gorilla/securecookie v1.1.1
 	github.com/kataras/go-mailer v0.1.0
 	github.com/kataras/tablewriter v0.0.0-20180708051242-e063d29b7c23 // indirect
@@ -30,7 +30,7 @@ require (
 	github.com/shirou/gopsutil v2.20.3+incompatible
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/xiusin/logger v0.0.2
+	github.com/xiusin/logger v0.0.3
 	github.com/xiusin/pine v0.0.5
 	go.etcd.io/bbolt v1.3.4
 	golang.org/x/crypto v0.0.0-20200427165652-729f1e841bcc // indirect

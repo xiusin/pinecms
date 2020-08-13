@@ -20,10 +20,16 @@ export const schema = {
         "disabled": true,
       },
       {
+        "type": "image",
+        "name": "avatar",
+        "label": "头像",
+        "reciever": 'POST public/upload',
+        "size": "md",
+      },
+      {
         "type": "text",
         "name": "lastloginip",
         "label": "登录IP",
-        "required": true,
         "size": "md",
         "disabled": true,
       },
@@ -38,9 +44,9 @@ export const schema = {
         "type": "text",
         "name": "realname",
         "label": "真实姓名",
-        "required": true,
         "size": "md",
       }
+
     ]
   }
 }

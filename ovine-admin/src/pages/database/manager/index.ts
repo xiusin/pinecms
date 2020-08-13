@@ -4,7 +4,6 @@ export const schema = {
   body: {
     type: 'crud',
     api: '$preset.apis.list',
-    draggable: true,
     bulkActions: [
       {
         label: '优化',
@@ -50,6 +49,12 @@ export const schema = {
         label: '表注释',
         type: 'text',
       },
+      {
+        type: 'operation',
+        label: '操作',
+        width: 160,
+        buttons: ['$preset.actions.crud', '$preset.actions.menu'], //'$preset.actions.editField',
+      },
     ],
   },
   preset: {
@@ -63,6 +68,24 @@ export const schema = {
         actionType: 'ajax',
         confirmText: "确定要备份数据库吗? 这可能需要几分钟!",
         api: "$preset.apis.backup"
+      },
+      crud: {
+        type: 'action',
+        label: '生成CRUD',
+        size: 'xs',
+        align: 'right',
+        actionType: 'ajax',
+        confirmText: "是否要一键生成CRUD内容？",
+        api: "$preset.apis.crud"
+      },
+      menu: {
+        type: 'action',
+        label: '生成菜单',
+        size: 'xs',
+        align: 'right',
+        actionType: 'ajax',
+        confirmText: "确定要备份数据库吗? 这可能需要几分钟!",
+        api: "$preset.apis.menu"
       },
     }
   }

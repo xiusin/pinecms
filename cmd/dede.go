@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"github.com/fatih/color"
 	"github.com/go-xorm/xorm"
+	"github.com/gookit/color"
 	"github.com/schollz/progressbar"
 	"github.com/spf13/cobra"
 	"github.com/xiusin/logger"
@@ -338,7 +338,7 @@ func importArcType() {
 	}
 	bar.Reset()
 	bar.Add(100)
-	fmt.Println(color.GreenString(`
+	fmt.Println(color.Green.Sprint(`
 
 SUCCESS!
 
@@ -347,7 +347,7 @@ SUCCESS!
 3. 使用标签开发模板
 4. Enjoy! 😃
 
-%s`, color.RedString("注意: 导入不保证完全正确,建议进行模型设置(固化字段被设置为text类型)")))
+%s`, color.Red.Sprint("注意: 导入不保证完全正确,建议进行模型设置(固化字段被设置为text类型)")))
 }
 
 func importAd() {

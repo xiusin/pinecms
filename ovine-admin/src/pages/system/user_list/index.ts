@@ -23,10 +23,10 @@ export const schema = {
         type: 'pagination',
         align: 'left',
       },
-      {
-        $preset: 'actions.tree',
-        align: 'right',
-      },
+      // {
+      //   $preset: 'actions.tree',
+      //   align: 'right',
+      // },
       {
         $preset: 'actions.add',
         align: 'right',
@@ -193,9 +193,6 @@ export const schema = {
             name: 'filter',
             label: '关键字',
             placeholder: 'ID/登录账号/名称',
-          },
-          {
-            $ref: 'sysRoleIdPicker',
           },
           {
             type: 'submit',

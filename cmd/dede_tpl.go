@@ -3,7 +3,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"github.com/fatih/color"
+	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -89,7 +89,7 @@ var dedeTplCmd = &cobra.Command{
 			logger.Error(err)
 			return
 		}
-		fmt.Println(color.GreenString(`
+		fmt.Println(color.Green.Sprint(`
 
 SUCCESS!
 
@@ -97,7 +97,7 @@ SUCCESS!
 2. 测试各个模板数据根据错误修改相应的标签
 3. Enjoy! 😃
 
-%s`, color.RedString("注意: 导入不保证完全正确,建议进行模型设置(固化字段被设置为text类型)")))
+%s`, color.Red.Sprint("注意: 导入不保证完全正确,建议进行模型设置(固化字段被设置为text类型)")))
 	},
 }
 
@@ -317,7 +317,7 @@ func (p *Parser) parseDedeBlockTags() {
 		}
 
 		if block && tag != "" {
-			logger.Debugf("%s 替换标签内容 \n%s \n↓\n%s\n\n", p.src, color.RedString(string(i)), color.GreenString(`{{yield `+tag+`(`+strings.Join(pineTagAttrs, ", ")+`) content}}`))
+			logger.Debugf("%s 替换标签内容 \n%s \n↓\n%s\n\n", p.src, color.Red.Sprint(string(i)), color.Green.Sprint(`{{yield `+tag+`(`+strings.Join(pineTagAttrs, ", ")+`) content}}`))
 			return []byte(`{{yield ` + tag + `(` + strings.Join(pineTagAttrs, ", ") + `) content}}`)
 		}
 		return nil

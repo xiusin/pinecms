@@ -46,6 +46,10 @@ var (
 	dc         = config.DBConfig()
 )
 
+func Dc() *config.DbConfig {
+	return dc
+}
+
 func initDatabase() {
 	m, o := dc.Db, dc.Orm
 	_orm, err := xorm.NewEngine(m.DbDriver, m.Dsn)
@@ -78,9 +82,13 @@ func initApp() {
 	app.Use(middleware.CheckDatabaseBackupDownload())
 }
 
-func Server() {
+func Bootstrap()  {
 	initDatabase()
 	initApp()
+}
+
+func Server() {
+	Bootstrap()
 	registerStatic()
 	registerV2BackendRoutes()
 	router.InitRouter(app)

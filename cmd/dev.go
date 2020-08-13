@@ -86,7 +86,6 @@ func serve() {
 		if err := currentCMD.Start(); err != nil {
 			logger.Error(err)
 		}
-		logger.Print("构建并启动服务成功")
 		excludeErrors := "signal: killed;exit status 1"
 		if err := currentCMD.Wait(); err != nil && !strings.Contains(excludeErrors, err.Error()) {
 			logger.Error(err)
@@ -103,7 +102,8 @@ func build() error {
 	if err := cmd.Run(); err != nil {
 		return err
 	}
-	logger.Printf("构建耗时: %s", time.Now().Sub(start).String())
+
+	logger.Print("构建耗时: " + time.Now().Sub(start).String())
 
 	return nil
 }

@@ -2,8 +2,9 @@ package models
 
 import (
 	"errors"
-	"github.com/xiusin/pine/di"
 	"log"
+
+	"github.com/xiusin/pine/di"
 
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -112,7 +113,7 @@ func (a *AdminModel) GetRoleById(id int64) (tables.AdminRole, error) {
 }
 
 func (a *AdminModel) UpdateRole(role tables.AdminRole) bool {
-	res, err := a.orm.Where("roleid=?", role.Roleid).Update(&role)
+	res, err := a.orm.Where("roleid=?", role.Roleid).MustCols("disabled").Update(&role)
 	if err != nil || res == 0 {
 		log.Println("AdminModel::UpdateRole", err, res)
 		return false

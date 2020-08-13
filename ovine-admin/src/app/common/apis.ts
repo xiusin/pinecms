@@ -43,7 +43,7 @@ export const apis = {
     mockSource,
   },
   sysRoleId: {
-    url: 'GET ovapi/system/role/filter',
+    url: 'GET public/select?type=role',
     actionDesc: '查看系统角色',
     mockSource,
     onSuccess: (source) => {

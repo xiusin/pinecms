@@ -30,7 +30,7 @@ export const layout = {
         type: 'head-item',
         faIcon: 'question-circle',
         tip: '查看文档',
-        href: 'https://ovine.igroupes.com/org/',
+        href: 'https://baidu.gitee.io/amis',
       },
       {
         type: 'item-search-menu', // 搜索侧边栏

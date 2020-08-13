@@ -35,21 +35,6 @@ export const schema = {
         label: '备份文件名',
         type: 'text',
       },
-      // {
-      //   name: 'total',
-      //   label: '记录数',
-      //   type: 'text',
-      // },
-      // {
-      //   name: 'engine',
-      //   label: '存储引擎',
-      //   type: 'text',
-      // },
-      // {
-      //   name: 'comment',
-      //   label: '表注释',
-      //   type: 'text',
-      // },
     ],
   },
   preset: {

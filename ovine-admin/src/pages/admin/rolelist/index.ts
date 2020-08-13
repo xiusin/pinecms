@@ -7,37 +7,17 @@ export const schema = {
   body: {
     type: 'lib-crud',
     api: '$preset.apis.list',
-    filter: {
-      $preset: 'forms.filter',
-      limits: `${limitKeys.global.sysRoleIdPicker}`,
-    },
-    filterTogglable: true,
-    perPageAvailable: [50, 100, 200],
-    defaultParams: {
-      size: 50,
-    },
-    perPageField: 'size',
-    pageField: 'page',
     headerToolbar: [
-      'filter-toggler',
-      {
-        type: 'columns-toggler',
-        align: 'left',
-      },
       {
         type: 'pagination',
         align: 'left',
-      },
-      {
-        $preset: 'actions.members',
-        align: 'right',
       },
       {
         $preset: 'actions.add',
         align: 'right',
       },
     ],
-    footerToolbar: ['statistics', 'switch-per-page', 'pagination'],
+    // footerToolbar: ['statistics', 'switch-per-page', 'pagination'],
     columns: [
       {
         name: 'roleid',
@@ -55,8 +35,15 @@ export const schema = {
         name: 'description',
         label: '角色描述',
         type: 'tpl',
-        width: 500,
+        width: 400,
         tpl: '<span class="text-ellipsis" title="${description}">${description}</span>',
+      },
+      {
+        name: 'disabled',
+        label: '状态',
+        type: 'tpl',
+        width: 100,
+        tpl: `<%= data.disabled ? "开启" : "关闭" %>`,
       },
       {
         type: 'operation',

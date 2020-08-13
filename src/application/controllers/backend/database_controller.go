@@ -12,7 +12,6 @@ import (
 	"github.com/alexmullins/zip"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/common/helper"
 )
@@ -46,7 +45,6 @@ func (c *DatabaseController) NoSupport() {
 }
 
 func (c *DatabaseController) Manager(orm *xorm.Engine) {
-
 	mataDatas, err := orm.DBMetas()
 	var data = []map[string]interface{}{}
 	if err != nil {
@@ -71,7 +69,6 @@ func (c *DatabaseController) Repair(orm *xorm.Engine) {
 		helper.Ajax("请选择要修复的表", 1, c.Ctx())
 		return
 	}
-
 	for _, table := range tables {
 		_, err := orm.Exec("REPAIR TABLE `" + table + "`")
 		if err != nil {
@@ -79,7 +76,6 @@ func (c *DatabaseController) Repair(orm *xorm.Engine) {
 			return
 		}
 	}
-
 	helper.Ajax("表 "+c.Ctx().FormValue("tables")+" 修复成功", 0, c.Ctx())
 }
 
@@ -165,12 +161,13 @@ func (c *DatabaseController) BackupDelete(orm *xorm.Engine) {
 }
 
 func (c *DatabaseController) backup(settingData map[string]string, auto bool) (msg string, errcode int) {
-	orm := di.MustGet("*xorm.Engine").(*xorm.Engine)
+	orm := pine.Make(controllers.ServiceXorm).(*xorm.Engine)
 	if settingData["UPLOAD_DATABASE_PASS"] == "" {
 		return "请先设置备份数据库打包zip的密码", 1
 	}
-	fNameBaseName := strings.Replace(time.Now().In(helper.GetLocation()).Format(helper.TimeFormat), " ", "-", 1)
-	fNameBaseName = strings.Replace(fNameBaseName, ":", "", 3)
+	fNameBaseName := strings.Replace(
+		strings.Replace(time.Now().In(helper.GetLocation()).Format(helper.TimeFormat), " ", "-", 1),
+		":", "", 3)
 	uploader := getStorageEngine(settingData)
 	uploadFile := fmt.Sprintf("%s/%s", baseBackupDir, fNameBaseName+".zip")
 	buf := bytes.NewBuffer([]byte{})
