@@ -2,22 +2,25 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
+	"runtime"
+	"strings"
+
+	"github.com/alecthomas/chroma/quick"
 	"github.com/gookit/color"
 	"github.com/xiusin/logger"
 	config "github.com/xiusin/pinecms/src/server"
-	"io/ioutil"
-	"os"
-	"strings"
 	"xorm.io/core"
 
 	"github.com/spf13/cobra"
 )
 
 const (
-	CONTROLLER_DIR = "src/application/backend/"
-	MODEL_DIR      = "src/application/models/"
-	TABLE_DIR      = MODEL_DIR + "tables/"
-	CONTROLLER_TPL = `package backend
+	controllerDir = "src/application/backend/"
+	modelDir      = "src/application/models/"
+	tableDir      = modelDir + "tables/"
+	controllerTpl = `package backend
 import (
 	"fmt"
 	"github.com/go-xorm/xorm"
@@ -35,7 +38,7 @@ func (c *[ctrl]) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/[table]/order", "Order")
 	b.ANY("/[table]/delete", "Delete")
 }`
-	MODEL_TPL = `package models
+	modelTpl = `package models
 
 import (
 	"github.com/go-xorm/xorm"
@@ -50,6 +53,13 @@ type [model] struct {
 func New[model]() *[model] {
 	return &[model]{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
 }`
+
+	tableTpl = `package tables
+
+type [table] struct {
+[field]
+}
+`
 )
 
 var crudCmd = &cobra.Command{
@@ -77,10 +87,9 @@ var crudCmd = &cobra.Command{
 			return
 		}
 		// 表字段
-		//cols := tableMata.Columns()
 		modelName, modelPath := getModelName(table)
 		controllerName, controllerPath := getControllerName(table)
-
+		tablePath := tableDir + table + ".go"
 		if !force && !print {
 			f, err := os.Stat(modelPath)
 			if !os.IsNotExist(err) && !f.IsDir() {
@@ -90,12 +99,22 @@ var crudCmd = &cobra.Command{
 			if !os.IsNotExist(err) && !f.IsDir() {
 				logger.Print("已有存在的文件: " + controllerPath)
 			}
+			f, err = os.Stat(tablePath)
+			if !os.IsNotExist(err) && !f.IsDir() {
+				logger.Print("已有存在的文件: " + tablePath)
+			}
 		}
 		err := genModelFile(print, modelName, modelPath)
 		if err != nil {
 			logger.Error(err)
 		}
 		err = genControllerFile(print, controllerName, table, controllerPath)
+		if err != nil {
+			logger.Error(err)
+		}
+		cols := tableMata.Columns() // 获取列数据
+
+		err = genTableFile(print, camelString(table), tableDir+table+".go", cols)
 		if err != nil {
 			logger.Error(err)
 		}
@@ -112,13 +131,13 @@ func init() {
 
 func getModelName(tableName string) (model string, filename string) {
 	model = camelString(tableName) + "Model"
-	filename = MODEL_DIR + snakeString(tableName) + "_model.go"
+	filename = modelDir + snakeString(tableName) + "_model.go"
 	return
 }
 
 func getControllerName(tableName string) (controller string, filename string) {
 	controller = camelString(tableName) + "Controller"
-	filename = CONTROLLER_DIR + snakeString(tableName) + "_controller.go"
+	filename = controllerDir + snakeString(tableName) + "_controller.go"
 	return
 }
 
@@ -173,7 +192,7 @@ func camelString(s string) string {
 
 func genModelFile(print bool, modelName, modelPath string) error {
 	var err error
-	content := strings.ReplaceAll(MODEL_TPL, "[model]", modelName)
+	content := strings.ReplaceAll(modelTpl, "[model]", modelName)
 	if !print {
 		err = ioutil.WriteFile(modelPath, []byte(content), os.ModePerm)
 	}
@@ -181,14 +200,14 @@ func genModelFile(print bool, modelName, modelPath string) error {
 		logger.Print("创建文件： " + color.Green.Sprint(modelPath))
 	}
 	if print {
-		fmt.Println(content)
+		quick.Highlight(os.Stdout, content, "go", "terminal256", "github")
 	}
 	return err
 }
 
 func genControllerFile(print bool, controllerName, tableName, controllerPath string) error {
 	var err error
-	content := strings.ReplaceAll(CONTROLLER_TPL, "[ctrl]", controllerName)
+	content := strings.ReplaceAll(controllerTpl, "[ctrl]", controllerName)
 	content = strings.ReplaceAll(content, "[table]", tableName)
 	if !print {
 		err = ioutil.WriteFile(controllerPath, []byte(content), os.ModePerm)
@@ -197,16 +216,24 @@ func genControllerFile(print bool, controllerName, tableName, controllerPath str
 		logger.Print("创建文件： " + color.Green.Sprint(controllerPath))
 	}
 	if print {
-		fmt.Println(content)
+		quick.Highlight(os.Stdout, content, "go", "terminal256", "github")
 	}
 	return err
 }
 
-func genTableFile(print bool, tableName, tablePath string) error  {
+func genTableFile(print bool, tableName, tablePath string, cols []*core.Column) error {
 	var err error
+	content := strings.ReplaceAll(tableTpl, "[table]", tableName)
+	var fields = []string{}
 
-	if print {
-		fmt.Println(content)
+	for _, col := range cols {
+		fmt.Printf("%+v\n", col)
 	}
+
+	var br = "\n"
+	if runtime.GOOS == "windows" {
+		br = "\r\n"
+	}
+	content = strings.ReplaceAll(content, "[field]", strings.Join(fields, br))
 	return err
 }

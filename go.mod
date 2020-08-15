@@ -6,6 +6,7 @@ require (
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/afocus/captcha v0.0.0-20191010092841-4bd1f21c8868
+	github.com/alecthomas/chroma v0.8.0
 	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0
 	github.com/aliyun/aliyun-oss-go-sdk v2.1.0+incompatible
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect

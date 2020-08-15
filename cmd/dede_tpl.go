@@ -3,15 +3,16 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"github.com/gookit/color"
-	"github.com/spf13/cobra"
-	"github.com/xiusin/logger"
-	"github.com/xiusin/pinecms/src/common/helper"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/gookit/color"
+	"github.com/spf13/cobra"
+	"github.com/xiusin/logger"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 var dedeTplCmd = &cobra.Command{
@@ -89,7 +90,7 @@ var dedeTplCmd = &cobra.Command{
 			logger.Error(err)
 			return
 		}
-		fmt.Println(color.Green.Sprint(`
+		fmt.Println(color.Green.Sprintf("%s", `
 
 SUCCESS!
 
@@ -182,18 +183,18 @@ func (p *Parser) parsePageTagField() {
 		}
 		switch field {
 		case "typename": //todo 前端使用标签实现.
-			field = `(isset(field) && field!=nil) ? (field["`+field+`"] ? field["`+field+`"] : field["Catname"]) : (isset(.Field["` + field + `"]) ? .Field["` + field + `"] : .Field["Catname"])`
+			field = `(isset(field) && field!=nil) ? (field["` + field + `"] ? field["` + field + `"] : field["Catname"]) : (isset(.Field["` + field + `"]) ? .Field["` + field + `"] : .Field["Catname"])`
 		case "typeurl", "typelink":
-			field = `(isset(field) && field!=nil) ? (field["`+field+`"] ? field["`+field+`"] : field["Url"]) : (isset(.Field["` + field + `"]) ? .Field["` + field + `"] : .Field["Url"])`
+			field = `(isset(field) && field!=nil) ? (field["` + field + `"] ? field["` + field + `"] : field["Url"]) : (isset(.Field["` + field + `"]) ? .Field["` + field + `"] : .Field["Url"])`
 		case "body":
 
-			field = `(isset(field) && field!=nil) ? (field["`+field+`"] ? field["`+field+`"] :( field["Content"] ?  field["Content"] : field["content"])) : (isset(.Field["` + field + `"]) ? .Field["` + field + `"] : (.Field["Content"] ? .Field["Content"] : .Field["content"]))`
-			default:
+			field = `(isset(field) && field!=nil) ? (field["` + field + `"] ? field["` + field + `"] :( field["Content"] ?  field["Content"] : field["content"])) : (isset(.Field["` + field + `"]) ? .Field["` + field + `"] : (.Field["Content"] ? .Field["Content"] : .Field["content"]))`
+		default:
 			strArry := []rune(field)
-			if strArry[0] >= 97 && strArry[0] <= 122  {
+			if strArry[0] >= 97 && strArry[0] <= 122 {
 				strArry[0] -= 32
 			}
-			field = `(!isset(field)||field==nil) ? (isset(.Field["`+field+`"]) ? .Field["`+field+`"] : .Field["`+string(strArry)+`"]) : field["` + field + `"]`
+			field = `(!isset(field)||field==nil) ? (isset(.Field["` + field + `"]) ? .Field["` + field + `"] : .Field["` + string(strArry) + `"]) : field["` + field + `"]`
 		}
 		if len(fs) > 1 {
 			function := strings.Trim(fs[1], " ")
@@ -201,7 +202,7 @@ func (p *Parser) parsePageTagField() {
 				function = strings.TrimPrefix(function, "function=")
 				function = strings.Trim(function, `'"`) // 按字符trim,直到不包括cutset
 				if !strings.HasPrefix(function, "html2text") {
-					if strings.HasPrefix(function, "GetDateTimeMk")  {
+					if strings.HasPrefix(function, "GetDateTimeMk") {
 						function = strings.ReplaceAll(function, "GetDateTimeMk", "format_time")
 					}
 					return []byte(`{{` + strings.ReplaceAll(function, "@me", field) + unsafe + `}}`)
@@ -349,7 +350,7 @@ func (p *Parser) parseFieldsInTagBlock() {
 				function = strings.Trim(function, `'"`) // 按字符trim,直到不包括cutset
 				if !strings.HasPrefix(function, "html2text") {
 					// todo 貌似这里不生效
-					if strings.Contains(function, "GetDateTimeMk")  {
+					if strings.Contains(function, "GetDateTimeMk") {
 						function = strings.ReplaceAll(function, "GetDateTimeMk", "format_time")
 					}
 					return []byte(`{{` + strings.ReplaceAll(function, "@me", field) + `}}`)
@@ -361,7 +362,6 @@ func (p *Parser) parseFieldsInTagBlock() {
 }
 
 func (p *Parser) Start() {
-	//appendHead := `{{import "tags.jet"}}`
 	p.parseInclude()
 	p.parseFieldsInTagBlock()
 	//{dede:global.cfg_webname/}

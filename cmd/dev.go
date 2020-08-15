@@ -3,8 +3,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/xiusin/logger"
-	"github.com/xiusin/pinecms/cmd/util"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -12,6 +10,9 @@ import (
 	"strings"
 	"sync/atomic"
 	"time"
+
+	"github.com/xiusin/logger"
+	"github.com/xiusin/pinecms/cmd/util"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
@@ -63,7 +64,6 @@ func devCommand(cmd *cobra.Command, args []string) error {
 	}
 	if err := registerFileToWatcher(); err != nil {
 		panic(err)
-		return err
 	}
 	go eventNotify()
 	go serve()
@@ -130,10 +130,8 @@ func registerFileToWatcher() error {
 		}
 		if err := watcher.Add(file.Path); err != nil {
 			return err
-		} else {
-			if !file.IsDir {
-				atomic.AddInt32(&counter, 1)
-			}
+		} else if !file.IsDir {
+			atomic.AddInt32(&counter, 1)
 		}
 	}
 	return nil
