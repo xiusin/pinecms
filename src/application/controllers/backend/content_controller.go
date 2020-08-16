@@ -118,6 +118,14 @@ func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 		helper.Ajax("分类不存在", 1, c.Ctx())
 		return
 	}
+	// 根据类型展示不同的页面 
+	if catogoryModel.Type == 2 {	// 外部链接
+
+	} else if catogoryModel.Type == 1 {	// 单页发布
+
+	}
+
+
 	rd := models.NewDocumentModel().GetByID(catogoryModel.ModelId)
 	if rd == nil || rd.Id == 0 {
 		helper.Ajax("找不到关联模型", 1, c.Ctx())

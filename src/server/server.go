@@ -82,12 +82,13 @@ func initApp() {
 	app.Use(middleware.CheckDatabaseBackupDownload())
 }
 
-func Bootstrap()  {
+func Bootstrap() {
 	initDatabase()
 	initApp()
 }
 
 func Server() {
+	fmt.Print("asdsad")
 	Bootstrap()
 	registerStatic()
 	registerV2BackendRoutes()
