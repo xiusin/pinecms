@@ -126,7 +126,7 @@ func init() {
 	crudCmd.Flags().Bool("force", false, "是否强制覆盖（可能导致已有代码丢失）")
 	crudCmd.Flags().Bool("print", false, "是否只打印生成文件以及操作步骤")
 	rootCmd.AddCommand(crudCmd)
-	config.Bootstrap()
+	//config.Bootstrap()
 }
 
 func getModelName(tableName string) (model string, filename string) {

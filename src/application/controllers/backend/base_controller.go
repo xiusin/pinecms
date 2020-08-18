@@ -1,37 +1,21 @@
 package backend
 
-import (
-	"github.com/xiusin/pine"
-)
+import "github.com/xiusin/pine"
 
-type BaseController struct {
-	pine.Controller
+type TestController struct {
+	BaseController
 }
 
-func (c *BaseController) List()  {
+//todo 通过前置控制器方法处理
 
-}
-
-
-func (c *BaseController) Add()  {
+func (t *TestController) Construct()  {
 
 }
 
-
-func (c *BaseController) Edit()  {
-
-}
-
-
-func (c *BaseController) Order()  {
-
-}
-
-
-func (c *BaseController) Delete()  {
-
-}
-
-func (c *BaseController) Info()  {
-
+func (c *TestController) RegisterRoute(b pine.IRouterWrapper) {
+	b.GET("/list", "List")
+	b.POST("/add", "Add")
+	b.ANY("/edit", "Edit")
+	b.ANY("/order", "Order")
+	b.ANY("/delete", "Delete")
 }
