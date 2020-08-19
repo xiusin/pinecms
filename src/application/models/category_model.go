@@ -85,6 +85,7 @@ func (c *CategoryModel) GetTree(categorys []tables.Category, parentid int64) []m
 					url = fmt.Sprintf("/%s/", c.GetUrlPrefix(category.Catid))
 				}
 				son := map[string]interface{}{
+					"parentid":    category.Parentid,
 					"catid":       category.Catid,
 					"catname":     category.Catname,
 					"model_id":    modelName,

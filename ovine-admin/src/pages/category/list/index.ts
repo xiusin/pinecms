@@ -30,7 +30,8 @@ export const schema = {
       {
         name: 'catname',
         label: '栏目名称',
-        type: 'text',
+        type: 'tpl',
+        tpl: '<a href="$url" target="_blank">$catname</a>',
       },
       {
         name: 'dir',
@@ -115,7 +116,7 @@ export const schema = {
           name: 'url',
           label: '链接',
           type: 'text',
-          visibleOn: "data.type != 2"
+          visibleOn: "data.type == 2"
         },
         {
           name: 'dir',

@@ -53,6 +53,8 @@ type ModelField struct {
 	FieldValidator    string `form:"validator" json:"validator"`
 	FieldDefault      string `form:"default" json:"default"`
 	FieldType         int64  `form:"type" json:"type"`
+	ShowInList        bool   `form:"show_in_list" json:"show_in_list"`
+	ShowInForm        bool   `form:"show_in_form" json:"show_in_form"`
 }
 
 var extraFields = []map[string]string{
@@ -167,8 +169,8 @@ func (c *DocumentController) ModelMatrix() {
 
 	for _, field := range fields {
 		rows = append(rows, KV{
-			Label:   field.FormName,
-			Name:    field.TableField,
+			Label: field.FormName,
+			Name:  field.TableField,
 		})
 	}
 	helper.Ajax(pine.H{"rows": rows, "columns": cols}, 0, c.Ctx())
@@ -211,6 +213,8 @@ func (c *DocumentController) ModelList(orm *xorm.Engine) {
 				FieldValidator:    field.Validator,
 				FieldDefault:      field.Default,
 				FieldType:         field.FieldType,
+				ShowInForm:        field.ShowInForm,
+				ShowInList:        field.ShowInList,
 			}
 		}
 		var f FieldShowInPageList
@@ -292,6 +296,8 @@ func (c *DocumentController) ModelAdd(orm *xorm.Engine) {
 				Validator:    data.Fields[k].FieldValidator,
 				Default:      data.Fields[k].FieldDefault,
 				Html:         data.Fields[k].FieldHtml,
+				ShowInList:   data.Fields[k].ShowInList,
+				ShowInForm:   data.Fields[k].ShowInForm,
 			}
 			if data.Fields[k].FieldRequired {
 				f.Required = 1
@@ -404,6 +410,8 @@ func (c *DocumentController) ModelEdit(orm *xorm.Engine, iCache cache.AbstractCa
 				Validator:    data.Fields[k].FieldValidator,
 				Default:      data.Fields[k].FieldDefault,
 				Html:         data.Fields[k].FieldHtml, // 新版废除此字段吧
+				ShowInForm:   data.Fields[k].ShowInForm,
+				ShowInList:   data.Fields[k].ShowInList,
 			}
 			if strings.HasPrefix(f.Datasource, "[") || strings.HasPrefix(f.Datasource, "{") {
 				var dataSourceJson interface{}

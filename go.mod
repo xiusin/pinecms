@@ -13,6 +13,7 @@ require (
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gbrlsnchs/jwt/v3 v3.0.0-rc.2
 	github.com/go-ole/go-ole v1.2.4 // indirect
+	github.com/go-playground/validator/v10 v10.3.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/go-xorm/xorm v0.7.9
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
@@ -31,7 +32,7 @@ require (
 	github.com/shirou/gopsutil v2.20.3+incompatible
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/xiusin/logger v0.0.3
+	github.com/xiusin/logger v0.0.4
 	github.com/xiusin/pine v0.0.5
 	go.etcd.io/bbolt v1.3.4
 	golang.org/x/crypto v0.0.0-20200427165652-729f1e841bcc // indirect
@@ -45,3 +46,5 @@ require (
 )
 
 replace github.com/xiusin/pine => ../pine
+
+replace github.com/xiusin/logger => ../logger

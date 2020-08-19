@@ -66,7 +66,7 @@ var crudCmd = &cobra.Command{
 	Use:   "crud",
 	Short: "生成基本crud模块",
 	Run: func(cmd *cobra.Command, args []string) {
-
+		config.Bootstrap() // 方法不可放到init里，否则缓存组件阻塞
 		table, _ := cmd.Flags().GetString("table")
 		force, _ := cmd.Flags().GetBool("force")
 		print, _ := cmd.Flags().GetBool("print")
@@ -126,7 +126,6 @@ func init() {
 	crudCmd.Flags().Bool("force", false, "是否强制覆盖（可能导致已有代码丢失）")
 	crudCmd.Flags().Bool("print", false, "是否只打印生成文件以及操作步骤")
 	rootCmd.AddCommand(crudCmd)
-	//config.Bootstrap()
 }
 
 func getModelName(tableName string) (model string, filename string) {

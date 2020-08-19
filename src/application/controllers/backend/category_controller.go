@@ -183,6 +183,7 @@ func (c *CategoryController) CategoryEdit(icache cache.AbstractCache) {
 	category.Description = c.Ctx().FormValue("description")
 	category.Keywords = c.Ctx().FormValue("keywords")
 	category.Dir = c.Ctx().FormValue("dir")
+	category.Url = c.Ctx().FormValue("url")
 	category.ListTpl = helper.EasyUiIDToFilePath(c.Ctx().FormValue("list_tpl"))
 	category.DetailTpl = helper.EasyUiIDToFilePath(c.Ctx().FormValue("detail_tpl"))
 

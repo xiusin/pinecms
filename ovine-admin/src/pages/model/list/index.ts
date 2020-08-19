@@ -140,6 +140,16 @@ export const schema = {
               type: "text",
               placeholder: "amis验证规则或自定义"
             },
+            {
+              name: "show_in_list",
+              label: "列表页是否显示",
+              type: "switch",
+            },
+            {
+              name: "show_in_form",
+              label: "表单页是否显示",
+              type: "switch",
+            },
           ]
         },
         {

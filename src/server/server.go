@@ -2,8 +2,6 @@ package config
 
 import (
 	"fmt"
-	"io"
-	"os"
 	"path/filepath"
 	"time"
 
@@ -88,7 +86,6 @@ func Bootstrap() {
 }
 
 func Server() {
-	fmt.Print("asdsad")
 	Bootstrap()
 	registerStatic()
 	registerV2BackendRoutes()
@@ -175,7 +172,6 @@ func diConfig() {
 		loggers := logger.New()
 		loggers.SetReportCaller(true, 3)
 		loggers.SetLogLevel(logger.DebugLevel)
-		loggers.SetOutput(io.MultiWriter(os.Stdout))
 		return loggers, nil
 	}, false)
 

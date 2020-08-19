@@ -16,4 +16,6 @@ type DocumentModelDsl struct {
 	Validator    string
 	Default      string    //默认值
 	DeletedAt    time.Time `xorm:"deleted_at" json:"deleted_at"`
+	ShowInList   bool
+	ShowInForm   bool
 }

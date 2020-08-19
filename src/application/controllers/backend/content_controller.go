@@ -118,13 +118,12 @@ func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 		helper.Ajax("分类不存在", 1, c.Ctx())
 		return
 	}
-	// 根据类型展示不同的页面 
-	if catogoryModel.Type == 2 {	// 外部链接
+	// 根据类型展示不同的页面
+	if catogoryModel.Type == 2 { // 外部链接
 
-	} else if catogoryModel.Type == 1 {	// 单页发布
+	} else if catogoryModel.Type == 1 { // 单页发布
 
 	}
-
 
 	rd := models.NewDocumentModel().GetByID(catogoryModel.ModelId)
 	if rd == nil || rd.Id == 0 {
@@ -137,8 +136,9 @@ func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 	var formColums []FormControl
 	fm := models.NewDocumentModelFieldModel().GetMap()
 	for _, field := range fields {
-		if rd.FieldShowInList != "" { // todo 判断字段显隐性
 
+		if !field.ShowInList {
+			continue
 		}
 
 		form := FormControl{Type: fm[field.FieldType].AmisType, Name: field.TableField, Label: field.FormName}
