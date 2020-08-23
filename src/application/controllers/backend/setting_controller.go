@@ -12,6 +12,7 @@ import (
 	bolt "go.etcd.io/bbolt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/xiusin/pinecms/src/application/models"
@@ -60,7 +61,7 @@ func (c *SettingController) Site(cache cache.AbstractCache, orm *xorm.Engine) {
 		if _, ok := tabs[v.Group]; !ok {
 			tabs[v.Group] = &TabsSchema{Title: v.Group, Hash: v.Group, Body: FormController{
 				Type:     "form",
-				Title:    v.Group + " 修改",
+				Title:    v.Group,
 				Mode:     "horizontal",
 				Controls: []FormControl{},
 			}}
@@ -69,11 +70,18 @@ func (c *SettingController) Site(cache cache.AbstractCache, orm *xorm.Engine) {
 			tabsKeys[v.Group] = append(tabsKeys[v.Group], v.Key)
 		}
 		body, opts := tabs[v.Group].Body, strings.SplitN(v.Editor, ":", 2)
+		var val interface{}
+		if inArray(v.Key, []interface{}{"SITE_DEBUG", "SITE_OPEN"}) {
+			val,_ = strconv.ParseBool(v.Value)
+		} else {
+			val = v.Value
+		}
+
 		fc := FormControl{
 			Type:  opts[0],
 			Name:  v.Key,
 			Label: v.FormName,
-			Value: v.Value,
+			Value: val,
 		}
 		if fc.Value == "" {
 			fc.Value = v.Default

@@ -1,11 +1,14 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
-	"runtime"
+	"regexp"
 	"strings"
+
+	"github.com/xwb1989/sqlparser"
 
 	"github.com/alecthomas/chroma/quick"
 	"github.com/gookit/color"
@@ -25,18 +28,19 @@ import (
 	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 )
 
 type [ctrl] struct {
 	BaseController
 }
 
-func (c *[ctrl]) RegisterRoute(b pine.IRouterWrapper) {
-	b.GET("/[table]/list", "List")
-	b.POST("/[table]/add", "Add")
-	b.ANY("/[table]/edit", "Edit")
-	b.ANY("/[table]/order", "Order")
-	b.ANY("/[table]/delete", "Delete")
+func (c *[ctrl]) Construct() {
+	c.BindType = "form"
+	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
+	c.Table = &tables.[table]{}
+	c.Entries = []tables.[table]{}
 }`
 	modelTpl = `package models
 
@@ -56,11 +60,11 @@ func New[model]() *[model] {
 
 	tableTpl = `package tables
 
-type [table] struct {
-[field]
-}
+[struct]
 `
 )
+
+const theme = "vim"
 
 var crudCmd = &cobra.Command{
 	Use:   "crud",
@@ -112,13 +116,30 @@ var crudCmd = &cobra.Command{
 		if err != nil {
 			logger.Error(err)
 		}
-		cols := tableMata.Columns() // 获取列数据
 
-		err = genTableFile(print, camelString(table), tableDir+table+".go", cols)
+		err = genTableFile(print, camelString(table), tableDir+table+".go", tableMata.Columns())
 		if err != nil {
 			logger.Error(err)
 		}
 	},
+}
+
+// SQLTable 表名结构体
+type SQLTable struct {
+	Name string
+	Cols []SQLColumn
+}
+
+// SQLColumn 描述结构体
+type SQLColumn struct {
+	Name, Type    string
+	IsPrimaryKey  bool
+	IsUnique      bool
+	Length        string
+	EnumValues    []string
+	AutoIncrement bool
+	NotNull       bool
+	Default       string
 }
 
 func init() {
@@ -199,7 +220,7 @@ func genModelFile(print bool, modelName, modelPath string) error {
 		logger.Print("创建文件： " + color.Green.Sprint(modelPath))
 	}
 	if print {
-		quick.Highlight(os.Stdout, content, "go", "terminal256", "github")
+		quick.Highlight(os.Stdout, content, "go", "terminal256", theme)
 	}
 	return err
 }
@@ -215,24 +236,167 @@ func genControllerFile(print bool, controllerName, tableName, controllerPath str
 		logger.Print("创建文件： " + color.Green.Sprint(controllerPath))
 	}
 	if print {
-		quick.Highlight(os.Stdout, content, "go", "terminal256", "github")
+		quick.Highlight(os.Stdout, content, "go", "terminal256", theme)
 	}
 	return err
 }
 
 func genTableFile(print bool, tableName, tablePath string, cols []*core.Column) error {
-	var err error
-	content := strings.ReplaceAll(tableTpl, "[table]", tableName)
-	var fields = []string{}
+	//for _, _ := range cols {
+	//	//fmt.Println(col.Name, 		col.Comment)
+	//}
+	realTableName := config.Dc().Db.DbPrefix + strings.ToLower(tableName)
+	res, err := config.XOrmEngine.QueryString(`show create table ` + realTableName)
 
-	for _, col := range cols {
-		fmt.Printf("%+v\n", col)
+	if err != nil {
+		return err
 	}
 
-	var br = "\n"
-	if runtime.GOOS == "windows" {
-		br = "\r\n"
+	createSQL := res[0]["Create Table"]
+
+	// 替换字段
+	reg := regexp.MustCompile(`"(.+?)"\s`)
+
+	createSQL = reg.ReplaceAllStringFunc(createSQL, func(s string) string {
+		s = strings.Trim(s, `" `)
+		return "`" + s + "` "
+	})
+	stmt, err := sqlparser.Parse(createSQL)
+	var tableStruct string
+	if err != nil {
+		panic(err)
 	}
-	content = strings.ReplaceAll(content, "[field]", strings.Join(fields, br))
+	switch stmt := stmt.(type) {
+	case *sqlparser.DDL:
+		if stmt.TableSpec == nil {
+			logger.Error("Canont get table spec")
+			break
+		}
+		var table SQLTable
+
+		var uniqueKeys []string
+		var primaryKey string
+		for _, ind := range stmt.TableSpec.Indexes {
+			switch ind.Info.Type {
+			case "primary key":
+				primaryKey = ind.Columns[0].Column.String()
+			case "unique key":
+				uniqueKeys = append(uniqueKeys, ind.Columns[0].Column.String())
+			default:
+				fmt.Fprintln(os.Stderr, "unknown type ", ind.Info.Type)
+			}
+		}
+
+		table.Name = stmt.NewName.Name.String()
+		for _, col := range stmt.TableSpec.Columns {
+			var scol SQLColumn
+
+			scol.Name = col.Name.String()
+			scol.Type = col.Type.Type
+			scol.EnumValues = col.Type.EnumValues
+			if col.Type.Length != nil {
+				scol.Length = string(col.Type.Length.Val)
+			}
+			scol.AutoIncrement = bool(col.Type.Autoincrement)
+			scol.NotNull = bool(col.Type.NotNull)
+			if col.Type.Default != nil {
+				scol.Default = string(col.Type.Default.Val)
+			}
+			scol.IsPrimaryKey = (col.Name.String() == primaryKey)
+			for _, k := range uniqueKeys {
+				if scol.Name == k {
+					scol.IsUnique = true
+					break
+				}
+			}
+
+			table.Cols = append(table.Cols, scol)
+		}
+
+		tableStruct = table.toXorm(tableName)
+	}
+
+	if tableStruct == "" {
+		return errors.New("没有生成模型内容, 请检查数据表是否正确")
+	}
+
+	content := strings.ReplaceAll(tableTpl, "[struct]", tableStruct)
+	if !print {
+		err = ioutil.WriteFile(tablePath, []byte(content), os.ModePerm)
+	}
+	if err == nil {
+		logger.Print("创建文件： " + color.Green.Sprint(tablePath))
+	}
+	if print{
+		quick.Highlight(os.Stdout, content, "go", "terminal256", theme)
+	}
 	return err
+}
+
+func (t *SQLTable) toXorm(tableName string) string {
+	var str strings.Builder
+	str.WriteString(fmt.Sprintf("type %s struct {\n", tableName))
+	for _, col := range t.Cols {
+		str.WriteRune('\t')
+		str.WriteString(camelString(col.Name))
+
+		var goType string
+		switch col.Type {
+		case "varchar", "text", "enum", "char", "longtext":
+			goType = "string"
+		case "int", "bigint":
+			goType = "int64"
+		case "tinyint":
+			goType = "int"
+		case "double", "float":
+			goType = "float64"
+		case "date", "datetime", "time", "timestamp":
+			goType = "time.Time"
+		case "blob":
+			goType = "[]byte"
+		default:
+			panic(col.Name + " 是一个未知类型")
+		}
+		str.WriteString(" " + goType)
+		str.WriteString(" `xorm:\"")
+
+		// Type
+		str.WriteString(col.Type)
+
+		// Bracketed type metadata
+		if len(col.EnumValues) > 0 {
+			str.WriteRune('(')
+			for i, en := range col.EnumValues {
+				str.WriteString(en)
+				if i != len(col.EnumValues)-1 {
+					str.WriteRune(',')
+				}
+			}
+			str.WriteRune(')')
+		} else if len(col.Length) > 0 {
+			str.WriteString("(" + col.Length + ")")
+		}
+
+		if col.AutoIncrement {
+			str.WriteString(" autoincr")
+		}
+		if col.NotNull {
+			str.WriteString(" not null")
+		}
+		if len(col.Default) > 0 {
+			str.WriteString(" default '" + col.Default + "'")
+		}
+		if col.IsPrimaryKey {
+			str.WriteString(" pk")
+		}
+		if col.IsUnique {
+			str.WriteString(" unique")
+		}
+		str.WriteString(" '" + col.Name + "'")
+
+		// close variable tag
+		str.WriteString("\"`\n")
+	}
+	str.WriteString("}")
+	return str.String()
 }

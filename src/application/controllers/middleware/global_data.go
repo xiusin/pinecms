@@ -14,8 +14,8 @@ func SetGlobalConfigData() pine.Handler {
 			pine.Logger().Error("无法读取到配置内容:" + err.Error())
 			return
 		}
-		if !strings.HasPrefix(ctx.Path(), "/b/") {
-			if settingData["SITE_OPEN"] != "开启"  {
+		if !strings.HasPrefix(ctx.Path(), "/v2/") {
+			if settingData["SITE_OPEN"] != "true"  {
 				ctx.WriteString("系统维护, 暂停访问...")
 				return
 			}

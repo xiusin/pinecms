@@ -73,6 +73,15 @@ func strFirstToUpper(str string) string {
 	return temp[0] + upperStr
 }
 
+func inArray(val interface{}, vals []interface{}) bool {
+	for _, v := range vals {
+		if v == val {
+			return true
+		}
+	}
+	return false
+}
+
 func ucwords(str string) string {
 	str = strings.ToLower(str)
 	vv := []rune(str)

@@ -34,6 +34,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/xiusin/logger v0.0.4
 	github.com/xiusin/pine v0.0.5
+	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	go.etcd.io/bbolt v1.3.4
 	golang.org/x/crypto v0.0.0-20200427165652-729f1e841bcc // indirect
 	golang.org/x/image v0.0.0-20200119044424-58c23975cae1

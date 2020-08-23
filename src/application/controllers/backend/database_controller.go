@@ -112,9 +112,7 @@ func (c *DatabaseController) BackupList() {
 	}
 	for _, v := range list {
 		v = strings.TrimLeft(v, filepath.Join(prefix, baseBackupDir))
-		files = append(files, map[string]string{
-			"name": v,
-		})
+		files = append(files, map[string]string{"name": v})
 	}
 	helper.Ajax(files, 0, c.Ctx())
 }

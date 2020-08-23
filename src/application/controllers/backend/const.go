@@ -50,7 +50,7 @@ type FormControl struct {
 	Type             string        `json:"type"`
 	Name             string        `json:"name"`
 	Label            string        `json:"label"`
-	Value            string        `json:"value"`
+	Value            interface{}   `json:"value"`
 	Options          []KV          `json:"options"`
 	Validations      string        `json:"validations"`
 	Required         bool          `json:"required"`

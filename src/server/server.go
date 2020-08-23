@@ -28,7 +28,6 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -70,7 +69,6 @@ func initDatabase() {
 func initApp() {
 	app = pine.New()
 	diConfig()
-	//app.Use(middleware.Demo())
 	app.Use(request_log.RequestRecorder())
 	var staticPathPrefix []string
 	for _, static := range conf.Statics {
@@ -102,7 +100,7 @@ func registerStatic() {
 func registerV2BackendRoutes() {
 	app.Use(middleware.SetGlobalConfigData())
 	app.Use(func(ctx *pine.Context) {
-		ctx.Response.Header.Add("Vary", "Origin")
+		//ctx.Response.Header.Add("Vary", "Origin")
 		ctx.Response.Header.Add("Vary", "Access-Control-Allow-Methods")
 		ctx.Response.Header.Add("Vary", "Access-Control-Allow-Headers")
 		ctx.Response.Header.Add("Vary", "Access-Control-Allow-Credentials")
