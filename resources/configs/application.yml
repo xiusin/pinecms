@@ -1,5 +1,5 @@
+debug: true
 port: 2019
-
 view:
   reload: false
   fedirname: "./resources/themes/"

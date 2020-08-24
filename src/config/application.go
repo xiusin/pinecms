@@ -1,19 +1,21 @@
 package config
 
 import (
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"time"
+
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"gopkg.in/yaml.v2"
-	"io/ioutil"
-	"os"
-	"path/filepath"
-	"time"
 )
 
 type Config struct {
+	Debug   bool    `yaml:"debug"`
 	Favicon string  `yaml:"favicon"`
 	Port    int64   `yaml:"port"`
 	View    View    `yaml:"view"`

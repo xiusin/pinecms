@@ -25,7 +25,7 @@ require (
 	github.com/klauspost/compress v1.10.5 // indirect
 	github.com/landoop/tableprinter v0.0.0-20200104100433-ae9249991eb1
 	github.com/mattn/go-runewidth v0.0.9 // indirect
-	github.com/mattn/go-sqlite3 v2.0.3+incompatible
+	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/schollz/progressbar v1.0.0

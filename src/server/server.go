@@ -47,6 +47,10 @@ func Dc() *config.DbConfig {
 	return dc
 }
 
+func Ac() *config.Config {
+	return conf
+}
+
 func initDatabase() {
 	m, o := dc.Db, dc.Orm
 	_orm, err := xorm.NewEngine(m.DbDriver, m.Dsn)

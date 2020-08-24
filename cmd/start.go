@@ -1,12 +1,13 @@
 package cmd
 
 import (
-	"github.com/landoop/tableprinter"
-	"github.com/spf13/cobra"
-	"github.com/xiusin/pinecms/src/server"
-	"github.com/xiusin/pine"
 	"os"
 	"runtime"
+
+	"github.com/landoop/tableprinter"
+	"github.com/spf13/cobra"
+	"github.com/xiusin/pine"
+	config "github.com/xiusin/pinecms/src/server"
 )
 
 type row struct {
@@ -33,7 +34,7 @@ var startCmd = &cobra.Command{
 				{"GoVersion", runtime.Version()},
 			})
 		}
-		runtime.GOMAXPROCS(runtime.NumCPU())
+		//runtime.GOMAXPROCS(runtime.NumCPU())
 		config.Server()
 	},
 }

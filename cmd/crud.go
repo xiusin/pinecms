@@ -23,6 +23,7 @@ const (
 	controllerDir = "src/application/backend/"
 	modelDir      = "src/application/models/"
 	tableDir      = modelDir + "tables/"
+	feDir         = "frontend/src/pages/"
 	controllerTpl = `package backend
 import (
 	"fmt"
@@ -71,6 +72,11 @@ var crudCmd = &cobra.Command{
 	Short: "生成基本crud模块",
 	Run: func(cmd *cobra.Command, args []string) {
 		config.Bootstrap() // 方法不可放到init里，否则缓存组件阻塞
+		if !config.Ac().Debug {
+			logger.SetReportCaller(false)
+			logger.Print("非Debug模式，不支持 CRUD 命令")
+			return
+		}
 		table, _ := cmd.Flags().GetString("table")
 		force, _ := cmd.Flags().GetBool("force")
 		print, _ := cmd.Flags().GetBool("print")
@@ -93,6 +99,7 @@ var crudCmd = &cobra.Command{
 		// 表字段
 		modelName, modelPath := getModelName(table)
 		controllerName, controllerPath := getControllerName(table)
+		genFrontendFile(table)
 		tablePath := tableDir + table + ".go"
 		if !force && !print {
 			f, err := os.Stat(modelPath)
@@ -128,6 +135,74 @@ var crudCmd = &cobra.Command{
 type SQLTable struct {
 	Name string
 	Cols []SQLColumn
+}
+
+func (t *SQLTable) toXorm(tableName string) string {
+	var str strings.Builder
+	str.WriteString(fmt.Sprintf("type %s struct {\n", tableName))
+	for _, col := range t.Cols {
+		str.WriteRune('\t')
+		str.WriteString(camelString(col.Name))
+
+		var goType string
+		switch col.Type {
+		case "varchar", "text", "enum", "char", "longtext":
+			goType = "string"
+		case "int", "bigint":
+			goType = "int64"
+		case "tinyint":
+			goType = "int"
+		case "double", "float":
+			goType = "float64"
+		case "date", "datetime", "time", "timestamp":
+			goType = "time.Time"
+		case "blob":
+			goType = "[]byte"
+		default:
+			panic(col.Name + " 是一个未知类型")
+		}
+		str.WriteString(" " + goType)
+		str.WriteString(" `xorm:\"")
+
+		// Type
+		str.WriteString(col.Type)
+
+		// Bracketed type metadata
+		if len(col.EnumValues) > 0 {
+			str.WriteRune('(')
+			for i, en := range col.EnumValues {
+				str.WriteString(en)
+				if i != len(col.EnumValues)-1 {
+					str.WriteRune(',')
+				}
+			}
+			str.WriteRune(')')
+		} else if len(col.Length) > 0 {
+			str.WriteString("(" + col.Length + ")")
+		}
+
+		if col.AutoIncrement {
+			str.WriteString(" autoincr")
+		}
+		if col.NotNull {
+			str.WriteString(" not null")
+		}
+		if len(col.Default) > 0 {
+			str.WriteString(" default '" + col.Default + "'")
+		}
+		if col.IsPrimaryKey {
+			str.WriteString(" pk")
+		}
+		if col.IsUnique {
+			str.WriteString(" unique")
+		}
+		str.WriteString(" '" + col.Name + "'")
+
+		// close variable tag
+		str.WriteString("\"`\n")
+	}
+	str.WriteString("}")
+	return str.String()
 }
 
 // SQLColumn 描述结构体
@@ -167,47 +242,6 @@ func getTableName(table string) string {
 		return table
 	}
 	return prefix + table
-}
-
-func snakeString(s string) string {
-	data := make([]byte, 0, len(s)*2)
-	j := false
-	num := len(s)
-	for i := 0; i < num; i++ {
-		d := s[i]
-		if i > 0 && d >= 'A' && d <= 'Z' && j {
-			data = append(data, '_')
-		}
-		if d != '_' {
-			j = true
-		}
-		data = append(data, d)
-	}
-	return strings.ToLower(string(data[:]))
-}
-
-func camelString(s string) string {
-	data := make([]byte, 0, len(s))
-	j := false
-	k := false
-	num := len(s) - 1
-	for i := 0; i <= num; i++ {
-		d := s[i]
-		if k == false && d >= 'A' && d <= 'Z' {
-			k = true
-		}
-		if d >= 'a' && d <= 'z' && (j || k == false) {
-			d = d - 32
-			j = false
-			k = true
-		}
-		if k && d == '_' && num > i && s[i+1] >= 'a' && s[i+1] <= 'z' {
-			j = true
-			continue
-		}
-		data = append(data, d)
-	}
-	return string(data[:])
 }
 
 func genModelFile(print bool, modelName, modelPath string) error {
@@ -327,76 +361,53 @@ func genTableFile(print bool, tableName, tablePath string, cols []*core.Column) 
 	if err == nil {
 		logger.Print("创建文件： " + color.Green.Sprint(tablePath))
 	}
-	if print{
+	if print {
 		quick.Highlight(os.Stdout, content, "go", "terminal256", theme)
 	}
 	return err
 }
 
-func (t *SQLTable) toXorm(tableName string) string {
-	var str strings.Builder
-	str.WriteString(fmt.Sprintf("type %s struct {\n", tableName))
-	for _, col := range t.Cols {
-		str.WriteRune('\t')
-		str.WriteString(camelString(col.Name))
+func genFrontendFile(table string) {
+	panic("组织运行: " + table)
+}
 
-		var goType string
-		switch col.Type {
-		case "varchar", "text", "enum", "char", "longtext":
-			goType = "string"
-		case "int", "bigint":
-			goType = "int64"
-		case "tinyint":
-			goType = "int"
-		case "double", "float":
-			goType = "float64"
-		case "date", "datetime", "time", "timestamp":
-			goType = "time.Time"
-		case "blob":
-			goType = "[]byte"
-		default:
-			panic(col.Name + " 是一个未知类型")
+func snakeString(s string) string {
+	data := make([]byte, 0, len(s)*2)
+	j := false
+	num := len(s)
+	for i := 0; i < num; i++ {
+		d := s[i]
+		if i > 0 && d >= 'A' && d <= 'Z' && j {
+			data = append(data, '_')
 		}
-		str.WriteString(" " + goType)
-		str.WriteString(" `xorm:\"")
-
-		// Type
-		str.WriteString(col.Type)
-
-		// Bracketed type metadata
-		if len(col.EnumValues) > 0 {
-			str.WriteRune('(')
-			for i, en := range col.EnumValues {
-				str.WriteString(en)
-				if i != len(col.EnumValues)-1 {
-					str.WriteRune(',')
-				}
-			}
-			str.WriteRune(')')
-		} else if len(col.Length) > 0 {
-			str.WriteString("(" + col.Length + ")")
+		if d != '_' {
+			j = true
 		}
-
-		if col.AutoIncrement {
-			str.WriteString(" autoincr")
-		}
-		if col.NotNull {
-			str.WriteString(" not null")
-		}
-		if len(col.Default) > 0 {
-			str.WriteString(" default '" + col.Default + "'")
-		}
-		if col.IsPrimaryKey {
-			str.WriteString(" pk")
-		}
-		if col.IsUnique {
-			str.WriteString(" unique")
-		}
-		str.WriteString(" '" + col.Name + "'")
-
-		// close variable tag
-		str.WriteString("\"`\n")
+		data = append(data, d)
 	}
-	str.WriteString("}")
-	return str.String()
+	return strings.ToLower(string(data[:]))
+}
+
+func camelString(s string) string {
+	data := make([]byte, 0, len(s))
+	j := false
+	k := false
+	num := len(s) - 1
+	for i := 0; i <= num; i++ {
+		d := s[i]
+		if k == false && d >= 'A' && d <= 'Z' {
+			k = true
+		}
+		if d >= 'a' && d <= 'z' && (j || k == false) {
+			d = d - 32
+			j = false
+			k = true
+		}
+		if k && d == '_' && num > i && s[i+1] >= 'a' && s[i+1] <= 'z' {
+			j = true
+			continue
+		}
+		data = append(data, d)
+	}
+	return string(data[:])
 }

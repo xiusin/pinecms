@@ -1,7 +1,7 @@
 package tables
 
 type Menu struct {
-	Id        int64 `xorm:"pk"`
+	Id        int64 `xorm:"pk autoincr"`
 	Name      string
 	Parentid  int64
 	C         string

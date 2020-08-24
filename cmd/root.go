@@ -6,8 +6,6 @@ import (
 	"os"
 )
 
-var cfgFile string
-
 // http://www.network-science.de/ascii/ Font: stop
 var rootCmd = &cobra.Command{
 	Use: "pinecms",
