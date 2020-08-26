@@ -118,16 +118,21 @@ var crudCmd = &cobra.Command{
 		err := genModelFile(print, modelName, modelPath)
 		if err != nil {
 			logger.Error(err)
+			return
 		}
 		err = genControllerFile(print, controllerName, table, controllerPath)
 		if err != nil {
 			logger.Error(err)
+			return
 		}
 
 		err = genTableFile(print, camelString(table), tableDir+table+".go", tableMata.Columns())
+
 		if err != nil {
 			logger.Error(err)
+			return
 		}
+		logger.Print("创建模块文件成功, 请将控制器注册到路由: registerV2BackendRoutes方法内")
 	},
 }
 

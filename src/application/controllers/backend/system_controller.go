@@ -16,7 +16,6 @@ type SystemController struct {
 	pine.Controller
 }
 
-
 func (c *SystemController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/system/menulist", "MenuList")
 	b.ANY("/system/menu-edit", "MenuEdit")
@@ -32,23 +31,7 @@ func (c *SystemController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *SystemController) MenuList() {
-	if c.Ctx().GetString("grid") == "treegrid" {
-		c.Ctx().Render().JSON(models.NewMenuModel().GetTree(models.NewMenuModel().GetAll(), 0))
-		return
-	}
-	menuid, _ := c.Ctx().GetInt64("menuid")
-	table := helper.Treegrid("system_menu_list", "/b/system/menulist?grid=treegrid", helper.EasyuiOptions{
-		"title":     models.NewMenuModel().CurrentPos(menuid),
-		"toolbar":   "system_menulist_treegrid_toolbar",
-		"idField":   "operateid",
-		"treeField": "name",
-	}, helper.EasyuiGridfields{
-		"排序":   {"field": "listorder", "width": "10", "align": "center", "formatter": "systemMenuOrderFormatter", "index": "0"},
-		"菜单名称": {"field": "name", "width": "130", "index": "1"},
-		"管理操作": {"field": "operateid", "width": "25", "align": "center", "formatter": "systemMenuOperateFormatter", "index": "2"},
-	})
-	c.Ctx().Render().ViewData("treegrid", template.HTML(table))
-	c.Ctx().Render().HTML("backend/system_menulist.html")
+	helper.Ajax(models.NewMenuModel().GetTree(models.NewMenuModel().GetAll(), 0), 0, c.Ctx())
 }
 
 func (c *SystemController) MenuAdd(iCache cache.AbstractCache) {
