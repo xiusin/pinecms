@@ -17,9 +17,10 @@ type SystemController struct {
 }
 
 func (c *SystemController) RegisterRoute(b pine.IRouterWrapper) {
-	b.ANY("/system/menulist", "MenuList")
-	b.ANY("/system/menu-edit", "MenuEdit")
-	b.ANY("/system/menu-add", "MenuAdd")
+	b.GET("/system/menulist", "MenuList")
+	b.POST("/system/menu-edit", "MenuEdit")
+	b.POST("/system/menu-quick-save", "MenuQuickSave")
+	b.POST("/system/menu-add", "MenuAdd")
 	b.POST("/system/menu-delete", "MenuDelete")
 	b.POST("/system/menu-order", "MenuOrder")
 	b.ANY("/system/menu-tree", "MenuSelectTree")
@@ -35,32 +36,18 @@ func (c *SystemController) MenuList() {
 }
 
 func (c *SystemController) MenuAdd(iCache cache.AbstractCache) {
-	if c.Ctx().IsPost() {
-		parentid, _ := c.Ctx().PostInt64("parentid", 0)
-		name := c.Ctx().PostString("name", "")
-		ctrl := c.Ctx().PostString("c", "")
-		a := c.Ctx().PostString("a", "")
-		data := c.Ctx().PostString("data", "")
-		display, _ := c.Ctx().PostInt64("display", 1)
-
-		menu := &tables.Menu{
-			Parentid: parentid,
-			Name:     name,
-			C:        ctrl,
-			A:        a,
-			Data:     data,
-			Display:  display,
-		}
-		newid, _ := c.Ctx().Value("orm").(*xorm.Engine).InsertOne(menu)
-		if newid > 0 {
-			clearMenuCache(iCache, c.Ctx().Value("orm").(*xorm.Engine))
-			helper.Ajax("新增菜单成功", 0, c.Ctx())
-		} else {
-			helper.Ajax("新增菜单失败", 1, c.Ctx())
-		}
+	menu := &tables.Menu{}
+	if err := c.Ctx().BindForm(menu); err != nil {
+		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
-	c.Ctx().Render().HTML("backend/system_menuadd.html")
+	if id, _ := c.Ctx().Value("orm").(*xorm.Engine).InsertOne(menu); id > 0 {
+		clearMenuCache(iCache, c.Ctx().Value("orm").(*xorm.Engine))
+		helper.Ajax("新增菜单成功", 0, c.Ctx())
+	} else {
+		helper.Ajax("新增菜单失败", 1, c.Ctx())
+	}
+	return
 }
 
 func (c *SystemController) MenuDelete(iCache cache.AbstractCache, orm *xorm.Engine) {
@@ -69,18 +56,11 @@ func (c *SystemController) MenuDelete(iCache cache.AbstractCache, orm *xorm.Engi
 		helper.Ajax("参数失败", 1, c.Ctx())
 		return
 	}
-	// 查找是否有下级菜单
-	exists, err := orm.Where("parentid = ?", id).Count(&tables.Menu{})
-	if err != nil {
-		helper.Ajax("删除菜单失败,异常错误", 1, c.Ctx())
-		return
-	}
-	if exists > 0 {
+	if exists, _ := orm.Where("parentid = ?", id).Count(&tables.Menu{}); exists > 0 {
 		helper.Ajax("删除菜单失败,有下级菜单", 1, c.Ctx())
 		return
 	}
-	aff, _ := c.Ctx().Value("orm").(*xorm.Engine).Id(id).Delete(&tables.Menu{})
-	if aff > 0 {
+	if row, _ := c.Ctx().Value("orm").(*xorm.Engine).Id(id).Delete(&tables.Menu{}); row > 0 {
 		clearMenuCache(iCache, c.Ctx().Value("orm").(*xorm.Engine))
 		helper.Ajax("删除菜单成功", 0, c.Ctx())
 	} else {
@@ -121,55 +101,46 @@ func (c *SystemController) MenuOrder(iCache cache.AbstractCache) {
 	}
 }
 
-func (c *SystemController) MenuEdit(iCache cache.AbstractCache) {
-	id, _ := c.Ctx().GetInt64("id")
-	if id == 0 {
-		helper.Ajax("参数错误", 1, c.Ctx())
+func (c *SystemController) MenuEdit(iCache cache.AbstractCache, orm *xorm.Engine) {
+	menu := &tables.Menu{}
+	var err error
+	if string(c.Ctx().Request.Header.ContentType()) == "application/json" {
+		err = c.Ctx().BindJSON(menu)
+	} else {
+		err = c.Ctx().BindForm(menu)
+	}
+	if err != nil {
+		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
 	}
-	menu, has := models.NewMenuModel().GetInfo(id)
-	if !has {
+	if menu.Id == 0 {
+		helper.Ajax("请选择要操作的数据", 1, c.Ctx())
+		return
+	}
+	if _, exist := models.NewMenuModel().GetInfo(menu.Id); !exist {
 		helper.Ajax("没有此菜单", 1, c.Ctx())
 		return
 	}
-	if c.Ctx().IsPost() {
-		parentid, _ := c.Ctx().PostInt64("parentid", 0)
-		name := c.Ctx().PostString("name", "")
-		ctrl := c.Ctx().PostString("c", "")
-		a := c.Ctx().PostString("a", "")
-		data := c.Ctx().PostString("data", "")
-		display, _ := c.Ctx().PostInt64("display", 1)
-
-		menu := &tables.Menu{
-			Parentid: parentid,
-			Name:     name,
-			C:        ctrl,
-			A:        a,
-			Data:     data,
-			Display:  display,
-		}
-		newid, _ := c.Ctx().Value("orm").(*xorm.Engine).Id(id).Update(menu)
-		if newid > 0 {
-			clearMenuCache(iCache, c.Ctx().Value("orm").(*xorm.Engine))
-			helper.Ajax("修改菜单成功", 0, c.Ctx())
-		} else {
-			helper.Ajax("修改菜单失败", 1, c.Ctx())
-		}
-		return
+	if result, _ := orm.Id(menu.Id).Update(menu); result > 0 {
+		clearMenuCache(iCache, orm)
+		helper.Ajax("修改菜单成功", 0, c.Ctx())
+	} else {
+		helper.Ajax("修改菜单失败", 1, c.Ctx())
 	}
+}
 
-	c.Ctx().Render().ViewData("data", menu)
-	c.Ctx().Render().HTML("backend/system_menuedit.html")
+func (c *SystemController) MenuQuickSave(iCache cache.AbstractCache, orm *xorm.Engine) {
+	c.MenuEdit(iCache, orm)
 }
 
 func (c *SystemController) MenuSelectTree() {
 	var tree []map[string]interface{}
 	tree = append(tree, map[string]interface{}{
-		"id":       0,
-		"text":     "作为一级菜单",
+		"value":    0,
+		"label":    "作为一级菜单",
 		"children": models.NewMenuModel().GetSelectTree(models.NewMenuModel().GetAll(), 0),
 	})
-	c.Ctx().Render().JSON(tree)
+	helper.Ajax(tree, 0, c.Ctx())
 }
 
 func (c *SystemController) MenuCheck() {

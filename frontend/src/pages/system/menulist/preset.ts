@@ -31,15 +31,15 @@ export default {
       },
     },
     add: {
-      url: 'POST category/category-add',
+      url: 'POST system/menu-add',
       limits: 'add',
     },
     edit: {
-      url: 'POST category/category-edit?id=$catid',
+      url: 'POST system/menu-edit?id=$id',
       limits: 'edit',
     },
     del: {
-      url: 'POST category/category-delete?id=$catid',
+      url: 'POST system/menu-delete?id=$id',
       limits: 'del',
     },
   },

@@ -1,19 +1,13 @@
 export const schema = {
   type: 'page',
   body: {
-    type: 'lib-crud',
+    type: 'crud',
     api: '$preset.apis.list',
-    draggable: true,
-    saveOrderApi: 'POST /category/category-order',
+    quickSaveItemApi: "POST system/menu-quick-save",
     expandConfig: {
       accordion: true
     },
     headerToolbar: [
-      'filter-toggler',
-      {
-        type: 'columns-toggler',
-        align: 'left',
-      },
       '$preset.actions.add',
     ],
     columns: [
@@ -21,20 +15,23 @@ export const schema = {
         name: 'id',
         label: 'ID',
         type: 'text',
-      },
-      {
-        name: 'listorder',
-        label: '排序',
-        type: 'text',
+        width: 60,
       },
       {
         name: 'name',
         label: '菜单名称',
+        quickEdit: true
+      },
+      {
+        name: 'listorder',
+        label: '排序',
+        quickEdit: {
+          saveImmediately: true,
+        },
       },
       {
         type: 'operation',
         label: '操作',
-        width: 60,
         limits: ['edit', 'del'],
         limitsLogic: 'or',
         buttons: ['$preset.actions.edit', '$preset.actions.del'],
@@ -48,100 +45,43 @@ export const schema = {
           name: 'parentid',
           label: '上级栏目',
           type: 'tree-select',
-          source: 'GET category/category-select',
+          source: 'GET system/menu-tree',
           required: true,
         },
         {
-          name: 'catname',
-          label: '栏目名称',
+          name: 'name',
+          label: '菜单名称',
           type: 'text',
           required: true,
         },
         {
-          name: 'type',
-          label: '栏目类型',
-          type: 'select',
+          name: 'c',
+          label: '控制器名称',
+          type: 'text',
           required: true,
-          options: [
-            {
-              "label": "栏目",
-              "value": "0"
-            },
-
-            {
-              "label": "单页",
-              "value": "1"
-            },
-
-            {
-              "label": "链接",
-              "value": "2"
-            },
-          ]
         },
         {
-          name: 'model_id',
-          label: '文档模型',
-          type: 'select',
-          source: "GET public/select?type=models",
+          name: 'a',
+          label: '路由名称',
+          type: 'text',
           required: true,
-          hiddenOn: "data.type != 0"
         },
         {
-          name: 'thumb',
-          label: '缩略图',
-          reciever: 'POST public/upload',
-          type: 'image',
-        },
-        {
-          name: 'url',
-          label: '链接',
-          type: 'text',
-          visibleOn: "data.type == 2"
-        },
-        {
-          name: 'dir',
-          label: '栏目目录',
-          type: 'text',
-          hiddenOn: "data.type == 2"
-        },
-        {
-          name: 'list_tpl',
-          label: '列表页面',
-          type: 'select',
-          source: "GET public/select?type=tpl_list",
-          clearable: true,
-          hiddenOn: "data.type != 0"
-        },
-        {
-          name: 'detail_tpl',
-          label: '详情页面',
-          type: 'select',
-          source: "GET public/select?type=tpl_list",
-          clearable: true,
-          hiddenOn: "data.type == 2",
-        },
-        {
-          name: 'keywords',
-          label: '关键词',
-          type: 'text',
-        },
-        {
-          name: 'description',
-          label: '描述',
+          name: 'data',
+          label: '附加数据',
           type: 'textarea',
-        },
-        {
-          name: 'ismenu',
-          value: true,
-          label: '启用',
-          type: 'switch',
         },
         {
           name: 'listorder',
           value: 30,
           label: '排序',
           type: 'number',
+        },
+        {
+          name: 'display',
+          value: true,
+          label: '是否显示',
+          type: 'switch',
         }
       ],
     },
@@ -158,7 +98,7 @@ export const schema = {
         size: 'sm',
         primary: true,
         dialog: {
-          title: '新增文档',
+          title: '新增菜单',
           size: 'lg',
           body: {
             type: 'form',
@@ -200,23 +140,6 @@ export const schema = {
           failed: '删除失败',
         },
       },
-    },
-    forms: {
-      filter: {
-        controls: [
-          {
-            type: 'date-range',
-            name: 'dateRange',
-            label: '创建时间范围',
-            format: 'YYYY-MM-DD',
-          },
-          {
-            type: 'submit',
-            className: 'm-l',
-            label: '搜索',
-          },
-        ],
-      },  // 搜索
     },
   }
 }

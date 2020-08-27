@@ -63,6 +63,173 @@ func New[model]() *[model] {
 
 [struct]
 `
+
+	indexTsTpl = `export const schema = {
+  type: 'page',
+
+  body: {
+    type: 'lib-crud',
+    api: '$preset.apis.list',
+    filter: '$preset.forms.filter',
+    filterTogglable: true,
+    perPageAvailable: [50, 100, 200],
+    defaultParams: {
+      size: 50,
+    },
+    perPageField: 'size',
+    pageField: 'page',
+    headerToolbar: [
+      'filter-toggler',
+      {
+        type: 'columns-toggler',
+        align: 'left',
+      },
+      {
+        type: 'pagination',
+        align: 'left',
+      },
+      '$preset.actions.add',
+    ],
+    footerToolbar: ['statistics', 'switch-per-page', 'pagination'],
+    columns:  [
+      [tableDSL]
+      {
+        type: 'operation',
+        label: '操作',
+        width: 60,
+        limits: ['edit', 'del'],
+        limitsLogic: 'or',
+        buttons: ['$preset.actions.edit', '$preset.actions.del'],
+      },
+    ],
+  },
+  definitions: {
+    updateControls: {
+      controls: [formDSL],
+    },
+  },
+  preset: {
+    actions: {
+      add: {
+        limits: 'add',
+        type: 'button',
+        align: 'right',
+        actionType: 'dialog',
+        label: '添加',
+        icon: 'fa fa-plus pull-left',
+        size: 'sm',
+        primary: true,
+        dialog: {
+          title: '新增文档',
+          size: 'lg',
+          body: {
+            type: 'form',
+            api: '$preset.apis.add',
+            mode: 'normal',
+            $ref: 'updateControls',
+          },
+        },
+      },
+      edit: {
+        limits: 'edit',
+        type: 'button',
+        icon: 'fa fa-pencil',
+        tooltip: '编辑',
+        actionType: 'dialog',
+        dialog: {
+          title: '编辑文档',
+          size: 'lg',
+          body: {
+            type: 'form',
+            mode: 'normal',
+            api: '$preset.apis.edit',
+            $ref: 'updateControls',
+          },
+        },
+      },
+      del: {
+        limits: 'del',
+        type: 'action',
+        icon: 'fa fa-times text-danger',
+        actionType: 'ajax',
+        tooltip: '删除',
+        confirmText: '您确认要删除?',
+        api: {
+          $preset: 'apis.del',
+        },
+        messages: {
+          success: '删除成功',
+          failed: '删除失败',
+        },
+      },
+    },
+    forms: {
+      filter: {
+        controls: [
+          {
+            type: 'date-range',
+            name: 'dateRange',
+            label: '创建时间范围',
+            format: 'YYYY-MM-DD',
+          },
+          {
+            type: 'submit',
+            className: 'm-l',
+            label: '搜索',
+          },
+        ],
+      },  // 搜索
+    },
+  },
+}
+`
+
+	presetTsTpl = `export default {
+  limits: {
+    $page: {
+      label: '查看列表',
+    },
+    add: {
+      label: '添加',
+    },
+    edit: {
+      label: '编辑',
+    },
+    del: {
+      label: '删除',
+    },
+  },
+  apis: {
+    list: {
+      url: 'GET [table]/list',
+      limits: '$page',
+      onPreRequest: (source) => {
+        const { dateRange } = source.data
+        if (dateRange) {
+          const arr = dateRange.split('%2C')
+          source.data = {
+            ...source.data,
+            startDate: arr[0],
+            endDate: arr[1],
+          }
+        }
+        return source
+      },
+    },
+    add: {
+      url: 'POST [table]/add',
+      limits: 'add',
+    },
+    edit: {
+      url: 'POST [table]/edit?linkid=$id',
+      limits: 'edit',
+    },
+    del: {
+      url: 'POST [table]/delete?id=$id',
+      limits: 'del',
+    },
+  },
+}`
 )
 
 const theme = "vim"
@@ -99,7 +266,6 @@ var crudCmd = &cobra.Command{
 		// 表字段
 		modelName, modelPath := getModelName(table)
 		controllerName, controllerPath := getControllerName(table)
-		genFrontendFile(table)
 		tablePath := tableDir + table + ".go"
 		if !force && !print {
 			f, err := os.Stat(modelPath)
@@ -126,12 +292,15 @@ var crudCmd = &cobra.Command{
 			return
 		}
 
-		err = genTableFile(print, camelString(table), tableDir+table+".go", tableMata.Columns())
+		err = genTableFile(print, table, tableDir+table+".go")
 
 		if err != nil {
 			logger.Error(err)
 			return
 		}
+
+		genFrontendFile(print, table)
+
 		logger.Print("创建模块文件成功, 请将控制器注册到路由: registerV2BackendRoutes方法内")
 	},
 }
@@ -144,7 +313,7 @@ type SQLTable struct {
 
 func (t *SQLTable) toXorm(tableName string) string {
 	var str strings.Builder
-	str.WriteString(fmt.Sprintf("type %s struct {\n", tableName))
+	str.WriteString(fmt.Sprintf("type %s struct {\n", camelString(tableName)))
 	for _, col := range t.Cols {
 		str.WriteRune('\t')
 		str.WriteString(camelString(col.Name))
@@ -259,7 +428,7 @@ func genModelFile(print bool, modelName, modelPath string) error {
 		logger.Print("创建文件： " + color.Green.Sprint(modelPath))
 	}
 	if print {
-		quick.Highlight(os.Stdout, content, "go", "terminal256", theme)
+		quick.Highlight(logger.DefaultWriter(), content, "go", "terminal256", theme)
 	}
 	return err
 }
@@ -267,7 +436,7 @@ func genModelFile(print bool, modelName, modelPath string) error {
 func genControllerFile(print bool, controllerName, tableName, controllerPath string) error {
 	var err error
 	content := strings.ReplaceAll(controllerTpl, "[ctrl]", controllerName)
-	content = strings.ReplaceAll(content, "[table]", tableName)
+	content = strings.ReplaceAll(content, "[table]", camelString(tableName))
 	if !print {
 		err = ioutil.WriteFile(controllerPath, []byte(content), os.ModePerm)
 	}
@@ -275,15 +444,12 @@ func genControllerFile(print bool, controllerName, tableName, controllerPath str
 		logger.Print("创建文件： " + color.Green.Sprint(controllerPath))
 	}
 	if print {
-		quick.Highlight(os.Stdout, content, "go", "terminal256", theme)
+		quick.Highlight(logger.DefaultWriter(), content, "go", "terminal256", theme)
 	}
 	return err
 }
 
-func genTableFile(print bool, tableName, tablePath string, cols []*core.Column) error {
-	//for _, _ := range cols {
-	//	//fmt.Println(col.Name, 		col.Comment)
-	//}
+func genTableFile(print bool, tableName, tablePath string) error {
 	realTableName := config.Dc().Db.DbPrefix + strings.ToLower(tableName)
 	res, err := config.XOrmEngine.QueryString(`show create table ` + realTableName)
 
@@ -341,7 +507,7 @@ func genTableFile(print bool, tableName, tablePath string, cols []*core.Column) 
 			if col.Type.Default != nil {
 				scol.Default = string(col.Type.Default.Val)
 			}
-			scol.IsPrimaryKey = (col.Name.String() == primaryKey)
+			scol.IsPrimaryKey = col.Name.String() == primaryKey
 			for _, k := range uniqueKeys {
 				if scol.Name == k {
 					scol.IsUnique = true
@@ -367,13 +533,31 @@ func genTableFile(print bool, tableName, tablePath string, cols []*core.Column) 
 		logger.Print("创建文件： " + color.Green.Sprint(tablePath))
 	}
 	if print {
-		quick.Highlight(os.Stdout, content, "go", "terminal256", theme)
+		quick.Highlight(logger.DefaultWriter(), content, "go", "terminal256", theme)
 	}
 	return err
 }
 
-func genFrontendFile(table string) {
-	panic("组织运行: " + table)
+func genFrontendFile(print bool, table string) {
+	// 根据路由创建目录文件
+	moduleFeDir := feDir + table + "/list"
+	indexFile := strFirstToUpper(moduleFeDir + "/index.ts")
+	presetFile := strFirstToUpper(moduleFeDir + "/preset.ts")
+	if !print {
+		os.RemoveAll(moduleFeDir) // 强制创建
+		os.MkdirAll(moduleFeDir, os.ModePerm)
+		err := ioutil.WriteFile(indexFile, []byte(indexTsTpl), os.ModePerm)
+		if err == nil {
+			logger.Error("创建文件: " + indexFile)
+		}
+		err = ioutil.WriteFile(presetFile, []byte(presetTsTpl), os.ModePerm)
+		if err == nil {
+			logger.Error("创建文件: " + presetFile)
+		}
+	} else {
+		logger.Print("创建文件: " + indexFile)
+		logger.Print("创建文件: " + presetFile)
+	}
 }
 
 func snakeString(s string) string {
@@ -391,6 +575,25 @@ func snakeString(s string) string {
 		data = append(data, d)
 	}
 	return strings.ToLower(string(data[:]))
+}
+
+func strFirstToUpper(str string) string {
+	temp := strings.Split(strings.ReplaceAll(str, "_", "-"), "-")
+	var upperStr string
+	for y := 0; y < len(temp); y++ {
+		vv := []rune(temp[y])
+		if y != 0 {
+			for i := 0; i < len(vv); i++ {
+				if i == 0 {
+					vv[i] -= 32
+					upperStr += string(vv[i]) // + string(vv[i+1])
+				} else {
+					upperStr += string(vv[i])
+				}
+			}
+		}
+	}
+	return temp[0] + upperStr
 }
 
 func camelString(s string) string {

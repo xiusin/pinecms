@@ -29,9 +29,14 @@ type SettingController struct {
 }
 
 func (c *SettingController) RegisterRoute(b pine.IRouterWrapper) {
-	b.ANY("/setting/site", "Site")
+	b.GET("/setting/site", "Site")
 	b.GET("/setting/cache", "Cache")
+	b.POST("/setting/add", "Add")
 	b.POST("/setting/del-cache", "DelCache")
+}
+
+func (c *SettingController) Add() {
+
 }
 
 func (c *SettingController) Site(cache cache.AbstractCache, orm *xorm.Engine) {
@@ -72,7 +77,7 @@ func (c *SettingController) Site(cache cache.AbstractCache, orm *xorm.Engine) {
 		body, opts := tabs[v.Group].Body, strings.SplitN(v.Editor, ":", 2)
 		var val interface{}
 		if inArray(v.Key, []interface{}{"SITE_DEBUG", "SITE_OPEN"}) {
-			val,_ = strconv.ParseBool(v.Value)
+			val, _ = strconv.ParseBool(v.Value)
 		} else {
 			val = v.Value
 		}
@@ -106,6 +111,23 @@ func (c *SettingController) Site(cache cache.AbstractCache, orm *xorm.Engine) {
 	}
 	helper.Ajax(pine.H{
 		"type": "tabs",
+		"toolbar": []interface{}{
+			map[string]interface{}{
+				"type":       "button",
+				"label":      "添加配置",
+				"actionType": "dialog",
+				"dialog": map[string]interface{}{
+					"title": "新增配置",
+					"size":  "lg",
+					"body": map[string]interface{}{
+						"type": "form",
+						"api":  "POST setting/add",
+						"mode": "horizontal",
+						"$ref": "updateControls",
+					},
+				},
+			},
+		},
 		"tabs": tabArr,
 	}, 0, c.Ctx())
 }

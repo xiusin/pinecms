@@ -47,28 +47,20 @@ func (m MenuModel) currentPos(id int64) string {
 	if menu.Parentid != 0 {
 		str += m.currentPos(menu.Parentid)
 	}
-	return str + "<li><a href=\\'javascript:;\\'>"+menu.Name+"</a></li>"
+	return str + "<li><a href=\\'javascript:;\\'>" + menu.Name + "</a></li>"
 }
 
 func (m MenuModel) CurrentPos(id int64) string {
 	return `<div class=\'breadcrumbs\'><ol class=\'breadcrumb\'><li><a href=\'javascript:;\'><i class=\'fa fa-home\'></i> 首页</a></li>` + m.currentPos(id) + `</ol></div>`
 }
 
-
-func (m MenuModel) GetTree(menus []tables.Menu, parentid int64) []map[string]interface{} {
-	res := []map[string]interface{}{}
+func (m MenuModel) GetTree(menus []tables.Menu, parentid int64) []tables.Menu {
+	res := []tables.Menu{}
 	if len(menus) != 0 {
 		for _, menu := range menus {
 			if parentid == menu.Parentid {
-				son := map[string]interface{}{
-					"id":        menu.Id,
-					"name":      menu.Name,
-					"listorder": menu.Listorder,
-					"operateid": menu.Id,
-					"is_system": menu.IsSystem,
-				}
-				son["children"] = m.GetTree(menus, menu.Id)
-				res = append(res, son)
+				menu.Children = m.GetTree(menus, menu.Id)
+				res = append(res, menu)
 			}
 		}
 	}
@@ -152,8 +144,8 @@ func (m MenuModel) GetSelectTree(menus []tables.Menu, parentid int64) []map[stri
 		for _, v := range menus {
 			if parentid == v.Parentid {
 				menu := map[string]interface{}{
-					"id":       v.Id,
-					"text":     v.Name,
+					"value":    v.Id,
+					"label":    v.Name,
 					"children": m.GetSelectTree(menus, v.Id),
 				}
 				res = append(res, menu)

@@ -24,8 +24,10 @@ export const request = new Request()
 // 请求准备阶段 回调
 request.onPreRequest = (option) => {
   option.mock = false // 全局控制是否开启 mock， 必须在 ovine cli --mock 选项开启的情况下，才有效
-  if (option.api.indexOf("model/") < 0 && option.api.indexOf('order') < 0) {  //模型相关操作使用rawbody
-    option.dataType = "form-data" //todo 调整为 form 表单提交数据
+  if (['quick-save', 'model/', 'order'].some( x => option.api.indexOf(x) > -1)) {
+    option.dataType = "json"
+  } else {
+    option.dataType = "form-data"
   }
   return option
 }
@@ -44,11 +46,6 @@ request.onRequest = (option) => {
   if (key) {
     option.headers[key] = token
   }
-
-  // 操作地址
-  // if (actionAddr) {
-  //   option.headers['X-ACTION-ADDR'] = actionAddr
-  // }
 
   return option
 }

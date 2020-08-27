@@ -14,5 +14,5 @@ resources/assets/example/
 resources/themes/example/
 resources/html/
 pinecms-dev-build
-pinecms-dev-build.exe
 pinecms-dev-build.exe~
+*.exe
