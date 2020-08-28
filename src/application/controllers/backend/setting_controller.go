@@ -29,14 +29,45 @@ type SettingController struct {
 }
 
 func (c *SettingController) RegisterRoute(b pine.IRouterWrapper) {
-	b.GET("/setting/site", "Site")
+	b.ANY("/setting/site", "Site")
+	b.GET("/setting/group", "Group")
 	b.GET("/setting/cache", "Cache")
 	b.POST("/setting/add", "Add")
 	b.POST("/setting/del-cache", "DelCache")
 }
 
-func (c *SettingController) Add() {
+// 读取分组列表
+func (c *SettingController) Group(orm *xorm.Engine) {
+	var settingGroups []tables.Setting
+	orm.GroupBy("`group`").Find(&settingGroups)
+	var groups = make([]KV, len(settingGroups), len(settingGroups))
+	if len(settingGroups) > 0 {
+		for k, v := range settingGroups {
+			groups[k] = KV{Label: v.Group, Value: v.Group}
+		}
+	}
+	helper.Ajax(groups, 0, c.Ctx())
+}
 
+func (c *SettingController) Add(orm *xorm.Engine) {
+	setting := tables.Setting{}
+	if err := c.Ctx().BindForm(&setting); err != nil {
+		helper.Ajax(err.Error(), 1, c.Ctx())
+		return
+	}
+	// 合并配置
+	if len(setting.Extra) > 0 {
+		switch setting.Editor {
+		case "select":
+		case "tree-select":
+		}
+	}
+	_, err := orm.InsertOne(&setting)
+	if err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+	} else {
+		helper.Ajax("添加新配置成功", 0, c.Ctx())
+	}
 }
 
 func (c *SettingController) Site(cache cache.AbstractCache, orm *xorm.Engine) {

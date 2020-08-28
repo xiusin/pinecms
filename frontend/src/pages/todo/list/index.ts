@@ -1,37 +1,56 @@
 export const schema = {
   type: 'page',
+
   body: {
-    type: 'crud',
+    type: 'lib-crud',
     api: '$preset.apis.list',
-    quickSaveItemApi: "POST system/menu-quick-save",
-    expandConfig: {
-      accordion: true
+    filter: '$preset.forms.filter',
+    filterTogglable: true,
+    perPageAvailable: [50, 100, 200],
+    defaultParams: {
+      size: 50,
     },
+    perPageField: 'size',
+    pageField: 'page',
     headerToolbar: [
+      'filter-toggler',
+      {
+        type: 'columns-toggler',
+        align: 'left',
+      },
+      {
+        type: 'pagination',
+        align: 'left',
+      },
       '$preset.actions.add',
     ],
+    footerToolbar: ['statistics', 'switch-per-page', 'pagination'],
     columns: [
       {
-        name: 'id',
-        label: 'ID',
-        type: 'text',
-        width: 60,
+        "label": "id",
+        "name": "id",
+        "type": "text"
       },
       {
-        name: 'name',
-        label: '菜单名称',
-        quickEdit: true
+        "label": "userid",
+        "name": "userid",
+        "type": "text"
       },
       {
-        name: 'listorder',
-        label: '排序',
-        quickEdit: {
-          saveImmediately: true,
-        },
+        "label": "message",
+        "name": "message",
+        "type": "text"
       },
+      {
+        "label": "status",
+        "name": "status",
+        "type": "text"
+      }
+      ,
       {
         type: 'operation',
         label: '操作',
+        width: 60,
         limits: ['edit', 'del'],
         limitsLogic: 'or',
         buttons: ['$preset.actions.edit', '$preset.actions.del'],
@@ -41,47 +60,21 @@ export const schema = {
   definitions: {
     updateControls: {
       controls: [
+
         {
-          name: 'parentid',
-          label: '上级栏目',
-          type: 'tree-select',
-          source: 'GET system/menu-tree',
-          required: true,
+          "label": "userid",
+          "name": "userid",
+          "type": "text"
         },
         {
-          name: 'name',
-          label: '菜单名称',
-          type: 'text',
-          required: true,
+          "label": "message",
+          "name": "message",
+          "type": "text"
         },
         {
-          name: 'c',
-          label: '控制器名称',
-          type: 'text',
-          required: true,
-        },
-        {
-          name: 'a',
-          label: '路由名称',
-          type: 'text',
-          required: true,
-        },
-        {
-          name: 'data',
-          label: '附加数据',
-          type: 'textarea',
-        },
-        {
-          name: 'listorder',
-          value: 30,
-          label: '排序',
-          type: 'number',
-        },
-        {
-          name: 'display',
-          value: true,
-          label: '是否显示',
-          type: 'switch',
+          "label": "status",
+          "name": "status",
+          "type": "text"
         }
       ],
     },
@@ -98,12 +91,12 @@ export const schema = {
         size: 'sm',
         primary: true,
         dialog: {
-          title: '新增菜单',
+          title: '新增文档',
           size: 'lg',
           body: {
             type: 'form',
             api: '$preset.apis.add',
-            mode: 'horizontal',
+            mode: 'normal',
             $ref: 'updateControls',
           },
         },
@@ -119,7 +112,7 @@ export const schema = {
           size: 'lg',
           body: {
             type: 'form',
-            mode: 'horizontal',
+            mode: 'normal',
             api: '$preset.apis.edit',
             $ref: 'updateControls',
           },
@@ -131,7 +124,7 @@ export const schema = {
         icon: 'fa fa-times text-danger',
         actionType: 'ajax',
         tooltip: '删除',
-        confirmText: '您确认要 <$name> 删除?',
+        confirmText: '您确认要删除?',
         api: {
           $preset: 'apis.del',
         },
@@ -141,5 +134,22 @@ export const schema = {
         },
       },
     },
-  }
+    forms: {
+      filter: {
+        controls: [
+          {
+            type: 'date-range',
+            name: 'dateRange',
+            label: '创建时间范围',
+            format: 'YYYY-MM-DD',
+          },
+          {
+            type: 'submit',
+            className: 'm-l',
+            label: '搜索',
+          },
+        ],
+      },  // 搜索
+    },
+  },
 }

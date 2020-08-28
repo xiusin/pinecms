@@ -11,7 +11,6 @@ import (
 	config "github.com/xiusin/pinecms/src/server"
 )
 
-
 var menuCmd = &cobra.Command{
 	Use:   "menu",
 	Short: "生成模块菜单权限",
@@ -33,38 +32,38 @@ var menuCmd = &cobra.Command{
 			menu = table + "管理"
 		}
 
-		menus := [] struct {
+		menus := []struct {
 			MenuName string
-			A  string
-		} {
+			A        string
+		}{
 			{
 				MenuName: menu,
-				A: "list",
+				A:        "list",
 			},
 
 			{
 				MenuName: "查看",
-				A: "info",
+				A:        "info",
 			},
 
 			{
 				MenuName: "新增",
-				A: "add",
+				A:        "add",
 			},
 
 			{
 				MenuName: "编辑",
-				A: "edit",
+				A:        "edit",
 			},
 
 			{
 				MenuName: "删除",
-				A: "delete",
+				A:        "delete",
 			},
 		}
 		role := &tables.Menu{}
 		if !force {
-			count,_ := config.XOrmEngine.Table(role).Where("c = ?", table).Count()
+			count, _ := config.XOrmEngine.Table(role).Where("c = ?", table).Count()
 			if count > 0 {
 				logger.Errorf("已经存在%s的相关菜单, 如需强制覆盖请追加参数--force true", table)
 				return
@@ -82,7 +81,7 @@ var menuCmd = &cobra.Command{
 				role.C = table
 				role.A = item.A
 				if k == 0 {
-					role.Parentid = 1
+					role.Parentid = 0
 					role.Display = 1
 				} else {
 					role.Parentid = parId

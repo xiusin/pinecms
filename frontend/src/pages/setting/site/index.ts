@@ -12,104 +12,69 @@ export const schema = {
     updateControls: {
       controls: [
         {
-          name: 'name',
-          label: '所属分组',
-          type: 'tree-select',
-          source: 'GET category/category-select',
+          name: 'group',
+          label: '配置分组',
+          type: 'select',
+          creatable: true,
+          source: 'GET setting/group',
           required: true,
         },
         {
-          name: 'catname',
-          label: '栏目名称',
+          name: 'form',
+          label: '配置名称',
           type: 'text',
           required: true,
         },
         {
-          name: 'type',
-          label: '栏目类型',
-          type: 'select',
+          name: 'key',
+          label: '配置Key',
+          type: 'text',
           required: true,
+        },
+        {
+          name: 'value',
+          label: '配置值',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'editor',
+          label: '配置类型',
+          type: 'select',
+          value: "text",
           options: [
             {
-              "label": "栏目",
-              "value": "0"
+              "label": "文本类型",
+              "value": "text"
             },
-
             {
-              "label": "单页",
-              "value": "1"
+              "label": "数字类型",
+              "value": "number"
             },
-
             {
-              "label": "链接",
-              "value": "2"
+              "label": "开关类型",
+              "value": "witch"
             },
-          ]
+            {
+              "label": "下拉类型",
+              "value": "select" //todo 下拉设置启动另一个字段合并
+            },
+            {
+              "label": "图片类型",
+              "value": "image"
+            },
+            {
+              "label": "代码编辑器",
+              "value": "editor"
+            },
+          ],
         },
         {
-          name: 'model_id',
-          label: '文档模型',
-          type: 'select',
-          source: "GET public/select?type=models",
-          required: true,
-          hiddenOn: "data.type != 0"
-        },
-        {
-          name: 'thumb',
-          label: '缩略图',
-          reciever: 'POST public/upload',
-          type: 'image',
-        },
-        {
-          name: 'url',
-          label: '链接',
-          type: 'text',
-          visibleOn: "data.type == 2"
-        },
-        {
-          name: 'dir',
-          label: '栏目目录',
-          type: 'text',
-          hiddenOn: "data.type == 2"
-        },
-        {
-          name: 'list_tpl',
-          label: '列表页面',
-          type: 'select',
-          source: "GET public/select?type=tpl_list",
-          clearable: true,
-          hiddenOn: "data.type != 0"
-        },
-        {
-          name: 'detail_tpl',
-          label: '详情页面',
-          type: 'select',
-          source: "GET public/select?type=tpl_list",
-          clearable: true,
-          hiddenOn: "data.type == 2",
-        },
-        {
-          name: 'keywords',
-          label: '关键词',
-          type: 'text',
-        },
-        {
-          name: 'description',
-          label: '描述',
+          name: 'extra',
+          label: '额外配置',
           type: 'textarea',
+          value: "text",
         },
-        {
-          name: 'ismenu',
-          value: true,
-          label: '启用',
-          type: 'switch',
-        },
-        {
-          name: 'listorder',
-          value: 30,
-          label: '排序',
-          type: 'number',
-        }
       ],
     },
   },

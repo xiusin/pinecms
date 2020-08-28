@@ -134,10 +134,10 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.DatabaseController)).
 		Handle(new(backend.AssetsManagerController)).
 		Handle(new(backend.AdController)).
-		Handle(new(backend.StatController))
+		Handle(new(backend.StatController)).
+		Handle(new(backend.TodoController), "/todo")
 
 	app.Group("/v2/public").Handle(new(backend.PublicController))
-	app.Group("/v2/test")
 }
 
 func runServe() {

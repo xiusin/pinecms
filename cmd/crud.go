@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -20,13 +22,12 @@ import (
 )
 
 const (
-	controllerDir = "src/application/backend/"
+	controllerDir = "src/application/controllers/backend/"
 	modelDir      = "src/application/models/"
 	tableDir      = modelDir + "tables/"
 	feDir         = "frontend/src/pages/"
 	controllerTpl = `package backend
 import (
-	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -41,13 +42,12 @@ func (c *[ctrl]) Construct() {
 	c.BindType = "form"
 	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
 	c.Table = &tables.[table]{}
-	c.Entries = []tables.[table]{}
+	c.Entries = &[]tables.[table]{}
 }`
 	modelTpl = `package models
 
 import (
 	"github.com/go-xorm/xorm"
-	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 )
 
@@ -299,8 +299,6 @@ var crudCmd = &cobra.Command{
 			return
 		}
 
-		genFrontendFile(print, table)
-
 		logger.Print("创建模块文件成功, 请将控制器注册到路由: registerV2BackendRoutes方法内")
 	},
 }
@@ -311,9 +309,14 @@ type SQLTable struct {
 	Cols []SQLColumn
 }
 
-func (t *SQLTable) toXorm(tableName string) string {
+func (t *SQLTable) toXorm(print bool, tableName string) string {
+
 	var str strings.Builder
 	str.WriteString(fmt.Sprintf("type %s struct {\n", camelString(tableName)))
+
+	var tableDsl = []map[string]interface{}{}
+	var formDsl = []map[string]interface{}{}
+
 	for _, col := range t.Cols {
 		str.WriteRune('\t')
 		str.WriteString(camelString(col.Name))
@@ -372,10 +375,34 @@ func (t *SQLTable) toXorm(tableName string) string {
 		}
 		str.WriteString(" '" + col.Name + "'")
 
-		// close variable tag
-		str.WriteString("\"`\n")
+		str.WriteString("\"")
+		// 添加Json和schematag
+		str.WriteString(" json:\"" + snakeString(col.Name) + "\"")
+		str.WriteString(" schema:\"" + snakeString(col.Name) + "\"")
+
+		// 添加验证规则选项
+		if !col.IsPrimaryKey {
+			str.WriteString(" validate:\"required\"")
+
+			formDsl = append(formDsl, map[string]interface{}{
+				"name":  snakeString(col.Name),
+				"label": col.Name,
+				"type":  "text",
+			})
+		}
+
+		tableDsl = append(tableDsl, map[string]interface{}{
+			"name":  snakeString(col.Name),
+			"label": col.Name,
+			"type":  "text",
+		})
+
+		str.WriteString("`\n")
 	}
 	str.WriteString("}")
+
+	genFrontendFile(print, tableName, tableDsl, formDsl)
+
 	return str.String()
 }
 
@@ -518,7 +545,7 @@ func genTableFile(print bool, tableName, tablePath string) error {
 			table.Cols = append(table.Cols, scol)
 		}
 
-		tableStruct = table.toXorm(tableName)
+		tableStruct = table.toXorm(print, tableName)
 	}
 
 	if tableStruct == "" {
@@ -538,25 +565,34 @@ func genTableFile(print bool, tableName, tablePath string) error {
 	return err
 }
 
-func genFrontendFile(print bool, table string) {
+func genFrontendFile(print bool, table string, tableDsl, formDsl []map[string]interface{}) {
 	// 根据路由创建目录文件
 	moduleFeDir := feDir + table + "/list"
 	indexFile := strFirstToUpper(moduleFeDir + "/index.ts")
 	presetFile := strFirstToUpper(moduleFeDir + "/preset.ts")
+
+	// 生成curd描述文件
+	data, _ := json.MarshalIndent(tableDsl, "", "\t")
+	content := bytes.ReplaceAll([]byte(indexTsTpl), []byte("[tableDSL]"), append(bytes.Trim(data, "[]"), ','))
+	data, _ = json.MarshalIndent(formDsl, "", "\t")
+	content = bytes.ReplaceAll(content, []byte("[formDSL]"), data)
+	presetContent := bytes.ReplaceAll([]byte(presetTsTpl), []byte("[table]"), []byte(table))
 	if !print {
 		os.RemoveAll(moduleFeDir) // 强制创建
 		os.MkdirAll(moduleFeDir, os.ModePerm)
-		err := ioutil.WriteFile(indexFile, []byte(indexTsTpl), os.ModePerm)
+		err := ioutil.WriteFile(indexFile, content, os.ModePerm)
 		if err == nil {
 			logger.Error("创建文件: " + indexFile)
 		}
-		err = ioutil.WriteFile(presetFile, []byte(presetTsTpl), os.ModePerm)
+		err = ioutil.WriteFile(presetFile, presetContent, os.ModePerm)
 		if err == nil {
 			logger.Error("创建文件: " + presetFile)
 		}
 	} else {
 		logger.Print("创建文件: " + indexFile)
+		quick.Highlight(logger.DefaultWriter(), string(content), "typescript", "terminal256", theme)
 		logger.Print("创建文件: " + presetFile)
+		quick.Highlight(logger.DefaultWriter(), string(presetContent), "typescript", "terminal256", theme)
 	}
 }
 

@@ -131,17 +131,17 @@ func GetMd5(str string) string {
 
 //Ajax Ajax返回数据给前端
 func Ajax(errmsg interface{}, errcode int64, this *pine.Context) {
+	switch errmsg.(type) {
+	case error:
+		// todo debug显示正常错误信息
+		errmsg = errmsg.(error).Error()
+	}
 	// 添加操作日志
 	data := pine.H{"code": errcode, "data": errmsg}
 	if errcode != 0 {
 		data["msg"] = errmsg
 	}
 	this.Render().JSON(data)
-}
-
-func Dialog(errmsg interface{}, this *pine.Context) {
-	this.Render().Text(fmt.Sprintf(`<div class="easyui-dialog" title="错误提醒" style="width:400px;height:200px;"
-    data-options="iconCls:'icon-error',resizable:true">%s</div>`, errmsg))
 }
 
 //GetTimeStamp 获取时间戳

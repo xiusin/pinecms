@@ -297,32 +297,31 @@ func (c *PublicController) Select() {
 	helper.Ajax(data, 0, c.Ctx())
 }
 
-func (c *PublicController) TODO(orm *xorm.Engine) {
-	id, _ := c.Ctx().PostInt64("id")
-	if id > 0 {
-		af, _ := orm.ID(id).MustCols("status").Update(&tables.Todo{
-			Status: false,
-		})
-		if af > 0 {
-			helper.Ajax("success", 0, c.Ctx())
-		} else {
-			helper.Ajax("failed", 1, c.Ctx())
-		}
-		return
-	}
-	todo := c.Ctx().FormValue("todo")
-	if todo == "" {
-		return
-	}
-	userid, _ := strconv.Atoi(c.Session().Get("adminid"))
-	todoObj := &tables.Todo{
-		Message: todo,
-		UserID:  int64(userid),
-		Status:  true,
-	}
-	_, err := orm.InsertOne(todoObj)
-	if err != nil {
-		panic(err)
-	}
-	helper.Ajax(todoObj.Id, 0, c.Ctx())
-}
+//func (c *PublicController) TODO(orm *xorm.Engine) {
+//	id, _ := c.Ctx().PostInt64("id")
+//	if id > 0 {
+//		af, _ := orm.ID(id).MustCols("status").Update(&tables.Todo{
+//			Status: false,
+//		})
+//		if af > 0 {
+//			helper.Ajax("success", 0, c.Ctx())
+//		} else {
+//			helper.Ajax("failed", 1, c.Ctx())
+//		}
+//	}
+//	todo := c.Ctx().FormValue("todo")
+//	if todo == "" {
+//		return
+//
+//	userid, _ := strconv.Atoi(c.Session().Get("adminid"))
+//	todoObj := &tables.Todo{
+//		Message: todo,
+//		UserID:  int64(userid),
+//		Status:  true,
+//	}
+//	_, err := orm.InsertOne(todoObj)
+//	if err != nil {
+//		panic(err)
+//	}
+//	helper.Ajax(todoObj.Id, 0, c.Ctx())
+//}

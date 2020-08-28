@@ -170,7 +170,7 @@ func (c *IndexController) GetMenus(iCache cache.AbstractCache) []MenuV2 {
 	data = string(dataBytes)
 	data = ""
 	if data == "" || json.Unmarshal([]byte(data), &menujs) != nil {
-		menus := models.NewMenuModel().GetMenu(1, roleid.(int64)) //获取menuid内容
+		menus := models.NewMenuModel().GetMenu(0, roleid.(int64)) //获取menuid内容
 		for _, v := range menus {
 			menu := models.NewMenuModel().GetMenu(v.Id, roleid.(int64))
 			var sonmenu []MenuV2

@@ -3,6 +3,9 @@ package backend
 import (
 	"errors"
 	"fmt"
+	"github.com/go-playground/locales/en"
+	"github.com/go-playground/locales/zh"
+	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
@@ -11,6 +14,7 @@ import (
 )
 
 var validate = validator.New()
+var trans, _ = ut.New(zh.New(), en.New()).GetTranslator("zh")
 var NotSupportErr = errors.New("暂不支持的传参类型")
 var BindParseErr = errors.New("解析参数错误")
 
@@ -31,23 +35,25 @@ type BaseController struct {
 	pine.Controller
 }
 
-func (c *BaseController) BindParse() error {
-	var err error
+func (c *BaseController) BindParse() (err error) {
 	switch c.BindType {
 	case "json", "JSON":
-		err = c.Ctx().BindJSON(c.Ctx())
+		err = c.Ctx().BindJSON(c.Table)
 	case "form", "FORM":
-		err = c.Ctx().BindForm(c.Ctx())
+		err = c.Ctx().BindForm(c.Table)
 	default:
 		return NotSupportErr
 	}
 	if err != nil {
-		pine.Logger().Error(err)
-	}
-	if err := validate.Struct(c.Table); err != nil {
 		return err
 	}
-	return BindParseErr
+	if err = validate.Struct(c.Table); err != nil {
+		errs := err.(validator.ValidationErrors)
+		for _, e := range errs {
+			return errors.New(e.Translate(trans))
+		}
+	}
+	return nil
 }
 
 func (c *BaseController) GetList() {
@@ -103,7 +109,12 @@ func (c *BaseController) PostAdd() {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
 	}
-
+	result, _ := c.Orm.InsertOne(c.Table)
+	if result > 0 {
+		helper.Ajax("新增数据成功", 0, c.Ctx())
+	} else {
+		helper.Ajax("新增数据失败", 1, c.Ctx())
+	}
 }
 
 func (c *BaseController) PostEdit() {
@@ -111,13 +122,19 @@ func (c *BaseController) PostEdit() {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
 	}
+	result, _ := c.Orm.AllCols().Update(c.Table)
+	if result > 0 {
+		helper.Ajax("修改数据成功", 0, c.Ctx())
+	} else {
+		helper.Ajax("修改数据失败", 1, c.Ctx())
+	}
 }
 
 func (c *BaseController) PostOrder() {
 
 }
 
-func (c *BaseController) GetDelete() {
+func (c *BaseController) PostDelete() {
 	id, _ := c.Ctx().GetInt("id", 0)
 	if id < 1 {
 		helper.Ajax("id参数范围错误", 1, c.Ctx())
