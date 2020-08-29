@@ -12,6 +12,7 @@ type TodoController struct {
 
 func (c *TodoController) Construct() {
 	c.BindType = "form"
+	c.SearchFields = map[string]searchFieldDsl{}
 	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
 	c.Table = &tables.Todo{}
 	c.Entries = &[]tables.Todo{}

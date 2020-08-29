@@ -8,6 +8,7 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-xorm/xorm"
+	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"strings"
@@ -25,8 +26,12 @@ type KeywordWhere struct {
 	CallBack func(*xorm.Session, string) // 替换callback 如果设置, 将绝对忽略Field Op DataExp的设置 匹配值=$?
 }
 
+type searchFieldDsl struct {
+	Op string
+}
+
 type BaseController struct {
-	//SearchFields []string	// 设置可以搜索的字段
+	SearchFields   map[string]searchFieldDsl // 设置可以搜索的字段
 	BindType       string
 	KeywordsSearch []KeywordWhere // 关键字搜索字段 用于关键字匹配字段
 	Table          interface{}    // 传入Table结构体引用
@@ -61,7 +66,7 @@ func (c *BaseController) GetList() {
 	c.buildParamsForQuery(query)
 	count, err := query.FindAndCount(c.Entries)
 	if err != nil {
-		c.Logger().Error(err)
+		logger.Error(err)
 		helper.Ajax("读取数据列表错误", 1, c.Ctx())
 		return
 	}
@@ -101,6 +106,14 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) {
 			}
 		}
 	}
+	if c.SearchFields != nil {
+		for field, dsl := range c.SearchFields {
+			if c.Ctx().GetString(field) != "" {
+				query.Where(fmt.Sprintf("%s %s ?", field, dsl.Op), c.Ctx().GetString(field))
+			}
+		}
+	}
+
 	query.OrderBy(fmt.Sprintf("%s %s", orderBy, orderDir))
 }
 

@@ -26,6 +26,7 @@ const (
 	modelDir      = "src/application/models/"
 	tableDir      = modelDir + "tables/"
 	feDir         = "frontend/src/pages/"
+	theme         = "vim"
 	controllerTpl = `package backend
 import (
 	"github.com/go-xorm/xorm"
@@ -40,6 +41,7 @@ type [ctrl] struct {
 
 func (c *[ctrl]) Construct() {
 	c.BindType = "form"
+	c.SearchFields = map[string]searchFieldDsl{}
 	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
 	c.Table = &tables.[table]{}
 	c.Entries = &[]tables.[table]{}
@@ -114,14 +116,14 @@ func New[model]() *[model] {
         limits: 'add',
         type: 'button',
         align: 'right',
-        actionType: 'dialog',
+        actionType: 'drawer',
         label: '添加',
         icon: 'fa fa-plus pull-left',
         size: 'sm',
         primary: true,
-        dialog: {
-          title: '新增文档',
-          size: 'lg',
+        drawer: {
+          title: '新增',
+          size: 'xl',
           body: {
             type: 'form',
             api: '$preset.apis.add',
@@ -137,8 +139,8 @@ func New[model]() *[model] {
         tooltip: '编辑',
         actionType: 'dialog',
         dialog: {
-          title: '编辑文档',
-          size: 'lg',
+          title: '编辑',
+          size: 'xl',
           body: {
             type: 'form',
             mode: 'normal',
@@ -166,12 +168,7 @@ func New[model]() *[model] {
     forms: {
       filter: {
         controls: [
-          {
-            type: 'date-range',
-            name: 'dateRange',
-            label: '创建时间范围',
-            format: 'YYYY-MM-DD',
-          },
+          [filterDSL]
           {
             type: 'submit',
             className: 'm-l',
@@ -232,7 +229,31 @@ func New[model]() *[model] {
 }`
 )
 
-const theme = "vim"
+var cols = map[string]*core.Column{}
+
+var matchSuffix = struct {
+	enumRadioSuffix, setCheckboxSuffix, switchSuffix []string
+	imageSuffix, fileSuffix                          []string
+	editorSuffix                                     []string
+	match                                            func([]string, string) bool
+}{
+	enumRadioSuffix:   []string{"data", "state", "status"},
+	setCheckboxSuffix: []string{"data", "state", "status"},
+	switchSuffix:      []string{"switch"},
+	editorSuffix:      []string{"editor", "content"},
+	imageSuffix:       []string{"image", "images", "avatar", "avatars", "logo", "logos", "img", "imgs", "pic", "pics"},
+	fileSuffix:        []string{"file", "files"},
+	match: func(suffixes []string, field string) bool {
+		var matched bool
+		for _, suffix := range suffixes {
+			if strings.HasSuffix(field, suffix) {
+				matched = true
+				break
+			}
+		}
+		return matched
+	},
+}
 
 var crudCmd = &cobra.Command{
 	Use:   "crud",
@@ -262,6 +283,10 @@ var crudCmd = &cobra.Command{
 		if tableMata == nil {
 			logger.Errorf("无法获取数据表[%s]元信息", getTableName(table))
 			return
+		}
+
+		for _, v := range tableMata.Columns() {
+			cols[v.Name] = v
 		}
 		// 表字段
 		modelName, modelPath := getModelName(table)
@@ -301,121 +326,6 @@ var crudCmd = &cobra.Command{
 
 		logger.Print("创建模块文件成功, 请将控制器注册到路由: registerV2BackendRoutes方法内")
 	},
-}
-
-// SQLTable 表名结构体
-type SQLTable struct {
-	Name string
-	Cols []SQLColumn
-}
-
-func (t *SQLTable) toXorm(print bool, tableName string) string {
-
-	var str strings.Builder
-	str.WriteString(fmt.Sprintf("type %s struct {\n", camelString(tableName)))
-
-	var tableDsl = []map[string]interface{}{}
-	var formDsl = []map[string]interface{}{}
-
-	for _, col := range t.Cols {
-		str.WriteRune('\t')
-		str.WriteString(camelString(col.Name))
-
-		var goType string
-		switch col.Type {
-		case "varchar", "text", "enum", "char", "longtext":
-			goType = "string"
-		case "int", "bigint":
-			goType = "int64"
-		case "tinyint":
-			goType = "int"
-		case "double", "float":
-			goType = "float64"
-		case "date", "datetime", "time", "timestamp":
-			goType = "time.Time"
-		case "blob":
-			goType = "[]byte"
-		default:
-			panic(col.Name + " 是一个未知类型")
-		}
-		str.WriteString(" " + goType)
-		str.WriteString(" `xorm:\"")
-
-		// Type
-		str.WriteString(col.Type)
-
-		// Bracketed type metadata
-		if len(col.EnumValues) > 0 {
-			str.WriteRune('(')
-			for i, en := range col.EnumValues {
-				str.WriteString(en)
-				if i != len(col.EnumValues)-1 {
-					str.WriteRune(',')
-				}
-			}
-			str.WriteRune(')')
-		} else if len(col.Length) > 0 {
-			str.WriteString("(" + col.Length + ")")
-		}
-
-		if col.AutoIncrement {
-			str.WriteString(" autoincr")
-		}
-		if col.NotNull {
-			str.WriteString(" not null")
-		}
-		if len(col.Default) > 0 {
-			str.WriteString(" default '" + col.Default + "'")
-		}
-		if col.IsPrimaryKey {
-			str.WriteString(" pk")
-		}
-		if col.IsUnique {
-			str.WriteString(" unique")
-		}
-		str.WriteString(" '" + col.Name + "'")
-
-		str.WriteString("\"")
-		// 添加Json和schematag
-		str.WriteString(" json:\"" + snakeString(col.Name) + "\"")
-		str.WriteString(" schema:\"" + snakeString(col.Name) + "\"")
-
-		// 添加验证规则选项
-		if !col.IsPrimaryKey {
-			str.WriteString(" validate:\"required\"")
-
-			formDsl = append(formDsl, map[string]interface{}{
-				"name":  snakeString(col.Name),
-				"label": col.Name,
-				"type":  "text",
-			})
-		}
-
-		tableDsl = append(tableDsl, map[string]interface{}{
-			"name":  snakeString(col.Name),
-			"label": col.Name,
-			"type":  "text",
-		})
-
-		str.WriteString("`\n")
-	}
-	str.WriteString("}")
-
-	genFrontendFile(print, tableName, tableDsl, formDsl)
-
-	return str.String()
-}
-
-// SQLColumn 描述结构体
-type SQLColumn struct {
-	Name, Type    string
-	IsPrimaryKey  bool
-	IsUnique      bool
-	Length        string
-	EnumValues    []string
-	AutoIncrement bool
-	NotNull       bool
-	Default       string
 }
 
 func init() {
@@ -565,7 +475,7 @@ func genTableFile(print bool, tableName, tablePath string) error {
 	return err
 }
 
-func genFrontendFile(print bool, table string, tableDsl, formDsl []map[string]interface{}) {
+func genFrontendFile(print bool, table string, tableDsl, formDsl, filterDSL []map[string]interface{}) {
 	// 根据路由创建目录文件
 	moduleFeDir := feDir + table + "/list"
 	indexFile := strFirstToUpper(moduleFeDir + "/index.ts")
@@ -574,6 +484,8 @@ func genFrontendFile(print bool, table string, tableDsl, formDsl []map[string]in
 	// 生成curd描述文件
 	data, _ := json.MarshalIndent(tableDsl, "", "\t")
 	content := bytes.ReplaceAll([]byte(indexTsTpl), []byte("[tableDSL]"), append(bytes.Trim(data, "[]"), ','))
+	data, _ = json.MarshalIndent(filterDSL, "", "\t")
+	content = bytes.ReplaceAll(content, []byte("[filterDSL]"), append(bytes.Trim(data, "[]"), ','))
 	data, _ = json.MarshalIndent(formDsl, "", "\t")
 	content = bytes.ReplaceAll(content, []byte("[formDSL]"), data)
 	presetContent := bytes.ReplaceAll([]byte(presetTsTpl), []byte("[table]"), []byte(table))
@@ -582,11 +494,11 @@ func genFrontendFile(print bool, table string, tableDsl, formDsl []map[string]in
 		os.MkdirAll(moduleFeDir, os.ModePerm)
 		err := ioutil.WriteFile(indexFile, content, os.ModePerm)
 		if err == nil {
-			logger.Error("创建文件: " + indexFile)
+			logger.Print("创建文件: " + indexFile)
 		}
 		err = ioutil.WriteFile(presetFile, presetContent, os.ModePerm)
 		if err == nil {
-			logger.Error("创建文件: " + presetFile)
+			logger.Print("创建文件: " + presetFile)
 		}
 	} else {
 		logger.Print("创建文件: " + indexFile)
@@ -655,3 +567,70 @@ func camelString(s string) string {
 	}
 	return string(data[:])
 }
+
+func getFieldType(fieldName, fieldType string) string {
+	inputType := "text"
+	switch fieldType {
+	case "bigint", "int", "mediumint", "smallint", "tinyint":
+		inputType = "number"
+	case "set":
+		inputType = "checkboxes"
+	case "enum":
+		inputType = "radios"
+	case "decimal", "double", "float":
+		inputType = "number"
+	case "longtext", "text", "mediumtext", "smalltext", "tinytext":
+		inputType = "textarea"
+	case "year", "date", "time", "datetime", "timestamp":
+		inputType = "datetime"
+	}
+
+	if matchSuffix.match(matchSuffix.imageSuffix, fieldName) {
+		inputType = "image"
+	} else if matchSuffix.match(matchSuffix.fileSuffix, fieldName) {
+		inputType = "file"
+	} else {
+		if fieldType == "enum" && matchSuffix.match(matchSuffix.enumRadioSuffix, fieldName) {
+			inputType = "radios"
+		}
+		if fieldType == "set" && matchSuffix.match(matchSuffix.setCheckboxSuffix, fieldName) {
+			inputType = "checkboxes"
+		}
+		if strings.HasSuffix(fieldType, "text") && matchSuffix.match(matchSuffix.editorSuffix, fieldName) {
+			inputType = "rich-text"
+		}
+	}
+
+	return inputType
+}
+
+// 生成表单字段额外扩展字段
+func getFieldFormExtra(amisType string, item map[string]interface{}) {
+	col := cols[item["name"].(string)]
+	if !col.DefaultIsEmpty {
+		item["value"] = col.Default	// 设置字段默认值
+	}
+	switch amisType {
+	case "radios", "checkboxes":
+		var options []map[string]interface{}
+		optionSets := col.SetOptions
+		if amisType == "radios" {
+			optionSets = col.EnumOptions
+		}
+		if len(optionSets) > 0 {	// 设置字段选项
+			for _, v := range optionSets {
+				options = append(options, map[string]interface{}{
+					"label": v,
+					"value": v,
+				})
+			}
+			item["options"] = options
+		}
+	case "image", "file":
+		if strings.HasSuffix(item["name"].(string), "s") {
+			item["multiple"] = true
+		}
+	}
+}
+
+
