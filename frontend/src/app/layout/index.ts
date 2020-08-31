@@ -15,7 +15,7 @@ export const layout = {
     brand: {
       // 公司品牌
       logo: '/static/images/logo_line_white.png',
-      title: 'Ovine',
+      title: 'PineCMS',
       link: {
         title: 'dashboard',
         href: '/',

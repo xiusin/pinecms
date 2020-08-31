@@ -38,11 +38,6 @@ export const schema = {
 		"type": "text"
 	},
 	{
-		"label": "信息内容",
-		"name": "message",
-		"type": "text"
-	},
-	{
 		"label": "状态",
 		"name": "status",
 		"type": "text"
@@ -50,41 +45,30 @@ export const schema = {
 	{
 		"label": "多选",
 		"name": "set_status",
-		"type": "text"
+		"tpl": "'\u003c% data.set_status.split(\",\").forEach(function(item) { %\u003e\u003c%= [\"'1'\",\"'2'\",\"'3'\"][item] %\u003e\u003c/span\u003e \u003c% }) %\u003e'",
+		"type": "tpl"
 	},
 	{
 		"label": "单选",
 		"name": "enum_status",
-		"type": "text"
+		"tpl": "\u003c%= [\"'0'\",\"'1'\",\"'2'\"][data.enum_status] %\u003e",
+		"type": "tpl"
 	},
 	{
+		"enlargeAble": true,
 		"label": "图片",
 		"name": "image",
-		"type": "text"
+		"type": "images"
 	},
 	{
+		"enlargeAble": true,
 		"label": "图片集合",
 		"name": "images",
-		"type": "text"
-	},
-	{
-		"label": "文件",
-		"name": "file",
-		"type": "text"
-	},
-	{
-		"label": "文件集合",
-		"name": "files",
-		"type": "text"
+		"type": "images"
 	},
 	{
 		"label": "城市ID",
 		"name": "city_id",
-		"type": "text"
-	},
-	{
-		"label": "文档内容",
-		"name": "content",
 		"type": "text"
 	}
 ,
@@ -101,11 +85,6 @@ export const schema = {
   definitions: {
     updateControls: {
       controls: [
-	{
-		"label": "序列ID",
-		"name": "id",
-		"type": "number"
-	},
 	{
 		"label": "用户ID",
 		"name": "userid",
@@ -126,16 +105,16 @@ export const schema = {
 		"name": "set_status",
 		"options": [
 			{
+				"label": 0,
+				"value": 0
+			},
+			{
 				"label": 1,
 				"value": 1
 			},
 			{
 				"label": 2,
 				"value": 2
-			},
-			{
-				"label": 0,
-				"value": 0
 			}
 		],
 		"type": "checkboxes",
@@ -146,16 +125,16 @@ export const schema = {
 		"name": "enum_status",
 		"options": [
 			{
-				"label": 2,
-				"value": 2
-			},
-			{
 				"label": 0,
 				"value": 0
 			},
 			{
 				"label": 1,
 				"value": 1
+			},
+			{
+				"label": 2,
+				"value": 2
 			}
 		],
 		"type": "radios",
@@ -278,16 +257,16 @@ export const schema = {
 		"name": "set_status",
 		"options": [
 			{
+				"label": 0,
+				"value": 0
+			},
+			{
 				"label": 1,
 				"value": 1
 			},
 			{
 				"label": 2,
 				"value": 2
-			},
-			{
-				"label": 0,
-				"value": 0
 			}
 		],
 		"type": "select"
@@ -297,16 +276,16 @@ export const schema = {
 		"name": "enum_status",
 		"options": [
 			{
-				"label": 2,
-				"value": 2
-			},
-			{
 				"label": 0,
 				"value": 0
 			},
 			{
 				"label": 1,
 				"value": 1
+			},
+			{
+				"label": 2,
+				"value": 2
 			}
 		],
 		"type": "select"

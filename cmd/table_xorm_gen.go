@@ -35,9 +35,7 @@ func (t *SQLTable) toXorm(print bool, tableName string) string {
 	for _, col := range t.Cols {
 		str.WriteRune('\t')
 		str.WriteString(camelString(col.Name))
-
 		var goType string
-
 		switch col.Type {
 		case "varchar", "text", "char", "longtext", "mediumtext", "smalltext", "tinytext", "set":
 			goType = "string"
@@ -96,12 +94,19 @@ func (t *SQLTable) toXorm(print bool, tableName string) string {
 		str.WriteString(" json:\"" + snakeString(col.Name) + "\"")
 		str.WriteString(" schema:\"" + snakeString(col.Name) + "\"")
 		// 添加验证规则选项
-		str.WriteString(" validate:\"required\"")
+		if !col.IsPrimaryKey {
+			str.WriteString(" validate:\"required\"")
+		}
 		amisType := getFieldType(col.Name, col.Type)
 
 		labelName := col.Name
-		if cols[col.Name].Comment != "" {
-			labelName = cols[col.Name].Comment
+		xormCol := cols[col.Name]
+		if xormCol.Comment != "" {
+			labelName = xormCol.Comment
+		}
+		tableItem := map[string]interface{}{
+			"name":  snakeString(col.Name),
+			"label": labelName,
 		}
 
 		item := map[string]interface{}{
@@ -110,29 +115,36 @@ func (t *SQLTable) toXorm(print bool, tableName string) string {
 			"type":  amisType,
 		}
 		getFieldFormExtra(amisType, item)
-		formDsl = append(formDsl, item)
-		// 生成过滤类型
-		if amisType != "rich-text" && amisType != "textarea" && amisType != "image" && amisType != "file" {
+		if !col.IsPrimaryKey {
+			formDsl = append(formDsl, item)
+		}
+		tableFieldType := "text"
+		// 过滤大字段或不可确定字段
+		if amisType != "rich-text" && amisType != "textarea" && amisType != "file" {
 			filterAmisType := amisType
 			switch amisType {
 			case "checkboxes", "radios", "select":
 				filterAmisType = "select"
-			case "image", "file":
-				filterAmisType = "text"
 			}
-			filterDsl = append(filterDsl, map[string]interface{}{
-				"name":    snakeString(col.Name),
-				"label":   "　　" + labelName + ":",
-				"type":    filterAmisType,
-				"options": item["options"],
-			})
+			if amisType == "image" {
+				tableFieldType = "images"
+				tableItem["enlargeAble"] = true
+			} else {
+				filterDsl = append(filterDsl, map[string]interface{}{
+					"name":    snakeString(col.Name),
+					"label":   "　　" + labelName + ":",
+					"type":    filterAmisType,
+					"options": item["options"],
+				})
+			}
+			tableItem["type"] = tableFieldType
+			if col.Type == "enum" {
+				FormatEnum(col.Name, col.EnumValues, tableItem)
+			} else if col.Type == "set" {
+				FormatSet(col.Name, col.EnumValues, tableItem)
+			}
+			tableDsl = append(tableDsl, tableItem)
 		}
-
-		tableDsl = append(tableDsl, map[string]interface{}{
-			"name":  snakeString(col.Name),
-			"label": labelName,
-			"type":  "text",
-		})
 
 		str.WriteString("`\n")
 	}
