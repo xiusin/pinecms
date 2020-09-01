@@ -2,11 +2,10 @@ package config
 
 import (
 	"fmt"
-	"path/filepath"
-	"time"
-
 	"github.com/gorilla/securecookie"
 	"github.com/xiusin/pine/cache/providers/bbolt"
+	"path/filepath"
+	"time"
 
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
@@ -64,7 +63,9 @@ func initDatabase() {
 	}
 
 	_orm.ShowSQL(o.ShowSql)
+	_orm.TZLocation, _ = time.LoadLocation("PRC")
 	_orm.ShowExecTime(o.ShowExecTime)
+	//_orm.SetDefaultCacher(caches.NewLRUCacher(caches.NewMemoryStore(), 1000))
 	_orm.SetMaxOpenConns(int(o.MaxOpenConns))
 	_orm.SetMaxIdleConns(int(o.MaxIdleConns))
 	XOrmEngine = _orm
@@ -84,11 +85,11 @@ func initApp() {
 
 func Bootstrap() {
 	initDatabase()
-	initApp()
 }
 
 func Server() {
 	Bootstrap()
+	initApp()
 	registerStatic()
 	registerV2BackendRoutes()
 	router.InitRouter(app)
@@ -104,13 +105,11 @@ func registerStatic() {
 func registerV2BackendRoutes() {
 	app.Use(middleware.SetGlobalConfigData())
 	app.Use(func(ctx *pine.Context) {
-		//ctx.Response.Header.Add("Vary", "Origin")
 		ctx.Response.Header.Add("Vary", "Access-Control-Allow-Methods")
 		ctx.Response.Header.Add("Vary", "Access-Control-Allow-Headers")
 		ctx.Response.Header.Add("Vary", "Access-Control-Allow-Credentials")
 		ctx.Response.Header.Set("Access-Control-Allow-Origin", "http://localhost:7050")
-		//ctx.Response.Header.Set("Access-Control-Allow-Headers", "X-TOKEN, Content-Type, Origin, Referer, Content-Length, Access-Control-Allow-Headers")
-		ctx.Response.Header.Set("Access-Control-Allow-Headers", "*")
+		ctx.Response.Header.Set("Access-Control-Allow-Headers", "X-TOKEN, Content-Type, Origin, Referer, Content-Length, Access-Control-Allow-Headers")
 		ctx.Response.Header.Set("Access-Control-Allow-Credentials", "true")
 		ctx.Response.Header.Set("Access-Control-Allow-Methods", "*")
 		if !ctx.IsOptions() {
@@ -138,6 +137,7 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.TodoController), "/todo")
 
 	app.Group("/v2/public").Handle(new(backend.PublicController))
+	app.Group("/v2/api").Handle(new(backend.PublicController))
 }
 
 func runServe() {
@@ -151,10 +151,11 @@ func runServe() {
 }
 
 func diConfig() {
-	iCache = bbolt.New(&bbolt.Option{
+	boltDB := bbolt.New(&bbolt.Option{
 		TTL:  int(conf.Session.Expires),
 		Path: conf.CacheDb,
 	})
+	iCache = boltDB
 
 	//badger.New(int(conf.Session.Expires), conf.CacheDb)
 

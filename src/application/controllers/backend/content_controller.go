@@ -124,7 +124,6 @@ func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 	} else if catogoryModel.Type == 1 { // 单页发布
 
 	}
-
 	rd := models.NewDocumentModel().GetByID(catogoryModel.ModelId)
 	if rd == nil || rd.Id == 0 {
 		helper.Ajax("找不到关联模型", 1, c.Ctx())
@@ -136,13 +135,10 @@ func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 	var formColums []FormControl
 	fm := models.NewDocumentModelFieldModel().GetMap()
 	for _, field := range fields {
-
-		if !field.ShowInList {
-			continue
-		}
-
 		form := FormControl{Type: fm[field.FieldType].AmisType, Name: field.TableField, Label: field.FormName}
-		formColums = append(formColums, FormControl{Type: "text", Name: field.TableField, Label: field.FormName})
+		if field.ShowInList {
+			formColums = append(formColums, FormControl{Type: "text", Name: field.TableField, Label: field.FormName})
+		}
 		rf := reflect.ValueOf(&form)
 		if fm[field.FieldType].Opt != "" { // 判断是否需要合并属性
 			optArr := strings.Split(fm[field.FieldType].Opt, "\r\n")
@@ -173,6 +169,9 @@ func (c *ContentController) NewsModelJson(orm *xorm.Engine) {
 		if field.Required == 1 {
 			form.Required = true
 			form.ValidationErrors = field.RequiredTips
+		}
+		if field.Validator != "" {
+			form.Validations = field.Validator
 		}
 		if field.Default != "" {
 			form.Value = field.Default
@@ -315,7 +314,7 @@ func (c customForm) MustCheck() bool {
 }
 
 //AddContent 添加内容
-func (c *ContentController) AddContent() {
+func (c *ContentController) AddContent(orm *xorm.Engine) {
 	if c.Ctx().IsPost() {
 		mid, _ := strconv.Atoi(c.Ctx().FormValue("mid"))
 		if mid < 1 {
@@ -324,12 +323,20 @@ func (c *ContentController) AddContent() {
 		}
 		var data = customForm{}
 		postData := c.Ctx().PostData()
+		model := models.NewDocumentModel().GetByID(int64(mid))
+		//table := orm.TableInfo(controllers.GetTableName(model.Table))
 		for formName, values := range postData {
 			if formName == "attrs" {
 				data[formName] = strings.Join(values, ",")
 			} else {
 				data[formName] = values[0]
 			}
+			//col := table.GetColumn(formName)
+			//if data[formName] == "" && col.Nullable{
+			//	if col.SQLType.IsNumeric() {
+			//		data[formName] = "0"
+			//	}
+			//}
 		}
 		data["mid"] = c.Ctx().FormValue("mid")
 		data["catid"] = c.Ctx().FormValue("catid")
@@ -340,23 +347,23 @@ func (c *ContentController) AddContent() {
 			return
 		}
 
-		if _, ok := data["status"]; ok {
-			data["status"] = "1"
-		} else {
-			data["status"] = "0"
-		}
+		//if _, ok := data["status"]; ok {
+		//	data["status"] = "1"
+		//} else {
+		//	data["status"] = "0"
+		//}
+		//
+		//if data["description"] == "" {
+		//	cont := bluemonday.NewPolicy().Sanitize(data["content"])
+		//	if len(cont) > 250 {
+		//		data["description"] = cont[:250]
+		//	} else {
+		//		data["description"] = cont
+		//	}
+		//}
+		//
+		//data["created_time"] = time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)
 
-		if data["description"] == "" {
-			cont := bluemonday.NewPolicy().Sanitize(data["content"])
-			if len(cont) > 250 {
-				data["description"] = cont[:250]
-			} else {
-				data["description"] = cont
-			}
-		}
-
-		data["created_time"] = time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)
-		model := models.NewDocumentModel().GetByID(int64(mid))
 		var fields []string
 		var values []interface{}
 		for k, v := range data {

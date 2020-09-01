@@ -107,6 +107,7 @@ func (c *DocumentController) RegisterRoute(b pine.IRouterWrapper) {
 	b.GET("/model/matrix", "ModelMatrix")
 	b.POST("/model/set", "ModelSet")
 	b.ANY("/model/delete", "ModelDelete")
+	b.GET("/model/del-field-check", "ModelDelFieldCheck")
 	b.ANY("/model/list-field-show", "ModelFieldShowInListPage")
 	if config.DBConfig().Db.DbDriver == "mysql" {
 		b.ANY("/model/gen-sql", "GenSQL")
@@ -114,6 +115,20 @@ func (c *DocumentController) RegisterRoute(b pine.IRouterWrapper) {
 		b.ANY("/model/gen-sql", "GenSQLFromSQLite3")
 	}
 	b.ANY("/model/preview-page", "PreviewPage")
+}
+
+func (c *DocumentController) ModelDelFieldCheck(orm *xorm.Engine) {
+	field := c.Ctx().GetString("field")
+	if field == "" {
+		helper.Ajax("参数错误", 1, c.Ctx())
+		return
+	}
+	count, _ := orm.Where("mid = ?", 0).Where("table_field = ?", field).Count(&tables.DocumentModelDsl{})
+	if count > 0 {
+		helper.Ajax("不可删除模型固有字段", 1, c.Ctx())
+	} else {
+		helper.Ajax("删除成功", 0, c.Ctx())
+	}
 }
 
 // ModelSet 设置模型字段显示

@@ -1,43 +1,40 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
-	"html/template"
 )
 
-func FormatEnum(field string, enums []string, item map[string]interface{}) {
+func FormatEnum(field string, opts []map[string]interface{}, item map[string]interface{}) {
 	item["type"] = "tpl"
-	enumsInfo, _ := json.Marshal(enums)
+	vmap := map[string]interface{}{}
+	for _, opt := range opts {
+		vmap[opt["value"].(string)] = opt["label"]
+	}
+	enumsInfo, _ := json.Marshal(vmap)
 	if len(enumsInfo) == 0 {
 		enumsInfo = []byte("[]")
 	}
-	item["tpl"] = template.HTML(`<%= `+ string(enumsInfo) +`[data.`+ field +`] %>`)
+	item["tpl"] = `<%= ` + string(enumsInfo) + `[data.` + field + `] %>`
 }
 
-
-func FormatSet(field string, set []string, item map[string]interface{}) {
+func FormatSet(field string, opts []map[string]interface{}, item map[string]interface{}) {
 	item["type"] = "tpl"
-	enumsInfo, _ := json.Marshal(set)
+	vmap := map[string]interface{}{}
+	for _, opt := range opts {
+		vmap[opt["value"].(string)] = opt["label"]
+	}
+	enumsInfo, _ := json.Marshal(vmap)
 	if len(enumsInfo) == 0 {
 		enumsInfo = []byte("[]")
 	}
-	json.
-	item["tpl"] = "'<% data."+field+".split(\",\").forEach(function(item) { %><%= " + string(enumsInfo) + "[item] %></span> <% }) %>'"
+	item["tpl"] = "<% data." + field + ".split(\",\").forEach(function(item) { %><%= " + string(enumsInfo) + "[item] %></span> <% }) %>"
 }
 
-func FormatLink()  {
-
+func JSONMarshal(t interface{}) ([]byte, error) {
+	buffer := &bytes.Buffer{}
+	encoder := json.NewEncoder(buffer)
+	encoder.SetEscapeHTML(false)
+	err := encoder.Encode(t)
+	return buffer.Bytes(), err
 }
-
-func FormatFile()  {
-
-}
-
-func FormatImage()  {
-
-}
-
-func FormatStatus(field string, set []string, item map[string]interface{})  {
-	
-}
-

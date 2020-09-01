@@ -46,7 +46,7 @@ func (t *SQLTable) toXorm(print bool, tableName string) string {
 		case "double", "float", "decimal":
 			goType = "float64"
 		case "year", "date", "datetime", "time", "timestamp":
-			goType = "time.Time"
+			goType = "LocalTime"
 		case "blob":
 			goType = "[]byte"
 		default:
@@ -99,10 +99,10 @@ func (t *SQLTable) toXorm(print bool, tableName string) string {
 		}
 		amisType := getFieldType(col.Name, col.Type)
 
-		labelName := col.Name
-		xormCol := cols[col.Name]
+		labelName, xormCol := col.Name, cols[col.Name]
 		if xormCol.Comment != "" {
-			labelName = xormCol.Comment
+			c := strings.Split(xormCol.Comment, ":")
+			labelName = c[0]
 		}
 		tableItem := map[string]interface{}{
 			"name":  snakeString(col.Name),
@@ -130,18 +130,49 @@ func (t *SQLTable) toXorm(print bool, tableName string) string {
 				tableFieldType = "images"
 				tableItem["enlargeAble"] = true
 			} else {
-				filterDsl = append(filterDsl, map[string]interface{}{
-					"name":    snakeString(col.Name),
-					"label":   "　　" + labelName + ":",
-					"type":    filterAmisType,
-					"options": item["options"],
-				})
+				filterItem := map[string]interface{}{
+					"name":  snakeString(col.Name),
+					"label": "　　" + labelName + ":",
+					"type":  filterAmisType,
+				}
+				if item["options"] != nil {
+					filterItem["options"] = item["options"]
+				}
+				switch col.Type {
+				case "datetime", "timestamp", "date":
+					filterAmisType += "-range"
+					if col.Type == "date" {
+						filterItem["format"] = "YYYY-MM-DD"
+					} else {
+						filterItem["format"] = "YYYY-MM-DD HH:mm:ss"
+					}
+					filterItem["type"] = filterAmisType
+				case "tinyint": // 如果仅仅为tinyint但是备注有可以解析的配置信息
+					vmap := parseCommentInfo(xormCol.Comment)
+					if len(vmap) > 0 {
+						opts := []map[string]interface{}{}
+						for k, v := range vmap {
+							opts = append(opts, map[string]interface{}{"label": v, "value": k})
+						}
+						filterItem["type"] = "select"
+						filterItem["options"] = opts
+						FormatEnum(col.Name, opts, tableItem)
+					}
+				}
+				filterDsl = append(filterDsl, filterItem)
 			}
 			tableItem["type"] = tableFieldType
+
+			var opts interface{}
+			var ok bool
+			opts, ok = item["options"]			// 查看是否存在options
+			if !ok {
+				opts = []map[string]interface{}{}
+			}
 			if col.Type == "enum" {
-				FormatEnum(col.Name, col.EnumValues, tableItem)
+				FormatEnum(col.Name, opts.([]map[string]interface{}), tableItem)
 			} else if col.Type == "set" {
-				FormatSet(col.Name, col.EnumValues, tableItem)
+				FormatSet(col.Name, opts.([]map[string]interface{}), tableItem)
 			}
 			tableDsl = append(tableDsl, tableItem)
 		}

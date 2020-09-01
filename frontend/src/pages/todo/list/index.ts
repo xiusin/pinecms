@@ -26,52 +26,7 @@ export const schema = {
     ],
     footerToolbar: ['statistics', 'switch-per-page', 'pagination'],
     columns:  [
-      
-	{
-		"label": "序列ID",
-		"name": "id",
-		"type": "text"
-	},
-	{
-		"label": "用户ID",
-		"name": "userid",
-		"type": "text"
-	},
-	{
-		"label": "状态",
-		"name": "status",
-		"type": "text"
-	},
-	{
-		"label": "多选",
-		"name": "set_status",
-		"tpl": "'\u003c% data.set_status.split(\",\").forEach(function(item) { %\u003e\u003c%= [\"'1'\",\"'2'\",\"'3'\"][item] %\u003e\u003c/span\u003e \u003c% }) %\u003e'",
-		"type": "tpl"
-	},
-	{
-		"label": "单选",
-		"name": "enum_status",
-		"tpl": "\u003c%= [\"'0'\",\"'1'\",\"'2'\"][data.enum_status] %\u003e",
-		"type": "tpl"
-	},
-	{
-		"enlargeAble": true,
-		"label": "图片",
-		"name": "image",
-		"type": "images"
-	},
-	{
-		"enlargeAble": true,
-		"label": "图片集合",
-		"name": "images",
-		"type": "images"
-	},
-	{
-		"label": "城市ID",
-		"name": "city_id",
-		"type": "text"
-	}
-,
+      {"label":"序列ID","name":"id","type":"text"},{"label":"用户ID","name":"userid","type":"text"},{"label":"状态","name":"status","tpl":"<%= {\"0\":\"关闭\",\"1\":\"开启\"}[data.status] %>","type":"text"},{"label":"多选","name":"set_status","tpl":"<% data.set_status.split(\",\").forEach(function(item) { %><%= {\"1\":\"你好\",\"2\":\"我好\",\"3\":\"大家好\"}[item] %></span> <% }) %>","type":"tpl"},{"label":"单选","name":"enum_status","tpl":"<%= {\"0\":\"天真\",\"1\":\"无邪\",\"2\":\"王胖子\"}[data.enum_status] %>","type":"tpl"},{"enlargeAble":true,"label":"图片","name":"image","type":"images"},{"enlargeAble":true,"label":"图片集合","name":"images","type":"images"},{"label":"城市ID","name":"city_id","type":"text"},{"label":"创建时间","name":"createtime","type":"text"},{"label":"创建日期","name":"date","type":"text"},{"label":"时间","name":"time","type":"text"},{"label":"年份","name":"year","type":"text"},
       {
         type: 'operation',
         label: '操作',
@@ -105,16 +60,16 @@ export const schema = {
 		"name": "set_status",
 		"options": [
 			{
-				"label": 0,
-				"value": 0
+				"label": "我好",
+				"value": "2"
 			},
 			{
-				"label": 1,
-				"value": 1
+				"label": "大家好",
+				"value": "3"
 			},
 			{
-				"label": 2,
-				"value": 2
+				"label": "你好",
+				"value": "1"
 			}
 		],
 		"type": "checkboxes",
@@ -125,16 +80,16 @@ export const schema = {
 		"name": "enum_status",
 		"options": [
 			{
-				"label": 0,
-				"value": 0
+				"label": "无邪",
+				"value": "1"
 			},
 			{
-				"label": 1,
-				"value": 1
+				"label": "王胖子",
+				"value": "2"
 			},
 			{
-				"label": 2,
-				"value": 2
+				"label": "天真",
+				"value": "0"
 			}
 		],
 		"type": "radios",
@@ -165,12 +120,32 @@ export const schema = {
 	{
 		"label": "城市ID",
 		"name": "city_id",
-		"type": "number"
+		"type": "city"
 	},
 	{
 		"label": "文档内容",
 		"name": "content",
 		"type": "rich-text"
+	},
+	{
+		"label": "创建时间",
+		"name": "createtime",
+		"type": "datetime"
+	},
+	{
+		"label": "创建日期",
+		"name": "date",
+		"type": "date"
+	},
+	{
+		"label": "时间",
+		"name": "time",
+		"type": "text"
+	},
+	{
+		"label": "年份",
+		"name": "year",
+		"type": "text"
 	}
 ],
     },
@@ -237,36 +212,43 @@ export const schema = {
 	{
 		"label": "　　序列ID:",
 		"name": "id",
-		"options": null,
 		"type": "number"
 	},
 	{
 		"label": "　　用户ID:",
 		"name": "userid",
-		"options": null,
 		"type": "number"
 	},
 	{
 		"label": "　　状态:",
 		"name": "status",
-		"options": null,
-		"type": "number"
+		"options": [
+			{
+				"label": "开启",
+				"value": "1"
+			},
+			{
+				"label": "关闭",
+				"value": "0"
+			}
+		],
+		"type": "select"
 	},
 	{
 		"label": "　　多选:",
 		"name": "set_status",
 		"options": [
 			{
-				"label": 0,
-				"value": 0
+				"label": "我好",
+				"value": "2"
 			},
 			{
-				"label": 1,
-				"value": 1
+				"label": "大家好",
+				"value": "3"
 			},
 			{
-				"label": 2,
-				"value": 2
+				"label": "你好",
+				"value": "1"
 			}
 		],
 		"type": "select"
@@ -276,16 +258,16 @@ export const schema = {
 		"name": "enum_status",
 		"options": [
 			{
-				"label": 0,
-				"value": 0
+				"label": "无邪",
+				"value": "1"
 			},
 			{
-				"label": 1,
-				"value": 1
+				"label": "王胖子",
+				"value": "2"
 			},
 			{
-				"label": 2,
-				"value": 2
+				"label": "天真",
+				"value": "0"
 			}
 		],
 		"type": "select"
@@ -293,8 +275,29 @@ export const schema = {
 	{
 		"label": "　　城市ID:",
 		"name": "city_id",
-		"options": null,
-		"type": "number"
+		"type": "city"
+	},
+	{
+		"format": "YYYY-MM-DD HH:mm:ss",
+		"label": "　　创建时间:",
+		"name": "createtime",
+		"type": "datetime-range"
+	},
+	{
+		"format": "YYYY-MM-DD",
+		"label": "　　创建日期:",
+		"name": "date",
+		"type": "date-range"
+	},
+	{
+		"label": "　　时间:",
+		"name": "time",
+		"type": "text"
+	},
+	{
+		"label": "　　年份:",
+		"name": "year",
+		"type": "text"
 	}
 ,
           {

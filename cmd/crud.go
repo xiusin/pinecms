@@ -273,9 +273,8 @@ func genFrontendFile(print bool, table string, tableDsl, formDsl, filterDSL []ma
 	indexFile := strFirstToUpper(moduleFeDir + "/index.ts")
 	presetFile := strFirstToUpper(moduleFeDir + "/preset.ts")
 
-	// 生成curd描述文件
-	data, _ := json.MarshalIndent(tableDsl, "", "\t")
-	content := bytes.ReplaceAll([]byte(indexTsTpl), []byte("[tableDSL]"), append(bytes.Trim(data, "[]"), ','))
+	data, _ := JSONMarshal(tableDsl)
+	content := bytes.ReplaceAll([]byte(indexTsTpl), []byte("[tableDSL]"), append(bytes.Trim(data, "[]\n"), ','))
 	data, _ = json.MarshalIndent(filterDSL, "", "\t")
 	content = bytes.ReplaceAll(content, []byte("[filterDSL]"), append(bytes.Trim(data, "[]"), ','))
 	data, _ = json.MarshalIndent(formDsl, "", "\t")
@@ -373,8 +372,10 @@ func getFieldType(fieldName, fieldType string) string {
 		inputType = "number"
 	case "longtext", "text", "mediumtext", "smalltext", "tinytext":
 		inputType = "textarea"
-	case "year", "date", "time", "datetime", "timestamp":
+	case "datetime", "timestamp":
 		inputType = "datetime"
+	case "date":
+		inputType = "date"
 	}
 
 	if matchSuffix.match(matchSuffix.imageSuffix, fieldName) {
@@ -388,12 +389,30 @@ func getFieldType(fieldName, fieldType string) string {
 		if fieldType == "set" && matchSuffix.match(matchSuffix.setCheckboxSuffix, fieldName) {
 			inputType = "checkboxes"
 		}
+		if strings.Contains(fieldType, "int") && strings.Contains(fieldName, "city") {
+			inputType = "city"
+		}
 		if strings.HasSuffix(fieldType, "text") && matchSuffix.match(matchSuffix.editorSuffix, fieldName) {
 			inputType = "rich-text"
 		}
 	}
 
 	return inputType
+}
+
+func parseCommentInfo(comment string) map[string]string {
+	vmap := map[string]string{}
+	commentInfo := strings.Split(comment, ":") // "状态:0=关闭,1=开启"
+	if len(commentInfo) > 1 {
+		dict := strings.Split(commentInfo[1], ",")
+		for _, v := range dict {
+			kv := strings.SplitN(v, "=", 2)
+			if len(kv) == 2 && kv[1] != "" {
+				vmap[kv[0]] = kv[1]
+			}
+		}
+	}
+	return vmap
 }
 
 // 生成表单字段额外扩展字段
@@ -404,16 +423,23 @@ func getFieldFormExtra(amisType string, item map[string]interface{}) {
 	}
 	switch amisType {
 	case "radios", "checkboxes":
+		// 解析备注内容
+		vmap := parseCommentInfo(col.Comment)
+
 		var options []map[string]interface{}
 		optionSets := col.SetOptions
 		if amisType == "radios" {
 			optionSets = col.EnumOptions
 		}
 		if len(optionSets) > 0 { // 设置字段选项
-			for _, v := range optionSets {
+			for setVal := range optionSets {
+				label, ok := vmap[setVal]
+				if !ok {
+					label = setVal
+				}
 				options = append(options, map[string]interface{}{
-					"label": v,
-					"value": v,
+					"label": label,
+					"value": setVal,
 				})
 			}
 			item["options"] = options

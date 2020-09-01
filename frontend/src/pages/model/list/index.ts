@@ -82,6 +82,10 @@ export const schema = {
           tabsStyle: "radio",
           mode: 'horizontal',
           maxLength: 40,
+          removable: true,
+          deleteApi: "GET model/del-field-check?field=$field",
+          draggable: true,
+          deleteConfirmText: "是否要删除$name吗?",
           tabsLabelTpl: "$name",
           controls: [
             {

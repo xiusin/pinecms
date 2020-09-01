@@ -20,6 +20,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
@@ -46,7 +47,7 @@ func GetRootPath() string {
 
 var location *time.Location
 
-func init()  {
+func init() {
 	loc, err := time.LoadLocation("PRC")
 	if err != nil {
 		pine.Logger().Error(err)
@@ -135,6 +136,7 @@ func Ajax(errmsg interface{}, errcode int64, this *pine.Context) {
 	case error:
 		// todo debug显示正常错误信息
 		errmsg = errmsg.(error).Error()
+		this.Logger().Error(string(debug.Stack()))
 	}
 	// 添加操作日志
 	data := pine.H{"code": errcode, "data": errmsg}
@@ -293,14 +295,14 @@ func FileUpload(field, data string, required bool, formName, defaultVal, Require
 	if len(data) > 0 {
 		jsJSON = data
 	}
-	var requiredFunc = `<script>buildFileLists(document.getElementById('`+rid+`_button'), `+jsJSON+`);</script>`
+	var requiredFunc = `<script>buildFileLists(document.getElementById('` + rid + `_button'), ` + jsJSON + `);</script>`
 
 	if required {
 		requiredFunc = `<script> fileUploader.push(function(){ if ($('#` + rid + `').val() == '') {$('#` + rid + `_tip').html("` + RequiredTips + `"); return false; } $('#` + rid + `_tip').html(''); return true; });
 </script>`
 	}
-	html := `<input name="` + field + `" id="`+rid+`" type="hidden" value='` + data +
-		`'/><button class="btn btn-default" type="button" id="`+rid+`_button" onclick="fromUEFileUploader(this, 0)" title="会自动过滤重复文件">上传或选择文件</button><div class='easy-uploader'><ul class="list"></ul></div><div id='` + rid + `_tip' class='errtips'></div>
+	html := `<input name="` + field + `" id="` + rid + `" type="hidden" value='` + data +
+		`'/><button class="btn btn-default" type="button" id="` + rid + `_button" onclick="fromUEFileUploader(this, 0)" title="会自动过滤重复文件">上传或选择文件</button><div class='easy-uploader'><ul class="list"></ul></div><div id='` + rid + `_tip' class='errtips'></div>
 ` + requiredFunc
 	return html
 }
@@ -358,9 +360,9 @@ func IsError(args ...error) bool {
 }
 
 type EmailOpt struct {
-	Title string
+	Title        string
 	UrlOrMessage string
-	Address []string
+	Address      []string
 }
 
 /**
@@ -486,4 +488,3 @@ func GetRandomString(l int) string {
 func GetORM() *xorm.Engine {
 	return pine.Make(controllers.ServiceXorm).(*xorm.Engine)
 }
-
