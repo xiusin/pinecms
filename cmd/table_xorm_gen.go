@@ -137,6 +137,7 @@ func (t *SQLTable) toXorm(print bool, tableName string) string {
 				}
 				if item["options"] != nil {
 					filterItem["options"] = item["options"]
+					filterItem["clearable"] = true
 				}
 				switch col.Type {
 				case "datetime", "timestamp", "date":
@@ -165,7 +166,7 @@ func (t *SQLTable) toXorm(print bool, tableName string) string {
 
 			var opts interface{}
 			var ok bool
-			opts, ok = item["options"]			// 查看是否存在options
+			opts, ok = item["options"] // 查看是否存在options
 			if !ok {
 				opts = []map[string]interface{}{}
 			}

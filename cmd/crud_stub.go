@@ -116,8 +116,8 @@ func New[model]() *[model] {
         type: 'button',
         icon: 'fa fa-pencil',
         tooltip: '编辑',
-        actionType: 'dialog',
-        dialog: {
+        actionType: 'drawer',
+        drawer: {
           title: '编辑',
           size: 'xl',
           body: {

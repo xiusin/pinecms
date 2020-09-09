@@ -60,16 +60,16 @@ export const schema = {
 		"name": "set_status",
 		"options": [
 			{
+				"label": "你好",
+				"value": "1"
+			},
+			{
 				"label": "我好",
 				"value": "2"
 			},
 			{
 				"label": "大家好",
 				"value": "3"
-			},
-			{
-				"label": "你好",
-				"value": "1"
 			}
 		],
 		"type": "checkboxes",
@@ -80,16 +80,16 @@ export const schema = {
 		"name": "enum_status",
 		"options": [
 			{
+				"label": "天真",
+				"value": "0"
+			},
+			{
 				"label": "无邪",
 				"value": "1"
 			},
 			{
 				"label": "王胖子",
 				"value": "2"
-			},
-			{
-				"label": "天真",
-				"value": "0"
 			}
 		],
 		"type": "radios",
@@ -177,8 +177,8 @@ export const schema = {
         type: 'button',
         icon: 'fa fa-pencil',
         tooltip: '编辑',
-        actionType: 'dialog',
-        dialog: {
+        actionType: 'drawer',
+        drawer: {
           title: '编辑',
           size: 'xl',
           body: {
@@ -224,20 +224,25 @@ export const schema = {
 		"name": "status",
 		"options": [
 			{
-				"label": "开启",
-				"value": "1"
-			},
-			{
 				"label": "关闭",
 				"value": "0"
+			},
+			{
+				"label": "开启",
+				"value": "1"
 			}
 		],
 		"type": "select"
 	},
 	{
+		"clearable": true,
 		"label": "　　多选:",
 		"name": "set_status",
 		"options": [
+			{
+				"label": "你好",
+				"value": "1"
+			},
 			{
 				"label": "我好",
 				"value": "2"
@@ -245,18 +250,19 @@ export const schema = {
 			{
 				"label": "大家好",
 				"value": "3"
-			},
-			{
-				"label": "你好",
-				"value": "1"
 			}
 		],
 		"type": "select"
 	},
 	{
+		"clearable": true,
 		"label": "　　单选:",
 		"name": "enum_status",
 		"options": [
+			{
+				"label": "天真",
+				"value": "0"
+			},
 			{
 				"label": "无邪",
 				"value": "1"
@@ -264,10 +270,6 @@ export const schema = {
 			{
 				"label": "王胖子",
 				"value": "2"
-			},
-			{
-				"label": "天真",
-				"value": "0"
 			}
 		],
 		"type": "select"
