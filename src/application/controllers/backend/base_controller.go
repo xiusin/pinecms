@@ -3,6 +3,8 @@ package backend
 import (
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/go-playground/locales/en"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
@@ -11,7 +13,6 @@ import (
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"strings"
 )
 
 var validate = validator.New()
@@ -85,7 +86,7 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) {
 	orderBy := c.Ctx().GetString("orderBy", "id")
 	orderDir := c.Ctx().GetString("orderDir", "desc")
 	keywords := c.Ctx().GetString("keywords", "")
-	if len(c.KeywordsSearch) > 0 && keywords != "" {
+	if len(c.KeywordsSearch) > 0 && keywords != "" { // 关键字搜索
 		for _, v := range c.KeywordsSearch {
 			if v.Field == "" && v.CallBack == nil {
 				continue
@@ -107,9 +108,18 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) {
 		}
 	}
 	if c.SearchFields != nil {
-		for field, dsl := range c.SearchFields {
-			if c.Ctx().GetString(field) != "" {
-				query.Where(fmt.Sprintf("%s %s ?", field, dsl.Op), c.Ctx().GetString(field))
+		for field, dsl := range c.SearchFields { // 其他字段搜索
+			val := c.Ctx().GetString(field)
+			if val != "" {
+				if dsl.Op == "range" { // 范围查询， 组件between and
+					ranges := strings.SplitN(val, ",", 2)
+					if len(ranges) == 2 {
+						query.Where(fmt.Sprintf("%s >= ?", field), ranges[0]).Where(fmt.Sprintf("%s <= ?", field), ranges[1])
+					}
+				} else {
+					query.Where(fmt.Sprintf("%s %s ?", field, dsl.Op), val)
+				}
+
 			}
 		}
 	}

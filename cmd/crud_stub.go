@@ -20,7 +20,10 @@ type [ctrl] struct {
 
 func (c *[ctrl]) Construct() {
 	c.BindType = "form"
-	c.SearchFields = map[string]searchFieldDsl{}
+    c.SearchFields = map[string]searchFieldDsl{
+[searchFieldDsl]
+	}
+  
 	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
 	c.Table = &tables.[table]{}
 	c.Entries = &[]tables.[table]{}

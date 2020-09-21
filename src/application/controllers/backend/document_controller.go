@@ -11,8 +11,6 @@ import (
 
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
-	"github.com/xiusin/pinecms/src/config"
-
 	"github.com/xiusin/pinecms/src/application/controllers"
 
 	"github.com/go-xorm/xorm"
@@ -109,11 +107,7 @@ func (c *DocumentController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/model/delete", "ModelDelete")
 	b.GET("/model/del-field-check", "ModelDelFieldCheck")
 	b.ANY("/model/list-field-show", "ModelFieldShowInListPage")
-	if config.DBConfig().Db.DbDriver == "mysql" {
-		b.ANY("/model/gen-sql", "GenSQL")
-	} else {
-		b.ANY("/model/gen-sql", "GenSQLFromSQLite3")
-	}
+	b.ANY("/model/gen-sql", "GenSQL")
 	b.ANY("/model/preview-page", "PreviewPage")
 }
 

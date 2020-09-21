@@ -103,19 +103,16 @@ var crudCmd = &cobra.Command{
 			logger.Error(err)
 			return
 		}
+		err = genTableFile(print, table, tableDir+table+".go")
+		if err != nil {
+			logger.Error(err)
+			return
+		}
 		err = genControllerFile(print, controllerName, table, controllerPath)
 		if err != nil {
 			logger.Error(err)
 			return
 		}
-
-		err = genTableFile(print, table, tableDir+table+".go")
-
-		if err != nil {
-			logger.Error(err)
-			return
-		}
-
 		logger.Print("创建模块文件成功, 请将控制器注册到路由: registerV2BackendRoutes方法内")
 	},
 }
@@ -166,6 +163,7 @@ func genControllerFile(print bool, controllerName, tableName, controllerPath str
 	var err error
 	content := strings.ReplaceAll(controllerTpl, "[ctrl]", controllerName)
 	content = strings.ReplaceAll(content, "[table]", camelString(tableName))
+	content = strings.ReplaceAll(content, "[searchFieldDsl]", searchFieldDsl)
 	if !print {
 		err = ioutil.WriteFile(controllerPath, []byte(content), os.ModePerm)
 	}
@@ -297,66 +295,6 @@ func genFrontendFile(print bool, table string, tableDsl, formDsl, filterDSL []ma
 		logger.Print("创建文件: " + presetFile)
 		quick.Highlight(logger.DefaultWriter(), string(presetContent), "typescript", "terminal256", theme)
 	}
-}
-
-func snakeString(s string) string {
-	data := make([]byte, 0, len(s)*2)
-	j := false
-	num := len(s)
-	for i := 0; i < num; i++ {
-		d := s[i]
-		if i > 0 && d >= 'A' && d <= 'Z' && j {
-			data = append(data, '_')
-		}
-		if d != '_' {
-			j = true
-		}
-		data = append(data, d)
-	}
-	return strings.ToLower(string(data[:]))
-}
-
-func strFirstToUpper(str string) string {
-	temp := strings.Split(strings.ReplaceAll(str, "_", "-"), "-")
-	var upperStr string
-	for y := 0; y < len(temp); y++ {
-		vv := []rune(temp[y])
-		if y != 0 {
-			for i := 0; i < len(vv); i++ {
-				if i == 0 {
-					vv[i] -= 32
-					upperStr += string(vv[i]) // + string(vv[i+1])
-				} else {
-					upperStr += string(vv[i])
-				}
-			}
-		}
-	}
-	return temp[0] + upperStr
-}
-
-func camelString(s string) string {
-	data := make([]byte, 0, len(s))
-	j := false
-	k := false
-	num := len(s) - 1
-	for i := 0; i <= num; i++ {
-		d := s[i]
-		if k == false && d >= 'A' && d <= 'Z' {
-			k = true
-		}
-		if d >= 'a' && d <= 'z' && (j || k == false) {
-			d = d - 32
-			j = false
-			k = true
-		}
-		if k && d == '_' && num > i && s[i+1] >= 'a' && s[i+1] <= 'z' {
-			j = true
-			continue
-		}
-		data = append(data, d)
-	}
-	return string(data[:])
 }
 
 func getFieldType(fieldName, fieldType string) string {

@@ -1,5 +1,6 @@
 package cmd
 
+// public/assets/js/require-table.js:403
 import (
 	"bytes"
 	"encoding/json"
@@ -31,6 +32,7 @@ func FormatSet(field string, opts []map[string]interface{}, item map[string]inte
 	item["tpl"] = "<% data." + field + ".split(\",\").forEach(function(item) { %><%= " + string(enumsInfo) + "[item] %></span> <% }) %>"
 }
 
+// JSONMarshal 不转义字符串编码
 func JSONMarshal(t interface{}) ([]byte, error) {
 	buffer := &bytes.Buffer{}
 	encoder := json.NewEncoder(buffer)

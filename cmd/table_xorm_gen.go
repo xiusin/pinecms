@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+var searchFieldDsl string
+
 // SQLTable 表名结构体
 type SQLTable struct {
 	Name string
@@ -160,6 +162,14 @@ func (t *SQLTable) toXorm(print bool, tableName string) string {
 						FormatEnum(col.Name, opts, tableItem)
 					}
 				}
+				if strings.HasSuffix(filterItem["type"].(string), "-range") {
+					searchFieldDsl += `		"` + filterItem["name"].(string) + `":{Op: "range"},`
+				} else if xormCol.SQLType.Name == "set" {
+					searchFieldDsl += `		"` + filterItem["name"].(string) + `":{Op: "set"},` // findInSet
+				} else {
+					searchFieldDsl += `		"` + filterItem["name"].(string) + `":{Op: "="},`
+				}
+				searchFieldDsl += "\r\n"
 				filterDsl = append(filterDsl, filterItem)
 			}
 			tableItem["type"] = tableFieldType
