@@ -70,3 +70,4 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 # TODO  
 - 重写为前后端分离
 - 一键CRUD(view models controllers menus)
+- 添加性能监控 github.com/arl/statsviz
