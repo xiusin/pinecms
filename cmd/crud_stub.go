@@ -48,7 +48,11 @@ func New[model]() *[model] {
 [struct]
 `
 
-	indexTsTpl = `export const schema = {
+	indexTsTpl = `import { registerFilter } from 'amis';
+
+[registerDataVar]
+
+export const schema = {
   type: 'page',
 
   body: {

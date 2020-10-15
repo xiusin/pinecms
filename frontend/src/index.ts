@@ -3,16 +3,30 @@
  * ‘～/*’  是 '/src/' 的别名
  */
 
-import { AppConfig } from '@core/app/types'
-import { DeepPartial } from '@core/utils/types'
+import {AppConfig} from '@core/app/types'
+import {DeepPartial} from '@core/utils/types'
 
-import { amis } from './app/amis'
-import { appConstants as constants } from './app/constants'
-import { entry } from './app/entry'
-import { env } from './app/env'
-import { request } from './app/request'
+import {amis} from './app/amis'
+import {appConstants as constants} from './app/constants'
+import {entry} from './app/entry'
+import {env} from './app/env'
+import {request} from './app/request'
 import globalStyle from './styled/global'
-import { theme } from './styled/theme'
+import {theme} from './styled/theme'
+import {registerFilter} from 'amis';
+
+let callback = (set, key) => {
+  let ret = "";
+  key.split(',').forEach(function (item) {
+    if (typeof set[item] != "undefined") {
+      ret = set[item]
+    }
+  });
+  return ret;
+};
+
+registerFilter("formatterSet", callback)
+registerFilter("formatterEnum", callback)
 
 // 应用配置
 const config: DeepPartial<AppConfig> = {

@@ -22,7 +22,7 @@ import (
 )
 
 var cols = map[string]*core.Column{}
-
+var topCode []string
 var matchSuffix = struct {
 	enumRadioSuffix, setCheckboxSuffix, switchSuffix []string
 	imageSuffix, fileSuffix                          []string
@@ -273,10 +273,15 @@ func genFrontendFile(print bool, table string, tableDsl, formDsl, filterDSL []ma
 
 	data, _ := JSONMarshal(tableDsl)
 	content := bytes.ReplaceAll([]byte(indexTsTpl), []byte("[tableDSL]"), append(bytes.Trim(data, "[]\n"), ','))
+
+	content = bytes.ReplaceAll(content, []byte("[registerDataVar]"), []byte(strings.Join(topCode, "\r\n")))
+
 	data, _ = json.MarshalIndent(filterDSL, "", "\t")
 	content = bytes.ReplaceAll(content, []byte("[filterDSL]"), append(bytes.Trim(data, "[]"), ','))
+
 	data, _ = json.MarshalIndent(formDsl, "", "\t")
 	content = bytes.ReplaceAll(content, []byte("[formDSL]"), data)
+
 	presetContent := bytes.ReplaceAll([]byte(presetTsTpl), []byte("[table]"), []byte(table))
 	if !print {
 		os.RemoveAll(moduleFeDir) // 强制创建

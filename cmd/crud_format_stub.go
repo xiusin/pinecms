@@ -16,7 +16,9 @@ func FormatEnum(field string, opts []map[string]interface{}, item map[string]int
 	if len(enumsInfo) == 0 {
 		enumsInfo = []byte("[]")
 	}
-	item["tpl"] = `<%= ` + string(enumsInfo) + `[data.` + field + `] %>`
+	topCode = append(topCode, `let _`+field+` =`+string(enumsInfo)+`;`)
+	item["tpl"] = "<%=formatterEnum(data." + field + ", _" + field + ")%>"
+	//item["tpl"] = `<%= ` + string(enumsInfo) + `[data.` + field + `] %>`
 }
 
 func FormatSet(field string, opts []map[string]interface{}, item map[string]interface{}) {
@@ -29,7 +31,8 @@ func FormatSet(field string, opts []map[string]interface{}, item map[string]inte
 	if len(enumsInfo) == 0 {
 		enumsInfo = []byte("[]")
 	}
-	item["tpl"] = "<% data." + field + ".split(\",\").forEach(function(item) { %><%= " + string(enumsInfo) + "[item] %></span> <% }) %>"
+	topCode = append(topCode, `let _`+field+` =`+string(enumsInfo)+`;`)
+	item["tpl"] = "<%=formatterSet(data." + field + ", _" + field + ")%>"
 }
 
 // JSONMarshal 不转义字符串编码
