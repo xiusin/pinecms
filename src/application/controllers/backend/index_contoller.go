@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-xorm/xorm"
-	"github.com/shirou/gopsutil/mem"
+	//"github.com/shirou/gopsutil/mem"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -17,7 +17,7 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 
-	"github.com/shirou/gopsutil/disk"
+	//"github.com/shirou/gopsutil/disk"
 	"github.com/xiusin/pinecms/src/common/helper"
 )
 
@@ -35,23 +35,23 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/index/index", "Index")
 	b.ANY("/index/menu", "Menu")
 	b.ANY("/index/main", "Main")
-	vm, err := mem.VirtualMemory()
-	if err == nil {
-		memTotal = vm.Total
-	}
-	go func() {
-		for range time.Tick(5 * time.Second) {
-			vm, err := mem.VirtualMemory()
-			if err != nil {
-				pine.Logger().Error("读取服务器内存信息错误:", err)
-			} else {
-				mems := getMems()
-				mems = append(mems, MemPos{TimePos: time.Now().In(helper.GetLocation()).Unix(), Percent: int(vm.UsedPercent)})
-				memsSaveData, _ := json.Marshal(mems)
-				pine.Make(controllers.ServiceICache).(cache.AbstractCache).Set(controllers.CacheMemCollect, memsSaveData)
-			}
-		}
-	}()
+	//vm, err := mem.VirtualMemory()
+	//if err == nil {
+	//	memTotal = vm.Total
+	//}
+	//go func() {
+	//	for range time.Tick(5 * time.Second) {
+	//		vm, err := mem.VirtualMemory()
+	//		if err != nil {
+	//			pine.Logger().Error("读取服务器内存信息错误:", err)
+	//		} else {
+	//			mems := getMems()
+	//			mems = append(mems, MemPos{TimePos: time.Now().In(helper.GetLocation()).Unix(), Percent: int(vm.UsedPercent)})
+	//			memsSaveData, _ := json.Marshal(mems)
+	//			pine.Make(controllers.ServiceICache).(cache.AbstractCache).Set(controllers.CacheMemCollect, memsSaveData)
+	//		}
+	//	}
+	//}()
 }
 
 func getMems() []MemPos {
@@ -79,12 +79,12 @@ func (c *IndexController) Index(icache cache.AbstractCache) {
 }
 
 func (c *IndexController) Main(orm *xorm.Engine, iCache cache.AbstractCache) {
-	var us, _ = disk.Usage(helper.GetRootPath())
-	//要转换的值，fmt方式，切割长度如果为-1则显示最大长度，64是float64
-	c.ViewData("FullSize", us.Total/1024/1024/1024)
-	c.ViewData("usedSize", us.Used/1024/1024/1024)
-	c.ViewData("memTotal", memTotal/1024/1024/1024)
-	c.ViewData("usedPercent", int(us.UsedPercent))
+	//var us, _ = disk.Usage(helper.GetRootPath())
+	////要转换的值，fmt方式，切割长度如果为-1则显示最大长度，64是float64
+	//c.ViewData("FullSize", us.Total/1024/1024/1024)
+	//c.ViewData("usedSize", us.Used/1024/1024/1024)
+	//c.ViewData("memTotal", memTotal/1024/1024/1024)
+	//c.ViewData("usedPercent", int(us.UsedPercent))
 	c.ViewData("NumCPU", runtime.NumCPU())
 	c.ViewData("GoVersion", "Version "+strings.ToUpper(runtime.Version()))
 	c.ViewData("pineVersion", "Version "+pine.Version)
