@@ -3,10 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"os"
 )
-
-var cfgFile string
 
 // http://www.network-science.de/ascii/ Font: stop
 var rootCmd = &cobra.Command{
@@ -24,6 +21,5 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
-		os.Exit(1)
 	}
 }

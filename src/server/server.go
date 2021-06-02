@@ -10,6 +10,7 @@ import (
 	"github.com/xiusin/pine/cache/providers/bbolt"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pine/middlewares/cache304"
+	request_log "github.com/xiusin/pine/middlewares/request-log"
 	"github.com/xiusin/pine/render/engine/jet"
 	"github.com/xiusin/pine/render/engine/template"
 	"github.com/xiusin/pine/sessions"
@@ -68,18 +69,13 @@ func initApp() {
 	app = pine.New()
 	diConfig()
 	app.Use(middleware.Demo())
-	//app.Use(request_log.RequestRecorder())
+	app.Use(request_log.RequestRecorder())
 	var staticPathPrefix []string
 	for _, static := range conf.Statics {
 		staticPathPrefix = append(staticPathPrefix, static.Route)
 	}
 	app.Use(cache304.Cache304(30000*time.Second, staticPathPrefix...))
 	app.Use(middleware.CheckDatabaseBackupDownload())
-	//pine.RegisterErrorCodeHandler(http.StatusNotFound, func(ctx *pine.Context) {
-	//	// 不同状态码可以显示不同的内容
-	//	// 自定义页面
-	//	ctx.WriteString("404 NotFround")
-	//})
 }
 
 func Server() {
@@ -93,7 +89,7 @@ func Server() {
 
 func registerStatic() {
 	for _, static := range conf.Statics {
-		app.Static(static.Route, filepath.FromSlash(static.Path))
+		app.Static(static.Route, filepath.FromSlash(static.Path), 1)
 	}
 }
 
@@ -121,10 +117,6 @@ func registerBackendRoutes() {
 }
 
 func runServe() {
-	//f, _ := os.Create("trace.out")
-	//defer f.Close()
-	//_ = trace.Start(f)
-	//defer trace.Stop()
 	app.Run(
 		pine.Addr(fmt.Sprintf(":%d", conf.Port)),
 		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))),
