@@ -3,7 +3,8 @@ package config
 import (
 	"fmt"
 	"github.com/gorilla/securecookie"
-	"github.com/xiusin/pine/cache/providers/bbolt"
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/xiusin/pine/cache/providers/bitcask"
 	"path/filepath"
 	"time"
 
@@ -75,6 +76,7 @@ func initApp() {
 	app = pine.New()
 	diConfig()
 	app.Use(request_log.RequestRecorder())
+	app.Use(middleware.YaagApiDoc())
 	var staticPathPrefix []string
 	for _, static := range conf.Statics {
 		staticPathPrefix = append(staticPathPrefix, static.Route)
@@ -151,13 +153,8 @@ func runServe() {
 }
 
 func diConfig() {
-	boltDB := bbolt.New(&bbolt.Option{
-		TTL:  int(conf.Session.Expires),
-		Path: conf.CacheDb,
-	})
-	iCache = boltDB
-
-	//badger.New(int(conf.Session.Expires), conf.CacheDb)
+	bitcaskDB := bitcask.New(int(conf.Session.Expires), conf.CacheDb)
+	iCache = bitcaskDB
 
 	theme, _ := iCache.Get(controllers.CacheTheme)
 	if len(theme) > 0 {

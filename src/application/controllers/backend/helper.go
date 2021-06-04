@@ -2,6 +2,7 @@ package backend
 
 import (
 	"fmt"
+	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/common/storage"
 	"math/rand"
@@ -91,4 +92,8 @@ func ucwords(str string) string {
 		}
 	}
 	return string(vv)
+}
+
+func parseParam(ctx *pine.Context, param interface{}) error {
+	return ctx.BindJSON(param)
 }

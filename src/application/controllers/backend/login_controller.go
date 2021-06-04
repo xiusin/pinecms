@@ -4,7 +4,6 @@ import (
 	"github.com/gbrlsnchs/jwt/v3"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -25,15 +24,19 @@ func (c *LoginController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/login/logout", "Logout")
 }
 
-func (c *LoginController) LoginV2(orm *xorm.Engine, cache cache.AbstractCache) {
-	username := c.Ctx().PostString("username")
-	password := c.Ctx().PostString("password")
-	code := c.Ctx().PostString("code")
-	if helper.IsFalse(username, password, code) {
+func (c *LoginController) LoginV2(orm *xorm.Engine) {
+	var p loginUserParam
+
+	if err := parseParam(c.Ctx(), &p); err != nil {
 		helper.Ajax("参数不能为空", 1, c.Ctx())
 		return
 	}
-	admin, err := models.NewAdminModel().Login(username, password, c.Ctx().ClientIP())
+
+	if helper.IsFalse(p.Username, p.Password) {
+		helper.Ajax("参数不能为空", 1, c.Ctx())
+		return
+	}
+	admin, err := models.NewAdminModel().Login(p.Username, p.Password, c.Ctx().ClientIP())
 	if err != nil {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 	} else {
@@ -59,7 +62,6 @@ func (c *LoginController) LoginV2(orm *xorm.Engine, cache cache.AbstractCache) {
 			"role_id":    admin.Roleid,
 			"admin_id":   admin.Userid,
 			"admin_name": admin.Username,
-			//"limit":      []string{}, // 用户权限
 			"token": string(token),
 			"key":   "X-TOKEN",
 		}, 0, c.Ctx())

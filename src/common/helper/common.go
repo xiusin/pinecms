@@ -132,16 +132,24 @@ func GetMd5(str string) string {
 
 //Ajax Ajax返回数据给前端
 func Ajax(errmsg interface{}, errcode int64, this *pine.Context) {
-	switch errmsg.(type) {
-	case error:
-		// todo debug显示正常错误信息
-		errmsg = errmsg.(error).Error()
-		this.Logger().Error(string(debug.Stack()))
+	if errcode == 0 {
+		errcode = 1000
 	}
 	// 添加操作日志
-	data := pine.H{"code": errcode, "data": errmsg}
+	data := pine.H{"code": errcode}
 	if errcode != 0 {
-		data["msg"] = errmsg
+		data["message"] = errmsg
+	}
+	switch errmsg.(type) {
+	case error:
+		errmsg = errmsg.(error).Error() // todo debug显示正常错误信息
+		pine.Logger().Error(string(debug.Stack()))
+		data["message"] = errmsg
+	case string:
+		errmsg = errmsg.(string)
+		data["message"] = errmsg
+	default:
+		data["data"] = errmsg
 	}
 	this.Render().JSON(data)
 }

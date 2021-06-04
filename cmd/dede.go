@@ -51,7 +51,7 @@ var dedeCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		dsn, _ := cmd.Flags().GetString("dsn")
 		if len(dsn) == 0 {
-			cmd.Usage()
+			_ = cmd.Usage()
 			return
 		}
 		initORM(dsn)
@@ -82,7 +82,7 @@ func initORM(dsn string) {
 	}
 	_orm.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, dc.Db.DbPrefix))
 	bar.Reset()
-	bar.Add(5)
+	_ = bar.Add(5)
 	pineOrm = _orm
 }
 
@@ -131,7 +131,7 @@ func createModelTable(table string, channel map[string]string) *tables.DocumentM
 func importChannelType() {
 	var table = dc.Db.DbPrefix + "document_model"
 	var dslTable = dc.Db.DbPrefix + "document_model_dsl"
-	clearDocumentModelTable(table, dslTable)
+	_ = clearDocumentModelTable(table, dslTable)
 	channels, _ := dedeOrm.QueryString("SELECT * FROM dede_channeltype")
 	pre := 70 / len(channels)
 	for _, channel := range channels {

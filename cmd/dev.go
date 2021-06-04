@@ -31,7 +31,6 @@ var (
 	delay, limit      int32
 	watcher           *fsnotify.Watcher
 	counter           int32
-	currentCMD        *exec.Cmd
 )
 
 func init() {
@@ -72,25 +71,25 @@ func devCommand(cmd *cobra.Command, args []string) error {
 }
 
 func serve() {
-	var nextLoop = make(chan struct{})
+	var nextEventCh = make(chan struct{})
 	for {
 		ctx, cancel := context.WithCancel(context.Background())
-		currentCMD = exec.CommandContext(ctx, fmt.Sprintf("./%s", buildName), "serve", "start", "--banner=false")
-		currentCMD.Stdout = os.Stdout
-		currentCMD.Stderr = os.Stdout
+		process := exec.CommandContext(ctx, fmt.Sprintf("./%s", buildName), "serve", "start", "--banner=false")
+		process.Stdout = os.Stdout
+		process.Stderr = os.Stdout
 		go func() {
 			<-rebuildNotifier
 			cancel()
-			nextLoop <- struct{}{}
+			nextEventCh <- struct{}{}
 		}()
-		if err := currentCMD.Start(); err != nil {
+		if err := process.Start(); err != nil {
 			logger.Error(err)
 		}
-		excludeErrors := "signal: killed;exit status 1"
-		if err := currentCMD.Wait(); err != nil && !strings.Contains(excludeErrors, err.Error()) {
+		excludeErrors := "signal:"
+		if err := process.Wait(); err != nil && !strings.Contains(err.Error(), excludeErrors) {
 			logger.Error(err)
 		}
-		<-nextLoop
+		<-nextEventCh
 	}
 }
 func build() error {
@@ -148,10 +147,10 @@ func eventNotify() {
 	for {
 		select {
 		case event, _ := <-watcher.Events:
+			if isIgnoreAction(&event) {
+				continue
+			}
 			if time.Now().Sub(lockerTimestamp) > time.Second*time.Duration(delay) && !building {
-				if isIgnoreAction(&event) {
-					continue
-				}
 				name := util.Replace(event.Name, util.AppPath(), "")
 				fileInfo := strings.Split(name, ".")
 				if !util.InSlice(".*", types) && !util.InSlice("."+strings.TrimRight(fileInfo[len(fileInfo)-1], "~"), types) {

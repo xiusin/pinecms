@@ -22,8 +22,8 @@ func NewAdminModel() *AdminModel {
 //登录用户
 func (a *AdminModel) Login(username, password, ip string) (tables.Admin, error) {
 	admin := tables.Admin{Username: username}
-	has, _ := a.orm.Get(&admin)
-	if !has {
+	exist, _ := a.orm.Get(&admin)
+	if !exist {
 		return admin, errors.New("管理员不存在")
 	}
 	password = helper.Password(password, admin.Encrypt)

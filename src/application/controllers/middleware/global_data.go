@@ -14,12 +14,12 @@ func SetGlobalConfigData() pine.Handler {
 			pine.Logger().Error("无法读取到配置内容:" + err.Error())
 			return
 		}
-		if !strings.HasPrefix(ctx.Path(), "/v2/") {
-			if settingData["SITE_OPEN"] != "true"  {
-				ctx.WriteString("系统维护, 暂停访问...")
-				return
-			}
-		}
+		//if !strings.HasPrefix(ctx.Path(), "/v2/") {
+		//	if settingData["SITE_OPEN"] != "true"  {
+		//		ctx.WriteString("系统维护, 暂停访问...")
+		//		return
+		//	}
+		//}
 
 		settingData["site_url"] = string(ctx.Host())
 

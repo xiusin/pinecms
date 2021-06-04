@@ -7,7 +7,6 @@ import (
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"html/template"
 	"strconv"
 	"strings"
 	"time"
@@ -19,6 +18,7 @@ type AdController struct {
 
 func (c *AdController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/ad/list", "AdList")
+	b.ANY("/ad/page", "AdList")
 	b.POST("/ad/add", "AdAdd")
 	b.ANY("/ad/edit", "AdEdit")
 	b.ANY("/ad/order", "AdOrder")
@@ -31,9 +31,12 @@ func (c *AdController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *AdController) AdList() {
-	page, _ := c.Ctx().GetInt64("page")
-	rows, _ := c.Ctx().GetInt64("rows")
-	list, total := models.NewAdModel().GetList(page, rows)
+	var p listParam
+	if err := parseParam(c.Ctx(), &p); err != nil {
+		helper.Ajax("参数错误", 1, c.Ctx())
+		return
+	}
+	list, total := models.NewAdModel().GetList(p.Page, p.Size)
 	spaces := models.NewAdSpaceModel().All()
 	var h = map[int64]string{}
 	for _, space := range spaces {
@@ -42,7 +45,14 @@ func (c *AdController) AdList() {
 	for k, v := range list {
 		list[k].SpaceName = h[v.SpaceID]
 	}
-	helper.Ajax(pine.H{"rows": list, "total": total}, 0, c.Ctx())
+	helper.Ajax(pine.H{
+		"list": list,
+		"pagination": pine.H{
+			"page":  p.Page,
+			"size":  p.Size,
+			"total": total,
+		},
+	}, 0, c.Ctx())
 }
 
 func (c *AdController) AdAdd() {
@@ -70,42 +80,32 @@ func (c *AdController) AdAdd() {
 }
 
 func (c *AdController) AdEdit() {
-	if c.Ctx().IsPost() {
-		var ad tables.Advert
-		ad.Status, _ = c.Ctx().PostBool("status")
-		ad.Name = c.Ctx().PostString("name")
-		ad.LinkUrl = c.Ctx().PostString("link_url")
-		ad.Id, _ = c.Ctx().PostInt64("id")
-		if ad.Id < 1 {
-			helper.Ajax("参数错误", 1, c.Ctx())
-			return
-		}
-		ad.SpaceID, _ = c.Ctx().PostInt64("space_id")
-		if ad.SpaceID < 1 {
-			helper.Ajax("广告位参数错误", 1, c.Ctx())
-			return
-		}
-		// 默认为当前时间向后推迟到一年
-		ad.StartTime = c.Ctx().PostString("start_time", time.Now().In(helper.GetLocation()).Format(helper.TimeFormat))
-		ad.EndTime = c.Ctx().PostString("end_time", time.Now().In(helper.GetLocation()).Add(365*24*3600*time.Second).Format(helper.TimeFormat))
-		ad.Image = c.Ctx().PostString("image")
-		listorder, _ := c.Ctx().PostInt("listorder")
-		ad.ListOrder = uint(listorder)
-
-		if models.NewAdModel().Update(&ad) {
-			helper.Ajax("广告修改成功", 0, c.Ctx())
-		} else {
-			helper.Ajax("广告修改失败", 1, c.Ctx())
-		}
+	var ad tables.Advert
+	ad.Status, _ = c.Ctx().PostBool("status")
+	ad.Name = c.Ctx().PostString("name")
+	ad.LinkUrl = c.Ctx().PostString("link_url")
+	ad.Id, _ = c.Ctx().PostInt64("id")
+	if ad.Id < 1 {
+		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	id, _ := c.Ctx().GetInt64("id")
-	ad := models.NewAdModel().Get(id)
-	imageUploader := template.HTML(helper.SiginUpload("image", ad.Image, false, "广告图", "", ""))
-	c.ViewData("imageUploader", imageUploader)
-	c.ViewData("ad", ad)
-	c.ViewData("adspaces", models.NewAdSpaceModel().All())
-	c.Ctx().Render().HTML("backend/ad_edit.html")
+	ad.SpaceID, _ = c.Ctx().PostInt64("space_id")
+	if ad.SpaceID < 1 {
+		helper.Ajax("广告位参数错误", 1, c.Ctx())
+		return
+	}
+	// 默认为当前时间向后推迟到一年
+	ad.StartTime = c.Ctx().PostString("start_time", time.Now().In(helper.GetLocation()).Format(helper.TimeFormat))
+	ad.EndTime = c.Ctx().PostString("end_time", time.Now().In(helper.GetLocation()).Add(365*24*3600*time.Second).Format(helper.TimeFormat))
+	ad.Image = c.Ctx().PostString("image")
+	listorder, _ := c.Ctx().PostInt("listorder")
+	ad.ListOrder = uint(listorder)
+
+	if models.NewAdModel().Update(&ad) {
+		helper.Ajax("广告修改成功", 0, c.Ctx())
+	} else {
+		helper.Ajax("广告修改失败", 1, c.Ctx())
+	}
 }
 
 func (c *AdController) AdOrder(orm *xorm.Engine) {
