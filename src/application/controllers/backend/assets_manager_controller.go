@@ -5,6 +5,7 @@ import (
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 	"html/template"
 	"io/ioutil"
 	"os"
@@ -19,37 +20,39 @@ import (
 )
 
 type AssetsManagerController struct {
-	pine.Controller
+	BaseController
 }
 
-// 定时备份任务功能
+func (c *AssetsManagerController) Construct() {
+	c.KeywordsSearch = []KeywordWhere{
+		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
+	}
+	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
+	c.Table = &tables.Link{}
+	c.Entries = &[]*tables.Link{}
 
-func (c *AssetsManagerController) RegisterRoute(b pine.IRouterWrapper) {
-	b.ANY("/assets-manager/list", "Manager")
-	b.ANY("/assets-manager/attachments-list", "AttachmentsList")
-	b.ANY("/assets-manager/attachments-delete", "AttachmentsDelete")
-	b.ANY("/assets-manager/edit", "Edit")
-	b.ANY("/assets-manager/add", "Add")
-	b.ANY("/assets-manager/theme", "Theme")
-	b.GET("/assets-manager/theme-thumb/:theme", "ThemeThumb")
-	b.POST("/assets-manager/set-theme", "SetTheme")
+	c.TableKey = "linkid"
+	c.TableStructKey = "Linkid"
 }
 
-func (c *AssetsManagerController) Manager(orm *xorm.Engine) {
+func (c *AssetsManagerController) PostList() {
 	conf := di.MustGet("pinecms.config").(*config.Config)
 	themeDir := filepath.Join(conf.View.FeDirname, conf.View.Theme)
 	fs, err := ioutil.ReadDir(themeDir)
-	var files = []map[string]interface{}{}
+
+	var p listParam
+	parseParam(c.Ctx(), &p)
+
+	var files []map[string]interface{}
 	if err == nil {
 		for _, f := range fs {
 			if !f.IsDir() {
 				if strings.HasSuffix(f.Name(), ".jet") {
-					content, _ := ioutil.ReadFile(filepath.Join(themeDir, f.Name()))
 					files = append(files, map[string]interface{}{
+						"id":      f.Name(),
 						"name":    f.Name(),
 						"size":    f.Size(),
 						"updated": f.ModTime().In(helper.GetLocation()).Format(helper.TimeFormat),
-						"content": string(content),
 					})
 				}
 			}
@@ -58,9 +61,14 @@ func (c *AssetsManagerController) Manager(orm *xorm.Engine) {
 		c.Logger().Error("读取模板列表错误: "+err.Error(), 1, c.Ctx())
 	}
 	helper.Ajax(pine.H{
-		"rows":  files,
-		"total": len(files),
+		"list": files,
+		"pagination": pine.H{
+			"page":  p.Page,
+			"size":  p.Size,
+			"total": len(files),
+		},
 	}, 0, c.Ctx())
+
 }
 
 func (c *AssetsManagerController) Theme() {
@@ -74,12 +82,12 @@ func (c *AssetsManagerController) Theme() {
 	for _, f := range fs {
 		if f.IsDir() {
 			// 读取一个json配置文件
-			contentByts,err := ioutil.ReadFile(filepath.Join(conf.View.FeDirname, f.Name(), "config.json"))
+			contentByts, err := ioutil.ReadFile(filepath.Join(conf.View.FeDirname, f.Name(), "config.json"))
 			if err != nil {
 				continue
 			}
 			var configMap ThemeConfig
-			err = json.Unmarshal(contentByts,&configMap)
+			err = json.Unmarshal(contentByts, &configMap)
 			if err != nil {
 				continue
 			}
@@ -90,7 +98,7 @@ func (c *AssetsManagerController) Theme() {
 			dirs = append(dirs, &configMap)
 		}
 	}
-	helper.Ajax(dirs, 0 , c.Ctx())
+	helper.Ajax(dirs, 0, c.Ctx())
 }
 
 func (c *AssetsManagerController) SetTheme(cache cache.AbstractCache) {
@@ -113,7 +121,36 @@ func (c *AssetsManagerController) SetTheme(cache cache.AbstractCache) {
 	}
 }
 
-func (c *AssetsManagerController) Edit() {
+func (c *AssetsManagerController) GetInfo() {
+	conf := di.MustGet("pinecms.config").(*config.Config)
+	name := c.Ctx().GetString("id")
+	if name == "" {
+		helper.Ajax("参数错误", 1, c.Ctx())
+		return
+	}
+	fullPath := filepath.Join(conf.View.FeDirname, conf.View.Theme, name)
+	f, err := os.Open(fullPath)
+	if err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
+	}
+	defer f.Close()
+	stat,_ := f.Stat()
+	var content = make([]byte, stat.Size())
+	_, err = f.Read(content)
+	if err != nil {
+		helper.Ajax("读取模板错误: "+err.Error(), 1, c.Ctx())
+		return
+	}
+	helper.Ajax(map[string]interface{}{
+		"id":      name,
+		"name":    name,
+		"size":    stat.Size(),
+		"updated": stat.ModTime().In(helper.GetLocation()).Format(helper.TimeFormat),
+		"content": string(content),
+	}, 0, c.Ctx())
+}
+func (c *AssetsManagerController) info() {
 	conf := di.MustGet("pinecms.config").(*config.Config)
 	if c.Ctx().IsPost() {
 		//origin := c.Ctx().URLParam("origin")
@@ -190,7 +227,7 @@ func (c *AssetsManagerController) AttachmentsList() {
 	keywords := c.Ctx().GetString("keywords")
 	list, total := models.NewAttachmentsModel().GetList(keywords, page, rows)
 	helper.Ajax(pine.H{
-		"rows": list,
+		"rows":  list,
 		"total": total,
 	}, 0, c.Ctx())
 }

@@ -15,7 +15,6 @@ import (
 	"github.com/xiusin/pine/middlewares/cache304"
 	request_log "github.com/xiusin/pine/middlewares/request-log"
 	"github.com/xiusin/pine/render/engine/jet"
-	"github.com/xiusin/pine/render/engine/template"
 	"github.com/xiusin/pine/sessions"
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -37,10 +36,10 @@ import (
 var (
 	app *pine.Application
 
-	iCache     cache.AbstractCache
-	XOrmEngine *xorm.Engine
-	conf       = config.AppConfig()
-	dc         = config.DBConfig()
+	cacheHandler cache.AbstractCache
+	XOrmEngine   *xorm.Engine
+	conf         = config.AppConfig()
+	dc           = config.DBConfig()
 )
 
 func Dc() *config.DbConfig {
@@ -66,7 +65,6 @@ func initDatabase() {
 	_orm.ShowSQL(o.ShowSql)
 	_orm.TZLocation, _ = time.LoadLocation("PRC")
 	_orm.ShowExecTime(o.ShowExecTime)
-	//_orm.SetDefaultCacher(caches.NewLRUCacher(caches.NewMemoryStore(), 1000))
 	_orm.SetMaxOpenConns(int(o.MaxOpenConns))
 	_orm.SetMaxIdleConns(int(o.MaxIdleConns))
 	XOrmEngine = _orm
@@ -81,8 +79,7 @@ func initApp() {
 	for _, static := range conf.Statics {
 		staticPathPrefix = append(staticPathPrefix, static.Route)
 	}
-	app.Use(cache304.Cache304(30000*time.Second, staticPathPrefix...))
-	app.Use(middleware.CheckDatabaseBackupDownload())
+	app.Use(cache304.Cache304(30000*time.Second, staticPathPrefix...), middleware.CheckDatabaseBackupDownload())
 }
 
 func Bootstrap() {
@@ -105,38 +102,27 @@ func registerStatic() {
 }
 
 func registerV2BackendRoutes() {
-	app.Use(middleware.SetGlobalConfigData())
-	app.Use(func(ctx *pine.Context) {
-		ctx.Response.Header.Add("Vary", "Access-Control-Allow-Methods")
-		ctx.Response.Header.Add("Vary", "Access-Control-Allow-Headers")
-		ctx.Response.Header.Add("Vary", "Access-Control-Allow-Credentials")
-		ctx.Response.Header.Set("Access-Control-Allow-Origin", "http://localhost:7050")
-		ctx.Response.Header.Set("Access-Control-Allow-Headers", "X-TOKEN, Content-Type, Origin, Referer, Content-Length, Access-Control-Allow-Headers")
-		ctx.Response.Header.Set("Access-Control-Allow-Credentials", "true")
-		ctx.Response.Header.Set("Access-Control-Allow-Methods", "*")
-		if !ctx.IsOptions() {
-			ctx.Next()
-		}
-	})
-	// 解析参数
+		app.Use(middleware.Cors(), middleware.SetGlobalConfigData())
+
 	app.Group(
 		"/v2",
 		middleware.VerifyJwtToken(),
-	).Handle(new(backend.AdminController)).
+	).Handle(new(backend.UserController), "/user").
+		Handle(new(backend.AdminRoleController), "/role").
+		Handle(new(backend.MenuController), "/menu").
+		Handle(new(backend.LinkController), "/link").
+		Handle(new(backend.AssetsManagerController),"/assets").
 		Handle(new(backend.LoginController)).
 		Handle(new(backend.IndexController)).
 		Handle(new(backend.CategoryController)).
 		Handle(new(backend.ContentController)).
 		Handle(new(backend.SettingController)).
 		Handle(new(backend.SystemController)).
-		Handle(new(backend.MemberController)).
+		//Handle(new(backend.MemberController)).
 		Handle(new(backend.DocumentController)).
-		Handle(new(backend.LinkController)).
 		Handle(new(backend.DatabaseController)).
-		Handle(new(backend.AssetsManagerController)).
 		Handle(new(backend.AdController)).
-		Handle(new(backend.StatController)).
-		Handle(new(backend.TodoController), "/todo")
+		Handle(new(backend.StatController))
 
 	app.Group("/v2/public").Handle(new(backend.PublicController))
 	app.Group("/v2/api").Handle(new(backend.PublicController))
@@ -153,15 +139,14 @@ func runServe() {
 }
 
 func diConfig() {
-	bitcaskDB := bitcask.New(int(conf.Session.Expires), conf.CacheDb)
-	iCache = bitcaskDB
+	cacheHandler = bitcask.New(int(conf.Session.Expires), conf.CacheDb, time.Minute*10)
 
-	theme, _ := iCache.Get(controllers.CacheTheme)
+	theme, _ := cacheHandler.Get(controllers.CacheTheme)
 	if len(theme) > 0 {
 		conf.View.Theme = string(theme)
 	}
 	di.Set(controllers.ServiceICache, func(builder di.AbstractBuilder) (i interface{}, err error) {
-		return iCache, nil
+		return cacheHandler, nil
 	}, true)
 
 	di.Set(controllers.ServiceConfig, func(builder di.AbstractBuilder) (i interface{}, e error) {
@@ -176,21 +161,33 @@ func diConfig() {
 	}, false)
 
 	di.Set(di.ServicePineSessions, func(builder di.AbstractBuilder) (i interface{}, err error) {
-		sess := sessions.New(cacheProvider.NewStore(iCache), &sessions.Config{
+		sess := sessions.New(cacheProvider.NewStore(cacheHandler), &sessions.Config{
 			CookieName: conf.Session.Name,
 			Expires:    conf.Session.Expires,
 		})
 		return sess, nil
 	}, true)
 
-	htmlEngine := template.New(conf.View.BeDirname, ".html", conf.View.Reload)
-	htmlEngine.AddFunc("in_array", controllers.InStringArr)
-	pine.RegisterViewEngine(htmlEngine)
+	pine.RegisterViewEngine(getJetEngine())
 
+	di.Set(XOrmEngine, func(builder di.AbstractBuilder) (i interface{}, err error) {
+		return XOrmEngine, nil
+	}, true)
+
+	di.Set(controllers.ServiceTablePrefix, func(builder di.AbstractBuilder) (i interface{}, err error) {
+		return dc.Db.DbPrefix, nil
+	}, true)
+
+	app.Use(func(ctx *pine.Context) {
+		ctx.Set("cache", cacheHandler)
+		ctx.Set("orm", XOrmEngine)
+		ctx.Next()
+	})
+}
+
+func getJetEngine() *jet.PineJet {
 	jetEngine := jet.New(conf.View.FeDirname, ".jet", conf.View.Reload)
-
 	jetEngine.AddPath("./resources/taglibs/")
-
 	jetEngine.AddGlobalFunc("flink", taglibs.Flink)
 	jetEngine.AddGlobalFunc("type", taglibs.Type)
 	jetEngine.AddGlobalFunc("adlist", taglibs.AdList)
@@ -211,33 +208,9 @@ func diConfig() {
 	jetEngine.AddGlobalFunc("GetDateTimeMK", tplfun.GetDateTimeMK)
 	jetEngine.AddGlobalFunc("MyDate", tplfun.MyDate)
 
-	pine.RegisterViewEngine(jetEngine)
-
-	//app.SetNotFound(func(ctx *pine.Context) {
-	//	conf := di.MustGet(controllers.ServiceConfig).(*config.Config)
-	//	path := filepath.Join(conf.View.Theme, "error.jet")
-	//	if runtime.GOOS == "windows" {
-	//		path = strings.ReplaceAll(path, "\\", "/")
-	//	}
-	//	ctx.Render().ViewData("msg", ctx.Msg)
-	//	ctx.Render().HTML(path)
-	//})
-
 	di.Set(controllers.ServiceJetEngine, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return jetEngine, nil
 	}, true)
 
-	di.Set(XOrmEngine, func(builder di.AbstractBuilder) (i interface{}, err error) {
-		return XOrmEngine, nil
-	}, true)
-
-	di.Set(controllers.ServiceTablePrefix, func(builder di.AbstractBuilder) (i interface{}, err error) {
-		return dc.Db.DbPrefix, nil
-	}, true)
-
-	app.Use(func(ctx *pine.Context) {
-		ctx.Set("cache", iCache)
-		ctx.Set("orm", XOrmEngine)
-		ctx.Next()
-	})
+	return jetEngine
 }

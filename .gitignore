@@ -16,3 +16,5 @@ resources/html/
 pinecms-dev-build
 pinecms-dev-build.exe~
 *.exe
+/apidoc.html
+/apidoc.html.json

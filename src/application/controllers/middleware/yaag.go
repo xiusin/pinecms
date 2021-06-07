@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"bytes"
-	"encoding/json"
 	"github.com/betacraft/yaag/yaag"
 	"github.com/betacraft/yaag/yaag/models"
 	"github.com/valyala/fasthttp"
@@ -47,17 +46,14 @@ func YaagApiDoc() pine.Handler {
 	}
 }
 
-//func handleMultipart(apiCall *models.ApiCall, req *http.Request) {
-//	apiCall.RequestHeader["Content-Type"] = "multipart/form-data"
-//	req.ParseMultipartForm(MaxInMemoryMultipartSize)
-//	apiCall.PostForm = ReadMultiPostForm(req.MultipartForm)
-//}
-
 func readHeaders(req *fasthttp.RequestCtx) map[string]string {
 	var m = map[string]string{}
-	err := json.Unmarshal(req.Request.Header.Header(), &m)
-	if err != nil {
-		pine.Logger().Error("解析header错误", string(req.Request.Header.Header()))
+	headers := strings.Split(string(req.Request.Header.Header()), "\r\n")
+	for _, header := range headers {
+		sp := strings.SplitN(header, ":", 2)
+		if len(sp) != 1 {
+			m[sp[0]] = sp[1]
+		}
 	}
 	return m
 }

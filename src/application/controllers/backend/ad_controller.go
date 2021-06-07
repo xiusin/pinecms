@@ -145,12 +145,12 @@ func (c *AdController) AdOrder(orm *xorm.Engine) {
 }
 
 func (c *AdController) AdDelete() {
-	id, _ := c.Ctx().GetInt64("id")
-	if id == 0 {
+	var idParam idParams
+	if err := parseParam(c.Ctx(), &idParam); err != nil {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	if models.NewAdModel().Delete(id) {
+	if models.NewAdModel().Delete(idParam.Ids) {
 		helper.Ajax("广告删除成功", 0, c.Ctx())
 	} else {
 		helper.Ajax("广告删除失败", 1, c.Ctx())

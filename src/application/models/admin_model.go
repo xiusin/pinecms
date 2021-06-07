@@ -2,8 +2,6 @@ package models
 
 import (
 	"errors"
-	"log"
-
 	"github.com/xiusin/pine/di"
 
 	"github.com/go-xorm/xorm"
@@ -74,67 +72,4 @@ func (a *AdminModel) GetList(where string, page, rows int, order string, sortTyp
 		a.orm.Where(where).Desc(order).Limit(rows, start).Find(&admins)
 	}
 	return admins
-}
-
-func (a *AdminModel) GetRoleList(where string, page, rows int) []tables.AdminRole {
-	start := (page - 1) * rows
-	myroles := []tables.AdminRole{}
-	err := a.orm.Where(where).Limit(rows, start).Find(&myroles)
-	if err != nil {
-		log.Println(err.Error())
-	}
-	return myroles
-}
-
-func (a *AdminModel) CheckRoleName(id int64, rolename string) bool {
-	exists, _ := a.orm.Where("roleid <> ?", id).Where("rolename = ?", rolename).Exist()
-	return exists
-}
-
-func (a *AdminModel) AddRole(rolename, description string, disabled, listorder int64) bool {
-	newRole := tables.AdminRole{
-		Rolename:    rolename,
-		Description: description,
-		Disabled:    disabled,
-		Listorder:   listorder,
-	}
-	insertId, err := a.orm.Insert(&newRole)
-	if err != nil || insertId == 0 {
-		log.Println(err, insertId)
-		return false
-	}
-	return true
-}
-
-func (a *AdminModel) GetRoleById(id int64) (tables.AdminRole, error) {
-	role := tables.AdminRole{Roleid: id}
-	_, err := a.orm.Get(&role)
-	return role, err
-}
-
-func (a *AdminModel) UpdateRole(role tables.AdminRole) bool {
-	res, err := a.orm.Where("roleid=?", role.Roleid).MustCols("disabled").Update(&role)
-	if err != nil || res == 0 {
-		log.Println("AdminModel::UpdateRole", err, res)
-		return false
-	}
-	return true
-}
-
-func (a *AdminModel) DeleteRole(role tables.AdminRole) bool {
-	res, err := a.orm.Delete(&role)
-	if err != nil || res == 0 {
-		log.Println("AdminModel::DeleteRole", err, res)
-		return false
-	}
-	return true
-}
-
-func (a *AdminModel) HasAdminByRoleId(roleid int64) bool {
-	res, err := a.orm.Count(&tables.Admin{Roleid: roleid})
-	if err != nil || res == 0 {
-		log.Println("AdminModel::DeleteRole", err, res)
-		return false
-	}
-	return true
 }

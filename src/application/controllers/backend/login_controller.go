@@ -40,7 +40,7 @@ func (c *LoginController) LoginV2(orm *xorm.Engine) {
 	if err != nil {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 	} else {
-		role := &tables.AdminRole{Roleid: admin.Roleid}
+		role := &tables.AdminRole{Id: admin.Roleid}
 		orm.Get(role)
 		var hs = jwt.NewHS256([]byte(config.AppConfig().JwtKey))
 		now := time.Now()
@@ -92,7 +92,7 @@ func (c *LoginController) Index(orm *xorm.Engine) {
 			helper.Ajax(err.Error(), 1, c.Ctx())
 		} else {
 			c.Session().Set("roleid", strconv.Itoa(int(admin.Roleid)))
-			role := &tables.AdminRole{Roleid: admin.Roleid}
+			role := &tables.AdminRole{Id: admin.Roleid}
 			orm.Get(role)
 			c.Session().Set("role_name", role.Rolename)
 			c.Session().Set("adminid", strconv.Itoa(int(admin.Userid)))

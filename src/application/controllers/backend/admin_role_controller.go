@@ -1,0 +1,131 @@
+package backend
+
+import (
+	"errors"
+	"github.com/go-xorm/xorm"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
+)
+
+type AdminRoleController struct {
+	BaseController
+}
+
+func (c *AdminRoleController) Construct() {
+	c.KeywordsSearch = []KeywordWhere{
+		{Field: "rolename", Op: "LIKE", DataExp: "%$?%"},
+	}
+	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
+	c.Table = &tables.AdminRole{}
+	c.Entries = &[]tables.AdminRole{}
+
+	c.OpBefore = c.before
+	c.OpAfter = c.after
+}
+
+func (c *AdminRoleController) before(opType int, param interface{}) error {
+	if opType == OpDel {
+		p := param.(*idParams)
+		for _, id := range p.Ids {
+			if 1 == id {
+				return errors.New("不可删除此角色")
+			}
+		}
+	}
+	return nil
+}
+
+func (c *AdminRoleController) PostAdd() {
+	if err := c.BindParse(); err != nil {
+		helper.Ajax(err.Error(), 1, c.Ctx())
+		return
+	}
+	if _, err := c.Orm.Transaction(func(session *xorm.Session) (interface{}, error) {
+		if !c.add() {
+			return nil, errors.New("新增数据失败")
+		}
+		t := c.Table.(*tables.AdminRole)
+		id := t.Id
+		if err := c.perm(id, t.MenuIdList); err != nil {
+			return nil, err
+		}
+		return nil, nil
+	}); err == nil {
+		helper.Ajax("新增数据成功", 0, c.Ctx())
+	} else {
+		helper.Ajax(err, 1, c.Ctx())
+	}
+}
+
+func (c *AdminRoleController) PostEdit() {
+	if err := c.BindParse(); err != nil {
+		helper.Ajax(err.Error(), 1, c.Ctx())
+		return
+	}
+	if _, err := c.Orm.Transaction(func(session *xorm.Session) (interface{}, error) {
+		if !c.edit() {
+			return nil, errors.New("修改菜单数据失败")
+		}
+		t := c.Table.(*tables.AdminRole)
+		id := t.Id
+		if err := c.perm(id, t.MenuIdList); err != nil {
+			return nil, err
+		}
+		return nil, nil
+	}); err == nil {
+		helper.Ajax("修改数据成功", 0, c.Ctx())
+	} else {
+		helper.Ajax(err, 1, c.Ctx())
+	}
+}
+
+func (c *AdminRoleController) after(opType int, param interface{}) error {
+	switch opType {
+	case OpDel:
+		p := param.(*idParams)
+		_, err := c.Orm.In("roleid", p.Ids).Delete(&tables.AdminRolePriv{})
+		return err
+	case OpInfo:
+		t := c.Table.(*tables.AdminRole)
+		var priv []tables.AdminRolePriv
+		c.Orm.Where("roleid = ?", t.Id).Find(&priv)
+		var menuIds = make([]int64, len(priv))
+		for _, i2 := range priv {
+			menuIds = append(menuIds, i2.MenuId)
+		}
+		t.MenuIdList = menuIds
+		c.Table = t
+	}
+	return nil
+}
+
+func (c *AdminRoleController) perm(roleid int64, menuIds []int64) error {
+	_, err := c.Orm.Where("roleid=?", roleid).Delete(&tables.AdminRolePriv{})
+	if err != nil {
+		return err
+	}
+	if len(menuIds) == 0 {
+		return nil
+	}
+	var inserts []tables.AdminRolePriv
+	for _, v := range menuIds {
+		menu := tables.Menu{Id: v}
+		exist, err := c.Ctx().Value("orm").(*xorm.Engine).Get(&menu)
+		if err != nil || !exist {
+			continue
+		}
+		inserts = append(inserts, tables.AdminRolePriv{
+			Roleid: roleid,
+			A:      menu.A,
+			C:      menu.C,
+			MenuId: v,
+		})
+	}
+	res, err := c.Orm.Insert(inserts)
+	if int(res) != len(menuIds) {
+		return errors.New("更新权限错误")
+	}
+	return nil
+}

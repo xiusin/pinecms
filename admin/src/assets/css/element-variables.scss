@@ -1,0 +1,9 @@
+$--color-primary: $primary;
+$--color-success: $color-success;
+$--color-danger: $color-danger;
+$--color-warning: $color-warning;
+$--color-info: $color-info;
+
+$--font-path: "element-plus/lib/theme-chalk/fonts";
+
+@import "element-plus/packages/theme-chalk/src/index";

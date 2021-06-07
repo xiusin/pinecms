@@ -15,12 +15,12 @@ type MemberController struct {
 }
 
 func (c *MemberController) RegisterRoute(b pine.IRouterWrapper) {
-	b.ANY( "/user/list", "List")
-	b.ANY( "/user/info", "Info")
-	b.ANY( "/user/add", "Add")
-	b.POST( "/user/edit", "Edit")
-	b.ANY( "/wechat/userlist", "WechatMemberList")
-	b.ANY( "/wechat/userinfo", "WechatMemberInfo")
+	//b.ANY( "/user/list", "List")
+	//b.ANY( "/user/info", "Info")
+	//b.ANY( "/user/add", "Add")
+	//b.POST( "/user/edit", "Edit")
+	//b.ANY( "/wechat/userlist", "WechatMemberList")
+	//b.ANY( "/wechat/userinfo", "WechatMemberInfo")
 }
 
 func (c *MemberController) List() {

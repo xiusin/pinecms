@@ -258,11 +258,11 @@ func (c *PublicController) Select() {
 			})
 		}
 	case "role": // 角色列表
-		roles := models.NewAdminModel().GetRoleList("1=1", 1, 1000)
+		roles, _ := models.NewAdminRoleModel().List(1, 1000)
 		for _, v := range roles {
 			data = append(data, KV{
 				Label: v.Rolename,
-				Value: v.Roleid,
+				Value: v.Id,
 			})
 		}
 	case "tpl_list": // 模板列表

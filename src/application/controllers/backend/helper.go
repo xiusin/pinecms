@@ -21,7 +21,7 @@ func clearMenuCache(cache cache.AbstractCache, xorm *xorm.Engine) {
 	xorm.Find(&roles)
 	for _, role := range roles {
 		for _, menu := range menus {
-			cacheKey := fmt.Sprintf(controllers.CacheAdminMenuByRoleIdAndMenuId, role.Roleid, menu.Id)
+			cacheKey := fmt.Sprintf(controllers.CacheAdminMenuByRoleIdAndMenuId, role.Id, menu.Id)
 			cache.Delete(cacheKey)
 		}
 	}

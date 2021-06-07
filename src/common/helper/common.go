@@ -20,7 +20,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
@@ -131,27 +130,24 @@ func GetMd5(str string) string {
 }
 
 //Ajax Ajax返回数据给前端
-func Ajax(errmsg interface{}, errcode int64, this *pine.Context) {
+func Ajax(msg interface{}, errcode int64, this *pine.Context) {
 	if errcode == 0 {
 		errcode = 1000
 	}
 	// 添加操作日志
 	data := pine.H{"code": errcode}
-	if errcode != 0 {
-		data["message"] = errmsg
+	if errcode != 1000 {
+		data["message"] = msg
+	} else {
+		switch msg.(type) {
+		case string:
+			data["message"] = msg
+		default:
+			data["data"] = msg
+		}
+		data["data"] = msg
 	}
-	switch errmsg.(type) {
-	case error:
-		errmsg = errmsg.(error).Error() // todo debug显示正常错误信息
-		pine.Logger().Error(string(debug.Stack()))
-		data["message"] = errmsg
-	case string:
-		errmsg = errmsg.(string)
-		data["message"] = errmsg
-	default:
-		data["data"] = errmsg
-	}
-	this.Render().JSON(data)
+	_ = this.Render().JSON(data)
 }
 
 //GetTimeStamp 获取时间戳
