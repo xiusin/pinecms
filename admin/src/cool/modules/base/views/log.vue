@@ -11,19 +11,8 @@
 			>
 				清空
 			</el-button>
-
-			<cl-filter label="日志保存天数">
-				<el-input-number
-					v-model="day"
-					controls-position="right"
-					size="mini"
-					:max="10000"
-					:min="1"
-					@blur="saveDay"
-				/>
-			</cl-filter>
-
 			<cl-flex1 />
+			<cl-query field="params.method" :list="methods" />
 			<cl-search-key placeholder="请输入请求地址, 参数，ip地址" />
 		</el-row>
 
@@ -51,6 +40,17 @@ export default defineComponent({
 		const service = inject<any>("service");
 		const { refs, setRefs }: any = useRefs();
 
+		const methods = [
+			{
+				label: "GET",
+				value: "GET"
+			},
+			{
+				label: "POST",
+				value: "POST"
+			}
+		];
+
 		// 天数
 		const day = ref<number>(1);
 
@@ -59,7 +59,7 @@ export default defineComponent({
 			"context-menu": ["refresh"],
 			props: {
 				"default-sort": {
-					prop: "createTime",
+					prop: "id",
 					order: "descending"
 				}
 			},
@@ -70,41 +70,57 @@ export default defineComponent({
 					width: 60
 				},
 				{
-					prop: "userId",
-					label: "用户ID"
+					prop: "userid",
+					label: "用户ID",
+					width: 60
 				},
 				{
-					prop: "name",
+					prop: "username",
 					label: "昵称",
-					minWidth: 150
+					width: 150
 				},
 				{
-					prop: "action",
+					prop: "uri",
 					label: "请求地址",
-					minWidth: 200,
-					showOverflowTooltip: true
+					width: 140,
+					showOverflowTooltip: true,
+					align: "left"
+				},
+				{
+					prop: "method",
+					label: "Method",
+					width: 140,
+					showOverflowTooltip: true,
+					align: "center"
 				},
 				{
 					prop: "params",
 					label: "参数",
-					align: "center",
+					align: "left",
 					minWidth: 200,
 					showOverflowTooltip: true
 				},
 				{
 					prop: "ip",
 					label: "ip",
-					minWidth: 180
+					width: 120
 				},
 				{
 					prop: "ipAddr",
 					label: "ip地址",
-					minWidth: 150
+					width: 150,
+					component: ({h, scope}) => {
+						if (scope.ip == "127.0.0.1") {
+							return "本机";
+						} else {
+							return "未知"
+						}
+					}
 				},
 				{
-					prop: "createTime",
-					label: "创建时间",
-					minWidth: 150,
+					prop: "time",
+					label: "请求时间",
+					width: 200,
 					sortable: true
 				}
 			]
@@ -153,6 +169,7 @@ export default defineComponent({
 			day,
 			table,
 			setRefs,
+			methods,
 			onLoad,
 			saveDay,
 			clear

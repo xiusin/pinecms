@@ -5,12 +5,13 @@ import SysMenu from "./system/menu";
 import SysRole from "./system/role";
 import SysDept from "./system/dept";
 import SysTask from "./system/task";
-import SysParam from "./system/param";
+import SysSetting from "./system/setting";
 import SysLog from "./system/log";
-import SysAd from "./system/log";
 import PluginInfo from "./plugin/info";
-import SysLink from "./system/role";
-import SysAssets from "./system/param";
+import SysAd from "./system/ad";
+import SysLink from "./system/link";
+import SysAssets from "./system/assets";
+import SysAttachment from "./system/attachment";
 
 export default {
 	common: new Common(),
@@ -21,11 +22,12 @@ export default {
 		role: new SysRole(),
 		dept: new SysDept(),
 		task: new SysTask(),
-		param: new SysParam(),
+		setting: new SysSetting(),
 		log: new SysLog(),
 		ad: new SysAd(),
 		link: new SysLink(),
-		assets: new SysAssets()
+		assets: new SysAssets(),
+		attachment: new SysAttachment()
 	},
 	plugin: {
 		info: new PluginInfo()

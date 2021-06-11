@@ -7,13 +7,13 @@
 <script lang="ts">
 import { defineComponent, nextTick, onMounted, ref, watch } from "vue";
 import CodeMirror from "codemirror";
-import beautifyJs from "js-beautify";
 
 import "codemirror/theme/cobalt.css";
 import "codemirror/lib/codemirror.css";
 import "codemirror/addon/hint/show-hint.css";
 import "codemirror/addon/hint/javascript-hint";
 import "codemirror/mode/javascript/javascript";
+import "codemirror/mode/htmlmixed/htmlmixed";
 
 export default defineComponent({
 	name: "cl-codemirror",
@@ -22,6 +22,7 @@ export default defineComponent({
 		modelValue: null,
 		height: String,
 		width: String,
+		mode: String,
 		options: Object
 	},
 
@@ -32,6 +33,11 @@ export default defineComponent({
 
 		let editor: any = null;
 
+		let mode: String = props.mode
+		if (mode == "") {
+			mode = "htmlmixed"
+		}
+
 		// 获取内容
 		function getValue() {
 			return editor ? editor.getValue() : "";
@@ -40,7 +46,7 @@ export default defineComponent({
 		// 设置内容
 		function setValue(val?: string) {
 			if (editor) {
-				editor.setValue(beautifyJs(val || getValue()));
+				editor.setValue(val || getValue());
 			}
 		}
 
@@ -57,10 +63,11 @@ export default defineComponent({
 		);
 
 		onMounted(function () {
+			console.log("mode", mode);
 			nextTick(() => {
 				// 实例化
 				editor = CodeMirror.fromTextArea(editorRef.value.querySelector("#editor"), {
-					mode: "javascript",
+					mode: mode,
 					theme: "ambiance",
 					styleActiveLine: true,
 					lineNumbers: true,

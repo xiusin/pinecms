@@ -1,46 +1,77 @@
 <template>
 	<cl-crud @load="onLoad">
 		<el-row type="flex">
-			<cl-refresh-btn />
-<!--			<cl-add-btn />-->
+			<cl-upload v-model="urls" multiple :limit="5" accept="*" list-type="text"/>
 		</el-row>
 
 		<el-row>
 			<cl-table v-bind="table" />
 		</el-row>
 
-
-		<cl-upsert :ref="setRefs('upsert')" v-bind="upsert" @open="onUpsertOpen">
-			<template #slot-content="{ scope }">
-				<component is="cl-codemirror" v-model="scope.content" mode="htmlmixed" height="500px" />
-			</template>
-		</cl-upsert>
+		<el-row type="flex">
+			<cl-flex1 />
+			<cl-pagination />
+		</el-row>
 	</cl-crud>
+
+
+	<cl-dialog
+		v-model="preview.visible"
+		title="图片预览"
+		:props="{width: previewWidth}"
+	>
+		<img style="width: 100%" :src="preview.url" alt="" />
+	</cl-dialog>
+
 </template>
 
 <script lang="ts">
-import { ElMessageBox } from "element-plus";
-import { defineComponent, inject, nextTick, reactive } from "vue";
+import { defineComponent, inject, reactive } from "vue";
 import { useRefs } from "/@/core";
 import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
 
 export default defineComponent({
-	name: "sys-assets-manager",
+	name: "attachment",
 
 	setup() {
 		const service = inject<any>("service");
 		const { refs, setRefs } = useRefs();
+		let preview = {
+			visible: false,
+			url: "",
+		}
 
-		// 选项卡
-		const tab = reactive<any>({index: null});
+		let urls = []
+
+		let previewWidth = {
+			type: String,
+			default: "500px"
+		}
 
 		// 表格配置
 		const table = reactive<Table>({
 			columns: [
 				{
-					label: "文件名",
-					prop: "name",
-					minWidth: 150
+					label: "源名称",
+					prop: "original",
+					minWidth: 150,
+					align: "left",
+				},
+				// {
+				// 	label: "文件名",
+				// 	prop: "name",
+				// 	minWidth: 150,
+				// 	align: "left",
+				// },
+				{
+					label: "图片",
+					prop: "url",
+					component: ({h, scope}) => {
+						return h("img", {
+							src: scope.url,
+							height: 40
+						});
+					},
 				},
 				{
 					label: "文件大小",
@@ -48,16 +79,21 @@ export default defineComponent({
 					minWidth: 150
 				},
 				{
-					label: "更新时间",
-					prop: "updated",
+					label: "类型",
+					prop: "type",
+					minWidth: 50
+				},
+				{
+					label: "上传时间",
+					prop: "upload_time",
 					minWidth: 200,
 					showOverflowTooltip: true
 				},
 				{
 					label: "操作",
 					type: "op",
-					width: 200,
-					buttons: ["edit"]
+					width: 100,
+					buttons: ["delete"]
 				}
 			]
 		});
@@ -89,44 +125,19 @@ export default defineComponent({
 
 		// crud 加载
 		function onLoad({ ctx, app }: CrudLoad) {
-			ctx.service(service.system.assets).done();
+			ctx.service(service.system.attachment).done();
 			app.refresh();
-		}
-
-		// 切换编辑器
-		function changeTab(i: number) {
-			ElMessageBox.confirm("切换编辑器会清空输入内容，是否继续？", "提示", {
-				type: "warning"
-			})
-				.then(() => {
-					tab.index = i;
-					refs.value.upsert.setForm("data", "");
-				})
-				.catch(() => null);
-		}
-
-		// 监听打开
-		function onUpsertOpen(isEdit: boolean, data: any) {
-			tab.index = null;
-
-			nextTick(() => {
-				if (isEdit) {
-					tab.index = /<*>/g.test(data.data) ? 1 : 0;
-				} else {
-					tab.index = 1;
-				}
-			});
 		}
 
 		return {
 			refs,
-			tab,
 			table,
 			upsert,
 			setRefs,
 			onLoad,
-			changeTab,
-			onUpsertOpen
+			preview,
+			previewWidth,
+			urls
 		};
 	}
 });

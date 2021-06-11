@@ -19,7 +19,7 @@ class Common extends BaseService {
 	 */
 	upload(params: any) {
 		return this.request({
-			url: "/upload",
+			url: "/public/upload",
 			method: "POST",
 			params
 		});

@@ -1,15 +1,6 @@
 import { BaseService, Service, Permission } from "/@/core";
 
 @Service("user")
-class SysUser extends BaseService {
-	@Permission("move")
-	move(data: any) {
-		return this.request({
-			url: "/move",
-			method: "POST",
-			data
-		});
-	}
-}
+class SysUser extends BaseService {}
 
 export default SysUser;

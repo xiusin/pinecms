@@ -1,6 +1,6 @@
 import { BaseService, Service } from "/@/core";
 
-@Service("role")
-class SysRole extends BaseService {}
+@Service("link")
+class SysLink extends BaseService {}
 
-export default SysRole;
+export default SysLink;

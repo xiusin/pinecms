@@ -2,7 +2,6 @@ import axios from "axios";
 import store from "/@/store";
 import { isDev } from "/@/config/env";
 import { href } from "/@/core/utils";
-import storage from "/@/core/utils/storage";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { ElMessage } from "element-plus";
@@ -43,6 +42,7 @@ axios.interceptors.request.use(
 
 		// 请求信息
 		if (isDev) {
+			console.log(config);
 			console.group(config.url);
 			console.log("method:", config.method);
 			console.table("data:", config.method == "get" ? config.params : config.data);

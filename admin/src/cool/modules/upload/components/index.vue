@@ -447,12 +447,12 @@ export default {
 
 		// 重设上传请求
 		async httpRequest(req) {
-			const mode = await this.uploadMode();
-
 			// 多种上传请求
 			const upload = (file) => {
+				console.log("file", file);
 				return new Promise((resolve, reject) => {
 					const next = (res) => {
+						console.log("upload.next", res);
 						const data = new FormData();
 
 						for (const i in res) {
@@ -468,7 +468,7 @@ export default {
 							fileName = uuidv4() + "." + last((file.name || "").split("."));
 						}
 
-						data.append("key", `app/${fileName}`);
+						data.append("key", `${fileName}`);
 						data.append("file", file);
 
 						// 上传
@@ -488,29 +488,20 @@ export default {
 								}
 							})
 							.then((url) => {
-								if (mode === "local") {
-									resolve(url);
-								} else {
-									resolve(`${res.host}/app/${fileName}`);
-								}
+								resolve(url);
 							})
 							.catch((err) => {
 								reject(err);
 							});
 					};
 
-					if (mode == "local") {
-						next({
-							host: "/upload"
-						});
-					} else {
-						this.service.common
-							.upload()
-							.then((res) => {
-								next(res);
-							})
-							.catch(reject);
-					}
+
+					this.service.common
+						.upload()
+						.then((res) => {
+							next(res);
+						})
+						.catch(reject);
 				});
 			};
 
@@ -531,11 +522,6 @@ export default {
 				});
 
 			this.loading = false;
-		},
-
-		// 上传模式
-		uploadMode() {
-			return this.service.common.uploadMode().then((res) => res.mode);
 		}
 	}
 };

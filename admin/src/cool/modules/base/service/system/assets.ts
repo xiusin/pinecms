@@ -1,6 +1,6 @@
 import { BaseService, Service } from "/@/core";
 
-@Service("base/sys/param")
-class SysParam extends BaseService {}
+@Service("assets")
+class SysAssets extends BaseService {}
 
-export default SysParam;
+export default SysAssets;
