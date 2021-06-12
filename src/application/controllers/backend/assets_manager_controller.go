@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
-	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"html/template"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -31,8 +29,6 @@ func (c *AssetsManagerController) Construct() {
 	c.Table = &tables.Link{}
 	c.Entries = &[]*tables.Link{}
 
-	c.TableKey = "linkid"
-	c.TableStructKey = "Linkid"
 }
 
 func (c *AssetsManagerController) PostList() {
@@ -69,6 +65,36 @@ func (c *AssetsManagerController) PostList() {
 		},
 	}, 0, c.Ctx())
 
+}
+
+func (c *AssetsManagerController) PostEdit() {
+	p := struct {
+		Content string `json:"content"`
+		Name    string `json:"name"`
+		Id      string `json:"id"`
+	}{}
+	if err := c.Ctx().BindJSON(&p); err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
+	}
+	conf := di.MustGet("pinecms.config").(*config.Config)
+	if len(p.Id) == 0 {
+		helper.Ajax("参数错误", 1, c.Ctx())
+		return
+	}
+	fullPath := filepath.Join(conf.View.FeDirname, conf.View.Theme, p.Id)
+	f, err := os.OpenFile(fullPath, os.O_WRONLY, os.ModePerm)
+	if err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
+	}
+	defer f.Close()
+	if _, err := f.WriteString(p.Content); err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
+	}
+
+	helper.Ajax("修改成功", 0, c.Ctx())
 }
 
 func (c *AssetsManagerController) Theme() {
@@ -135,7 +161,7 @@ func (c *AssetsManagerController) GetInfo() {
 		return
 	}
 	defer f.Close()
-	stat,_ := f.Stat()
+	stat, _ := f.Stat()
 	var content = make([]byte, stat.Size())
 	_, err = f.Read(content)
 	if err != nil {
@@ -149,41 +175,6 @@ func (c *AssetsManagerController) GetInfo() {
 		"updated": stat.ModTime().In(helper.GetLocation()).Format(helper.TimeFormat),
 		"content": string(content),
 	}, 0, c.Ctx())
-}
-func (c *AssetsManagerController) info() {
-	conf := di.MustGet("pinecms.config").(*config.Config)
-	if c.Ctx().IsPost() {
-		//origin := c.Ctx().URLParam("origin")
-		name := c.Ctx().PostValue("name")
-		content := c.Ctx().PostValue("content")
-		f := filepath.Join(conf.View.FeDirname, conf.View.Theme, name)
-		_, err := os.Stat(f)
-		if err != nil {
-			helper.Ajax("获取模板状态失败："+err.Error(), 1, c.Ctx())
-			return
-		}
-		if err := ioutil.WriteFile(f, []byte(content), os.ModePerm); err != nil {
-			helper.Ajax("写入模板内容失败: "+err.Error(), 1, c.Ctx())
-			return
-		}
-		helper.Ajax("修改成功", 0, c.Ctx())
-		return
-	}
-	name := c.Ctx().GetString("name")
-	typeName := c.Ctx().GetString("type")
-	if name == "" || typeName == "" {
-		helper.Ajax("参数错误", 1, c.Ctx())
-		return
-	}
-	content, err := ioutil.ReadFile(filepath.Join(conf.View.FeDirname, conf.View.Theme, name))
-	if err != nil {
-		helper.Ajax("读取模板错误: "+err.Error(), 1, c.Ctx())
-		return
-	}
-	c.Ctx().Render().ViewData("name", name)
-	c.Ctx().Render().ViewData("typeName", typeName)
-	c.Ctx().Render().ViewData("content", template.HTML(content))
-	c.Ctx().Render().HTML("backend/assets_edit.html")
 }
 
 func (c *AssetsManagerController) Add(orm *xorm.Engine) {
@@ -218,29 +209,4 @@ func (c *AssetsManagerController) ThemeThumb() {
 	c.Ctx().SetContentType("img/png")
 	//todo 打开连接直接显示而不下载
 	c.Ctx().SendFile(dirName)
-}
-
-func (c *AssetsManagerController) AttachmentsList() {
-	page, _ := c.Ctx().GetInt64("page")
-	rows, _ := c.Ctx().GetInt64("rows")
-
-	keywords := c.Ctx().GetString("keywords")
-	list, total := models.NewAttachmentsModel().GetList(keywords, page, rows)
-	helper.Ajax(pine.H{
-		"rows":  list,
-		"total": total,
-	}, 0, c.Ctx())
-}
-
-func (c *AssetsManagerController) AttachmentsDelete() {
-	id, _ := c.Ctx().PostInt64("id")
-	if id < 1 {
-		helper.Ajax("参数错误", 1, c.Ctx())
-		return
-	}
-	if models.NewAttachmentsModel().Delete(id) {
-		helper.Ajax("删除附件成功", 0, c.Ctx())
-	} else {
-		helper.Ajax("删除附件失败", 1, c.Ctx())
-	}
 }

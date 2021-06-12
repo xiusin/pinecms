@@ -12,20 +12,16 @@ type idParams struct {
 }
 
 type listParam struct {
-	Page       int    `json:"page"`
-	Size       int    `json:"size"`
-	OrderField string `json:"order"`
-	Sort       string `json:"sort"`
-	Keywords   string `json:"keyWord"`
+	Page       int    `json:"page"`     // 分页数
+	Size       int    `json:"size"`     // 页码
+	OrderField string `json:"order"`    // 排序字段
+	Sort       string `json:"sort"`     // 排序规则
+	Keywords   string `json:"keyWord"`  // 搜索关键字
+	Export     bool   `json:"_isExport"` // 是否导出
 }
 
 type responsePageParam struct {
 	Page  int64 `json:"page"`
 	Size  int64 `json:"size"`
 	Total int64 `json:"total"`
-}
-
-type responseListParam struct {
-	List       interface{}       `json:"list"`
-	Pagination responsePageParam `json:"pagination"`
 }

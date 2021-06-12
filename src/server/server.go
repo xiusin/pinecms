@@ -102,7 +102,7 @@ func registerStatic() {
 }
 
 func registerV2BackendRoutes() {
-		app.Use(middleware.Cors(), middleware.SetGlobalConfigData())
+	app.Use(middleware.Cors(), middleware.SetGlobalConfigData())
 
 	app.Group(
 		"/v2",
@@ -111,14 +111,15 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.AdminRoleController), "/role").
 		Handle(new(backend.MenuController), "/menu").
 		Handle(new(backend.LinkController), "/link").
-		Handle(new(backend.AssetsManagerController),"/assets").
+		Handle(new(backend.LogController), "/log").
+		Handle(new(backend.AssetsManagerController), "/assets").
+		Handle(new(backend.AttachmentController), "/attachment").
+		Handle(new(backend.SettingController), "/setting").
 		Handle(new(backend.LoginController)).
 		Handle(new(backend.IndexController)).
 		Handle(new(backend.CategoryController)).
 		Handle(new(backend.ContentController)).
-		Handle(new(backend.SettingController)).
 		Handle(new(backend.SystemController)).
-		//Handle(new(backend.MemberController)).
 		Handle(new(backend.DocumentController)).
 		Handle(new(backend.DatabaseController)).
 		Handle(new(backend.AdController)).

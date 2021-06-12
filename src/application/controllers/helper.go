@@ -8,8 +8,9 @@ import (
 //LoginAdminPayload 登录JWT载体
 type LoginAdminPayload struct {
 	jwt.Payload
-	AdminId int64 `json:"admin_id"`
-	RoleID  int64 `json:"role_id"`
+	AdminId   int64  `json:"admin_id"`
+	AdminName string `json:"admin_name"`
+	RoleID    int64  `json:"role_id"`
 }
 
 // InStringArr 判断是否在字符串数组内容

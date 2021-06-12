@@ -3,11 +3,12 @@ package tables
 import "time"
 
 type Log struct {
-	Logid    int64 `xorm:"pk"`
-	Type     int
-	Message  string
-	Userid   int64 `json:"userid"`
-	Username string
-	Ip       string
-	Time     time.Time
+	Id       int64     `json:"id"`
+	Params   string    `json:"params"`
+	Uri      string    `json:"uri"`
+	Userid   int64     `json:"userid"`
+	Username string    `json:"username"`
+	Ip       string    `json:"ip"`
+	Time     time.Time `json:"time"`
+	Method   string    `json:"method"`
 }

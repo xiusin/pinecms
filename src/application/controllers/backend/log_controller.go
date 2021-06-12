@@ -1,24 +1,28 @@
 package backend
 
 import (
-	"github.com/go-xorm/xorm"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
-type LinkController struct {
+type LogController struct {
 	BaseController
 }
 
-func (c *LinkController) Construct() {
+func (c *LogController) Construct() {
 	c.KeywordsSearch = []KeywordWhere{
-		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
+		{Field: "username", Op: "LIKE", DataExp: "%$?%"},
+		{Field: "ip", Op: "LIKE", DataExp: "%$?%"},
+		{Field: "uri", Op: "LIKE", DataExp: "%$?%"},
+		{Field: "params", Op: "LIKE", DataExp: "%$?%"},
 	}
-	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
-	c.Table = &tables.Link{}
-	c.Entries = &[]*tables.Link{}
+	c.Table = &tables.Log{}
+	c.Entries = &[]*tables.Log{}
 
-	c.TableKey = "linkid"
-	c.TableStructKey = "Linkid"
+	c.BaseController.Construct()
+}
+
+func (c *LogController) PostClear() {
+	c.Orm.Where("id > 0").Delete(c.Table)
+	helper.Ajax("清理成功", 0, c.Ctx())
 }

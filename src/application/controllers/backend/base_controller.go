@@ -1,12 +1,10 @@
 package backend
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
-	"reflect"
-	"strconv"
-	"strings"
-
+	"github.com/360EntSecGroup-Skylar/excelize/v2"
 	"github.com/go-playground/locales/en"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
@@ -14,7 +12,12 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"reflect"
+	"strconv"
+	"strings"
+	"time"
 )
 
 var validate = validator.New()
@@ -42,6 +45,12 @@ type searchFieldDsl struct {
 	Op string
 }
 
+type exportHeader struct {
+	Field      string
+	HeaderName string
+	Method     excelize.Cell
+}
+
 type BaseController struct {
 	SearchFields   map[string]searchFieldDsl // 设置可以搜索的字段
 	BindType       string                    // 表单绑定类型
@@ -49,13 +58,22 @@ type BaseController struct {
 	Table          interface{}               // 传入Table结构体引用
 	Entries        interface{}               // 传入Table结构体的切片
 	Orm            *xorm.Engine
-	TableKey       string // 表主键
-	TableStructKey string // 表结构体主键字段 主要用于更新逻辑反射数据
+
+	TableKey       string         // 表主键
+	TableStructKey string         // 表结构体主键字段 主要用于更新逻辑反射数据
+	ExportHeaders  []exportHeader // 导出数据头信息
 
 	OpBefore func(int, interface{}) error // 操作前置
 	OpAfter  func(int, interface{}) error // 操作后置
 
 	pine.Controller
+}
+
+//Construct 默认初始化数据
+func (c *BaseController) Construct() {
+	c.TableKey = "id"
+	c.TableStructKey = "Id"
+	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
 }
 
 func (c *BaseController) BindParse() (err error) {
@@ -85,8 +103,11 @@ func (c *BaseController) PostList() {
 	} else {
 		var count int64
 		var err error
+		if p.Export {
+			p.Size = 0
+		}
 		if p.Size == 0 {
-			err = query.Limit(p.Size, (p.Page-1)*p.Size).Find(c.Entries)
+			err = query.Find(c.Entries)
 		} else {
 			count, err = query.Limit(p.Size, (p.Page-1)*p.Size).FindAndCount(c.Entries)
 		}
@@ -101,7 +122,11 @@ func (c *BaseController) PostList() {
 			}
 		}
 		if p.Size == 0 {
-			helper.Ajax(c.Entries, 0, c.Ctx())
+			if p.Export {
+				c.export()
+			} else {
+				helper.Ajax(c.Entries, 0, c.Ctx())
+			}
 		} else {
 			helper.Ajax(pine.H{
 				"list": c.Entries,
@@ -121,6 +146,8 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 		return nil, err
 	}
 	if len(c.KeywordsSearch) > 0 && p.Keywords != "" { // 关键字搜索
+		var whereBuilder []string
+		var whereLikeBind []interface{}
 		for _, v := range c.KeywordsSearch {
 			if v.Field == "" && v.CallBack == nil {
 				continue
@@ -132,13 +159,15 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 				if v.DataExp == "" {
 					v.DataExp = "$?"
 				}
-				query.Where(
-					fmt.Sprintf("%s %s ?", v.Field, v.Op),
-					strings.ReplaceAll(v.DataExp, "$?", p.Keywords),
-				)
+				whereBuilder = append(whereBuilder, fmt.Sprintf("%s %s ?", v.Field, v.Op))
+				whereLikeBind = append(whereLikeBind, strings.ReplaceAll(v.DataExp, "$?", p.Keywords))
 			} else {
 				v.CallBack(query, p.Keywords)
 			}
+		}
+		wl := len(whereBuilder)
+		if wl == len(whereLikeBind) && wl != 0 {
+			query.Where(strings.Join(whereBuilder, " OR "), whereLikeBind...)
 		}
 	}
 	if c.SearchFields != nil {
@@ -202,7 +231,7 @@ func (c *BaseController) edit() bool {
 		c.TableStructKey = "Id"
 	}
 	val := reflect.ValueOf(c.Table).Elem().FieldByName(c.TableStructKey)
-	if !val.IsValid()  {
+	if !val.IsValid() {
 		c.Logger().Error("无法匹配字段", c.TableStructKey)
 		return false
 	}
@@ -267,4 +296,61 @@ func (c *BaseController) GetInfo() {
 		}
 		helper.Ajax(c.Table, 0, c.Ctx())
 	}
+}
+
+func (c *BaseController) export() {
+	entities := c.convertEntities()
+	f := excelize.NewFile()
+	for i, header := range c.ExportHeaders {
+		f.SetCellValue("Sheet1", cells(0, i), header.HeaderName)
+	}
+	for idx, entity := range entities {
+		for i, header := range c.ExportHeaders {
+			val := entity.Elem().FieldByName(header.Field)
+			if val.IsValid() {
+				helper.Ajax("导出字段"+header.Field+"无效", 1, c.Ctx())
+				return
+			}
+			f.SetCellValue("Sheet1", cells(idx+1, i), val.Interface())
+		}
+	}
+	var buffer bytes.Buffer
+	if _, err := f.WriteTo(&buffer); err != nil {
+		helper.Ajax("导出失败", 1, c.Ctx())
+	} else {
+		c.Ctx().Response.Header.Set("Access-Control-Expose-Headers", "content-disposition")
+		c.Ctx().Response.Header.Set("content-disposition", `attachment; filename=export_data_`+time.Now().Format("2006-01-02")+`.xlsx`)
+		c.Ctx().Response.SetBodyStream(&buffer, buffer.Len())
+	}
+}
+
+// todo 后面查看是否能够直接反射
+func (c *BaseController) convertEntities() []reflect.Value {
+	panic("must rewrite method convertEntities")
+}
+
+func cells(row int, col int) string { // todo 看官方有没有更好的方法
+	letters := [26]string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
+	var let, let2, let3, letter string
+	var i, i2, i3 int
+	for _, let = range letters {
+		i++
+		if col == i {
+			letter = let
+		}
+		for _, let2 = range letters {
+			i2++
+			if col-26 == i2 {
+				letter = let + let2
+			}
+			for _, let3 = range letters {
+				i3++
+				if col-702 == i3 {
+					letter = let + let2 + let3
+				}
+			}
+		}
+	}
+	rows := strconv.Itoa(row)
+	return letter + rows
 }

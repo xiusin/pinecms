@@ -7,7 +7,6 @@ import (
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"html/template"
 	"strconv"
 	"strings"
 )
@@ -25,10 +24,6 @@ func (c *SystemController) RegisterRoute(b pine.IRouterWrapper) {
 	b.POST("/system/menu-order", "MenuOrder")
 	b.ANY("/system/menu-tree", "MenuSelectTree")
 	b.POST("/system/menu-check", "MenuCheck")
-	b.ANY("/system/loglist", "LogList")
-	b.ANY("/system/tail", "TailList")
-	b.ANY("/system/log-delete", "LogDelete")
-	b.ANY("/system/ws-connection", "WsConnection")
 }
 
 func (c *SystemController) MenuList() {
@@ -155,82 +150,4 @@ func (c *SystemController) MenuCheck() {
 	}
 
 	helper.Ajax("正常", 0, c.Ctx())
-}
-
-func (c *SystemController) WsConnection() {
-	//if conn, err := upgrader.Upgrade(c.Ctx().Writer(), c.Ctx().Request(), nil); err != nil {
-	//	//报错了，直接返回底层的websocket链接就会终断掉
-	//	pine.Logger().Print("连接ws错误", err)
-	//	return
-	//} else {
-	//	conf := pine.Make("pinecms.config").(*config.Config)
-	//	logPath := filepath.Join(conf.LogPath, "pinecms.log")
-	//	fileInfo, err := os.Stat(logPath)
-	//	if err != nil {
-	//		return
-	//	}
-	//	size := fileInfo.Size()
-	//	ta, err := tail.TailFile(logPath, tail.Config{
-	//		ReOpen:      true,
-	//		MustExist:   true,
-	//		Poll:        false,
-	//		Follow:      true,
-	//		MaxLineSize: 0,
-	//	})
-	//	if err != nil {
-	//		return
-	//	}
-	//	for text := range ta.Lines {
-	//		size -= int64(len(text.Text) + 1) // 添加一个换行符字节
-	//		if size <= 2048 {
-	//			if err = conn.WriteMessage(websocket.TextMessage, []byte(text.Text)); err != nil {
-	//				pine.Logger().Error("tail log failed", err)
-	//				_ = ta.Stop()
-	//				ta.Cleanup()
-	//				ta = nil
-	//				return
-	//			}
-	//		}
-	//	}
-	//}
-}
-
-func (c *SystemController) TailList() {
-	// 扫描日志文件可选日志内容 设置最大行号
-	c.Ctx().Render().HTML("backend/system_tail.html")
-}
-
-func (c *SystemController) LogList() {
-	page, _ := c.Ctx().GetInt64("page")
-	rows, _ := c.Ctx().GetInt64("rows")
-
-	if page > 0 {
-		list, total := models.NewLogModel().GetList(page, rows)
-		c.Ctx().Render().JSON(map[string]interface{}{"rows": list, "total": total})
-		return
-	}
-
-	menuid, _ := c.Ctx().GetInt64("menuid")
-	table := helper.Datagrid("system_menu_logList", "/b/system/loglist", helper.EasyuiOptions{
-		"title":   models.NewMenuModel().CurrentPos(menuid),
-		"toolbar": "system_loglist_datagrid_toolbar",
-	}, helper.EasyuiGridfields{
-		"用户名": {"field": "Username", "width": "20", "index": "0"},
-		"模块":  {"field": "Controller", "width": "15", "index": "1"},
-		"方法":  {"field": "Action", "width": "15", "index": "2"},
-		"URL": {"field": "Querystring", "width": "100", "formatter": "systemLogViewFormatter", "index": "3"},
-		"时间":  {"field": "Time", "width": "30", "index": "4"},
-		"IP":  {"field": "Ip", "width": "25", "index": "5"},
-	})
-	c.Ctx().Render().ViewData("dataGrid", template.HTML(table))
-	c.Ctx().Render().HTML("backend/system_loglist.html")
-
-}
-
-func (c *SystemController) LogDelete() {
-	if models.NewLogModel().DeleteAll() {
-		helper.Ajax("清空日志成功", 0, c.Ctx())
-	} else {
-		helper.Ajax("清空日志失败", 1, c.Ctx())
-	}
 }

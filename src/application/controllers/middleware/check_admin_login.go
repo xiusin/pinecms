@@ -3,9 +3,9 @@ package middleware
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"strconv"
 	"strings"
 
@@ -16,9 +16,6 @@ import (
 
 func CheckAdminLoginAndAccess(xorm *xorm.Engine, iCache cache.AbstractCache) pine.Handler {
 	return func(this *pine.Context) {
-		this.Render().ViewData("staticDir", "/assets/backend/static")
-		this.Render().ViewData("baseDir", "/assets/backend")
-
 		if strings.Contains(this.Path(), "login") {
 			this.Next()
 			return
