@@ -28,8 +28,8 @@ type FieldShowInPageList struct {
 type KV struct {
 	Label   string      `json:"label"`
 	Value   interface{} `json:"value"`
-	Name    string      `json:"name"`
-	Checked bool        `json:"checked"`
+	Name    string      `json:"-"`
+	Checked bool        `json:"-"`
 }
 
 type TabsSchema struct {
@@ -64,3 +64,5 @@ type FormControl struct {
 	Limits           []string      `json:"limits"`
 	LimitsLogic      string        `json:"limitsLogic"`
 }
+
+

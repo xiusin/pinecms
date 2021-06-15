@@ -1,8 +1,8 @@
 package backend
 
 import (
-	"fmt"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 type SettingController struct {
@@ -14,11 +14,23 @@ func (c *SettingController) Construct() {
 	c.Table = &tables.Setting{}
 	c.Entries = &[]*tables.Setting{}
 	c.BaseController.Construct()
+
+	c.KeywordsSearch = []KeywordWhere{
+		{Field: "form_name", Op: "LIKE", DataExp: "%$?%"},
+		{Field: "key", Op: "LIKE", DataExp: "%$?%"},
+		{Field: "`group`", Op: "LIKE", DataExp: "%$?%"},
+	}
+
 }
 
-// PostGroupList 获取新分组
-func (c *LogController) PostGroupList() {
-	var groups []string
-	c.Orm.GroupBy("group").Cols("group").Find(&groups)
-	fmt.Println("groups", groups)
+// PostGroups 获取新分组
+func (c *SettingController) PostGroups() {
+	var groups []tables.Setting
+	c.Orm.Table(&tables.Setting{}).GroupBy("`group`").Find(&groups)
+	var kvs = []KV{}
+
+	for _, group := range groups {
+		kvs = append(kvs, KV{Label: group.Group, Value: group.Group})
+	}
+	helper.Ajax(kvs, 0, c.Ctx())
 }

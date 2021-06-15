@@ -2,11 +2,10 @@ import { BaseService, Service } from "/@/core";
 
 @Service("setting")
 class SysSetting extends BaseService {
-	groupList(data: any) {
+	groupList() {
 		return this.request({
-			url: "/groupList",
-			method: "POST",
-			data
+			url: "/groups",
+			method: "POST"
 		});
 	}
 }

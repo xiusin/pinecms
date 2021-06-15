@@ -5,8 +5,8 @@
 				<cl-refresh-btn />
 				<cl-add-btn />
 				<cl-multi-delete-btn />
-				<demo-dialog />
-				<demo-context-menu />
+<!--				<demo-dialog />-->
+<!--				<demo-context-menu />-->
 				<demo-form />
 				<demo-query />
 				<cl-flex1 />

@@ -1,92 +1,187 @@
 <template>
-	<cl-form ref="settingFormRef" inner></cl-form>
+	<cl-crud @load="onLoad">
+		<el-row type="flex">
+			<cl-refresh-btn/>
+			<cl-add-btn/>
+			<cl-flex1/>
+			<cl-query field="param" :list="groupsList"/>
+			<cl-search-key/>
+		</el-row>
+
+		<el-row>
+			<cl-table v-bind="table"/>
+		</el-row>
+
+		<el-row type="flex">
+			<cl-flex1/>
+		</el-row>
+
+		<cl-upsert :ref="setRefs('upsert')" v-bind="upsert" @open="onUpsertOpen"></cl-upsert>
+	</cl-crud>
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from "vue";
-import {useRefs} from "../../../../core";
+import {defineComponent, inject, onBeforeMount, reactive, ref} from "vue";
+import {useRefs} from "/@/core";
+import {CrudLoad, QueryList, Table, Upsert} from "cl-admin-crud-vue3/types";
 
 export default defineComponent({
 	name: "sys-setting",
-
 	setup() {
-		const { refs, setRefs } = useRefs();
-		const formRef = refs.settingFormRef;
-		console.log("formRef", formRef)
-		formRef.open({
-			items: [
+		const service = inject<any>("service");
+		const {refs, setRefs} = useRefs();
+
+		let groupsList = ref<QueryList[]>([])
+
+		onBeforeMount(() => {
+			service.system.setting.groupList().then((list: QueryList[]) => {
+				groupsList.value?.push(...list)
+			})
+		})
+
+		// 表格配置
+		const table = reactive<Table>({
+			props: {
+				"default-sort": {
+					prop: "listorder",
+					order: "descending"
+				}
+			},
+			columns: [
 				{
-					type: "tabs",
-					props: {
-						labels: [
-							{
-								label: "基本信息",
-								value: "base"
-							},
-							{
-								label: "金融",
-								value: "financial"
-							}
-						]
-					}
+					label: "排序",
+					prop: "listorder",
+					width: 50,
+					align: "left",
 				},
 				{
-					label: "昵称",
-					prop: "name",
+					label: "名称",
+					prop: "form_name",
+					width: 120,
+					align: "left",
+				},
+				{
+					label: "KEY",
+					prop: "key",
+					width: 200,
+					align: "left"
+				},
+				{
+					label: "分组",
+					prop: "group",
+					width: 100,
+				},
+				{
+					label: "VALUE",
+					prop: "value",
+					showOverflowTooltip: true,
+					align: "left"
+				},
+				{
+					label: "备注",
+					prop: "remark",
+					width: 150,
+					align: "left",
+					showOverflowTooltip: true
+				},
+				{
+					label: "操作",
+					type: "op",
+					width: 80,
+					buttons: ["edit"]
+				}
+			]
+		});
+		// 新增编辑配置
+		const upsert = reactive<Upsert>({
+			width: "1000px",
+			items: [
+				{
+					prop: "form_name",
+					label: "名称",
 					component: {
 						name: "el-input",
-
-						attrs: {
-							placeholder: "请填写昵称"
+						props: {
+							placeholder: "请输入名称"
 						}
 					},
 					rules: {
 						required: true,
-						message: "昵称不能为空"
+						message: "名称不能为空"
 					}
 				},
 				{
-					label: "年纪",
-					prop: "age",
-					value: 18,
+					prop: "key",
+					label: "KEY",
 					component: {
-						name: "el-input-number"
-					}
-				},
-				{
-					label: "支付宝",
-					prop: "alipay",
-					value: 300,
-					group: "financial",
-					component: {
-						name: "el-input-number"
+						name: "el-input",
+						props: {
+							placeholder: "请输入Key"
+						}
 					},
-					append: ({ h }) => {
-						return h("p", "元");
+					rules: {
+						required: true,
+						message: "Key不能为空"
 					}
 				},
 				{
-					label: "微信",
-					prop: "wechat",
-					value: 10,
-					group: "financial",
+					prop: "value",
+					label: "VALUE",
+					component: ({ h, scope }) => {
+						return h("input", {
+							props: {
+								type: "textarea"
+							},
+							attrs: {
+								placeholder: "请填写内容"
+							}
+						});
+					}
+				},
+				{
+					prop: "listorder",
+					label: "排序",
 					component: {
-						name: "el-input-number"
-					},
-					append: ({ h }) => {
-						return h("p", "元");
+						name: "el-input",
+						props: {
+							placeholder: "请输入Key"
+						}
+					}
+				},
+				{
+					prop: "remark",
+					label: "备注",
+					component: {
+						name: "el-input",
+						props: {
+							placeholder: "请输入备注",
+							rows: 3,
+							type: "textarea"
+						}
 					}
 				}
-			],
-			on: {
-				submit: (data, { close }) => {
-					close();
-				}
-			}
+			]
 		});
 
+		// crud 加载
+		function onLoad({ctx, app}: CrudLoad) {
+			ctx.service(service.system.setting).done();
+			app.refresh();
+		}
+
+		// 监听打开
+		function onUpsertOpen(isEdit: boolean, data: any) {
+
+		}
+
 		return {
-			formRef
+			refs,
+			table,
+			upsert,
+			setRefs,
+			onLoad,
+			groupsList,
+			onUpsertOpen
 		};
 	}
 });
