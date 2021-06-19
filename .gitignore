@@ -6,7 +6,6 @@ go.sum
 vendor
 node_modules
 uploads
-data.db.demo
 trace.out
 resources/configs/database.yml
 resources/assets/example/
