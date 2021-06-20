@@ -28,7 +28,6 @@ type MemPos struct {
 }
 
 func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
-	b.ANY("/index/index", "Index")
 	b.ANY("/index/menu", "Menu")
 	b.ANY("/index/main", "Main")
 }

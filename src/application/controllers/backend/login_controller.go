@@ -36,35 +36,31 @@ func (c *LoginController) LoginV2(orm *xorm.Engine) {
 		helper.Ajax("参数不能为空", 1, c.Ctx())
 		return
 	}
-	//admin, err := models.NewAdminModel().Login(p.Username, p.Password, c.Ctx().ClientIP())
-	//if err != nil {
-	//	helper.Ajax(err.Error(), 1, c.Ctx())
-	//} else {
-	//	role := &tables.AdminRole{Id: admin.Roleid}
-	//	orm.Get(role)
-		var hs = jwt.NewHS256([]byte(config.AppConfig().JwtKey))
-		now := time.Now()
-		pl := controllers.LoginAdminPayload{
-			Payload: jwt.Payload{
-				Subject:        "PineCMS",
-				ExpirationTime: jwt.NumericDate(now.Add(24 * 30 * 12 * time.Hour)),
-			},
-			AdminId:   1, //admin.Userid,
-			RoleID:    1, //admin.Roleid,
-			AdminName: "admin", //admin.Username,
-		}
-		token, err := jwt.Sign(pl, hs)
-		if err != nil {
-			helper.Ajax("登录失败： 授权失败", 1, c.Ctx())
-			return
-		}
-		helper.Ajax(pine.H{
-			"role_name":  "超级管理员",
-			"role_id":    1,
-			"admin_id":   1,
-			"admin_name": "admin",
-			"token":      string(token),
-		}, 0, c.Ctx())
+	var hs = jwt.NewHS256([]byte(config.AppConfig().JwtKey))
+	now := time.Now()
+	pl := controllers.LoginAdminPayload{
+		Payload: jwt.Payload{
+			Subject:        "PineCMS",
+			ExpirationTime: jwt.NumericDate(now.Add(24 * 30 * 12 * time.Hour)),
+		},
+		Id:        1,
+		AdminId:   1,       //admin.Userid,
+		RoleID:    1,       //admin.Roleid,
+		AdminName: "admin", //admin.Username,
+	}
+	token, err := jwt.Sign(pl, hs)
+	if err != nil {
+		helper.Ajax("登录失败： 授权失败", 1, c.Ctx())
+		return
+	}
+	helper.Ajax(pine.H{
+		"role_name":  "超级管理员",
+		"role_id":    1,
+		"admin_id":   1,
+		"id":         1,
+		"admin_name": "admin",
+		"token":      string(token),
+	}, 0, c.Ctx())
 
 	//}
 }

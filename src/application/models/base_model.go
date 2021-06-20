@@ -9,7 +9,3 @@ type BaseModel struct {
 	orm *xorm.Engine
 	builder.Between
 }
-
-func Where(interface{})  {
-
-}

@@ -3,7 +3,7 @@ package tables
 import "time"
 
 type Link struct {
-	Linkid    int64     `xorm:"pk autoincr" json:"id"`
+	Linkid    int64     `xorm:"pk autoincr id" json:"id"`
 	Linktype  int64     `json:"linktype"`
 	Name      string    `json:"name"`
 	Logo      string    `json:"logo"`

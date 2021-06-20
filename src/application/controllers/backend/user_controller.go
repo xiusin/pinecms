@@ -24,7 +24,7 @@ func (c *UserController) Construct() {
 	c.Table = &tables.Admin{}
 	c.Entries = &[]*tables.Admin{}
 
-	c.TableKey = "userid"
+	c.TableKey = "id"
 	c.TableStructKey = "Userid"
 
 	c.OpBefore = c.before

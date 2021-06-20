@@ -8,16 +8,15 @@ import { ElMessage } from "element-plus";
 
 axios.defaults.timeout = 30000;
 axios.defaults.withCredentials = true;
-
 NProgress.configure({
 	showSpinner: false
 });
 
 // 请求队列
-let requests: Array<Function> = [];
+const requests: Array<Function> = [];
 
 // Token 是否刷新中
-let isRefreshing = false;
+const isRefreshing = false;
 
 // 忽略规则
 const ignore = {
@@ -47,6 +46,15 @@ axios.interceptors.request.use(
 			console.log("method:", config.method);
 			console.table("data:", config.method == "get" ? config.params : config.data);
 			console.groupEnd();
+		}
+		if (config.method == "post" && config.data !== undefined) {
+			config.data["params"] = {};
+			for (const configKey in config.data) {
+				if (config.data.hasOwnProperty(configKey) && configKey.startsWith("params.")) {
+					config.data.params[configKey.replace("params.", "")] = config.data[configKey];
+					delete config.data[configKey];
+				}
+			}
 		}
 
 		// 验证 token

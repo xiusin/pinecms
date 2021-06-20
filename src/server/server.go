@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"github.com/gorilla/securecookie"
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/xiusin/pine/cache/providers/bitcask"
 	"path/filepath"
 	"time"

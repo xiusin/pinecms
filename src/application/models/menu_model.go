@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"strconv"
 	"strings"
@@ -69,12 +68,9 @@ func (m MenuModel) GetTree(menus []tables.Menu, parentid int64) []tables.Menu {
 }
 
 func (m MenuModel) GetAll() []tables.Menu {
-	menus := new([]tables.Menu)
-	err := m.orm.Asc("listorder").Desc("id").Find(menus)
-	if err != nil {
-		pine.Logger().Error(err)
-	}
-	return *menus
+	menus := []tables.Menu{}
+	m.orm.Asc("listorder").Desc("id").Find(&menus)
+	return menus
 }
 
 func (m MenuModel) GetRoleTree(parentid int64, roleid int64) []map[string]interface{} {

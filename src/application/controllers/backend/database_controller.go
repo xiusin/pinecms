@@ -3,7 +3,6 @@ package backend
 import (
 	"bytes"
 	"fmt"
-	"github.com/xiusin/pinecms/src/config"
 	"io"
 	"path/filepath"
 	"strings"
@@ -25,23 +24,13 @@ var baseBackupDir = fmt.Sprintf("%s/%s", "database", "backup")
 // 定时备份任务功能
 
 func (c *DatabaseController) RegisterRoute(b pine.IRouterWrapper) {
-	b.ANY("/database/manager", "Manager")
-	if config.DBConfig().Db.DbDriver == "sqlite3" {
-		b.POST("/database/repair", "NoSupport")
-		b.POST("/database/optimize", "NoSupport")
-		b.POST("/database/backup", "NoSupport")
-	} else {
-		b.POST("/database/repair", "Repair")
-		b.POST("/database/optimize", "Optimize")
-		b.POST("/database/backup", "Backup")
-	}
+	b.ANY("/database/list", "Manager")
+	b.POST("/database/repair", "Repair")
+	b.POST("/database/optimize", "Optimize")
+	b.POST("/database/backup", "Backup")
 	b.ANY("/database/backup-list", "BackupList")
 	b.POST("/database/backup-delete", "BackupDelete")
 	b.POST("/database/backup-download", "BackupDownload")
-}
-
-func (c *DatabaseController) NoSupport() {
-	helper.Ajax("SQLITE不支持此功能", 1, c.Ctx())
 }
 
 func (c *DatabaseController) Manager(orm *xorm.Engine) {
@@ -98,7 +87,7 @@ func (c *DatabaseController) Optimize(orm *xorm.Engine) {
 
 func (c *DatabaseController) Backup() {
 	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
-	msg, code := c.backup(settingData, false)
+	msg, code := c.backup(settingData)
 	helper.Ajax(msg, int64(code), c.Ctx())
 }
 
@@ -158,7 +147,7 @@ func (c *DatabaseController) BackupDelete(orm *xorm.Engine) {
 	helper.Ajax("删除文件成功", 0, c.Ctx())
 }
 
-func (c *DatabaseController) backup(settingData map[string]string, auto bool) (msg string, errcode int) {
+func (c *DatabaseController) backup(settingData map[string]string) (msg string, erode int) {
 	orm := pine.Make(controllers.ServiceXorm).(*xorm.Engine)
 	if settingData["UPLOAD_DATABASE_PASS"] == "" {
 		return "请先设置备份数据库打包zip的密码", 1
@@ -175,17 +164,16 @@ func (c *DatabaseController) backup(settingData map[string]string, auto bool) (m
 	}
 	zipsc := bytes.NewBuffer([]byte{})
 	zipw := zip.NewWriter(zipsc)
+	defer zipw.Close()
 	w, err := zipw.Encrypt(fNameBaseName+".sql", settingData["UPLOAD_DATABASE_PASS"])
 	if err != nil {
 		return "打包zip失败: " + err.Error(), 1
 	}
 	_, err = io.Copy(w, buf)
 	if err != nil {
-		zipw.Close()
 		return "打包zip失败: " + err.Error(), 1
 	}
 	zipw.Flush()
-	zipw.Close()
 	f, err := uploader.Upload(uploadFile, zipsc)
 	if err != nil {
 		return "备份表数据失败: " + err.Error(), 1

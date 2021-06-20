@@ -12,6 +12,7 @@ import SysAd from "./system/ad";
 import SysLink from "./system/link";
 import SysAssets from "./system/assets";
 import SysAttachment from "./system/attachment";
+import SysDatabaseList from "./system/database_list";
 
 export default {
 	common: new Common(),
@@ -27,7 +28,8 @@ export default {
 		ad: new SysAd(),
 		link: new SysLink(),
 		assets: new SysAssets(),
-		attachment: new SysAttachment()
+		attachment: new SysAttachment(),
+		databaseList: new SysDatabaseList()
 	},
 	plugin: {
 		info: new PluginInfo()

@@ -52,7 +52,7 @@ type exportHeader struct {
 }
 
 type BaseController struct {
-	SearchFields   map[string]searchFieldDsl // 设置可以搜索的字段
+	SearchFields   map[string]searchFieldDsl // 设置可以搜索的字段 接收或匹配params的字段
 	BindType       string                    // 表单绑定类型
 	KeywordsSearch []KeywordWhere            // 关键字搜索字段 用于关键字匹配字段
 	Table          interface{}               // 传入Table结构体引用
@@ -172,17 +172,16 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 	}
 	if c.SearchFields != nil {
 		for field, dsl := range c.SearchFields { // 其他字段搜索
-			val := c.Ctx().GetString(field)
-			if val != "" {
+			val, exists := p.Params[strings.ReplaceAll(field, "`", "")]
+			if exists {
 				if dsl.Op == "range" { // 范围查询， 组件between and
-					ranges := strings.SplitN(val, ",", 2)
+					ranges := strings.SplitN(val.(string), ",", 2)
 					if len(ranges) == 2 {
 						query.Where(fmt.Sprintf("%s >= ?", field), ranges[0]).Where(fmt.Sprintf("%s <= ?", field), ranges[1])
 					}
 				} else {
 					query.Where(fmt.Sprintf("%s %s ?", field, dsl.Op), val)
 				}
-
 			}
 		}
 	}

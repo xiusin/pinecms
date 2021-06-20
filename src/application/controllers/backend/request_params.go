@@ -12,12 +12,13 @@ type idParams struct {
 }
 
 type listParam struct {
-	Page       int    `json:"page"`     // 分页数
-	Size       int    `json:"size"`     // 页码
-	OrderField string `json:"order"`    // 排序字段
-	Sort       string `json:"sort"`     // 排序规则
-	Keywords   string `json:"keyWord"`  // 搜索关键字
-	Export     bool   `json:"_isExport"` // 是否导出
+	Page       int                    `json:"page"`      // 分页数
+	Size       int                    `json:"size"`      // 页码
+	OrderField string                 `json:"order"`     // 排序字段
+	Sort       string                 `json:"sort"`      // 排序规则
+	Keywords   string                 `json:"keyWord"`   // 搜索关键字
+	Export     bool                   `json:"_isExport"` // 是否导出
+	Params     map[string]interface{} `json:"params"`    // 额外附加参数
 }
 
 type responsePageParam struct {

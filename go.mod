@@ -28,24 +28,23 @@ require (
 	github.com/landoop/tableprinter v0.0.0-20200104100433-ae9249991eb1
 	github.com/lib/pq v1.7.0 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
-	github.com/mattn/go-sqlite3 v2.0.3+incompatible
+	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/schollz/progressbar v1.0.0
 	github.com/spf13/cobra v1.0.0
 	github.com/valyala/fasthttp v1.26.0
-	github.com/wangtuanjie/ip17mon v1.5.2 // indirect
 	github.com/xiusin/logger v0.0.5
-	github.com/xiusin/pine v0.0.5
+	github.com/xiusin/pine v0.0.0-20210611061920-584b667194ae
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
-	go.etcd.io/bbolt v1.3.4
 	golang.org/x/image v0.0.0-20210220032944-ac19c3e999fb
+	golang.org/x/sys v0.0.0-20210611083646-a4fc73990273 // indirect
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
 	gopkg.in/yaml.v2 v2.3.0
 	xorm.io/builder v0.3.7
 	xorm.io/core v0.7.3
 )
 
-replace github.com/xiusin/pine => ../pine
-
-replace github.com/xiusin/logger => ../logger
+//replace github.com/xiusin/pine => ../pine
+//
+//replace github.com/xiusin/logger => ../logger

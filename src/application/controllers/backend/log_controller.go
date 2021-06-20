@@ -16,6 +16,9 @@ func (c *LogController) Construct() {
 		{Field: "uri", Op: "LIKE", DataExp: "%$?%"},
 		{Field: "params", Op: "LIKE", DataExp: "%$?%"},
 	}
+	c.SearchFields = map[string]searchFieldDsl{
+		"method": {Op: "="},
+	}
 	c.Table = &tables.Log{}
 	c.Entries = &[]*tables.Log{}
 

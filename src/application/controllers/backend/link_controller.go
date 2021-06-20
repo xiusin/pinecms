@@ -18,7 +18,5 @@ func (c *LinkController) Construct() {
 	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
 	c.Table = &tables.Link{}
 	c.Entries = &[]*tables.Link{}
-
-	c.TableKey = "linkid"
 	c.TableStructKey = "Linkid"
 }

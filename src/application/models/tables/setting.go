@@ -8,6 +8,7 @@ type Setting struct {
 	Group     string `json:"group" schema:"group"`
 	Default   string `json:"default" schema:"default"`
 	Listorder uint   `json:"listorder"`
+	Remark    string `json:"remark"`
 	Editor    string `json:"editor" schema:"editor"`
 	Extra     string `json:"extra" xorm:"-" schema:"extra"`
 	Options   []KV   `json:"options" xorm:"json"`

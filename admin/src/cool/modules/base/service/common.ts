@@ -43,7 +43,7 @@ class Common extends BaseService {
 	 */
 	userInfo() {
 		return this.request({
-			url: "/admin/info"
+			url: "/user/info"
 		});
 	}
 

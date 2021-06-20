@@ -8,6 +8,7 @@ import (
 //LoginAdminPayload 登录JWT载体
 type LoginAdminPayload struct {
 	jwt.Payload
+	Id        int64  `json:"id"`
 	AdminId   int64  `json:"admin_id"`
 	AdminName string `json:"admin_name"`
 	RoleID    int64  `json:"role_id"`

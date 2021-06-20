@@ -9,16 +9,18 @@ type SettingController struct {
 	BaseController
 }
 
-
 func (c *SettingController) Construct() {
 	c.Table = &tables.Setting{}
 	c.Entries = &[]*tables.Setting{}
 	c.BaseController.Construct()
 
+	c.SearchFields = map[string]searchFieldDsl{
+		"`group`": {Op: "="},
+	}
+
 	c.KeywordsSearch = []KeywordWhere{
 		{Field: "form_name", Op: "LIKE", DataExp: "%$?%"},
-		{Field: "key", Op: "LIKE", DataExp: "%$?%"},
-		{Field: "`group`", Op: "LIKE", DataExp: "%$?%"},
+		{Field: "`key`", Op: "LIKE", DataExp: "%$?%"},
 	}
 
 }

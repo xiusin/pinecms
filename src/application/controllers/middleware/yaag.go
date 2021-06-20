@@ -108,10 +108,9 @@ func readPostForm(req *fasthttp.RequestCtx) map[string]string {
 func requestBefore(apiCall *models.ApiCall, req *fasthttp.RequestCtx) {
 	apiCall.RequestHeader = readHeaders(req)
 	apiCall.RequestUrlParams = readQueryParams(req)
-	val, ok := apiCall.RequestHeader["Content-Type"]
-	log.Println(val)
-	if ok {
-		ct := strings.TrimSpace(apiCall.RequestHeader["Content-Type"])
+
+	if val, ok := apiCall.RequestHeader["Content-Type"]; ok {
+		ct := strings.TrimSpace(val)
 		switch ct {
 		case "application/x-www-form-urlencoded":
 			fallthrough

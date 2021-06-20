@@ -1,44 +1,40 @@
 <template>
-	<cl-crud @load="onLoad">
+	<cl-crud @load="onLoad" :ref="setRefs('crud')">
 		<el-row type="flex">
-			<cl-refresh-btn/>
-			<cl-add-btn/>
-			<cl-flex1/>
-			<cl-query field="param" :list="groupsList"/>
-			<cl-search-key/>
+			<cl-refresh-btn />
+			<cl-add-btn />
+			<cl-flex1 />
+			<cl-query :list="list" />
+			<cl-search-key />
 		</el-row>
-
 		<el-row>
-			<cl-table v-bind="table"/>
+			<el-tabs type="border-card" style="width: 100%" v-model="tab">
+				<el-tab-pane v-for="(item, index) in list" :label="item.label" :key="index" :name="item.label"
+					><cl-table v-bind="table"
+				/></el-tab-pane>
+			</el-tabs>
 		</el-row>
 
 		<el-row type="flex">
-			<cl-flex1/>
+			<cl-flex1 />
 		</el-row>
 
-		<cl-upsert :ref="setRefs('upsert')" v-bind="upsert" @open="onUpsertOpen"></cl-upsert>
+		<cl-upsert :ref="setRefs('upsert')" v-bind="upsert" @open="onUpsertOpen" />
 	</cl-crud>
 </template>
 
 <script lang="ts">
-import {defineComponent, inject, onBeforeMount, reactive, ref} from "vue";
-import {useRefs} from "/@/core";
-import {CrudLoad, QueryList, Table, Upsert} from "cl-admin-crud-vue3/types";
+import { defineComponent, inject, reactive, ref, watch } from "vue";
+import { useRefs } from "/@/core";
+import { CrudLoad, QueryList, Table, Upsert } from "cl-admin-crud-vue3/types";
 
 export default defineComponent({
 	name: "sys-setting",
 	setup() {
 		const service = inject<any>("service");
-		const {refs, setRefs} = useRefs();
-
-		let groupsList = ref<QueryList[]>([])
-
-		onBeforeMount(() => {
-			service.system.setting.groupList().then((list: QueryList[]) => {
-				groupsList.value?.push(...list)
-			})
-		})
-
+		const { refs, setRefs } = useRefs();
+		const list = ref<QueryList[]>([]);
+		const tab = ref<String>("");
 		// 表格配置
 		const table = reactive<Table>({
 			props: {
@@ -48,20 +44,20 @@ export default defineComponent({
 				}
 			},
 			columns: [
-				{
-					label: "排序",
-					prop: "listorder",
-					width: 50,
-					align: "left",
-				},
+				// {
+				// 	label: "排序",
+				// 	prop: "listorder",
+				// 	width: 50,
+				// 	align: "left"
+				// },
 				{
 					label: "名称",
 					prop: "form_name",
 					width: 120,
-					align: "left",
+					align: "left"
 				},
 				{
-					label: "KEY",
+					label: "键名",
 					prop: "key",
 					width: 200,
 					align: "left"
@@ -69,10 +65,10 @@ export default defineComponent({
 				{
 					label: "分组",
 					prop: "group",
-					width: 100,
+					width: 100
 				},
 				{
-					label: "VALUE",
+					label: "值",
 					prop: "value",
 					showOverflowTooltip: true,
 					align: "left"
@@ -111,8 +107,27 @@ export default defineComponent({
 					}
 				},
 				{
+					prop: "group",
+					label: "分组",
+					component: {
+						name: "el-select",
+						props: {
+							clearable: true,
+							filterable: true,
+							allowCreate: true,
+							placeholder: "请选择分组或创建新分组"
+						},
+						options: list
+					},
+					rules: {
+						required: true,
+						message: "名称不能为空"
+					}
+				},
+
+				{
 					prop: "key",
-					label: "KEY",
+					label: "键名",
 					component: {
 						name: "el-input",
 						props: {
@@ -126,16 +141,14 @@ export default defineComponent({
 				},
 				{
 					prop: "value",
-					label: "VALUE",
-					component: ({ h, scope }) => {
-						return h("input", {
-							props: {
-								type: "textarea"
-							},
-							attrs: {
-								placeholder: "请填写内容"
-							}
-						});
+					label: "值",
+					component: {
+						name: "el-input",
+						props: {
+							placeholder: "请输入备注",
+							rows: 3,
+							type: "textarea"
+						}
 					}
 				},
 				{
@@ -163,24 +176,38 @@ export default defineComponent({
 			]
 		});
 
+		// 刷新列表
+		function refresh(params: any) {
+			refs.value.crud.refresh(params);
+		}
+
+		watch(
+			() => tab.value,
+			(val) => {
+				refresh({
+					"params.group": val
+				});
+			}
+		);
+
 		// crud 加载
-		function onLoad({ctx, app}: CrudLoad) {
+		async function onLoad({ ctx, app }: CrudLoad) {
 			ctx.service(service.system.setting).done();
-			app.refresh();
+			list.value = await service.system.setting.groupList();
+			tab.value = list.value[0].label;
+			await app.refresh({ "params.group": tab.value });
 		}
-
 		// 监听打开
-		function onUpsertOpen(isEdit: boolean, data: any) {
-
-		}
+		function onUpsertOpen(isEdit: boolean, data: any) {}
 
 		return {
-			refs,
 			table,
 			upsert,
 			setRefs,
 			onLoad,
-			groupsList,
+			list,
+			tab,
+			refresh,
 			onUpsertOpen
 		};
 	}
