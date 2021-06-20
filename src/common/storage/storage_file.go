@@ -38,8 +38,8 @@ func (s *FileUploader) Upload(storageName string, LocalFile io.Reader) (string, 
 }
 
 func (s *FileUploader) List(dir string) ([]string, string, error) {
-	scandir := filepath.Join(s.baseDir, dir)
-	fs, err := ioutil.ReadDir(scandir)
+	scanDir := filepath.Join(s.baseDir, dir)
+	fs, err := ioutil.ReadDir(scanDir)
 	if err != nil {
 		return nil, "", err
 	}
@@ -51,8 +51,7 @@ func (s *FileUploader) List(dir string) ([]string, string, error) {
 }
 
 func (s *FileUploader) Exists(name string) (bool, error) {
-	fullname := filepath.Join(s.baseDir, name)
-	_, err := os.Stat(fullname)
+	_, err := os.Stat(filepath.Join(s.baseDir, name))
 	if err != nil {
 		if !os.IsNotExist(err) {
 			return false, err
