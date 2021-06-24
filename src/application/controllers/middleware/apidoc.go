@@ -5,8 +5,10 @@ import (
 	"github.com/fatih/structs"
 	"github.com/xiusin/pine"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
+	"sync"
 )
 
 const apiDocKey = "apiEntity"
@@ -30,20 +32,24 @@ type apiHeader struct {
 	Desc    string `json:"desc"`
 }
 
+type apiPublicResponse struct {
+	Name string `json:"name"`
+	Desc string `json:"desc"`
+	Type string `json:"type"`
+	Main bool   `json:"main,omitempty"`
+}
+
 type Config struct {
-	Enable        bool     `json:"enable"`
-	DataPath      string   `json:"-"`
-	Title         string   `json:"title"`
-	Desc          string   `json:"desc"`
-	Copyright     string   `json:"copyright"`
-	DefaultMethod string   `json:"default_method"`
-	DefaultAuthor string   `json:"default_author"`
-	Apps          []apiApp `json:"apps"`
-	Groups        []struct {
-		Title string `json:"title"`
-		Name  string `json:"name"`
-	} `json:"groups"`
-	Cache struct {
+	Enable        bool       `json:"enable"`
+	DataPath      string     `json:"-"`
+	Title         string     `json:"title"`
+	Desc          string     `json:"desc"`
+	Copyright     string     `json:"copyright"`
+	DefaultMethod string     `json:"default_method"`
+	DefaultAuthor string     `json:"default_author"`
+	Apps          []apiApp   `json:"apps"`
+	Groups        []apiGroup `json:"groups"`
+	Cache         struct {
 		Enable bool   `json:"enable"`
 		Path   string `json:"path"`
 		Reload bool   `json:"reload"`
@@ -53,16 +59,11 @@ type Config struct {
 		Enable    bool   `json:"enable"`
 		SecretKey string `json:"secret_key"`
 	} `json:"auth"`
-	FilterMethod []interface{} `json:"filter_method"`
-	Headers      []apiHeader   `json:"headers"` // 猜测是保存的公共头部
-	Parameters   []interface{} `json:"parameters"`
-	Responses    []struct {
-		Name string `json:"name"`
-		Desc string `json:"desc"`
-		Type string `json:"type"`
-		Main bool   `json:"main,omitempty"`
-	} `json:"responses"`
-	Docs struct {
+	FilterMethod []interface{}       `json:"filter_method"`
+	Headers      []apiHeader         `json:"headers"` // 猜测是保存的公共头部
+	Parameters   []interface{}       `json:"parameters"`
+	Responses    []apiPublicResponse `json:"responses"`
+	Docs         struct {
 		MenuTitle string `json:"menu_title"`
 		Menus     []struct {
 			Title string `json:"title"`
@@ -150,24 +151,28 @@ type apiParam struct {
 
 type apiEntity struct {
 	configed  bool
-	immutable bool       `json:"immutable"`
-	Title     string     `json:"title"`
-	Desc      string     `json:"desc,omitempty"`
-	Tag       string     `json:"tag"`
-	Author    string     `json:"author"`
-	URL       string     `json:"url"`
-	Method    string     `json:"method"`
-	Param     []apiParam `json:"param"`
-	Return    []struct {
-		Name   string     `json:"name"`
-		Desc   string     `json:"desc"`
-		Type   string     `json:"type"`
-		Main   bool       `json:"main,omitempty"`
-		Params []apiParam `json:"params,omitempty"`
-	} `json:"return"`
-	Header  []apiHeader `json:"header"`
-	Name    string      `json:"name"`
-	MenuKey string      `json:"menu_key"`
+	immutable bool
+	Title     string      `json:"title"`
+	Desc      string      `json:"desc,omitempty"`
+	Tag       string      `json:"tag"`
+	Author    string      `json:"author"`
+	URL       string      `json:"url"`
+	Method    string      `json:"method"`
+	Param     []apiParam  `json:"param"`
+	Return    []apiReturn `json:"return"`
+	Header    []apiHeader `json:"header"`
+	Name      string      `json:"name"`
+	MenuKey   string      `json:"menu_key"`
+	group     apiGroup
+	subGroup  string
+}
+
+type apiReturn struct {
+	Name   string     `json:"name"`
+	Desc   string     `json:"desc"`
+	Type   string     `json:"type"`
+	Main   bool       `json:"main,omitempty"`
+	Params []apiParam `json:"params,omitempty"`
 }
 
 type apiList struct {
@@ -185,16 +190,28 @@ type apiData struct {
 	Tags   []string   `json:"tags"`
 }
 
+type apiDocApp struct {
+	sync.Mutex
+	config  *Config
+	groups  []apiGroup
+	ApiData map[string]apiList
+}
+
 func DefaultConfig() *Config {
 	return &Config{
 		Enable:        true,
 		Title:         "PineCMS ApiDoc",
 		Desc:          "PineCMS 接口文档",
-		Copyright:     "http://github.com/xiusin/pinecms.git",
+		Copyright:     "https://github.com/xiusin/pinecms.git",
 		DefaultMethod: "GET",
 		DefaultAuthor: "xiusin",
 		Debug:         true,
 		DataPath:      "apidoc",
+		//Responses: []apiPublicResponse{ // todo 使用解析
+		//	{Name: "code", Desc: "状态码", Type: "int"},
+		//	{Name: "message", Desc: "操作描述", Type: "string"},
+		//	{Name: "data", Desc: "业务数据", Type: "object", Main: true},
+		//},
 		Headers: []apiHeader{
 			{
 				Name:    "Authorization",
@@ -216,9 +233,15 @@ func DefaultConfig() *Config {
 	}
 }
 
-//type DemoParams struct {
-//	Page int `json:"page" api:"require:true,remark:分页数,default:0"`
-//}
+type DemoParams struct {
+	Page int `json:"page" api:"require:true,remark:分页数,default:0"`
+}
+
+type DemoResponseParam struct {
+	Code    int         `json:"code" api:"require:true,remark:状态码,default:0"`
+	Message string      `json:"message" api:"require:true,remark:操作描述"`
+	Data    interface{} `json:"data" api:"require:true,remark:业务数据"`
+}
 
 func parseInterface(reqParams interface{}) []apiParam {
 	if reqParams != nil {
@@ -277,12 +300,19 @@ func parseInterface(reqParams interface{}) []apiParam {
 	return nil
 }
 
+var apiJsonData []byte
+
 func ApiDoc(config *Config) pine.Handler {
 	if config == nil {
 		config = DefaultConfig()
 	}
 	defaultConfig = config
 	_ = os.Mkdir(config.DataPath, os.ModePerm)
+	fileName := filepath.Join(config.DataPath, "apidoc.json")
+	apiJsonData, _ = os.ReadFile(fileName)
+
+	//json.Unmarshal(apiJsonData, )
+
 	return func(ctx *pine.Context) {
 		if !config.Enable {
 			ctx.Next()
@@ -296,12 +326,13 @@ func ApiDoc(config *Config) pine.Handler {
 		default:
 			ps := strings.Split(ctx.Path(), "/")
 			method := string(ctx.Method())
+			key := strings.ToLower(fmt.Sprintf("%s_%s", method, strings.ReplaceAll(ctx.Path(), "/", "_")))
 			entity := &apiEntity{
 				URL:     ctx.Path(),
 				Method:  method,
 				Name:    ps[len(ps)-1],
 				Header:  defaultConfig.Headers,
-				MenuKey: strings.ToLower(fmt.Sprintf("%s_%s", method, strings.ReplaceAll(ctx.Path(), "/", "_"))),
+				MenuKey: key,
 			}
 			ctx.Set(apiDocKey, entity)
 
@@ -317,8 +348,9 @@ func ApiDoc(config *Config) pine.Handler {
 				return
 			}
 			entity.Author = defaultConfig.DefaultAuthor
-
 			// 读取请求参数
+			m := structs.Fields(structs.Map(ctx.Response.Body()))
+
 			fmt.Printf("%+v\n", entity)
 		}
 	}
