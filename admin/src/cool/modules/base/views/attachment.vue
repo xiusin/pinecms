@@ -43,6 +43,16 @@ export default defineComponent({
 
 		let urls = []
 
+		let file_size_format = function ($size = 0, $dec = 2) {
+			const unit = ["B", "KB", "MB", "GB", "TB", "PB"];
+			let pos = 0;
+			while ($size >= 1024) {
+				$size /= 1024;
+				pos++;
+			}
+			return  $size.toFixed(2)  + unit[pos];
+		}
+
 		let previewWidth = {
 			type: String,
 			default: "500px"
@@ -57,12 +67,6 @@ export default defineComponent({
 					minWidth: 150,
 					align: "left",
 				},
-				// {
-				// 	label: "文件名",
-				// 	prop: "name",
-				// 	minWidth: 150,
-				// 	align: "left",
-				// },
 				{
 					label: "图片",
 					prop: "url",
@@ -76,7 +80,10 @@ export default defineComponent({
 				{
 					label: "文件大小",
 					prop: "size",
-					minWidth: 150
+					minWidth: 150,
+					component: ({h, scope}) => {
+						return file_size_format(scope.size);
+					},
 				},
 				{
 					label: "类型",

@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/config"
@@ -9,6 +10,7 @@ import (
 
 func SetGlobalConfigData() pine.Handler {
 	return func(ctx *pine.Context) {
+		fmt.Println("SetGlobalConfigData")
 		settingData, err := config.SiteConfig()
 		if err != nil {
 			pine.Logger().Error("无法读取到配置内容:" + err.Error())

@@ -1,9 +1,11 @@
 package config
 
 import (
+	"embed"
 	"fmt"
 	"github.com/gorilla/securecookie"
 	"github.com/xiusin/pine/cache/providers/bitcask"
+	"net/http"
 	"path/filepath"
 	"time"
 
@@ -41,6 +43,10 @@ var (
 	dc           = config.DBConfig()
 )
 
+//go:embed test
+var fs embed.FS
+
+
 func Dc() *config.DbConfig {
 	return dc
 }
@@ -73,7 +79,6 @@ func initApp() {
 	app = pine.New()
 	diConfig()
 	app.Use(request_log.RequestRecorder())
-	app.Use(middleware.YaagApiDoc())
 	var staticPathPrefix []string
 	for _, static := range conf.Statics {
 		staticPathPrefix = append(staticPathPrefix, static.Route)
@@ -98,11 +103,11 @@ func registerStatic() {
 	for _, static := range conf.Statics {
 		app.Static(static.Route, filepath.FromSlash(static.Path))
 	}
+	app.StaticFS("/test/", fs, "test")
 }
 
 func registerV2BackendRoutes() {
-	app.Use(middleware.Cors(), middleware.SetGlobalConfigData())
-
+	app.Use(middleware.Cors(), middleware.SetGlobalConfigData(), middleware.ApiDoc(nil))
 	app.Group(
 		"/v2",
 		middleware.VerifyJwtToken(),
@@ -129,6 +134,11 @@ func registerV2BackendRoutes() {
 }
 
 func runServe() {
+
+	app.SetRecoverHandler(func(ctx *pine.Context) {
+		ctx.WriteJSON(pine.H{"code": http.StatusInternalServerError, "message": ctx.Msg})
+	})
+	//app.DumpRouteTable()
 	app.Run(
 		pine.Addr(fmt.Sprintf(":%d", conf.Port)),
 		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))), // 关闭加密cookie

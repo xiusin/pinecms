@@ -13,6 +13,7 @@ import (
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/controllers/middleware"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"reflect"
 	"strconv"
@@ -96,6 +97,7 @@ func (c *BaseController) BindParse() (err error) {
 }
 
 func (c *BaseController) PostList() {
+
 	query := c.Orm.Table(c.Table)
 	if p, err := c.buildParamsForQuery(query); err != nil {
 		helper.Ajax("参数错误: "+err.Error(), 1, c.Ctx())
@@ -142,6 +144,8 @@ func (c *BaseController) PostList() {
 
 func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, error) {
 	var p listParam
+	middleware.SetApiEntity(c.Ctx(), "测试接口", "用于测试相关接口自动生成文档", &p)
+
 	if err := parseParam(c.Ctx(), &p); err != nil {
 		return nil, err
 	}

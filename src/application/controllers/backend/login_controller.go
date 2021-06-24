@@ -5,6 +5,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/controllers/middleware"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -19,14 +20,14 @@ type LoginController struct {
 }
 
 func (c *LoginController) RegisterRoute(b pine.IRouterWrapper) {
-	b.ANY("/login", "LoginV2")
+	b.ANY("/login", "Login")
 	b.ANY("/login/index", "Index")
-	b.ANY("/login/logout", "Logout")
+	//b.ANY("/login/logout", "Logout")
 }
 
-func (c *LoginController) LoginV2(orm *xorm.Engine) {
+func (c *LoginController) Login() {
 	var p loginUserParam
-
+	middleware.SetApiEntity(c.Ctx(), "测试接口", "用于测试相关接口自动生成文档", &p)
 	if err := parseParam(c.Ctx(), &p); err != nil {
 		helper.Ajax("参数不能为空", 1, c.Ctx())
 		return
@@ -101,13 +102,13 @@ func (c *LoginController) Index(orm *xorm.Engine) {
 
 	c.Ctx().Render().HTML("backend/login_index.html")
 }
-
-func (c *LoginController) Logout() {
-	c.Session().Remove("adminid")
-	c.Session().Remove("roleid")
-	c.Ctx().RemoveCookie("username")
-	c.Ctx().RemoveCookie("userid")
-	c.Session().Remove("role_name")
-	c.Session().Remove("username")
-	c.Ctx().Redirect("/b/login/index")
-}
+//
+//func (c *LoginController) Logout() {
+//	c.Session().Remove("adminid")
+//	c.Session().Remove("roleid")
+//	c.Ctx().RemoveCookie("username")
+//	c.Ctx().RemoveCookie("userid")
+//	c.Session().Remove("role_name")
+//	c.Session().Remove("username")
+//	c.Ctx().Redirect("/b/login/index")
+//}

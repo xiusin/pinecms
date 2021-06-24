@@ -34,7 +34,7 @@ var startCmd = &cobra.Command{
 				{"GoVersion", runtime.Version()},
 			})
 		}
-		//runtime.GOMAXPROCS(runtime.NumCPU())
+
 		config.Server()
 	},
 }

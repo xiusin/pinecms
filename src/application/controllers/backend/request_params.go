@@ -12,7 +12,7 @@ type idParams struct {
 }
 
 type listParam struct {
-	Page       int                    `json:"page"`      // 分页数
+	Page       int                    `json:"page" api:"remark:分页数,default:0,require:true"`      // 分页数
 	Size       int                    `json:"size"`      // 页码
 	OrderField string                 `json:"order"`     // 排序字段
 	Sort       string                 `json:"sort"`      // 排序规则

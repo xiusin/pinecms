@@ -83,7 +83,7 @@ func ScanDir(dir string) []Node {
 			}
 			nodes = append(nodes, node)
 		}
-		cacher.SetWithMarshal(controllers.CacheFeTplList, &nodes)
+		_ = cacher.SetWithMarshal(controllers.CacheFeTplList, &nodes)
 	}
 
 	return nodes
