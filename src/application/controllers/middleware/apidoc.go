@@ -40,15 +40,15 @@ type apiPublicResponse struct {
 }
 
 type Config struct {
-	Enable        bool       `json:"enable"`
-	DataPath      string     `json:"-"`
-	Title         string     `json:"title"`
-	Desc          string     `json:"desc"`
-	Copyright     string     `json:"copyright"`
-	DefaultMethod string     `json:"default_method"`
-	DefaultAuthor string     `json:"default_author"`
-	Apps          []apiApp   `json:"apps"`
-	Groups        []apiGroup `json:"groups"`
+	Enable        bool        `json:"enable"`         // 是否启用apidoc
+	DataPath      string      `json:"-"`              // 配置数据存储目录
+	ResponseParam interface{} `json:"-"`              // 用于反射返回值信息
+	Title         string      `json:"title"`          // 标题目录
+	Desc          string      `json:"desc"`           // 描述
+	Copyright     string      `json:"copyright"`      // 版权
+	DefaultAuthor string      `json:"default_author"` // 默认作者
+	Apps          []apiApp    `json:"apps"`           // 应用， 例如 前端接口，后端接口
+	Groups        []apiGroup  `json:"groups"`         //  应用分组
 	Cache         struct {
 		Enable bool   `json:"enable"`
 		Path   string `json:"path"`
@@ -150,21 +150,25 @@ type apiParam struct {
 }
 
 type apiEntity struct {
-	configed  bool
-	immutable bool
-	Title     string      `json:"title"`
-	Desc      string      `json:"desc,omitempty"`
-	Tag       string      `json:"tag"`
-	Author    string      `json:"author"`
-	URL       string      `json:"url"`
-	Method    string      `json:"method"`
-	Param     []apiParam  `json:"param"`
-	Return    []apiReturn `json:"return"`
-	Header    []apiHeader `json:"header"`
-	Name      string      `json:"name"`
-	MenuKey   string      `json:"menu_key"`
-	group     apiGroup
-	subGroup  string
+	configed        bool
+	immutable       bool
+	Title           string      `json:"title"`
+	Desc            string      `json:"desc,omitempty"`
+	Tag             string      `json:"tag"`
+	Author          string      `json:"author"`
+	URL             string      `json:"url"`
+	Method          string      `json:"method"`
+	Param           []apiParam  `json:"param"`
+	Return          []apiReturn `json:"return"`
+	Header          []apiHeader `json:"header"`
+	Name            string      `json:"name"`
+	MenuKey         string      `json:"menu_key"`
+	RawParam        string      `json:"raw_param"`
+	RawReturn       string      `json:"raw_return"`
+	RawQuery        string      `json:"raw_query"`
+	QueryDataMethod string      `json:"query_data_method"`
+	group           apiGroup
+	subGroup        string
 }
 
 type apiReturn struct {
@@ -203,7 +207,6 @@ func DefaultConfig() *Config {
 		Title:         "PineCMS ApiDoc",
 		Desc:          "PineCMS 接口文档",
 		Copyright:     "https://github.com/xiusin/pinecms.git",
-		DefaultMethod: "GET",
 		DefaultAuthor: "xiusin",
 		Debug:         true,
 		DataPath:      "apidoc",
@@ -273,6 +276,7 @@ func parseInterface(reqParams interface{}) []apiParam {
 				name = field.Name()
 			}
 			apiReqParam := apiParam{Type: fieldType, Name: name}
+			//apiReturn := apiReturn{Type: fieldType, Name: name, Params: nil}
 			for _, data := range apiDatas {
 				kv := strings.Split(strings.ToLower(data), ":")
 				v := ""
@@ -286,6 +290,10 @@ func parseInterface(reqParams interface{}) []apiParam {
 					}
 				case "remark":
 					apiReqParam.Desc = v
+				case "main":
+					if strings.ToLower(v) == "true" {
+						apiReqParam.Require = true
+					}
 				case "default":
 					apiReqParam.Default = v
 				}
@@ -348,9 +356,15 @@ func ApiDoc(config *Config) pine.Handler {
 				return
 			}
 			entity.Author = defaultConfig.DefaultAuthor
-			// 读取请求参数
-			m := structs.Fields(structs.Map(ctx.Response.Body()))
-
+			entity.RawQuery = string(ctx.RequestCtx.RequestURI())
+			entity.QueryDataMethod = string(ctx.Response.Header.ContentType())
+			if strings.Contains(strings.ToLower(entity.QueryDataMethod), "application/json") {
+				entity.RawParam = string(ctx.Request.Body())
+			} else {
+				entity.RawParam = string(ctx.PostBody())
+			}
+			entity.RawReturn = string(ctx.Response.Body())
+			//entity.Return = parseInterface(defaultConfig.ResponseParam)
 			fmt.Printf("%+v\n", entity)
 		}
 	}
