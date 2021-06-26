@@ -47,7 +47,11 @@ axios.interceptors.request.use(
 			console.table("data:", config.method == "get" ? config.params : config.data);
 			console.groupEnd();
 		}
-		if (config.method == "post" && config.data !== undefined) {
+		if (
+			config.method == "post" &&
+			config.data !== undefined &&
+			Object.keys(config.data).length
+		) {
 			config.data["params"] = {};
 			for (const configKey in config.data) {
 				if (config.data.hasOwnProperty(configKey) && configKey.startsWith("params.")) {

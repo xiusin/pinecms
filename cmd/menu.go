@@ -82,10 +82,10 @@ var menuCmd = &cobra.Command{
 				role.A = item.A
 				if k == 0 {
 					role.Parentid = 0
-					role.Display = 1
+					role.Display = true
 				} else {
 					role.Parentid = parId
-					role.Display = 0
+					role.Display = false
 				}
 				id, err := config.XOrmEngine.Insert(&role)
 				if err != nil {

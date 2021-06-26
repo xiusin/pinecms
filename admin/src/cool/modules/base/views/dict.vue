@@ -4,26 +4,16 @@
 			<!-- 组织架构 -->
 			<div class="dept" :class="_expand">
 				<div class="container">
-					<cl-crud :ref="setRefs('crud')" :on-refresh="onRefresh" @load="onLoad">
+					<cl-crud :ref="setRefs('categoryCrud')" :on-refresh="onCategoryRefresh" @load="onCategoryLoad">
 						<el-row type="flex">
 							<cl-refresh-btn />
 							<cl-add-btn />
-							<cl-multi-delete-btn />
-							<el-button
-								size="mini"
-								type="success"
-								:disabled="selects.ids.length == 0"
-								@click="toMove()"
-							>转移</el-button
-							>
-							<cl-flex1 />
-							<cl-search-key />
 						</el-row>
 
 						<el-row>
 							<cl-table
-								:ref="setRefs('table')"
-								v-bind="table"
+								:ref="setRefs('categoryTable')"
+								v-bind="categoryTable"
 								@selection-change="onSelectionChange"
 							>
 								<!-- 头像 -->
@@ -45,33 +35,12 @@
 										size="small"
 										effect="dark"
 										style="margin: 2px"
-									>{{ item }}</el-tag
-									>
-								</template>
-
-								<!-- 单个转移 -->
-								<template #slot-move-btn="{ scope }">
-									<el-button
-										v-permission="service.base.system.user.permission.move"
-										type="text"
-										size="mini"
-										@click="toMove(scope.row)"
-									>转移</el-button
+										>{{ item }}</el-tag
 									>
 								</template>
 							</cl-table>
 						</el-row>
-
-						<el-row type="flex">
-							<cl-flex1 />
-							<cl-pagination />
-						</el-row>
-
-						<cl-upsert
-							:ref="setRefs('upsert')"
-							:items="upsert.items"
-							:on-submit="onUpsertSubmit"
-						/>
+						<cl-upsert :ref="setRefs('categoryUpsert')" :items="categoryUpsert.items" />
 					</cl-crud>
 				</div>
 			</div>
@@ -84,13 +53,6 @@
 							<cl-refresh-btn />
 							<cl-add-btn />
 							<cl-multi-delete-btn />
-							<el-button
-								size="mini"
-								type="success"
-								:disabled="selects.ids.length == 0"
-								@click="toMove()"
-							>转移</el-button
-							>
 							<cl-flex1 />
 							<cl-search-key />
 						</el-row>
@@ -120,18 +82,7 @@
 										size="small"
 										effect="dark"
 										style="margin: 2px"
-									>{{ item }}</el-tag
-									>
-								</template>
-
-								<!-- 单个转移 -->
-								<template #slot-move-btn="{ scope }">
-									<el-button
-										v-permission="service.base.system.user.permission.move"
-										type="text"
-										size="mini"
-										@click="toMove(scope.row)"
-									>转移</el-button
+										>{{ item }}</el-tag
 									>
 								</template>
 							</cl-table>
@@ -155,21 +106,17 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, reactive, ref, watch } from "vue";
-import { useStore } from "vuex";
+import {defineComponent, inject, reactive, ref} from "vue";
 import { useRefs } from "/@/core";
-import { Table, Upsert } from "cl-admin-crud-vue3/types";
+import {QueryList, Table, Upsert} from "cl-admin-crud-vue3/types";
 
 export default defineComponent({
 	name: "sys-dict",
 
 	setup() {
 		const service = inject<any>("service");
-		const store = useStore();
-		const { refs, setRefs } = useRefs();
 
-		// 是否展开
-		const isExpand = ref<boolean>(true);
+		const { refs, setRefs } = useRefs();
 
 		// 选择项
 		const selects = reactive<any>({
@@ -177,70 +124,36 @@ export default defineComponent({
 			ids: []
 		});
 
-		// 部门列表
-		const dept = ref<any[]>([]);
-
 		// 表格配置
 		const table = reactive<Table>({
 			props: {
 				"default-sort": {
-					prop: "createTime",
+					prop: "id",
 					order: "descending"
 				}
 			},
 			columns: [
 				{
-					type: "selection",
-					width: 60
-				},
-				{
-					prop: "headImg",
-					label: "头像"
-				},
-				{
 					prop: "name",
-					label: "姓名",
-					minWidth: 150
+					label: "名称",
+					width: 170
 				},
 				{
-					prop: "username",
-					label: "用户名",
-					minWidth: 150
+					prop: "value",
+					label: "值"
 				},
 				{
-					prop: "nickName",
-					label: "昵称",
-					minWidth: 150
-				},
-				{
-					prop: "departmentName",
-					label: "部门名称",
-					minWidth: 150
-				},
-				{
-					prop: "roleName",
-					label: "角色",
-					headerAlign: "center",
-					minWidth: 200
-				},
-				{
-					prop: "phone",
-					label: "手机号码",
-					minWidth: 150
-				},
-				{
-					prop: "remark",
-					label: "备注",
-					minWidth: 150
+					prop: "cat_name",
+					label: "所属分类"
 				},
 				{
 					prop: "status",
 					label: "状态",
-					minWidth: 120,
+					minWidth: 50,
 					dict: [
 						{
-							label: "启用",
-							value: 1,
+							label: "正常",
+							value: true,
 							type: "success"
 						},
 						{
@@ -251,138 +164,85 @@ export default defineComponent({
 					]
 				},
 				{
-					prop: "createTime",
-					label: "创建时间",
-					sortable: "custom",
-					minWidth: 150
-				},
-				{
 					type: "op",
-					buttons: ["slot-move-btn", "edit", "delete"],
-					width: 160
+					buttons: ["edit", "delete"],
+					width: 120
 				}
 			]
 		});
 
-		// 新增、编辑配置
-		const upsert = reactive<Upsert>({
-			items: [
-				{
-					prop: "headImg",
-					label: "头像",
-					span: 24,
-					component: {
-						name: "cl-upload",
-						props: {
-							text: "选择头像",
-							icon: "el-icon-picture"
-						}
-					}
-				},
+		const categoryTable = reactive<Table>({
+			props: {
+				"default-sort": {
+					prop: "id",
+					order: "descending"
+				}
+			},
+			columns: [
 				{
 					prop: "name",
-					label: "姓名",
-					span: 12,
-					component: {
-						name: "el-input",
-						props: {
-							placeholder: "请填写姓名"
-						}
-					},
-					rules: {
-						required: true,
-						message: "姓名不能为空"
-					}
+					label: "字典名称",
+					width: 170
 				},
 				{
-					prop: "nickName",
-					label: "昵称",
-					span: 12,
-					component: {
-						name: "el-input",
-						props: {
-							placeholder: "请填写昵称"
-						}
-					},
-					rules: {
-						required: true,
-						message: "昵称不能为空"
-					}
+					prop: "key",
+					label: "字典标识"
 				},
 				{
-					prop: "username",
-					label: "用户名",
-					span: 12,
-					component: {
-						name: "el-input",
-						props: {
-							placeholder: "请填写用户名"
-						}
-					},
-					rules: [
+					prop: "status",
+					label: "状态",
+					minWidth: 50,
+					dict: [
 						{
-							required: true,
-							message: "用户名不能为空"
+							label: "正常",
+							value: true,
+							type: "success"
+						},
+						{
+							label: "禁用",
+							value: 0,
+							type: "danger"
 						}
 					]
 				},
 				{
-					prop: "password",
-					label: "密码",
+					type: "op",
+					buttons: ["edit", "delete"],
+					width: 120
+				}
+			]
+		});
+
+		const categoryUpsert = reactive<Upsert>({
+			items: [
+				{
+					prop: "name",
+					label: "字典名称",
 					span: 12,
 					component: {
 						name: "el-input",
 						props: {
-							placeholder: "请填写密码",
-							type: "password"
-						}
-					},
-					rules: [
-						{
-							min: 6,
-							max: 16,
-							message: "密码长度在 6 到 16 个字符"
-						}
-					]
-				},
-				{
-					prop: "roleIdList",
-					label: "角色",
-					span: 24,
-					value: [],
-					component: {
-						name: "cl-role-select",
-						props: {
-							props: {
-								"multiple-limit": 3
-							}
+							placeholder: "请填写字典名称"
 						}
 					},
 					rules: {
 						required: true,
-						message: "角色不能为空"
+						message: "字典名称不能为空"
 					}
 				},
 				{
-					prop: "phone",
-					label: "手机号码",
+					prop: "key",
+					label: "字典标识",
 					span: 12,
 					component: {
 						name: "el-input",
 						props: {
-							placeholder: "请填写手机号码"
+							placeholder: "请填写字典标识"
 						}
-					}
-				},
-				{
-					prop: "email",
-					label: "邮箱",
-					span: 12,
-					component: {
-						name: "el-input",
-						props: {
-							placeholder: "请填写邮箱"
-						}
+					},
+					rules: {
+						required: true,
+						message: "字典标识不能为空"
 					}
 				},
 				{
@@ -406,12 +266,12 @@ export default defineComponent({
 						name: "el-radio-group",
 						options: [
 							{
-								label: "开启",
-								value: 1
+								label: "正常",
+								value: true
 							},
 							{
-								label: "关闭",
-								value: 0
+								label: "禁用",
+								value: false
 							}
 						]
 					}
@@ -419,23 +279,103 @@ export default defineComponent({
 			]
 		});
 
-		// 浏览器信息
-		const browser = computed(() => store.getters.browser);
+		const list = ref<QueryList[]>([]);
 
-		// 监听屏幕大小变化
-		watch(
-			() => browser.value.isMini,
-			(val: boolean) => {
-				isExpand.value = !val;
-			},
-			{
-				immediate: true
-			}
-		);
+		const upsert = reactive<Upsert>({
+			items: [
+				{
+					prop: "name",
+					label: "名称",
+					span: 24,
+					component: {
+						name: "el-input",
+						props: {
+							placeholder: "请填写名称"
+						}
+					},
+					rules: {
+						required: true,
+						message: "名称不能为空"
+					}
+				},
+				{
+					prop: "cid",
+					label: "字典分类",
+					component: {
+						name: "el-select",
+						props: {
+							clearable: true,
+							filterable: true,
+							placeholder: "请选择分组或创建新分组"
+						},
+						options: list
+					},
+					rules: {
+						required: true,
+						message: "分类必选"
+					}
+				},
+				{
+					prop: "value",
+					label: "值",
+					span: 24,
+					component: {
+						name: "el-input",
+						props: {
+							placeholder: "请填写值",
+							type: "textarea",
+							rows: 4
+						}
+					},
+					rules: {
+						required: true,
+						message: "值不能为空"
+					}
+				},
+				{
+					prop: "remark",
+					label: "备注",
+					span: 24,
+					component: {
+						name: "el-input",
+						props: {
+							placeholder: "请填写备注",
+							type: "textarea",
+							rows: 4
+						}
+					}
+				},
+				{
+					prop: "status",
+					label: "状态",
+					value: 1,
+					component: {
+						name: "el-radio-group",
+						options: [
+							{
+								label: "正常",
+								value: true
+							},
+							{
+								label: "禁用",
+								value: false
+							}
+						]
+					}
+				}
+			]
+		});
 
 		// crud 加载
-		function onLoad({ ctx, app }: any) {
-			ctx.service(service.base.system.user).done();
+		async function onLoad({ ctx, app }: any) {
+			ctx.service(service.system.dict).done();
+			await service.system.setting.groupList();
+			app.refresh();
+		}
+
+		// crud 加载
+		function onCategoryLoad({ ctx, app }: any) {
+			ctx.service(service.system.dictCategory).done();
 			app.refresh();
 		}
 
@@ -467,54 +407,20 @@ export default defineComponent({
 		}
 
 
-		// 部门下新增成员
-		function onDeptUserAdd(item: any) {
-			refs.value.crud.rowAppend({
-				departmentId: item.id
-			});
-		}
-
-		// 部门列表监听
-		function onDeptListChange(list: any[]) {
-			dept.value = list;
-		}
-
-		// 是否显示部门
-		function deptExpand() {
-			isExpand.value = !isExpand.value;
-		}
-
-		// 移动成员
-		async function toMove(e?: any) {
-			let ids = [];
-
-			if (!e) {
-				ids = selects.ids;
-			} else {
-				ids = [e.id];
-			}
-
-			refs.value["dept-move"].toMove(ids);
-		}
-
 		return {
 			service,
 			refs,
-			isExpand,
 			selects,
-			dept,
+			categoryUpsert,
 			table,
 			upsert,
-			browser,
 			setRefs,
 			onLoad,
+			onCategoryLoad,
 			refresh,
 			onRefresh,
 			onSelectionChange,
-			onDeptUserAdd,
-			onDeptListChange,
-			deptExpand,
-			toMove
+			categoryTable
 		};
 	}
 });
@@ -531,7 +437,7 @@ export default defineComponent({
 
 .dept {
 	height: 100%;
-	width: 300px;
+	width: 600px;
 	max-width: calc(100% - 50px);
 	background-color: #fff;
 	transition: width 0.3s;
@@ -545,7 +451,7 @@ export default defineComponent({
 }
 
 .user {
-	width: calc(100% - 310px);
+	width: calc(100% - 610px);
 	flex: 1;
 
 .header {

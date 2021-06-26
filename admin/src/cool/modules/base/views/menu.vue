@@ -16,8 +16,8 @@
 						effect="dark"
 						type="danger"
 						style="margin-left: 10px"
-						>隐藏</el-tag
-					>
+						>隐藏
+					</el-tag>
 				</template>
 
 				<!-- 图标 -->
@@ -33,15 +33,15 @@
 						size="mini"
 						effect="dark"
 						style="margin: 2px; letter-spacing: 0.5px"
-						>{{ item }}</el-tag
-					>
+						>{{ item }}
+					</el-tag>
 				</template>
 
 				<!-- 路由 -->
 				<template #column-router="{ scope }">
-					<el-link v-if="scope.row.type == 1" type="primary" :href="scope.row.router">{{
-						scope.row.router
-					}}</el-link>
+					<el-link v-if="scope.row.type == 1" type="primary" :href="scope.row.router"
+						>{{ scope.row.router }}
+					</el-link>
 					<span v-else>{{ scope.row.router }}</span>
 				</template>
 
@@ -60,8 +60,8 @@
 						type="text"
 						size="mini"
 						@click="upsertAppend(scope.row)"
-						>新增</el-button
-					>
+						>新增
+					</el-button>
 				</template>
 			</cl-table>
 		</el-row>
@@ -81,7 +81,7 @@ import { useRefs } from "/@/core";
 import { deepTree } from "/@/core/utils";
 import { useRouter } from "vue-router";
 import { defineComponent, inject, reactive } from "vue";
-import { CrudLoad, Table, Upsert, RefreshOp } from "cl-admin-crud-vue3/types";
+import { CrudLoad, RefreshOp, Table, Upsert } from "cl-admin-crud-vue3/types";
 
 export default defineComponent({
 	name: "sys-menu",

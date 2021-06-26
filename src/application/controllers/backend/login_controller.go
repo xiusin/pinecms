@@ -2,15 +2,11 @@ package backend
 
 import (
 	"github.com/gbrlsnchs/jwt/v3"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
-	"github.com/xiusin/pinecms/src/application/models"
-	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
-	"strconv"
-	"strings"
 	"time"
 )
 
@@ -18,13 +14,26 @@ type LoginController struct {
 	pine.Controller
 }
 
+/**
+todo 系统无法兼容: /dist分组 和 /dist/category分组
+dist-category 路由段无法解析 /v2/dict-category/list
+*/
+
 func (c *LoginController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/login", "Login")
-	b.ANY("/login/index", "Index")
 }
 
 func (c *LoginController) Login() {
 	var p loginUserParam
+	apidoc.SetApiEntity(c.Ctx(), &apidoc.Entity{
+		ApiParam: &p,
+		AppId:    "admin",
+		Group:    "登录模块",
+		SubGroup: "系统登录",
+		Title:    "登录系统",
+		Desc:     "账号密码登录系统， 并且返回JWT凭证",
+	})
+
 	if err := parseParam(c.Ctx(), &p); err != nil {
 		helper.Ajax("参数不能为空", 1, c.Ctx())
 		return
@@ -60,50 +69,3 @@ func (c *LoginController) Login() {
 		"token":      string(token),
 	}, 0, c.Ctx())
 }
-
-func (c *LoginController) Index(orm *xorm.Engine) {
-	if c.Ctx().IsPost() {
-		username := c.Ctx().PostString("username")
-		password := c.Ctx().PostString("password")
-		code := c.Ctx().PostString("code")
-		verify := c.Session().Get("verify")
-		if helper.IsFalse(username, password, code) {
-			helper.Ajax("参数不能为空", 1, c.Ctx())
-			return
-		}
-		if verify == "" {
-			helper.Ajax("验证码过期,无法验证", 1, c.Ctx())
-			return
-		}
-		if strings.ToLower(code) != strings.ToLower(verify) {
-			helper.Ajax("验证码错误", 1, c.Ctx())
-			return
-		}
-		admin, err := models.NewAdminModel().Login(username, password, c.Ctx().ClientIP())
-		if err != nil {
-			helper.Ajax(err.Error(), 1, c.Ctx())
-		} else {
-			c.Session().Set("roleid", strconv.Itoa(int(admin.Roleid)))
-			role := &tables.AdminRole{Id: admin.Roleid}
-			orm.Get(role)
-			c.Session().Set("role_name", role.Rolename)
-			c.Session().Set("adminid", strconv.Itoa(int(admin.Userid)))
-			c.Session().Set("username", admin.Username)
-
-			helper.Ajax("登录成功", 0, c.Ctx())
-		}
-		return
-	}
-
-	c.Ctx().Render().HTML("backend/login_index.html")
-}
-//
-//func (c *LoginController) Logout() {
-//	c.Session().Remove("adminid")
-//	c.Session().Remove("roleid")
-//	c.Ctx().RemoveCookie("username")
-//	c.Ctx().RemoveCookie("userid")
-//	c.Session().Remove("role_name")
-//	c.Session().Remove("username")
-//	c.Ctx().Redirect("/b/login/index")
-//}

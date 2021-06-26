@@ -121,7 +121,7 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.AssetsManagerController), "/assets").
 		Handle(new(backend.AttachmentController), "/attachment").
 		Handle(new(backend.SettingController), "/setting").
-		Handle(new(backend.DictCategoryController), "/dict/category").
+		Handle(new(backend.DictCategoryController), "/dict_category").
 		Handle(new(backend.DictController), "/dict").
 		Handle(new(backend.LoginController)).
 		Handle(new(backend.IndexController)).

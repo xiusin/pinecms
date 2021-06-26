@@ -2,8 +2,8 @@ package backend
 
 // loginUserParam 登录参数
 type loginUserParam struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `json:"username" api:"remark:登录账号|require:true"`
+	Password string `json:"password" api:"remark:登录密码|require:true"`
 }
 
 type idParams struct {

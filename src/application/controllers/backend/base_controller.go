@@ -100,7 +100,6 @@ func (c *BaseController) BindParse() (err error) {
 }
 
 func (c *BaseController) PostList() {
-
 	query := c.Orm.Table(c.Table)
 	if p, err := c.buildParamsForQuery(query); err != nil {
 		helper.Ajax("参数错误: "+err.Error(), 1, c.Ctx())
@@ -204,8 +203,13 @@ func (c *BaseController) PostAdd() {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
 	}
-	result, _ := c.Orm.InsertOne(c.Table)
-	if result > 0 {
+	if c.OpBefore != nil {
+		if err := c.OpBefore(OpAdd, c.Table); err != nil {
+			helper.Ajax(err.Error(), 1, c.Ctx())
+			return
+		}
+	}
+	if c.add() {
 		helper.Ajax("新增数据成功", 0, c.Ctx())
 	} else {
 		helper.Ajax("新增数据失败", 1, c.Ctx())
@@ -221,6 +225,12 @@ func (c *BaseController) PostEdit() {
 	if err := c.BindParse(); err != nil {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
+	}
+	if c.OpBefore != nil {
+		if err := c.OpBefore(OpEdit, c.Table); err != nil {
+			helper.Ajax(err.Error(), 1, c.Ctx())
+			return
+		}
 	}
 	if c.edit() {
 		helper.Ajax("修改数据成功", 0, c.Ctx())
@@ -334,11 +344,13 @@ func (c *BaseController) setApiEntity() {
 	if len(c.apiEntities) == 0 || !exist {
 		return
 	}
-	if apiEntity.ApiParam == nil{
-		switch  key   {
+	if apiEntity.ApiParam == nil {
+		switch key {
 		case "list":
 			apiEntity.ApiParam = &c.p
-		case "delete","edit","add":
+		case "edit", "add":
+			apiEntity.ApiParam = c.Table
+		case "delete":
 			apiEntity.ApiParam = &idParams{}
 		}
 	}

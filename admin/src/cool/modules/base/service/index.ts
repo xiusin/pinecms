@@ -33,7 +33,7 @@ export default {
 		attachment: new SysAttachment(),
 		databaseList: new SysDatabaseList(),
 		dict: new SysDict(),
-		dictCategory: new SysDictCategory(),
+		dictCategory: new SysDictCategory()
 	},
 	plugin: {
 		info: new PluginInfo()

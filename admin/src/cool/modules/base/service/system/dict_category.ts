@@ -1,7 +1,6 @@
-import {BaseService, Service} from "/@/core";
+import { BaseService, Service } from "/@/core";
 
-@Service("dist/category")
-class SysDictCategory extends BaseService {
-}
+@Service("dict_category")
+class SysDictCategory extends BaseService {}
 
 export default SysDictCategory;
