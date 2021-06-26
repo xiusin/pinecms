@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 )
@@ -10,6 +11,9 @@ type LogController struct {
 }
 
 func (c *LogController) Construct() {
+	c.AppId = "admin"
+	c.Group = "日志模块"
+
 	c.KeywordsSearch = []KeywordWhere{
 		{Field: "username", Op: "LIKE", DataExp: "%$?%"},
 		{Field: "ip", Op: "LIKE", DataExp: "%$?%"},
@@ -21,7 +25,10 @@ func (c *LogController) Construct() {
 	}
 	c.Table = &tables.Log{}
 	c.Entries = &[]*tables.Log{}
-
+	c.apiEntities = map[string]apidoc.Entity{
+		"list":  {Title: "日志列表", Desc: "查询系统接口请求日志列表"},
+		"clear": {Title: "清空日志", Desc: "一键清理系统所有日志"},
+	}
 	c.BaseController.Construct()
 }
 

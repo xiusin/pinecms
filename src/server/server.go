@@ -1,10 +1,11 @@
 package config
 
 import (
-	"embed"
 	"fmt"
 	"github.com/gorilla/securecookie"
 	"github.com/xiusin/pine/cache/providers/bitcask"
+	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 	"net/http"
 	"path/filepath"
 	"time"
@@ -43,9 +44,8 @@ var (
 	dc           = config.DBConfig()
 )
 
-//go:embed test
-var fs embed.FS
-
+////go:embed test
+//var fs embed.FS
 
 func Dc() *config.DbConfig {
 	return dc
@@ -68,10 +68,12 @@ func initDatabase() {
 	}
 
 	_orm.ShowSQL(o.ShowSql)
-	_orm.TZLocation, _ = time.LoadLocation("PRC")
+	_orm.TZLocation, _ = time.LoadLocation("Asia/Shanghai")
 	_orm.ShowExecTime(o.ShowExecTime)
 	_orm.SetMaxOpenConns(int(o.MaxOpenConns))
 	_orm.SetMaxIdleConns(int(o.MaxIdleConns))
+
+	_orm.Sync2(&tables.Dict{}, &tables.DictCategory{})
 	XOrmEngine = _orm
 }
 
@@ -103,11 +105,11 @@ func registerStatic() {
 	for _, static := range conf.Statics {
 		app.Static(static.Route, filepath.FromSlash(static.Path))
 	}
-	app.StaticFS("/test/", fs, "test")
+	//app.StaticFS("/test/", fs, "test")
 }
 
 func registerV2BackendRoutes() {
-	app.Use(middleware.Cors(), middleware.SetGlobalConfigData(), middleware.ApiDoc(nil))
+	app.Use(middleware.Cors(), middleware.SetGlobalConfigData(), apidoc.New(nil))
 	app.Group(
 		"/v2",
 		middleware.VerifyJwtToken(),
@@ -119,6 +121,8 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.AssetsManagerController), "/assets").
 		Handle(new(backend.AttachmentController), "/attachment").
 		Handle(new(backend.SettingController), "/setting").
+		Handle(new(backend.DictCategoryController), "/dict/category").
+		Handle(new(backend.DictController), "/dict").
 		Handle(new(backend.LoginController)).
 		Handle(new(backend.IndexController)).
 		Handle(new(backend.CategoryController)).

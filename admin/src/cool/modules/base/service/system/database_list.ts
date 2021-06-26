@@ -1,4 +1,5 @@
-import { BaseService, Service } from "/@/core";
+import {BaseService, Service} from "/@/core";
+
 @Service("database")
 class SysDatabaseList extends BaseService {
 	backup(params: any) {
@@ -11,4 +12,5 @@ class SysDatabaseList extends BaseService {
 		});
 	}
 }
+
 export default SysDatabaseList;

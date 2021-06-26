@@ -13,7 +13,7 @@ import (
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
-	"github.com/xiusin/pinecms/src/application/controllers/middleware"
+	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"reflect"
 	"strconv"
@@ -30,7 +30,6 @@ const (
 	OpList       = iota
 	OpAdd
 	OpEdit
-	OpOrder
 	OpDel
 	OpInfo
 )
@@ -59,6 +58,8 @@ type BaseController struct {
 	Table          interface{}               // 传入Table结构体引用
 	Entries        interface{}               // 传入Table结构体的切片
 	Orm            *xorm.Engine
+	p              listParam
+	apiEntities    map[string]apidoc.Entity
 
 	TableKey       string         // 表主键
 	TableStructKey string         // 表结构体主键字段 主要用于更新逻辑反射数据
@@ -67,6 +68,7 @@ type BaseController struct {
 	OpBefore func(int, interface{}) error // 操作前置
 	OpAfter  func(int, interface{}) error // 操作后置
 
+	apidoc.Entity
 	pine.Controller
 }
 
@@ -75,6 +77,7 @@ func (c *BaseController) Construct() {
 	c.TableKey = "id"
 	c.TableStructKey = "Id"
 	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
+	c.setApiEntity()
 }
 
 func (c *BaseController) BindParse() (err error) {
@@ -143,13 +146,10 @@ func (c *BaseController) PostList() {
 }
 
 func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, error) {
-	var p listParam
-	middleware.SetApiEntity(c.Ctx(), "测试接口", "用于测试相关接口自动生成文档", &p)
-
-	if err := parseParam(c.Ctx(), &p); err != nil {
+	if err := parseParam(c.Ctx(), &c.p); err != nil {
 		return nil, err
 	}
-	if len(c.KeywordsSearch) > 0 && p.Keywords != "" { // 关键字搜索
+	if len(c.KeywordsSearch) > 0 && c.p.Keywords != "" { // 关键字搜索
 		var whereBuilder []string
 		var whereLikeBind []interface{}
 		for _, v := range c.KeywordsSearch {
@@ -164,9 +164,9 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 					v.DataExp = "$?"
 				}
 				whereBuilder = append(whereBuilder, fmt.Sprintf("%s %s ?", v.Field, v.Op))
-				whereLikeBind = append(whereLikeBind, strings.ReplaceAll(v.DataExp, "$?", p.Keywords))
+				whereLikeBind = append(whereLikeBind, strings.ReplaceAll(v.DataExp, "$?", c.p.Keywords))
 			} else {
-				v.CallBack(query, p.Keywords)
+				v.CallBack(query, c.p.Keywords)
 			}
 		}
 		wl := len(whereBuilder)
@@ -176,7 +176,7 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 	}
 	if c.SearchFields != nil {
 		for field, dsl := range c.SearchFields { // 其他字段搜索
-			val, exists := p.Params[strings.ReplaceAll(field, "`", "")]
+			val, exists := c.p.Params[strings.ReplaceAll(field, "`", "")]
 			if exists {
 				if dsl.Op == "range" { // 范围查询， 组件between and
 					ranges := strings.SplitN(val.(string), ",", 2)
@@ -189,14 +189,14 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 			}
 		}
 	}
-	if len(p.OrderField) > 0 {
-		if p.Sort == "desc" {
-			query.Desc(p.OrderField)
+	if len(c.p.OrderField) > 0 {
+		if c.p.Sort == "desc" {
+			query.Desc(c.p.OrderField)
 		} else {
-			query.Asc(p.OrderField)
+			query.Asc(c.p.OrderField)
 		}
 	}
-	return &p, nil
+	return &c.p, nil
 }
 
 func (c *BaseController) PostAdd() {
@@ -325,6 +325,33 @@ func (c *BaseController) export() {
 		c.Ctx().Response.Header.Set("content-disposition", `attachment; filename=export_data_`+time.Now().Format("2006-01-02")+`.xlsx`)
 		c.Ctx().Response.SetBodyStream(&buffer, buffer.Len())
 	}
+}
+
+func (c *BaseController) setApiEntity() {
+	ps := strings.Split(c.Ctx().Path(), "/")
+	key := ps[len(ps)-1]
+	apiEntity, exist := c.apiEntities[key]
+	if len(c.apiEntities) == 0 || !exist {
+		return
+	}
+	if apiEntity.ApiParam == nil{
+		switch  key   {
+		case "list":
+			apiEntity.ApiParam = &c.p
+		case "delete","edit","add":
+			apiEntity.ApiParam = &idParams{}
+		}
+	}
+	if len(apiEntity.AppId) == 0 {
+		apiEntity.AppId = c.AppId
+	}
+	if len(apiEntity.Group) == 0 {
+		apiEntity.Group = c.Group
+	}
+	if len(apiEntity.SubGroup) == 0 {
+		apiEntity.SubGroup = c.SubGroup
+	}
+	apidoc.SetApiEntity(c.Ctx(), &apiEntity)
 }
 
 // todo 后面查看是否能够直接反射

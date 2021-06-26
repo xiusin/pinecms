@@ -13,6 +13,8 @@ import SysLink from "./system/link";
 import SysAssets from "./system/assets";
 import SysAttachment from "./system/attachment";
 import SysDatabaseList from "./system/database_list";
+import SysDict from "./system/dict";
+import SysDictCategory from "./system/dict_category";
 
 export default {
 	common: new Common(),
@@ -29,7 +31,9 @@ export default {
 		link: new SysLink(),
 		assets: new SysAssets(),
 		attachment: new SysAttachment(),
-		databaseList: new SysDatabaseList()
+		databaseList: new SysDatabaseList(),
+		dict: new SysDict(),
+		dictCategory: new SysDictCategory(),
 	},
 	plugin: {
 		info: new PluginInfo()

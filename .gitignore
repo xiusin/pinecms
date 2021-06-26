@@ -16,3 +16,4 @@ pinecms-dev-build.exe~
 *.exe
 /apidoc.html
 /apidoc.html.json
+/apidoc/

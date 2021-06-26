@@ -7,18 +7,18 @@ type loginUserParam struct {
 }
 
 type idParams struct {
-	Id  int64   `json:"id"`
-	Ids []int64 `json:"ids"`
+	Id  int64   `json:"id" api:"remark:删除单个记录"`
+	Ids []int64 `json:"ids" api:"remark:删除多个记录"`
 }
 
 type listParam struct {
-	Page       int                    `json:"page" api:"remark:分页数,default:0,require:true"`      // 分页数
-	Size       int                    `json:"size"`      // 页码
-	OrderField string                 `json:"order"`     // 排序字段
-	Sort       string                 `json:"sort"`      // 排序规则
-	Keywords   string                 `json:"keyWord"`   // 搜索关键字
-	Export     bool                   `json:"_isExport"` // 是否导出
-	Params     map[string]interface{} `json:"params"`    // 额外附加参数
+	Page       int                    `json:"page" api:"remark:分页数|default:1|require:true"`   // 分页数
+	Size       int                    `json:"size" api:"remark:分页条数|default:10|require:true"` // 页码
+	OrderField string                 `json:"order" api:"remark:排序字段"`                        // 排序字段
+	Sort       string                 `json:"sort" api:"remark:排序方法desc=逆序,asc=正序"`           // 排序规则
+	Keywords   string                 `json:"keyWord" api:"remark:查询关键字"`                     // 搜索关键字
+	Export     bool                   `json:"_isExport" api:"remark:是否导出"`                    // 是否导出
+	Params     map[string]interface{} `json:"params" api:"remark:额外参数用于非配置字段导出"`              // 额外附加参数
 }
 
 type responsePageParam struct {

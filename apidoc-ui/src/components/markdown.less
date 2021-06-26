@@ -1,0 +1,81 @@
+.doc-wraper{
+    min-height: 600px;
+    &:not([class*='mobile']){
+
+        margin-right: 160px;
+    }
+}
+.affix-wraper{
+    position: absolute;
+    right: -170px;
+    width: 160px;
+}
+.affix-box{
+    // box-shadow: 1px 1px 10px rgba(0,0,0,0.1);
+    padding:5px;
+}
+.markdown{
+    font-size: 16px;
+    h1, h2, h3, h4, h5, h6 {
+        font-weight: 600;
+        line-height: 1.25;
+    }
+    &:not(.custom)>h1, 
+    &:not(.custom)>h2, 
+    &:not(.custom)>h3, 
+    &:not(.custom)>h4, 
+    &:not(.custom)>h5, 
+    &:not(.custom)>h6{
+        margin-top: -3.1rem;
+        padding-top: 4.6rem;
+        margin-bottom: 0;
+    }
+    &:not(.custom)>h1:first-child,
+    &:not(.custom)>h2:first-child, 
+    &:not(.custom)>h3:first-child, 
+    &:not(.custom)>h4:first-child, 
+    &:not(.custom)>h5:first-child, 
+    &:not(.custom)>h6:first-child {
+        margin-top: -1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    h2 {
+        font-size: 1.65rem;
+        padding-bottom: .3rem;
+        border-bottom: 1px solid #eaecef;
+    }
+
+    table {
+        border-collapse: collapse;
+        margin: 1rem 0;
+        display: block;
+        overflow-x: auto;
+        width: 100%;
+        tr {
+            border-top: 1px solid #dfe2e5;
+        }
+        td, th {
+            border: 1px solid #dfe2e5;
+            padding: .6em 1em;
+        }
+        tr:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+    }
+
+    img{
+        max-width: 100%;
+    }
+
+    pre{
+        display: block;
+        overflow-x: auto;
+        padding: 0.5em;
+        color: #abb2bf;
+        background: #282c34;
+        border-radius: 6px;
+    }
+
+    
+}
