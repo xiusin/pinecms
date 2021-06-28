@@ -72,7 +72,6 @@
 						<cl-upsert
 							:ref="setRefs('upsert')"
 							:items="upsert.items"
-							:on-submit="onUpsertSubmit"
 						>
 							<template #slot-tips>
 								<div>

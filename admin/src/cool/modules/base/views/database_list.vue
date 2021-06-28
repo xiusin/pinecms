@@ -4,17 +4,20 @@
 			<el-button size="mini" type="success" @click="backup"> 备份 </el-button>
 			<el-button size="mini" type="danger"> 优化 </el-button>
 			<el-button size="mini" type="danger"> 修复 </el-button>
+			<el-button size="mini" type="error" @click="execSQL"> 执行SQL </el-button>
 		</el-row>
 		<el-row>
 			<cl-table v-bind="table" @selection-change="onSelectionChange" />
 		</el-row>
 	</cl-crud>
+
+	<cl-form ref="sqlFormRef"></cl-form>
 </template>
 
 <script lang="ts">
 import { defineComponent, inject, reactive, ref } from "vue";
 import { useRefs } from "/@/core";
-import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
+import {CrudLoad, FormRef, Table, Upsert} from "cl-admin-crud-vue3/types";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 export default defineComponent({
@@ -22,7 +25,10 @@ export default defineComponent({
 
 	setup() {
 		const service = inject<any>("service");
+
 		const { refs, setRefs } = useRefs();
+
+		const sqlFormRef = ref<FormRef>();
 
 		// 选择项
 		const selects = ref<any>([]);
@@ -90,7 +96,6 @@ export default defineComponent({
 		}
 		// 多选监听
 		function onSelectionChange(selection: any[]) {
-			console.log(selection)
 			selects.value = selection.map((e) => e.id);
 		}
 
@@ -114,6 +119,32 @@ export default defineComponent({
 				.catch(() => null);
 		}
 
+		function execSQL() {
+			sqlFormRef.value?.open({
+				title: "SQL执行",
+				items: [
+					{
+						label: {
+							text: "语句",
+							icon: "el-icon-question",
+							tip: "需要执行的SQL, 造成数据丢失, 自行负责. "
+						},
+						component: "cl-codemirror"
+					}
+				],
+				on: {
+					submit: async (data, { close }) => {
+						if (!data["undefined"]) {
+							ElMessage.error("SQL语句必须填写")
+							return;
+						}
+						await service.system.databaseList.exec({sql: data["undefined"]})
+						close();
+					}
+				}
+			});
+		}
+
 		return {
 			refs,
 			table,
@@ -121,6 +152,8 @@ export default defineComponent({
 			backup,
 			setRefs,
 			onLoad,
+			sqlFormRef,
+			execSQL,
 			onSelectionChange,
 		};
 	}

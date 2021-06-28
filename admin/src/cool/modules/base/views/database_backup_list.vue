@@ -1,9 +1,5 @@
 <template>
 	<cl-crud @load="onLoad">
-		<el-row type="flex">
-			<cl-upload v-model="urls" multiple :limit="5" accept="*" list-type="text"/>
-		</el-row>
-
 		<el-row>
 			<cl-table v-bind="table" />
 		</el-row>
@@ -14,15 +10,6 @@
 		</el-row>
 	</cl-crud>
 
-
-	<cl-dialog
-		v-model="preview.visible"
-		title="图片预览"
-		:props="{width: previewWidth}"
-	>
-		<img style="width: 100%" :src="preview.url" alt="" />
-	</cl-dialog>
-
 </template>
 
 <script lang="ts">
@@ -31,17 +18,11 @@ import { useRefs } from "/@/core";
 import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
 
 export default defineComponent({
-	name: "attachment",
+	name: "database-backup-list",
 
 	setup() {
 		const service = inject<any>("service");
 		const { refs, setRefs } = useRefs();
-		let preview = {
-			visible: false,
-			url: "",
-		}
-
-		let urls: string[] = []
 
 		let file_size_format = function ($size = 0, $dec = 2) {
 			const unit = ["B", "KB", "MB", "GB", "TB", "PB"];
@@ -53,10 +34,6 @@ export default defineComponent({
 			return  $size.toFixed(2)  + unit[pos];
 		}
 
-		let previewWidth = {
-			type: String,
-			default: "500px"
-		}
 
 		// 表格配置
 		const table = reactive<Table>({
@@ -105,46 +82,17 @@ export default defineComponent({
 			]
 		});
 
-		// 新增编辑配置
-		const upsert = reactive<Upsert>({
-			width: "1000px",
-			items: [
-				{
-					prop: "name",
-					label: "名称",
-					span: 24,
-					component: {
-						name: "el-input",
-						props: {
-							placeholder: "名称"
-						}
-					},
-				},
-				{
-					prop: "content",
-					label: "内容",
-					component: {
-						name: "slot-content"
-					}
-				}
-			]
-		});
-
 		// crud 加载
 		function onLoad({ ctx, app }: CrudLoad) {
-			ctx.service(service.system.attachment).done();
+			ctx.service(service.system.databaseBackupList).done();
 			app.refresh();
 		}
 
 		return {
 			refs,
 			table,
-			upsert,
 			setRefs,
 			onLoad,
-			preview,
-			previewWidth,
-			urls,
 		};
 	}
 });

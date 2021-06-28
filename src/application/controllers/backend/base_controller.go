@@ -25,7 +25,6 @@ var validate = validator.New()
 var trans, _ = ut.New(zh.New(), en.New()).GetTranslator("zh")
 
 const (
-	BindTypeJson = "JSON"
 	BindTypeForm = "FORM"
 	OpList       = iota
 	OpAdd
@@ -69,6 +68,7 @@ type BaseController struct {
 	OpAfter  func(int, interface{}) error // 操作后置
 
 	apidoc.Entity
+	ApiEntityName string
 	pine.Controller
 }
 
@@ -77,6 +77,17 @@ func (c *BaseController) Construct() {
 	c.TableKey = "id"
 	c.TableStructKey = "Id"
 	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
+	c.AppId = "admin"
+
+	c.apiEntities = map[string]apidoc.Entity{ // 内置一个模板, 配合ApiEntityName使用
+		"__inner": {}, // 重写时不要附加此参数
+		"list":    {Title: "%s列表", Desc: "获取系统未删除的%s列表"},
+		"add":     {Title: "新增%s", Desc: "新增一个新的%s"},
+		"edit":    {Title: "编辑%s", Desc: "修改给定ID的%s信息"},
+		"delete":  {Title: "删除%s", Desc: "删除指定%s"},
+		"info":    {Title: "%s详情", Desc: "获取指定%s的详情信息"},
+	}
+
 	c.setApiEntity()
 }
 
@@ -281,7 +292,7 @@ func (c *BaseController) PostDelete() {
 	})
 
 	if err != nil {
-		helper.Ajax("删除异常:"+err.Error(), 1, c.Ctx())
+		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
 	}
 	helper.Ajax("删除成功", 0, c.Ctx())
@@ -340,10 +351,17 @@ func (c *BaseController) export() {
 func (c *BaseController) setApiEntity() {
 	ps := strings.Split(c.Ctx().Path(), "/")
 	key := ps[len(ps)-1]
+
 	apiEntity, exist := c.apiEntities[key]
 	if len(c.apiEntities) == 0 || !exist {
 		return
 	}
+
+	if _, exist = c.apiEntities["__inner"]; exist && len(c.ApiEntityName) > 0 {
+		apiEntity.Title = fmt.Sprintf(apiEntity.Title, c.ApiEntityName)
+		apiEntity.Desc = fmt.Sprintf(apiEntity.Desc, c.ApiEntityName)
+	}
+
 	if apiEntity.ApiParam == nil {
 		switch key {
 		case "list":

@@ -1,11 +1,6 @@
 package backend
 
-import (
-	"github.com/go-xorm/xorm"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pinecms/src/application/controllers"
-	"github.com/xiusin/pinecms/src/application/models/tables"
-)
+import "github.com/xiusin/pinecms/src/application/models/tables"
 
 type LinkController struct {
 	BaseController
@@ -15,8 +10,10 @@ func (c *LinkController) Construct() {
 	c.KeywordsSearch = []KeywordWhere{
 		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
 	}
-	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
 	c.Table = &tables.Link{}
 	c.Entries = &[]*tables.Link{}
-	c.TableStructKey = "Linkid"
+	c.ApiEntityName = "友链"
+	c.Group = "友情链接管理"
+	c.SubGroup = "友情链接管理"
+	c.BaseController.Construct()
 }

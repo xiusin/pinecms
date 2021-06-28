@@ -11,6 +11,16 @@ class SysDatabaseList extends BaseService {
 			}
 		});
 	}
+
+	exec(params: any) {
+		return this.request({
+			url: "/exec",
+			method: "POST",
+			data: {
+				...params
+			}
+		});
+	}
 }
 
 export default SysDatabaseList;

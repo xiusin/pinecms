@@ -1,6 +1,5 @@
 package apidoc
 
-
 type Config struct {
 	Enable        bool        `json:"enable"`         // 是否启用apidoc
 	DataPath      string      `json:"-"`              // 配置数据存储目录
@@ -79,7 +78,7 @@ type Config struct {
 	Debug bool `json:"debug"`
 }
 
-func (c *Config) FindApp(appOrName string)  {
+func (c *Config) FindApp(appOrName string) {
 	for _, app := range c.Apps {
 		if app.Title == appOrName || app.Folder == appOrName {
 
@@ -136,5 +135,26 @@ func WithImmutable(immutable bool) Configure {
 func WithHeaders(headers []apiHeader) Configure {
 	return func(entity *apiEntity) {
 		entity.Header = append(entity.Header, headers...)
+	}
+}
+
+// WithOnlyParams 只允许部分参数体现在文档内
+func WithOnlyParams(onlyParams []string) Configure {
+	return func(entity *apiEntity) {
+		entity.OnlyParams = onlyParams
+	}
+}
+
+// WithExcludeParams 排除部分参数
+func WithExcludeParams(excludeParams []string) Configure {
+	return func(entity *apiEntity) {
+		entity.ExcludeParams = excludeParams
+	}
+}
+
+// WithNoParams 不带参数
+func WithNoParams() Configure {
+	return func(entity *apiEntity) {
+		entity.NoParams = true
 	}
 }

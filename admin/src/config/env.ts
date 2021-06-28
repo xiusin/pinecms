@@ -21,7 +21,7 @@ const baseUrl: String = (function () {
 		proxy = store.get("proxy") || "dev";
 	}
 
-	return isDev ? `/${proxy}` : `/api`;
+	return isDev ? `/${proxy}` : `/v2`;
 })();
 
 // Socket

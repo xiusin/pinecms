@@ -44,7 +44,7 @@ var (
 	dc           = config.DBConfig()
 )
 
-////go:embed test
+////go:embed dist
 //var fs embed.FS
 
 func Dc() *config.DbConfig {
@@ -73,7 +73,7 @@ func initDatabase() {
 	_orm.SetMaxOpenConns(int(o.MaxOpenConns))
 	_orm.SetMaxIdleConns(int(o.MaxIdleConns))
 
-	_orm.Sync2(&tables.Dict{}, &tables.DictCategory{})
+	_ = _orm.Sync2(&tables.Dict{}, &tables.DictCategory{})
 	XOrmEngine = _orm
 }
 
@@ -103,13 +103,16 @@ func Server() {
 
 func registerStatic() {
 	for _, static := range conf.Statics {
-		app.Static(static.Route, filepath.FromSlash(static.Path))
+		app.Static(static.Route, filepath.FromSlash(static.Path), 1)
 	}
-	//app.StaticFS("/test/", fs, "test")
 }
 
 func registerV2BackendRoutes() {
-	app.Use(middleware.Cors(), middleware.SetGlobalConfigData(), apidoc.New(nil))
+	app.Use(
+		middleware.Cors(),
+		middleware.SetGlobalConfigData(),
+		apidoc.New(nil),
+	)
 	app.Group(
 		"/v2",
 		middleware.VerifyJwtToken(),
@@ -123,12 +126,12 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.SettingController), "/setting").
 		Handle(new(backend.DictCategoryController), "/dict_category").
 		Handle(new(backend.DictController), "/dict").
+		Handle(new(backend.DocumentController), "/model").
 		Handle(new(backend.LoginController)).
 		Handle(new(backend.IndexController)).
 		Handle(new(backend.CategoryController)).
 		Handle(new(backend.ContentController)).
 		Handle(new(backend.SystemController)).
-		Handle(new(backend.DocumentController)).
 		Handle(new(backend.DatabaseController)).
 		Handle(new(backend.AdController)).
 		Handle(new(backend.StatController))
@@ -140,7 +143,7 @@ func registerV2BackendRoutes() {
 func runServe() {
 
 	app.SetRecoverHandler(func(ctx *pine.Context) {
-		ctx.WriteJSON(pine.H{"code": http.StatusInternalServerError, "message": ctx.Msg})
+		_ = ctx.WriteJSON(pine.H{"code": http.StatusInternalServerError, "message": ctx.Msg})
 	})
 	//app.DumpRouteTable()
 	app.Run(
@@ -202,6 +205,7 @@ func diConfig() {
 func getJetEngine() *jet.PineJet {
 	jetEngine := jet.New(conf.View.FeDirname, ".jet", conf.View.Reload)
 	jetEngine.AddPath("./resources/taglibs/")
+
 	jetEngine.AddGlobalFunc("flink", taglibs.Flink)
 	jetEngine.AddGlobalFunc("type", taglibs.Type)
 	jetEngine.AddGlobalFunc("adlist", taglibs.AdList)

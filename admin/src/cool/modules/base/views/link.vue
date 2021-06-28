@@ -144,7 +144,7 @@ export default defineComponent({
 				{
 					prop: "logo",
 					label: "Logo",
-					component: ({h, scope}) => {
+					component: ({h, scope}: any) => {
 						return h("img", {
 							src: scope.logo,
 							height: 40

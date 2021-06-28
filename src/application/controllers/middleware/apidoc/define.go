@@ -81,11 +81,44 @@ type apiEntity struct {
 	RawReturn       string      `json:"raw_return"`        // 原始返回参数
 	RawQuery        string      `json:"raw_query"`         // 原始query
 	QueryDataMethod string      `json:"query_data_method"` // 原始请求数据方法
+	OnlyParams      []string    // 只允许部分参数
+	ExcludeParams   []string    // 过滤部分参数
+	NoParams        bool
 }
 
 func (e *apiEntity) ID() (jsonField string, value interface{}) {
 	value, jsonField = e.MenuKey, "menu_key"
 	return
+}
+
+func (e *apiEntity) FilterParams() {
+	var filterParams []apiParam
+	if len(e.OnlyParams) > 0 {
+		for _, param := range e.Param {
+			for _, onlyParam := range e.OnlyParams {
+				if param.Name == onlyParam {
+					filterParams = append(filterParams, param)
+					break
+				}
+			}
+		}
+	} else if len(e.ExcludeParams) > 0 {
+		for _, param := range e.Param {
+			var exclude bool
+			for _, excludeParam := range e.ExcludeParams {
+				if param.Name == excludeParam {
+					exclude = true
+					break
+				}
+			}
+			if !exclude {
+				filterParams = append(filterParams, param)
+			}
+		}
+	}
+	if e.NoParams {
+		e.Param = []apiParam{}
+	}
 }
 
 type apiReturn struct {

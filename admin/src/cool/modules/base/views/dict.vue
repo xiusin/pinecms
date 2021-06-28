@@ -1,13 +1,12 @@
 <template>
 	<div class="system-user">
 		<div class="pane">
-			<!-- 组织架构 -->
-			<div class="dept" :class="_expand">
+			<div class="dept">
 				<div class="container">
-					<cl-crud :ref="setRefs('categoryCrud')" :on-refresh="onCategoryRefresh" @load="onCategoryLoad">
+					<cl-crud :ref="setRefs('categoryCrud')" @load="onCategoryLoad">
 						<el-row type="flex">
-							<cl-refresh-btn />
-							<cl-add-btn />
+							<cl-refresh-btn/>
+							<cl-add-btn/>
 						</el-row>
 
 						<el-row>
@@ -16,31 +15,14 @@
 								v-bind="categoryTable"
 								@selection-change="onSelectionChange"
 							>
-								<!-- 头像 -->
-								<template #column-headImg="{ scope }">
-									<cl-avatar
-										shape="square"
-										size="medium"
-										:src="scope.row.headImg"
-										:style="{ margin: 'auto' }"
-									/>
-								</template>
-
-								<!-- 权限 -->
-								<template #column-roleName="{ scope }">
-									<el-tag
-										v-for="(item, index) in scope.row.roleNameList"
-										:key="index"
-										disable-transitions
-										size="small"
-										effect="dark"
-										style="margin: 2px"
-										>{{ item }}</el-tag
-									>
+								<template #slot-btn="{ scope }">
+									<el-button @click="changeCategory(scope.row.id, scope.row.key, scope.row.name)"
+											   type="text" size="mini">属性
+									</el-button>
 								</template>
 							</cl-table>
 						</el-row>
-						<cl-upsert :ref="setRefs('categoryUpsert')" :items="categoryUpsert.items" />
+						<cl-upsert :ref="setRefs('categoryUpsert')" :items="categoryUpsert.items"/>
 					</cl-crud>
 				</div>
 			</div>
@@ -50,11 +32,11 @@
 				<div class="container">
 					<cl-crud :ref="setRefs('crud')" :on-refresh="onRefresh" @load="onLoad">
 						<el-row type="flex">
-							<cl-refresh-btn />
-							<cl-add-btn />
-							<cl-multi-delete-btn />
-							<cl-flex1 />
-							<cl-search-key />
+							<el-button size="small" v-if="catId > 0">当前分类: {{ catName }}({{ catKey }})</el-button>
+							<cl-refresh-btn/>
+							<cl-add-btn/>
+							<cl-flex1/>
+							<cl-search-key/>
 						</el-row>
 
 						<el-row>
@@ -82,21 +64,22 @@
 										size="small"
 										effect="dark"
 										style="margin: 2px"
-										>{{ item }}</el-tag
+									>{{ item }}
+									</el-tag
 									>
 								</template>
 							</cl-table>
 						</el-row>
 
 						<el-row type="flex">
-							<cl-flex1 />
-							<cl-pagination />
+							<cl-flex1/>
+							<cl-pagination/>
 						</el-row>
 
 						<cl-upsert
 							:ref="setRefs('upsert')"
 							:items="upsert.items"
-							:on-submit="onUpsertSubmit"
+							:on-open="onOpenUpsert"
 						/>
 					</cl-crud>
 				</div>
@@ -107,8 +90,9 @@
 
 <script lang="ts">
 import {defineComponent, inject, reactive, ref} from "vue";
-import { useRefs } from "/@/core";
+import {useRefs} from "/@/core";
 import {QueryList, Table, Upsert} from "cl-admin-crud-vue3/types";
+import {ElMessage} from "element-plus";
 
 export default defineComponent({
 	name: "sys-dict",
@@ -116,7 +100,7 @@ export default defineComponent({
 	setup() {
 		const service = inject<any>("service");
 
-		const { refs, setRefs } = useRefs();
+		const {refs, setRefs} = useRefs();
 
 		// 选择项
 		const selects = reactive<any>({
@@ -207,8 +191,8 @@ export default defineComponent({
 				},
 				{
 					type: "op",
-					buttons: ["edit", "delete"],
-					width: 120
+					buttons: ['slot-btn', "edit", "delete"],
+					width: 150
 				}
 			]
 		});
@@ -281,6 +265,10 @@ export default defineComponent({
 
 		const list = ref<QueryList[]>([]);
 
+		const catId = ref<any>(0);
+		const catName = ref<string>("");
+		const catKey = ref<string>("");
+
 		const upsert = reactive<Upsert>({
 			items: [
 				{
@@ -304,9 +292,7 @@ export default defineComponent({
 					component: {
 						name: "el-select",
 						props: {
-							clearable: true,
-							filterable: true,
-							placeholder: "请选择分组或创建新分组"
+							placeholder: "请选择分类"
 						},
 						options: list
 					},
@@ -366,15 +352,29 @@ export default defineComponent({
 			]
 		});
 
-		// crud 加载
-		async function onLoad({ ctx, app }: any) {
-			ctx.service(service.system.dict).done();
-			await service.system.setting.groupList();
-			app.refresh();
+
+		function changeCategory(categoryId: any, categoryKey: string, categoryName: string) {
+			catId.value = categoryId
+			catKey.value = categoryKey
+			catName.value = categoryName
+			list.value = [{label:categoryName, value:categoryId}];
+			refresh({cid: categoryId})
 		}
 
 		// crud 加载
-		function onCategoryLoad({ ctx, app }: any) {
+		async function onLoad({ctx, app}: any) {
+			ctx.service(service.system.dict).done();
+			const cats = await service.system.dictCategory.list({size: 1});
+			if (cats.length) {
+				catId.value = cats[0].id;
+				catKey.value = cats[0].key;
+				catName.value = cats[0].name;
+				app.refresh({cid: catId});
+			}
+		}
+
+		// crud 加载
+		function onCategoryLoad({ctx, app}: any) {
 			ctx.service(service.system.dictCategory).done();
 			app.refresh();
 		}
@@ -385,8 +385,8 @@ export default defineComponent({
 		}
 
 		// 刷新监听
-		async function onRefresh(params: any, { next, render }: any) {
-			const { list } = await next(params);
+		async function onRefresh(params: any, {next, render}: any) {
+			const {list} = await next(params);
 
 			render(
 				list.map((e: any) => {
@@ -406,6 +406,12 @@ export default defineComponent({
 			selects.ids = selection.map((e) => e.id);
 		}
 
+		function onOpenUpsert() {
+			if (catId.value == 0) {
+				ElMessage.error("请先选择要添加的目标分类");
+				arguments[2].close()
+			}
+		}
 
 		return {
 			service,
@@ -415,12 +421,17 @@ export default defineComponent({
 			table,
 			upsert,
 			setRefs,
+			changeCategory,
 			onLoad,
 			onCategoryLoad,
 			refresh,
 			onRefresh,
+			catId,
+			catName,
+			catKey,
 			onSelectionChange,
-			categoryTable
+			categoryTable,
+			onOpenUpsert
 		};
 	}
 });
@@ -428,6 +439,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .system-user {
+
 .pane {
 	display: flex;
 	height: 100%;
@@ -444,10 +456,12 @@ export default defineComponent({
 	margin-right: 10px;
 	flex-shrink: 0;
 
-&._collapse {
-	 margin-right: 0;
-	 width: 0;
- }
+&
+._collapse {
+	margin-right: 0;
+	width: 0;
+}
+
 }
 
 .user {
@@ -480,15 +494,18 @@ span {
 	line-height: 40px;
 	padding-left: 10px;
 }
+
 }
 }
 
 .dept,
 .user {
 	overflow: hidden;
+
 .container {
 	height: calc(100% - 40px);
 }
+
 }
 
 @media only screen and (max-width: 768px) {
@@ -496,5 +513,6 @@ span {
 		width: calc(100% - 100px);
 	}
 }
+
 }
 </style>

@@ -44,12 +44,6 @@ export default defineComponent({
 				}
 			},
 			columns: [
-				// {
-				// 	label: "排序",
-				// 	prop: "listorder",
-				// 	width: 50,
-				// 	align: "left"
-				// },
 				{
 					label: "名称",
 					prop: "form_name",

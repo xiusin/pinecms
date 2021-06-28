@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -28,9 +27,7 @@ func (c *DatabaseController) RegisterRoute(b pine.IRouterWrapper) {
 	b.POST("/database/repair", "Repair")
 	b.POST("/database/optimize", "Optimize")
 	b.POST("/database/backup", "Backup")
-	b.ANY("/database/backup-list", "BackupList")
-	b.POST("/database/backup-delete", "BackupDelete")
-	b.POST("/database/backup-download", "BackupDownload")
+	b.POST("/database/exec", "Exec")
 }
 
 func (c *DatabaseController) Manager(orm *xorm.Engine) {
@@ -68,6 +65,37 @@ func (c *DatabaseController) Repair(orm *xorm.Engine) {
 	helper.Ajax("表 "+c.Ctx().FormValue("tables")+" 修复成功", 0, c.Ctx())
 }
 
+func (c *DatabaseController) Exec(orm *xorm.Engine) {
+	var sql = struct {
+		Sql string `json:"sql"`
+	}{}
+	c.Ctx().BindJSON(&sql)
+	sql.Sql = strings.Trim(sql.Sql, "\n ")
+	if sql.Sql == "" {
+		helper.Ajax("请填入要操作的SQL语句", 1, c.Ctx())
+		return
+	}
+	if len(sql.Sql) < 6 {
+		helper.Ajax("请填入完整的SQL", 1, c.Ctx())
+		return
+	}
+	act := strings.ToLower(sql.Sql[:6])
+	if act == "select" {
+		helper.Ajax("暂不支持查询操作", 1, c.Ctx())
+		return
+	}
+	if (act == "delete" || act == "update") && !strings.Contains(strings.ToLower(sql.Sql), "where") {
+		helper.Ajax("更新或删除操作必须带有WHERE语句", 1, c.Ctx())
+		return
+	}
+	_, err := orm.Exec(sql.Sql)
+	if err != nil {
+		helper.Ajax(err.Error(), 1, c.Ctx())
+		return
+	}
+	helper.Ajax("操作成功", 0, c.Ctx())
+}
+
 func (c *DatabaseController) Optimize(orm *xorm.Engine) {
 	tables := strings.Split(c.Ctx().FormValue("ids"), ",")
 	if len(tables) == 0 {
@@ -89,62 +117,6 @@ func (c *DatabaseController) Backup() {
 	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
 	msg, code := c.backup(settingData)
 	helper.Ajax(msg, int64(code), c.Ctx())
-}
-
-func (c *DatabaseController) BackupList() {
-	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
-	uploader := getStorageEngine(settingData)
-	list, prefix, err := uploader.List(baseBackupDir)
-	var files = []map[string]string{}
-	if err != nil {
-		c.Logger().Error(err)
-	}
-	for _, v := range list {
-		v = strings.TrimLeft(v, filepath.Join(prefix, baseBackupDir))
-		files = append(files, map[string]string{"name": v})
-	}
-	helper.Ajax(files, 0, c.Ctx())
-}
-
-func (c *DatabaseController) BackupDownload() {
-	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
-	name := c.Ctx().FormValue("name")
-	if name == "" {
-		helper.Ajax("参数错误", 1, c.Ctx())
-		return
-	}
-	relName := filepath.Join(baseBackupDir, name)
-	// 判断文件是否存在
-	uploader := getStorageEngine(settingData)
-	exists, err := uploader.Exists(relName)
-	if err != nil {
-		helper.Ajax("获取文件信息错误: "+err.Error(), 1, c.Ctx())
-		return
-	}
-	if !exists {
-		helper.Ajax("文件不存在或已经被删除", 1, c.Ctx())
-		return
-	}
-	// 返回下载地址
-	helper.Ajax(uploader.GetFullUrl(relName), 0, c.Ctx())
-}
-
-func (c *DatabaseController) BackupDelete(orm *xorm.Engine) {
-	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
-
-	name := c.Ctx().FormValue("name")
-	if name == "" {
-		helper.Ajax("参数错误", 1, c.Ctx())
-		return
-	}
-
-	relName := filepath.Join(baseBackupDir, name)
-	uploader := getStorageEngine(settingData)
-	if err := uploader.Remove(relName); err != nil {
-		helper.Ajax("删除文件错误: "+err.Error(), 1, c.Ctx())
-		return
-	}
-	helper.Ajax("删除文件成功", 0, c.Ctx())
 }
 
 func (c *DatabaseController) backup(settingData map[string]string) (msg string, erode int) {

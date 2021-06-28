@@ -35,6 +35,7 @@ func SetApiEntity(ctx *pine.Context, entity *Entity, configures ...Configure) {
 			}
 			e.AppId = entity.AppId
 			e.Param, _ = parseInterface(entity.ApiParam)
+			e.FilterParams()
 		}
 	}
 }

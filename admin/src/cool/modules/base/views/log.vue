@@ -109,7 +109,7 @@ export default defineComponent({
 					prop: "ipAddr",
 					label: "ip地址",
 					width: 150,
-					component: ({h, scope}) => {
+					component: ({h, scope}: any) => {
 						if (scope.ip == "127.0.0.1") {
 							return "本机";
 						} else {

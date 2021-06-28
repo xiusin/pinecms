@@ -53,7 +53,7 @@ func (l *LinkModel) Get(id int64) *tables.Link {
 }
 
 func (l *LinkModel) Update(data *tables.Link) bool {
-	id, err := l.orm.ID(data.Linkid).Update(data)
+	id, err := l.orm.ID(data.Id).Update(data)
 	if err != nil {
 		pine.Logger().Error(helper.GetCallerFuncName(), err)
 	}

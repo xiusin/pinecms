@@ -33,7 +33,7 @@ export default defineComponent({
 
 		let editor: any = null;
 
-		let mode: String = props.mode
+		let mode: String | undefined = props.mode
 		if (mode == "") {
 			mode = "htmlmixed"
 		}

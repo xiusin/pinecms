@@ -15,6 +15,8 @@ import SysAttachment from "./system/attachment";
 import SysDatabaseList from "./system/database_list";
 import SysDict from "./system/dict";
 import SysDictCategory from "./system/dict_category";
+import SysDatabaseBackupList from "./system/database_backup_list";
+import SysModel from "./system/dict";
 
 export default {
 	common: new Common(),
@@ -32,7 +34,9 @@ export default {
 		assets: new SysAssets(),
 		attachment: new SysAttachment(),
 		databaseList: new SysDatabaseList(),
+		databaseBackupList: new SysDatabaseBackupList(),
 		dict: new SysDict(),
+		model: new SysModel(),
 		dictCategory: new SysDictCategory()
 	},
 	plugin: {

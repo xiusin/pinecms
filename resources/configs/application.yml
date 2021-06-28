@@ -27,5 +27,6 @@ upload:
 
 
 statics:
-  - {route: "/assets", path: "./resources/assets"}
+  - {route: "/assets", path: "./dist/assets"}
+  - {route: "/themes", path: "./dist/themes"}
   - {route: "/uploads", path: "./resources/uploads"}
