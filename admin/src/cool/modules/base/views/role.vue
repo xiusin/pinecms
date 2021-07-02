@@ -17,7 +17,7 @@
 			<cl-pagination />
 		</el-row>
 
-		<cl-upsert v-model="form" v-bind="upsert" />
+		<cl-upsert v-model="form" :on-submit="upsertSubmit" v-bind="upsert" />
 	</cl-crud>
 </template>
 
@@ -69,6 +69,15 @@ export default defineComponent({
 						}
 					}
 				},
+				// {
+				// 	prop: "listorder",
+				// 	label: "排序值",
+				// 	span: 24,
+				// 	component: {
+				// 		name: "el-input",
+				// 		type: "number"
+				// 	}
+				// },
 				{
 					label: "功能权限",
 					prop: "menuIdList",
@@ -85,7 +94,7 @@ export default defineComponent({
 			props: {
 				"default-sort": {
 					prop: "id",
-					order: "descending"
+					order: "ascending"
 				}
 			},
 			columns: [
@@ -96,13 +105,14 @@ export default defineComponent({
 				{
 					prop: "rolename",
 					label: "名称",
-					minWidth: 150
+					width: 150,
+					align: "left"
 				},
 				{
 					prop: "description",
 					label: "备注",
 					showOverflowTooltip: true,
-					minWidth: 150
+					align: "left"
 				},
 				{
 					label: "操作",
@@ -117,11 +127,17 @@ export default defineComponent({
 			app.refresh();
 		}
 
+		function upsertSubmit(isEdit: boolean, data: any, { next }: any) {
+			data.listorder = parseInt(data.listorder);
+			next(data);
+		}
+
 		return {
 			form,
 			upsert,
 			table,
-			onLoad
+			onLoad,
+			upsertSubmit
 		};
 	}
 });

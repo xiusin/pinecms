@@ -2,6 +2,7 @@ package backend
 
 import (
 	"errors"
+	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -20,7 +21,7 @@ func (c *AdminRoleController) Construct() {
 	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
 	c.Table = &tables.AdminRole{}
 	c.Entries = &[]tables.AdminRole{}
-
+	c.BaseController.Construct()
 	c.OpBefore = c.before
 	c.OpAfter = c.after
 }
@@ -30,8 +31,13 @@ func (c *AdminRoleController) before(opType int, param interface{}) error {
 		p := param.(*idParams)
 		for _, id := range p.Ids {
 			if 1 == id {
-				return errors.New("不可删除此角色")
+				return errors.New("不可删除超级管理员角色")
 			}
+		}
+	} else if opType == OpEdit {
+		if c.Ctx().Value("roleid").(int64) != 1 {
+			fmt.Println("asdasda")
+			return errors.New("您的角色无法修改超级管理员信息")
 		}
 	}
 	return nil

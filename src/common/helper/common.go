@@ -19,6 +19,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strconv"
 	"strings"
@@ -491,4 +492,16 @@ func GetRandomString(l int) string {
 
 func GetORM() *xorm.Engine {
 	return pine.Make(controllers.ServiceXorm).(*xorm.Engine)
+}
+
+func ToInterfaces(values interface{}) []interface{} {
+	v := reflect.ValueOf(values)
+	if v.Kind() != reflect.Slice {
+		return nil
+	}
+	var is []interface{}
+	for i := 0; i < v.Len(); i++ {
+		is = append(is, v.Index(i).Interface())
+	}
+	return is
 }

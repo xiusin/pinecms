@@ -73,7 +73,7 @@ func initDatabase() {
 	_orm.SetMaxOpenConns(int(o.MaxOpenConns))
 	_orm.SetMaxIdleConns(int(o.MaxIdleConns))
 
-	_ = _orm.Sync2(&tables.Dict{}, &tables.DictCategory{})
+	_ = _orm.Sync2(&tables.Dict{}, &tables.DictCategory{}, &tables.AdminRole{})
 	XOrmEngine = _orm
 }
 

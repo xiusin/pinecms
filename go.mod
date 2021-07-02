@@ -34,7 +34,7 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/microcosm-cc/bluemonday v1.0.14
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
-	github.com/robfig/cron/v3 v3.0.0 // indirect
+	github.com/robfig/cron/v3 v3.0.0
 	github.com/schollz/progressbar v1.0.0
 	github.com/sonyarouje/simdb v0.1.0
 	github.com/spf13/cobra v1.1.3
@@ -53,6 +53,6 @@ require (
 	xorm.io/core v0.7.3
 )
 
-replace github.com/xiusin/pine => ../pine
+//replace github.com/xiusin/pine => ../pine
 
 //replace github.com/xiusin/logger => ../logger
