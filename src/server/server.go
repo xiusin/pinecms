@@ -127,9 +127,9 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.DictCategoryController), "/dict_category").
 		Handle(new(backend.DictController), "/dict").
 		Handle(new(backend.DocumentController), "/model").
+		Handle(new(backend.CategoryController), "/category").
 		Handle(new(backend.LoginController)).
 		Handle(new(backend.IndexController)).
-		Handle(new(backend.CategoryController)).
 		Handle(new(backend.ContentController)).
 		Handle(new(backend.SystemController)).
 		Handle(new(backend.DatabaseController)).
