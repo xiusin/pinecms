@@ -1,6 +1,5 @@
 package controllers
 
-// NOTE: `pinecms.` 开始的会加入到清理数据缓存逻辑
 const CacheTheme = "theme"
 const CacheStatistics = "pinecms_persist.statistics"
 const CacheRefer = "statistics_refer"

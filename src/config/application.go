@@ -58,12 +58,11 @@ type View struct {
 const dbYml = "resources/configs/database.yml"
 const appYml = "resources/configs/application.yml"
 
-var config *Config
+var config = &Config{}
 
 func init() {
-	config = &Config{}
 	parseConfig(appYml, config)
-	os.MkdirAll(config.LogPath, os.ModePerm)
+	_ = os.MkdirAll(config.LogPath, os.ModePerm)
 }
 
 func AppConfig() *Config {
