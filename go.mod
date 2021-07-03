@@ -14,6 +14,7 @@ require (
 	github.com/fatih/structs v1.1.0
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gbrlsnchs/jwt/v3 v3.0.0
+	github.com/gdamore/tcell/v2 v2.3.3
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.6.1
@@ -34,7 +35,7 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/microcosm-cc/bluemonday v1.0.14
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
-	github.com/rivo/tview v0.0.0-20210624165335-29d673af0ce2 // indirect
+	github.com/rivo/tview v0.0.0-20210624165335-29d673af0ce2
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/schollz/progressbar v1.0.0
 	github.com/sonyarouje/simdb v0.1.0

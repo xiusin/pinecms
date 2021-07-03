@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"github.com/gorilla/securecookie"
-	"github.com/xiusin/pine/cache/providers/bitcask"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"net/http"
@@ -56,6 +55,7 @@ func Ac() *config.Config {
 }
 
 func initDatabase() {
+	config.InitDB()
 	m, o := dc.Db, dc.Orm
 	_orm, err := xorm.NewEngine(m.DbDriver, m.Dsn)
 	if err != nil {
@@ -141,7 +141,6 @@ func registerV2BackendRoutes() {
 }
 
 func runServe() {
-
 	app.SetRecoverHandler(func(ctx *pine.Context) {
 		_ = ctx.WriteJSON(pine.H{"code": http.StatusInternalServerError, "message": ctx.Msg})
 	})
@@ -156,12 +155,13 @@ func runServe() {
 }
 
 func diConfig() {
-	cacheHandler = bitcask.New(int(conf.Session.Expires), conf.CacheDb, time.Minute*10)
+	//cacheHandler = bitcask.New(int(conf.Session.Expires), conf.CacheDb, time.Minute*10)
+	//cacheHandler = badger.New(int(conf.Session.Expires), conf.CacheDb)
 
-	theme, _ := cacheHandler.Get(controllers.CacheTheme)
-	if len(theme) > 0 {
-		conf.View.Theme = string(theme)
-	}
+	//theme, _ := cacheHandler.Get(controllers.CacheTheme)
+	//if len(theme) > 0 {
+	//	conf.View.Theme = string(theme)
+	//}
 	di.Set(controllers.ServiceICache, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return cacheHandler, nil
 	}, true)
