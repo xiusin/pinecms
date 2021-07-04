@@ -27,7 +27,7 @@ var startCmd = &cobra.Command{
 			p.HeaderBgColor, p.HeaderFgColor = 40, 32
 			p.Print([]row{
 				{"Name", "PineCMS内容管理系统"},
-				{"Version", "Development"},
+				{"Status", "Development"},
 				{"Author", "xiusin"},
 				{"PineVersion", pine.Version},
 				{"Version", Version},

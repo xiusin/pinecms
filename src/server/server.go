@@ -21,7 +21,6 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/taglibs"
 	"github.com/xiusin/pinecms/src/application/controllers/tplfun"
-	"xorm.io/core"
 
 	"github.com/xiusin/pinecms/src/config"
 	"github.com/xiusin/pinecms/src/router"
@@ -30,8 +29,6 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware"
-	"github.com/xiusin/pinecms/src/common/helper"
-	ormlogger "github.com/xiusin/pinecms/src/common/logger"
 )
 
 var (
@@ -54,29 +51,6 @@ func Ac() *config.Config {
 	return conf
 }
 
-func initDatabase() {
-	config.InitDB()
-	m, o := dc.Db, dc.Orm
-	_orm, err := xorm.NewEngine(m.DbDriver, m.Dsn)
-	if err != nil {
-		panic(err.Error())
-	}
-	_orm.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, dc.Db.DbPrefix))
-	_orm.SetLogger(ormlogger.NewIrisCmsXormLogger(helper.NewOrmLogFile(conf.LogPath), core.LOG_INFO))
-	if err = _orm.Ping(); err != nil {
-		panic(err.Error())
-	}
-
-	_orm.ShowSQL(o.ShowSql)
-	_orm.TZLocation, _ = time.LoadLocation("Asia/Shanghai")
-	_orm.ShowExecTime(o.ShowExecTime)
-	_orm.SetMaxOpenConns(int(o.MaxOpenConns))
-	_orm.SetMaxIdleConns(int(o.MaxIdleConns))
-
-	_ = _orm.Sync2(&tables.Dict{}, &tables.DictCategory{}, &tables.AdminRole{})
-	XOrmEngine = _orm
-}
-
 func initApp() {
 	app = pine.New()
 	diConfig()
@@ -89,7 +63,8 @@ func initApp() {
 }
 
 func Bootstrap() {
-	initDatabase()
+	XOrmEngine = config.InitDB(nil)
+	_ = XOrmEngine.Sync2(&tables.Dict{}, &tables.DictCategory{}, &tables.AdminRole{})
 }
 
 func Server() {

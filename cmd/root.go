@@ -1,16 +1,13 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 // http://www.network-science.de/ascii/ Font: stop
 var rootCmd = &cobra.Command{
 	Use: "pinecms",
-	Long: `
-       _                             
+	Long: `       _                             
       (_)                            
  ____  _ ____   ____ ____ ____   ___ 
 |  _ \| |  _ \ / _  ) ___)    \ /___)
@@ -21,7 +18,6 @@ var rootCmd = &cobra.Command{
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		panic(err)
 	}
 }
