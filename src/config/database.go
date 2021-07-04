@@ -5,6 +5,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
+	"strings"
 	"sync"
 )
 
@@ -21,6 +22,14 @@ type DbInfo struct {
 	Username string
 	Password string
 	Name     string
+}
+
+func (t *DbInfo) Check() bool {
+	return (strings.Trim(t.ServeIp, " ") == "" || strings.Contains(t.ServeIp, " ") ||
+		strings.Trim(t.Port, " ") == "" || strings.Contains(t.Port, " ") ||
+		strings.Trim(t.Username, " ") == "" || strings.Contains(t.Username, " ") ||
+		strings.Trim(t.Password, " ") == "" || strings.Contains(t.Password, " ") ||
+		strings.Trim(t.Name, " ") == "" || strings.Contains(t.Name, " ")) != true
 }
 
 type DbConfig struct {
