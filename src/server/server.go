@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/gorilla/securecookie"
+	"github.com/xiusin/pine/cache/providers/bitcask"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"net/http"
@@ -87,7 +88,15 @@ func registerV2BackendRoutes() {
 		middleware.Cors(),
 		middleware.SetGlobalConfigData(),
 		apidoc.New(nil),
+		middleware.StatesViz(app),
 	)
+	app.ANY("/aaa", func(ctx *pine.Context) {
+		ctx.WriteString("hello world app")
+	})
+	//admin := app // .Subdomain("admin.xiusin.cn")
+	//app.ANY("/aaa", func(ctx *pine.Context) {
+	//	ctx.WriteString("hello world admin")
+	//})
 	app.Group(
 		"/v2",
 		middleware.VerifyJwtToken(),
@@ -124,13 +133,13 @@ func runServe() {
 		pine.Addr(fmt.Sprintf(":%d", conf.Port)),
 		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))), // 关闭加密cookie
 		pine.WithoutStartupLog(false),
-		pine.WithServerName("xiusin/pinecms"),
+		pine.WithServerName("pinecms.xiusin.cn"),
 		pine.WithCookie(true),
 	)
 }
 
 func diConfig() {
-	//cacheHandler = bitcask.New(int(conf.Session.Expires), conf.CacheDb, time.Minute*10)
+	cacheHandler = bitcask.New(int(conf.Session.Expires), conf.CacheDb, time.Minute*10)
 	//cacheHandler = badger.New(int(conf.Session.Expires), conf.CacheDb)
 
 	//theme, _ := cacheHandler.Get(controllers.CacheTheme)

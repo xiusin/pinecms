@@ -14,11 +14,6 @@ type LoginController struct {
 	pine.Controller
 }
 
-/**
-todo 系统无法兼容: /dist分组 和 /dist/category分组
-dist-category 路由段无法解析 /v2/dict-category/list
-*/
-
 func (c *LoginController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/login", "Login")
 }
@@ -34,15 +29,11 @@ func (c *LoginController) Login() {
 		Desc:     "账号密码登录系统， 并且返回JWT凭证",
 	})
 
-	if err := parseParam(c.Ctx(), &p); err != nil {
+	if err := parseParam(c.Ctx(), &p); err != nil || helper.IsFalse(p.Username, p.Password) {
 		helper.Ajax("参数不能为空", 1, c.Ctx())
 		return
 	}
 
-	if helper.IsFalse(p.Username, p.Password) {
-		helper.Ajax("参数不能为空", 1, c.Ctx())
-		return
-	}
 	var hs = jwt.NewHS256([]byte(config.AppConfig().JwtKey))
 	now := time.Now()
 	pl := controllers.LoginAdminPayload{
@@ -55,17 +46,18 @@ func (c *LoginController) Login() {
 		RoleID:    1,       //admin.Roleid,
 		AdminName: "admin", //admin.Username,
 	}
-	token, err := jwt.Sign(pl, hs)
-	if err != nil {
+
+	if token, err := jwt.Sign(pl, hs); err != nil {
 		helper.Ajax("登录失败： 授权失败", 1, c.Ctx())
-		return
+	} else {
+		helper.Ajax(pine.H{
+			"role_name":  "超级管理员",
+			"role_id":    1,
+			"admin_id":   1,
+			"id":         1,
+			"admin_name": "admin",
+			"token":      string(token),
+		}, 0, c.Ctx())
 	}
-	helper.Ajax(pine.H{
-		"role_name":  "超级管理员",
-		"role_id":    1,
-		"admin_id":   1,
-		"id":         1,
-		"admin_name": "admin",
-		"token":      string(token),
-	}, 0, c.Ctx())
+
 }

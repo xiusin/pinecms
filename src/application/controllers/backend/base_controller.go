@@ -237,6 +237,7 @@ func (c *BaseController) PostEdit() {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
 	}
+
 	if c.OpBefore != nil {
 		if err := c.OpBefore(OpEdit, c.Table); err != nil {
 			helper.Ajax(err.Error(), 1, c.Ctx())

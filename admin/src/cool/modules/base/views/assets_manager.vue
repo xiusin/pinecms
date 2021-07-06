@@ -40,23 +40,23 @@ export default defineComponent({
 				{
 					label: "文件名",
 					prop: "name",
-					minWidth: 150
+					align:"left",
 				},
 				{
 					label: "文件大小",
 					prop: "size",
-					minWidth: 150
+					width: 150
 				},
 				{
 					label: "更新时间",
 					prop: "updated",
-					minWidth: 200,
+					width: 200,
 					showOverflowTooltip: true
 				},
 				{
 					label: "操作",
 					type: "op",
-					width: 200,
+					width: 100,
 					buttons: ["edit"]
 				}
 			]

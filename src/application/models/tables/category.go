@@ -1,8 +1,7 @@
 package tables
 
-// todo cat 对应的表名字段冗余
 type Category struct {
-	Catid       int64          `xorm:"pk autoincr" json:"catid"`
+	Catid       int64          `xorm:"pk autoincr id" json:"catid"`
 	Parentid    int64          `json:"parentid"`
 	Topid       int64          `json:"topid"`
 	ModelId     int64          `json:"model_id"`

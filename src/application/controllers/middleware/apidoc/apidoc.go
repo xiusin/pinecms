@@ -30,6 +30,8 @@ func New(config *Config) pine.Handler {
 			getConfig(ctx)
 		case "/apidoc/apiData":
 			getApiData(ctx)
+		case "/apidoc/edit":
+			panic("修改接口信息, 一般用于确定接口数据, 为字段添加详细备注")
 		default:
 			ps := strings.Split(ctx.Path(), "/")
 			method := string(ctx.Method())
@@ -57,7 +59,7 @@ func New(config *Config) pine.Handler {
 			entity.RawReturn = string(ctx.Response.Body())
 			_, entity.Return = parseInterface(defaultConfig.ResponseParam)
 			if err := simdbDriver.Upsert(entity); err != nil {
-				pine.Logger().Warning("保存接口实体失败", err)
+				pine.Logger().Warning("保存接口数据失败", err)
 			}
 		}
 	}

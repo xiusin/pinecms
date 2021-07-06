@@ -9,8 +9,10 @@ require (
 	github.com/alecthomas/chroma v0.9.2
 	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0
 	github.com/aliyun/aliyun-oss-go-sdk v2.1.8+incompatible
+	github.com/arl/statsviz v0.4.0 // indirect
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc // indirect
+	github.com/fasthttp/websocket v1.4.3 // indirect
 	github.com/fatih/structs v1.1.0
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gbrlsnchs/jwt/v3 v3.0.0
@@ -23,6 +25,7 @@ require (
 	github.com/golang/glog v0.0.0-20210429001901-424d2337a529
 	github.com/gookit/color v1.4.2
 	github.com/gorilla/securecookie v1.1.1
+	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/kataras/go-mailer v0.1.0
 	github.com/kataras/tablewriter v0.0.0-20180708051242-e063d29b7c23 // indirect
 	github.com/klauspost/compress v1.13.1 // indirect
@@ -39,11 +42,13 @@ require (
 	github.com/schollz/progressbar v1.0.0
 	github.com/sonyarouje/simdb v0.1.0
 	github.com/spf13/cobra v1.1.3
-	github.com/valyala/fasthttp v1.27.0 // indirect
+	github.com/traefik/yaegi v0.9.19 // indirect
+	github.com/valyala/fasthttp v1.28.0 // indirect
 	github.com/xiusin/logger v0.0.5
 	github.com/xiusin/pine v0.0.0-20210611061920-584b667194ae
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
+	golang.org/x/exp v0.0.0-20210625193404-fa9d1d177d71 // indirect
 	golang.org/x/image v0.0.0-20210622092929-e6eecd499c2c
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e // indirect
 	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
@@ -53,6 +58,6 @@ require (
 	xorm.io/core v0.7.3
 )
 
-//replace github.com/xiusin/pine => ../pine
+replace github.com/xiusin/pine => ../pine
 
 //replace github.com/xiusin/logger => ../logger

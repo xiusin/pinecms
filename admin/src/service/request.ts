@@ -5,6 +5,7 @@ import { href } from "/@/core/utils";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { ElMessage } from "element-plus";
+import {del} from "@vue/composition-api";
 
 axios.defaults.timeout = 30000;
 axios.defaults.withCredentials = true;
@@ -58,6 +59,9 @@ axios.interceptors.request.use(
 					config.data.params[configKey.replace("params.", "")] = config.data[configKey];
 					delete config.data[configKey];
 				}
+			}
+			if (Object.keys(config.data.params).length === 0) {
+				delete config.data.params
 			}
 		}
 

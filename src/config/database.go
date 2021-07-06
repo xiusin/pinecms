@@ -76,7 +76,7 @@ var dbConfig = &DbConfig{}
 
 func InitDB(conf *DbConfig) *xorm.Engine {
 	dbConfig.Do(func() {
-		if config != nil {
+		if conf != nil {
 			dbConfig = conf
 		} else {
 			parseConfig(dbYml, dbConfig)

@@ -33,6 +33,6 @@ func (c *LogController) Construct() {
 }
 
 func (c *LogController) PostClear() {
-	c.Orm.Where("id > 0").Delete(c.Table)
+	_, _ = c.Orm.Where("id > 0").Delete(c.Table)
 	helper.Ajax("清理成功", 0, c.Ctx())
 }

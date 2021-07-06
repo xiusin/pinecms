@@ -20,9 +20,3 @@ type listParam struct {
 	Export     bool                   `json:"_isExport" api:"remark:是否导出"`                    // 是否导出
 	Params     map[string]interface{} `json:"params" api:"remark:额外参数用于非配置字段导出"`              // 额外附加参数
 }
-
-type responsePageParam struct {
-	Page  int64 `json:"page"`
-	Size  int64 `json:"size"`
-	Total int64 `json:"total"`
-}
