@@ -14,7 +14,8 @@ import (
 
 func VerifyJwtToken() pine.Handler {
 	return func(ctx *pine.Context) {
-		if !strings.Contains(ctx.Path(), "login") && !strings.Contains(ctx.Path(), "/public/") {
+		uri := ctx.Path()
+		if !strings.Contains(uri, "login") && !strings.Contains(uri, "/public/") && !strings.Contains(uri, "thumb") {
 			token := ctx.Header("Authorization")
 			var hs = jwt.NewHS256([]byte(config.AppConfig().JwtKey))
 			// 验证token
@@ -26,12 +27,11 @@ func VerifyJwtToken() pine.Handler {
 			}
 			ctx.Set("roleid", pl.RoleID)
 			ctx.Set("adminid", pl.AdminId)
-			if strings.Contains(ctx.Path(), "user/info") {
+			if strings.Contains(uri, "user/info") {
 				ctx.QueryArgs().Set("id", fmt.Sprintf("%d", pl.AdminId))
 			}
-			if !strings.Contains(ctx.Path(), "/log/list") {
-				// 记录操作日志
-				ctx.Value("orm").(*xorm.Engine).Insert(&tables.Log{
+			if !strings.Contains(uri, "/log/list") {
+				_, _ = ctx.Value("orm").(*xorm.Engine).Insert(&tables.Log{
 					Uri:      string(ctx.RequestURI()),
 					Userid:   pl.AdminId,
 					Params:   string(ctx.PostBody()),

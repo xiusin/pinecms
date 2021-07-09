@@ -87,12 +87,9 @@ func registerV2BackendRoutes() {
 	app.Use(
 		middleware.Cors(),
 		middleware.SetGlobalConfigData(),
-		apidoc.New(nil),
+		apidoc.New(app, nil),
 		middleware.StatesViz(app),
 	)
-	app.ANY("/aaa", func(ctx *pine.Context) {
-		ctx.WriteString("hello world app")
-	})
 	//admin := app // .Subdomain("admin.xiusin.cn")
 	//app.ANY("/aaa", func(ctx *pine.Context) {
 	//	ctx.WriteString("hello world admin")
@@ -112,6 +109,7 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.DictController), "/dict").
 		Handle(new(backend.DocumentController), "/model").
 		Handle(new(backend.CategoryController), "/category").
+		Handle(new(backend.DistrictController), "/district").
 		Handle(new(backend.LoginController)).
 		Handle(new(backend.IndexController)).
 		Handle(new(backend.ContentController)).

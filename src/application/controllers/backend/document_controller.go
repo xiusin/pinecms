@@ -3,6 +3,7 @@ package backend
 import (
 	"errors"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 type DocumentController struct {
@@ -27,6 +28,7 @@ func (c *DocumentController) Construct() {
 	c.BaseController.Construct()
 }
 
+
 func (c *DocumentController) before(act int, params interface{}) error {
 	if act == OpDel {
 		modelID := params.(*idParams).Ids[0]
@@ -38,4 +40,17 @@ func (c *DocumentController) before(act int, params interface{}) error {
 		}
 	}
 	return nil
+}
+
+func (c *DocumentController) PostSelect() {
+	c.Orm.Find(c.Entries)
+	models := c.Entries.(*[]*tables.DocumentModel)
+	var kv []tables.KV
+	for _, model := range *models {
+		kv = append(kv, tables.KV{
+			Label: model.Name,
+			Value: model.Id,
+		})
+	}
+	helper.Ajax(kv, 0, c.Ctx())
 }

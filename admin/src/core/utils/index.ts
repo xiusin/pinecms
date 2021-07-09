@@ -252,7 +252,7 @@ export function deepTree(list: Array<any>) {
 	const fn = (list: Array<any>) => {
 		list.map((e) => {
 			if (e.children instanceof Array) {
-				e.children = orderBy(e.children, "orderNum");
+				e.children = orderBy(e.children, "listorder");
 
 				fn(e.children);
 			}
@@ -261,7 +261,7 @@ export function deepTree(list: Array<any>) {
 
 	fn(newList);
 
-	return orderBy(newList, "orderNum");
+	return orderBy(newList, "listorder");
 }
 
 export function revDeepTree(list: Array<any> = []) {

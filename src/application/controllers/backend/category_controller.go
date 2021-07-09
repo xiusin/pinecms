@@ -24,6 +24,7 @@ func (c *CategoryController) Construct() {
 	c.BaseController.Construct()
 	c.OpBefore = c.before
 	c.sql = "SELECT COUNT(*) total FROM `%s` WHERE id=? and deleted_time IS NULL"
+	c.TableStructKey = "Catid"
 }
 
 func (c *CategoryController) before(act int, params interface{}) error {

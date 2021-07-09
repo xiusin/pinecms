@@ -1,6 +1,7 @@
 package apidoc
 
 type Config struct {
+	RoutePrefix   string      `json:"route_prefix"`
 	Enable        bool        `json:"enable"`         // 是否启用apidoc
 	DataPath      string      `json:"-"`              // 配置数据存储目录
 	ResponseParam interface{} `json:"-"`              // 用于反射返回值信息
@@ -90,6 +91,7 @@ var defaultConfig *Config
 
 func DefaultConfig() *Config {
 	return &Config{
+		RoutePrefix:   "/apidoc",
 		Enable:        true,
 		Title:         "PineCMS ApiDoc",
 		Desc:          "PineCMS 接口文档",

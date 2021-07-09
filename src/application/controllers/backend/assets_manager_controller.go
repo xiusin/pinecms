@@ -5,6 +5,7 @@ import (
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"io/fs"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -26,36 +27,45 @@ func (c *AssetsManagerController) Construct() {
 		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
 	}
 	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
-	c.Table = &tables.Link{}
-	c.Entries = &[]*tables.Link{}
+}
 
+func (c *AssetsManagerController) GetSelect() {
+	conf := di.MustGet("pinecms.config").(*config.Config)
+	themeDir := filepath.Join(conf.View.FeDirname, conf.View.Theme)
+	files := c.getTempList(themeDir)
+	var kv []tables.KV
+	for _, file := range files {
+		kv = append(kv, tables.KV{
+			Label: file["id"].(string),
+			Value: file["id"].(string),
+		})
+	}
+	helper.Ajax(kv, 0, c.Ctx())
+}
+
+func (c *AssetsManagerController) getTempList(dir string) []map[string]interface{} {
+	var files []map[string]interface{}
+	_ = filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+		f, _ := d.Info()
+		if strings.HasSuffix(f.Name(), ".jet") {
+			files = append(files, map[string]interface{}{
+				"id":      strings.TrimLeft(strings.TrimPrefix(path, dir), "/"),
+				"name":    strings.TrimLeft(strings.TrimPrefix(path, dir), "/"),
+				"size":    f.Size(),
+				"updated": f.ModTime().In(helper.GetLocation()).Format(helper.TimeFormat),
+			})
+		}
+		return nil
+	})
+	return files
 }
 
 func (c *AssetsManagerController) PostList() {
 	conf := di.MustGet("pinecms.config").(*config.Config)
 	themeDir := filepath.Join(conf.View.FeDirname, conf.View.Theme)
-	fs, err := ioutil.ReadDir(themeDir)
-
 	var p listParam
-	parseParam(c.Ctx(), &p)
-
-	var files []map[string]interface{}
-	if err == nil {
-		for _, f := range fs {
-			if !f.IsDir() {
-				if strings.HasSuffix(f.Name(), ".jet") {
-					files = append(files, map[string]interface{}{
-						"id":      f.Name(),
-						"name":    f.Name(),
-						"size":    f.Size(),
-						"updated": f.ModTime().In(helper.GetLocation()).Format(helper.TimeFormat),
-					})
-				}
-			}
-		}
-	} else {
-		c.Logger().Error("读取模板列表错误: "+err.Error(), 1, c.Ctx())
-	}
+	_ = parseParam(c.Ctx(), &p)
+	files := c.getTempList(themeDir)
 	helper.Ajax(pine.H{
 		"list": files,
 		"pagination": pine.H{
@@ -97,39 +107,41 @@ func (c *AssetsManagerController) PostEdit() {
 	helper.Ajax("修改成功", 0, c.Ctx())
 }
 
-func (c *AssetsManagerController) Theme() {
+func (c *AssetsManagerController) GetThemes() {
 	conf := di.MustGet("pinecms.config").(*config.Config)
 	fs, err := ioutil.ReadDir(conf.View.FeDirname)
 	if err != nil {
-		helper.Ajax("读取模板主题目录失败: "+err.Error(), 1, c.Ctx())
+		helper.Ajax("读取主题目录失败: "+err.Error(), 1, c.Ctx())
 		return
 	}
-	var dirs = []*ThemeConfig{}
+	var dirs []*ThemeConfig
 	for _, f := range fs {
 		if f.IsDir() {
-			// 读取一个json配置文件
 			contentByts, err := ioutil.ReadFile(filepath.Join(conf.View.FeDirname, f.Name(), "config.json"))
 			if err != nil {
 				continue
 			}
-			var configMap ThemeConfig
-			err = json.Unmarshal(contentByts, &configMap)
+			var tConf ThemeConfig
+			err = json.Unmarshal(contentByts, &tConf)
 			if err != nil {
 				continue
 			}
-			configMap.Dir = f.Name()
-			if configMap.Name == conf.View.Theme {
-				configMap.IsDefault = true
+			tConf.Dir = f.Name()
+			if tConf.Dir == conf.View.Theme {
+				tConf.IsDefault = true
 			}
-			dirs = append(dirs, &configMap)
+			dirs = append(dirs, &tConf)
 		}
 	}
 	helper.Ajax(dirs, 0, c.Ctx())
 }
 
-func (c *AssetsManagerController) SetTheme(cache cache.AbstractCache) {
+func (c *AssetsManagerController) PostTheme(cache cache.AbstractCache) {
 	conf := di.MustGet("pinecms.config").(*config.Config)
-	name := c.Ctx().FormValue("theme")
+	var p = map[string]interface{}{}
+	_ = c.Ctx().BindJSON(&p)
+	name := p["theme"].(string)
+
 	if name == "" {
 		helper.Ajax("模板主题参数错误", 1, c.Ctx())
 		return
@@ -177,7 +189,7 @@ func (c *AssetsManagerController) GetInfo() {
 	}, 0, c.Ctx())
 }
 
-func (c *AssetsManagerController) Add(orm *xorm.Engine) {
+func (c *AssetsManagerController) PostAdd(orm *xorm.Engine) {
 	conf := di.MustGet("pinecms.config").(*config.Config)
 	if c.Ctx().IsPost() {
 		name := c.Ctx().PostValue("name")
@@ -202,11 +214,10 @@ func (c *AssetsManagerController) Add(orm *xorm.Engine) {
 	c.Ctx().Render().HTML("backend/assets_add.html")
 }
 
-func (c *AssetsManagerController) ThemeThumb() {
+func (c *AssetsManagerController) GetThumb() {
 	conf := di.MustGet("pinecms.config").(*config.Config)
-	themeName := c.Ctx().Params().Get("theme")
+	themeName := c.Ctx().GetString("id")
 	dirName := filepath.Join(conf.View.FeDirname, themeName, "thumb.png")
 	c.Ctx().SetContentType("img/png")
-	//todo 打开连接直接显示而不下载
 	c.Ctx().SendFile(dirName)
 }

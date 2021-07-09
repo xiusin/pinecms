@@ -13,7 +13,7 @@ func CheckDatabaseBackupDownload() func(ctx *pine.Context) {
 			aid, _ := strconv.Atoi(ctx.Session().Get("adminid"))
 			roleId, _ := strconv.Atoi(ctx.Session().Get("roleid"))
 			if aid ==0 || roleId == 0 {
-				ctx.Abort(404)
+				//ctx.Abort(404)
 				ctx.Stop()
 			}
 		}

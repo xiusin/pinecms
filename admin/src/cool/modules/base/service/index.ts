@@ -17,6 +17,8 @@ import SysDict from "./system/dict";
 import SysDictCategory from "./system/dict_category";
 import SysDatabaseBackupList from "./system/database_backup_list";
 import SysModel from "./system/dict";
+import SysCategory from "./system/category";
+import SysDocument from "./system/document";
 
 export default {
 	common: new Common(),
@@ -37,7 +39,9 @@ export default {
 		databaseBackupList: new SysDatabaseBackupList(),
 		dict: new SysDict(),
 		model: new SysModel(),
-		dictCategory: new SysDictCategory()
+		dictCategory: new SysDictCategory(),
+		category: new SysCategory(),
+		document: new SysDocument(),
 	},
 	plugin: {
 		info: new PluginInfo()

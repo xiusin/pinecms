@@ -39,7 +39,7 @@ func (c *IndexController) Detail(pathname string) {
 		c.Ctx().Abort(http.StatusNotFound)
 		return
 	}
-	if category.Model.Enabled == 0 {
+	if category.Model.Enabled == 0{
 		pine.Logger().Warning("模型内容已被禁止查看")
 		c.Ctx().Abort(404)
 		return
