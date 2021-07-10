@@ -5,8 +5,6 @@ import (
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/common/storage"
-	"math/rand"
-	"strconv"
 	"strings"
 
 	"github.com/go-xorm/xorm"
@@ -25,20 +23,6 @@ func clearMenuCache(cache cache.AbstractCache, xorm *xorm.Engine) {
 			cache.Delete(cacheKey)
 		}
 	}
-}
-
-func getEditor(field, val, attrs string, required bool, formName, defaultVal, RequiredTips string) string {
-	rid := "component_editor_um_" + strconv.Itoa(rand.Int())
-	if RequiredTips == "" {
-		RequiredTips = formName + "必须填写"
-	}
-	var requiredFunc = ""
-	if required {
-		requiredFunc = `editors.push(function(){ if (!` + rid + `.hasContents()) {$('#` + rid + `_tip').html("` + RequiredTips + `"); return false; } $('#` + rid + `_tip').html(''); return true; });`
-	}
-	return `<textarea id="` + rid + `" ` + attrs + ` style="width:100%;height:360px" name="` + field + `">` + val + `</textarea>
-<div id='` + rid + `_tip' class='errtips'></div>
-<script>var ` + rid + ` = UE.getEditor('` + rid + `'); ` + requiredFunc + `</script>`
 }
 
 func getStorageEngine(settingData map[string]string) storage.Uploader {
@@ -72,15 +56,6 @@ func strFirstToUpper(str string) string {
 		}
 	}
 	return temp[0] + upperStr
-}
-
-func inArray(val interface{}, vals []interface{}) bool {
-	for _, v := range vals {
-		if v == val {
-			return true
-		}
-	}
-	return false
 }
 
 func ucwords(str string) string {

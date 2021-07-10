@@ -28,7 +28,6 @@ func (c *DocumentController) Construct() {
 	c.BaseController.Construct()
 }
 
-
 func (c *DocumentController) before(act int, params interface{}) error {
 	if act == OpDel {
 		modelID := params.(*idParams).Ids[0]
@@ -43,7 +42,7 @@ func (c *DocumentController) before(act int, params interface{}) error {
 }
 
 func (c *DocumentController) PostSelect() {
-	c.Orm.Find(c.Entries)
+	_ = c.Orm.Find(c.Entries)
 	models := c.Entries.(*[]*tables.DocumentModel)
 	var kv []tables.KV
 	for _, model := range *models {

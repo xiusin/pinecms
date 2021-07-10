@@ -1,7 +1,5 @@
 package tables
 
-
-//District database https://github.com/eduosi/district/blob/master/district-full.sql
 type District struct {
 	Id       int64  `xorm:"pk autoincr" json:"id"`
 	Name     string `json:"name"`

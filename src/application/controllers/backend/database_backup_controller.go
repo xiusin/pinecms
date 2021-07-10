@@ -10,7 +10,7 @@ import (
 )
 
 type DatabaseBackupController struct {
-	pine.Controller
+	BaseController
 }
 
 // 定时备份任务功能

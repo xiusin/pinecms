@@ -2,6 +2,7 @@ package backend
 
 import (
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"net/http"
 )
 
 type DistrictController struct {
@@ -16,7 +17,18 @@ func (c *DistrictController) Construct() {
 	c.SubGroup = "地区管理"
 	c.ApiEntityName = "地区"
 	c.BaseController.Construct()
+}
 
-
-	// todo 增加自动下载导入数据库功能
+// PostImport 导入外部数据库
+func (c *DistrictController) PostImport() {
+	dbUrl := "https://github.com/eduosi/district/blob/master/district-full.sql"
+	resp, err := http.Get(dbUrl)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+	_, err = c.Orm.Import(resp.Body)
+	if err != nil {
+		panic(err)
+	}
 }

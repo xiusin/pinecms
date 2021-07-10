@@ -1,8 +1,8 @@
 <template>
 	<div class="page-login">
 		<div class="box">
-			<img class="logo" src="../../static/images/logo.png" alt="" />
-			<p class="desc">COOL ADMIN是一款快速开发后台权限管理系统</p>
+			<img class="logo" src="//doc.xiusin.cn/logo.png" alt="" />
+			<p class="desc">PineCMS 内容管理系统</p>
 
 			<el-form class="form" size="medium" :disabled="saving">
 				<el-form-item label="用户名">

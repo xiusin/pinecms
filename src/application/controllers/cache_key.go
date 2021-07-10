@@ -14,3 +14,8 @@ const CacheCategories = "pinecms.categories"
 const CacheCategoryPosPrefix = "pinecms.category.pos.%d"
 const CacheCategoryInfoPrefix = "pinecms.category.%d"
 const CacheCategoryContentPrefix = "pinecms.content.%d_%d"
+
+// CacheKeyAll 缓存管理迭代
+var CacheKeyAll = []map[string]interface{}{
+	{CacheTheme: "主题"},
+}

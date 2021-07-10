@@ -22,30 +22,9 @@ type IndexController struct {
 	pine.Controller
 }
 
-type MemPos struct {
-	TimePos int64 `json:"x"`
-	Percent int   `json:"y"`
-}
-
 func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/index/menu", "Menu")
 	b.ANY("/index/main", "Main")
-}
-
-func getMems() []MemPos {
-	var mems []MemPos
-	c := pine.Make(controllers.ServiceICache).(cache.AbstractCache)
-	memCollect, _ := c.Get(controllers.CacheMemCollect)
-	if memCollect == nil {
-		memCollect = []byte{}
-	}
-	err := json.Unmarshal(memCollect, &mems)
-	if err == nil {
-		if len(mems) > 10 {
-			mems = mems[len(mems)-10:]
-		}
-	}
-	return mems
 }
 
 func (c *IndexController) Menu() {
@@ -66,10 +45,6 @@ func (c *IndexController) Main(orm *xorm.Engine, iCache cache.AbstractCache) {
 	c.ViewData("pineVersion", "Version "+pine.Version)
 	c.ViewData("Goos", strings.ToUpper(runtime.GOOS))
 	c.ViewData("Grountues", runtime.NumGoroutine())
-	memBytes, _ := json.Marshal(getMems())
-
-	data := strings.ReplaceAll(string(memBytes), "\"", "")
-	c.ViewData("mems", data)
 
 	var todos []tables.Todo
 	orm.Where("status = ?", 1).Find(&todos)

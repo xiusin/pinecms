@@ -1,33 +1,37 @@
 <template>
 	<cl-crud @load="onLoad">
 		<el-row>
-			<cl-table v-bind="table"/>
+			<cl-table v-bind="table">
+				<template #slot-model-define="{ scope }">
+					<el-button @click="" type="text" size="mini">定义模型</el-button>
+				</template>
+			</cl-table>
 		</el-row>
 		<el-row type="flex">
-			<cl-flex1/>
-			<cl-pagination/>
+			<cl-flex1 />
+			<cl-pagination />
 		</el-row>
 		<cl-upsert v-bind="upsert" />
 	</cl-crud>
 </template>
 
 <script lang="ts">
-import {defineComponent, h, inject, reactive, ref, resolveComponent} from "vue";
-import {useRefs} from "/@/core";
-import {CrudLoad, FormItem, FormRef, Table, Upsert} from "cl-admin-crud-vue3/types";
+import { defineComponent, inject, reactive, ref } from "vue";
+import { useRefs } from "/@/core";
+import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
 
 export default defineComponent({
 	name: "sys-model",
 
 	setup() {
 		const service = inject<any>("service");
-		const {refs, setRefs} = useRefs();
+		const { refs, setRefs } = useRefs();
 
 		const models = ref([]);
 
 		service.system.assets.select().then((data) => {
 			models.value?.push(...data);
-		})
+		});
 
 		// 表格配置
 		const table = reactive<Table>({
@@ -54,7 +58,7 @@ export default defineComponent({
 					label: "详情模板",
 					prop: "fe_tpl_detail",
 					width: 150,
-					align:"left"
+					align: "left"
 				},
 				{
 					label: "备注",
@@ -64,7 +68,7 @@ export default defineComponent({
 				{
 					label: "启用",
 					prop: "enabled",
-					width: 70,
+					width: 100,
 					dict: [
 						{
 							label: "启用",
@@ -81,8 +85,8 @@ export default defineComponent({
 				{
 					label: "操作",
 					type: "op",
-					width: 100,
-					buttons: ["slot-model-define","edit", "delete"]
+					width: 180,
+					buttons: ["slot-model-define", "edit", "delete"]
 				}
 			]
 		});
@@ -130,7 +134,7 @@ export default defineComponent({
 						props: {
 							placeholder: "请选择列表模板"
 						},
-						options:models
+						options: models
 					}
 				},
 				{
@@ -142,7 +146,7 @@ export default defineComponent({
 						props: {
 							placeholder: "请选择详情模板"
 						},
-						options:models
+						options: models
 					}
 				},
 				{
@@ -171,7 +175,7 @@ export default defineComponent({
 		});
 
 		// crud 加载
-		function onLoad({ctx, app}: CrudLoad) {
+		function onLoad({ ctx, app }: CrudLoad) {
 			ctx.service(service.system.model).done();
 			app.refresh();
 		}
@@ -181,7 +185,7 @@ export default defineComponent({
 			table,
 			upsert,
 			setRefs,
-			onLoad,
+			onLoad
 		};
 	}
 });
