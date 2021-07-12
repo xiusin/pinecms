@@ -1,29 +1,29 @@
 <template>
 	<cl-crud @load="onLoad">
 		<el-row type="flex">
-			<cl-refresh-btn/>
-			<cl-add-btn/>
-			<cl-multi-delete-btn/>
-			<cl-flex1/>
-			<cl-search-key/>
+			<cl-refresh-btn />
+			<cl-add-btn />
+			<cl-multi-delete-btn />
+			<cl-flex1 />
+			<cl-search-key />
 		</el-row>
 
 		<el-row>
-			<cl-table v-bind="table"/>
+			<cl-table v-bind="table" />
 		</el-row>
 
 		<el-row type="flex">
-			<cl-flex1/>
-			<cl-pagination/>
+			<cl-flex1 />
+			<cl-pagination />
 		</el-row>
 
-		<cl-upsert v-model="form" v-bind="upsert"/>
+		<cl-upsert v-model="form" v-bind="upsert" />
 	</cl-crud>
 </template>
 
 <script lang="ts">
-import {CrudLoad, Table, Upsert} from "cl-admin-crud-vue3/types";
-import {defineComponent, inject, reactive} from "vue";
+import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { defineComponent, inject, reactive } from "vue";
 
 export default defineComponent({
 	name: "sys-link",
@@ -62,7 +62,12 @@ export default defineComponent({
 						name: "cl-upload",
 						props: {
 							text: "选择图片",
-							icon: "el-icon-picture"
+							name: "file",
+							accept: ".jpg,.png",
+							icon: "el-icon-picture",
+							headers: {
+								"Content-Type": "application/json"
+							}
 						}
 					}
 				},
@@ -117,7 +122,6 @@ export default defineComponent({
 			]
 		});
 
-
 		// 表格配置
 		const table = reactive<Table>({
 			props: {
@@ -131,11 +135,6 @@ export default defineComponent({
 					type: "selection",
 					width: 40
 				},
-				// {
-				// 	prop: "linktype",
-				// 	label: "类型",
-				// 	minWidth: 60
-				// },
 				{
 					prop: "name",
 					label: "名称",
@@ -144,7 +143,7 @@ export default defineComponent({
 				{
 					prop: "logo",
 					label: "Logo",
-					component: ({h, scope}: any) => {
+					component: ({ h, scope }: any) => {
 						return h("img", {
 							src: scope.logo,
 							height: 40
@@ -189,7 +188,7 @@ export default defineComponent({
 		});
 
 		// crud 加载
-		function onLoad({ctx, app}: CrudLoad) {
+		function onLoad({ ctx, app }: CrudLoad) {
 			ctx.service(service.system.link).done();
 			app.refresh();
 		}

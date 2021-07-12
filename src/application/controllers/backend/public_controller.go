@@ -55,12 +55,17 @@ func (c *PublicController) Upload() {
 	uploader := getStorageEngine(settingData)
 	uploadDir := fmt.Sprintf("%s/%s", mid, helper.NowDate("Ymd"))
 
-	fs, err := c.Ctx().Files("file")
+	mf, err := c.Ctx().MultipartForm()
 	if err != nil {
 		uploadAjax(c.Ctx(), map[string]interface{}{"state": "打开上传临时文件失败 : " + err.Error(), "errcode": "1"}, isEditor)
 		return
 	}
-
+	fss, ok := mf.File["file"]
+	if !ok {
+		uploadAjax(c.Ctx(), map[string]interface{}{"state": "打开上传临时文件失败", "errcode": "1"}, isEditor)
+		return
+	}
+	fs := fss[0]
 	var fname string
 	var size int64
 	if fs != nil {

@@ -69,10 +69,7 @@
 							<cl-pagination />
 						</el-row>
 
-						<cl-upsert
-							:ref="setRefs('upsert')"
-							:items="upsert.items"
-						>
+						<cl-upsert :ref="setRefs('upsert')" :items="upsert.items">
 							<template #slot-tips>
 								<div>
 									<i class="el-icon-warning"></i>

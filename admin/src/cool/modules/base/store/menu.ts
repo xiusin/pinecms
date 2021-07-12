@@ -67,7 +67,7 @@ const actions = {
 
 				// 转成树形菜单
 				const menuGroup = deepTree(routes);
-				console.log("menuGroup", menuGroup);
+				// console.log("menuGroup", menuGroup);
 
 				// 设置权限
 				commit("SET_PERMIESSION", res.perms);

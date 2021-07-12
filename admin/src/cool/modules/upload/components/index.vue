@@ -266,7 +266,7 @@ export default {
 		},
 
 		_loading() {
-			return this.listType == "default" ? this.loading : false;
+			return this.listType === "default" ? this.loading : false;
 		},
 
 		_urls() {
@@ -299,7 +299,7 @@ export default {
 
 			const [height, width] = arr.map((e) => (isNumber(e) ? `${e}px` : e));
 
-			if (this.listType == "default" && !this.drag) {
+			if (this.listType === "default" && !this.drag) {
 				return {
 					height,
 					width
@@ -449,7 +449,6 @@ export default {
 		async httpRequest(req) {
 			// 多种上传请求
 			const upload = (file) => {
-				console.log("file", file);
 				return new Promise((resolve, reject) => {
 					const next = (res) => {
 						console.log("upload.next", res);
@@ -470,7 +469,7 @@ export default {
 
 						data.append("key", `${fileName}`);
 						data.append("file", file);
-
+						console.log(data)
 						// 上传
 						this.service.common
 							.request({
@@ -481,6 +480,7 @@ export default {
 								},
 								data,
 								onUploadProgress: (e) => {
+									debugger
 									if (this.onProgress) {
 										e.percent = parseInt((e.loaded / e.total) * 100);
 										this.onProgress(e, req.file);
@@ -495,7 +495,6 @@ export default {
 							});
 					};
 
-
 					this.service.common
 						.upload()
 						.then((res) => {
@@ -509,6 +508,7 @@ export default {
 
 			await upload(req.file)
 				.then((url) => {
+					debugger
 					this._onSuccess({ data: url }, { raw: req.file });
 				})
 				.catch((err) => {
