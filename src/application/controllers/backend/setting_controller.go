@@ -13,9 +13,11 @@ type SettingController struct {
 func (c *SettingController) Construct() {
 	c.Table = &tables.Setting{}
 	c.Entries = &[]*tables.Setting{}
-	c.AppId = "admin"
 	c.Group = "系统配置"
 	c.SubGroup = "配置模块"
+	c.ApiEntityName = "配置"
+
+	c.BaseController.Construct()
 
 	c.apiEntities = map[string]apidoc.Entity{
 		"list":   {Title: "配置列表", Desc: "查询系统指定分组配置信息列表"},
@@ -25,7 +27,8 @@ func (c *SettingController) Construct() {
 		"info":   {Title: "配置详情", Desc: "获取指定配置详情信息"},
 		"groups": {Title: "配置分组列表", Desc: "获取所有配置分组列表"},
 	}
-	c.BaseController.Construct()
+	c.setApiEntity()
+
 	c.SearchFields = map[string]searchFieldDsl{
 		"`group`": {Op: "="},
 	}
@@ -33,7 +36,6 @@ func (c *SettingController) Construct() {
 		{Field: "form_name", Op: "LIKE", DataExp: "%$?%"},
 		{Field: "`key`", Op: "LIKE", DataExp: "%$?%"},
 	}
-
 }
 
 // PostGroups 获取新分组
