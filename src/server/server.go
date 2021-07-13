@@ -97,7 +97,8 @@ func registerV2BackendRoutes() {
 	app.Group(
 		"/v2",
 		middleware.VerifyJwtToken(),
-	).Handle(new(backend.UserController), "/user").
+	).
+		Handle(new(backend.UserController), "/user").
 		Handle(new(backend.AdminRoleController), "/role").
 		Handle(new(backend.MenuController), "/menu").
 		Handle(new(backend.LinkController), "/link").
@@ -105,17 +106,17 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.AssetsManagerController), "/assets").
 		Handle(new(backend.AttachmentController), "/attachment").
 		Handle(new(backend.SettingController), "/setting").
-		Handle(new(backend.DictCategoryController), "/dict_category").
+		Handle(new(backend.DictCategoryController), "/dict/category").
 		Handle(new(backend.DictController), "/dict").
 		Handle(new(backend.DocumentController), "/model").
 		Handle(new(backend.CategoryController), "/category").
 		Handle(new(backend.DistrictController), "/district").
+		Handle(new(backend.AdController), "/ad").
+		Handle(new(backend.AdSpaceController), "/ad/space").
 		Handle(new(backend.LoginController)).
 		Handle(new(backend.IndexController)).
 		Handle(new(backend.ContentController)).
-		Handle(new(backend.SystemController)).
 		Handle(new(backend.DatabaseController)).
-		Handle(new(backend.AdController)).
 		Handle(new(backend.StatController))
 
 	app.Group("/v2/public").Handle(new(backend.PublicController))

@@ -63,8 +63,8 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 # 演示 # 
 - 首页 http://pinecms.xiusin.cn/
-- 后端 http://pinecms.xiusin.cn/b/login/index (新版正在开发中...)
-
+- 后端 http://pinecms.xiusin.cn/b/login/index 
+- 新版后端 http://new_pinecms.xiusin.cn/
 
 # Doing
 - 重写为前后端分离
@@ -73,6 +73,4 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 # TODO  
 - github.com/gokeeptech/gktemplate
 - github.com/traefik/yaegi  
-- 修改框架 需要支持/shop的方式 group.Handle(new(v1.ShopController), "/shop")
-- todo 系统无法兼容:/dist分组 和 /dist/category分组
 - dist-category 路由段无法解析 /v2/dict-category/list

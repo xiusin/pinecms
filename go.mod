@@ -50,7 +50,7 @@ require (
 	golang.org/x/exp v0.0.0-20210625193404-fa9d1d177d71 // indirect
 	golang.org/x/image v0.0.0-20210622092929-e6eecd499c2c
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e // indirect
-	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
+	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 	xorm.io/builder v0.3.9

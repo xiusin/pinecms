@@ -23,7 +23,10 @@ func (s *OssUploader) Remove(name string) error {
 }
 
 func (s *OssUploader) GetFullUrl(name string) string {
-	return fmt.Sprintf("%s/%s", strings.TrimRight(s.host, "/"), strings.TrimLeft(filepath.Join(s.urlPrefix, name), "/"))
+	return fmt.Sprintf("%s/%s",
+		strings.TrimRight(s.host, "/"),
+		strings.TrimLeft(filepath.Join(s.urlPrefix, name), "/"),
+	)
 }
 
 func (s *OssUploader) Exists(name string) (bool, error) {
@@ -72,9 +75,12 @@ func (s *OssUploader) List(dir string) ([]string, string, error) {
 	if err != nil {
 		return nil, "", err
 	}
-	var files = []string{}
+	var files []string
 	for _, object := range list.Objects {
 		files = append(files, s.host+object.Key)
 	}
 	return files, s.host, nil
+}
+func init() {
+	//register("阿里云存储", NewOssUploader())
 }

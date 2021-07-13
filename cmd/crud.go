@@ -61,7 +61,7 @@ var crudCmd = &cobra.Command{
 		force, _ := cmd.Flags().GetBool("force")
 		print, _ := cmd.Flags().GetBool("print")
 		if table == "" {
-			cmd.Help()
+			_ = cmd.Help()
 			return
 		}
 		metas, _ := config.XOrmEngine.DBMetas()
@@ -171,7 +171,7 @@ func genControllerFile(print bool, controllerName, tableName, controllerPath str
 		logger.Print("创建文件： " + color.Green.Sprint(controllerPath))
 	}
 	if print {
-		quick.Highlight(logger.DefaultWriter(), content, "go", "terminal256", theme)
+		_ = quick.Highlight(logger.DefaultWriter(), content, "go", "terminal256", theme)
 	}
 	return err
 }

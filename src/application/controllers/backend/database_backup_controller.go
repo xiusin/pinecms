@@ -25,7 +25,7 @@ func (c *DatabaseBackupController) BackupList() {
 	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
 	uploader := getStorageEngine(settingData)
 	list, prefix, err := uploader.List(baseBackupDir)
-	var files = []map[string]string{}
+	var files []map[string]string
 	if err != nil {
 		c.Logger().Error(err)
 	}

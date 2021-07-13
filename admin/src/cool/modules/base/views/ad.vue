@@ -11,10 +11,13 @@
 
 						<el-row>
 							<cl-table
-								:ref="setRefs('categoryTable')"
-								v-bind="categoryTable"
+								:ref="setRefs('adSpaceTable')"
+								v-bind="adSpaceTable"
 								@selection-change="onSelectionChange"
 							>
+								<template #column-image="{ scope }">
+									<img :src="scope.row.image"  alt=""/>
+								</template>
 								<template #slot-btn="{ scope }">
 									<el-button
 										@click="
@@ -26,7 +29,7 @@
 										"
 										type="text"
 										size="mini"
-										>属性
+										>广告
 									</el-button>
 								</template>
 							</cl-table>
@@ -36,7 +39,6 @@
 				</div>
 			</div>
 
-			<!-- 成员列表 -->
 			<div class="user">
 				<div class="container">
 					<cl-crud :ref="setRefs('crud')" :on-refresh="onRefresh" @load="onLoad">
@@ -56,7 +58,6 @@
 								v-bind="table"
 								@selection-change="onSelectionChange"
 							>
-								<!-- 头像 -->
 								<template #column-headImg="{ scope }">
 									<cl-avatar
 										shape="square"
@@ -64,19 +65,6 @@
 										:src="scope.row.headImg"
 										:style="{ margin: 'auto' }"
 									/>
-								</template>
-
-								<!-- 权限 -->
-								<template #column-roleName="{ scope }">
-									<el-tag
-										v-for="(item, index) in scope.row.roleNameList"
-										:key="index"
-										disable-transitions
-										size="small"
-										effect="dark"
-										style="margin: 2px"
-										>{{ item }}
-									</el-tag>
 								</template>
 							</cl-table>
 						</el-row>
@@ -105,20 +93,18 @@ import { QueryList, Table, Upsert } from "cl-admin-crud-vue3/types";
 import { ElMessage } from "element-plus";
 
 export default defineComponent({
-	name: "sys-dict",
+	name: "sys-ad",
 
 	setup() {
 		const service = inject<any>("service");
 
 		const { refs, setRefs } = useRefs();
 
-		// 选择项
 		const selects = reactive<any>({
 			dept: {},
 			ids: []
 		});
 
-		// 表格配置
 		const table = reactive<Table>({
 			props: {
 				"default-sort": {
@@ -128,17 +114,26 @@ export default defineComponent({
 			},
 			columns: [
 				{
+					prop: "listorder",
+					label: "排序",
+					width: 170
+				},
+				{
 					prop: "name",
 					label: "名称",
 					width: 170
 				},
 				{
-					prop: "value",
+					prop: "image",
 					label: "值"
 				},
 				{
-					prop: "cat_name",
-					label: "所属分类"
+					prop: "start_time",
+					label: "开始时间"
+				},
+				{
+					prop: "end_time",
+					label: "结束时间"
 				},
 				{
 					prop: "status",
@@ -147,7 +142,7 @@ export default defineComponent({
 					dict: [
 						{
 							label: "正常",
-							value: true,
+							value: 1,
 							type: "success"
 						},
 						{
@@ -165,7 +160,7 @@ export default defineComponent({
 			]
 		});
 
-		const categoryTable = reactive<Table>({
+		const adSpaceTable = reactive<Table>({
 			props: {
 				"default-sort": {
 					prop: "id",
@@ -175,34 +170,19 @@ export default defineComponent({
 			columns: [
 				{
 					prop: "name",
-					label: "字典名称",
-					width: 170
+					label: "广告位名称",
+					align: "left",
 				},
 				{
 					prop: "key",
-					label: "字典标识"
-				},
-				{
-					prop: "status",
-					label: "状态",
-					minWidth: 50,
-					dict: [
-						{
-							label: "正常",
-							value: true,
-							type: "success"
-						},
-						{
-							label: "禁用",
-							value: 0,
-							type: "danger"
-						}
-					]
+					label: "标识",
+					align: "left",
+					width: 80
 				},
 				{
 					type: "op",
 					buttons: ["slot-btn", "edit", "delete"],
-					width: 150
+					width: 120
 				}
 			]
 		});
@@ -211,27 +191,27 @@ export default defineComponent({
 			items: [
 				{
 					prop: "name",
-					label: "字典名称",
+					label: "广告位名称",
 					span: 12,
 					component: {
 						name: "el-input",
 						props: {
-							placeholder: "请填写字典名称"
+							placeholder: "请填写广告位名称"
 						}
 					},
 					rules: {
 						required: true,
-						message: "字典名称不能为空"
+						message: "广告位名称不能为空"
 					}
 				},
 				{
 					prop: "key",
-					label: "字典标识",
+					label: "标识",
 					span: 12,
 					component: {
 						name: "el-input",
 						props: {
-							placeholder: "请填写字典标识"
+							placeholder: "请填写标识"
 						}
 					},
 					rules: {
@@ -250,24 +230,6 @@ export default defineComponent({
 							type: "textarea",
 							rows: 4
 						}
-					}
-				},
-				{
-					prop: "status",
-					label: "状态",
-					value: 1,
-					component: {
-						name: "el-radio-group",
-						options: [
-							{
-								label: "正常",
-								value: true
-							},
-							{
-								label: "禁用",
-								value: false
-							}
-						]
 					}
 				}
 			]
@@ -297,8 +259,8 @@ export default defineComponent({
 					}
 				},
 				{
-					prop: "cid",
-					label: "字典分类",
+					prop: "space_id",
+					label: "广告位",
 					component: {
 						name: "el-select",
 						props: {
@@ -306,21 +268,23 @@ export default defineComponent({
 						},
 						options: list
 					},
+					span: 12,
 					rules: {
 						required: true,
 						message: "分类必选"
 					}
 				},
 				{
-					prop: "value",
-					label: "值",
-					span: 24,
+					prop: "data_range",
+					label: "有效期",
+					span: 12,
 					component: {
-						name: "el-input",
+						name: "el-date-picker",
 						props: {
-							placeholder: "请填写值",
-							type: "textarea",
-							rows: 4
+							type: "datetimerange",
+							"range-separator": "至",
+							"start-placeholder": "开始时间",
+							"end-placeholder": "结束日期"
 						}
 					},
 					rules: {
@@ -329,17 +293,16 @@ export default defineComponent({
 					}
 				},
 				{
-					prop: "remark",
-					label: "备注",
+					prop: "image",
+					label: "图片",
 					span: 24,
-					component: {
-						name: "el-input",
-						props: {
-							placeholder: "请填写备注",
-							type: "textarea",
-							rows: 4
-						}
-					}
+					component: "upload"
+				},
+				{
+					prop: "linkurl",
+					label: "链接地址",
+					span: 24,
+					component: "el-input"
 				},
 				{
 					prop: "status",
@@ -350,11 +313,11 @@ export default defineComponent({
 						options: [
 							{
 								label: "正常",
-								value: true
+								value: 1
 							},
 							{
 								label: "禁用",
-								value: false
+								value: 0
 							}
 						]
 					}
@@ -372,8 +335,8 @@ export default defineComponent({
 
 		// crud 加载
 		async function onLoad({ ctx, app }: any) {
-			ctx.service(service.system.dict).done();
-			const cats = await service.system.dictCategory.list({ size: 1 });
+			ctx.service(service.system.ad).done();
+			const cats = await service.system.adSpace.list({ size: 1 });
 			if (cats.length) {
 				catId.value = cats[0].id;
 				catKey.value = cats[0].key;
@@ -384,7 +347,7 @@ export default defineComponent({
 
 		// crud 加载
 		function onCategoryLoad({ ctx, app }: any) {
-			ctx.service(service.system.dictCategory).done();
+			ctx.service(service.system.adSpace).done();
 			app.refresh();
 		}
 
@@ -439,7 +402,7 @@ export default defineComponent({
 			catName,
 			catKey,
 			onSelectionChange,
-			categoryTable,
+			adSpaceTable,
 			onOpenUpsert
 		};
 	}
@@ -457,7 +420,7 @@ export default defineComponent({
 
 	.dept {
 		height: 100%;
-		width: 600px;
+		width: 350px;
 		max-width: calc(100% - 50px);
 		background-color: #fff;
 		transition: width 0.3s;

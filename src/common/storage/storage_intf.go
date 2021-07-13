@@ -20,3 +20,17 @@ func getAvailableUrl(path string) string {
 	}
 	return path
 }
+
+type UploadRegister struct {
+	Name string
+	Inst Uploader
+}
+
+var storages []UploadRegister
+
+func register(name string, ins Uploader) {
+	storages = append(storages, UploadRegister{
+		Name: name,
+		Inst: ins,
+	})
+}

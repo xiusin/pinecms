@@ -1,4 +1,4 @@
-import { BaseService, Service, Permission } from "/@/core";
+import { BaseService, Service } from "/@/core";
 
 @Service("ad")
 class SysAd extends BaseService {

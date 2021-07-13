@@ -14,11 +14,12 @@ import SysAssets from "./system/assets";
 import SysAttachment from "./system/attachment";
 import SysDatabaseList from "./system/database_list";
 import SysDict from "./system/dict";
+import SysModel from "./system/dict";
 import SysDictCategory from "./system/dict_category";
 import SysDatabaseBackupList from "./system/database_backup_list";
-import SysModel from "./system/dict";
 import SysCategory from "./system/category";
 import SysDocument from "./system/document";
+import SysAdSpace from "./system/ad_space";
 
 export default {
 	common: new Common(),
@@ -32,6 +33,7 @@ export default {
 		setting: new SysSetting(),
 		log: new SysLog(),
 		ad: new SysAd(),
+		adSpace: new SysAdSpace(),
 		link: new SysLink(),
 		assets: new SysAssets(),
 		attachment: new SysAttachment(),
