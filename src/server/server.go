@@ -65,7 +65,13 @@ func initApp() {
 
 func Bootstrap() {
 	XOrmEngine = config.InitDB(nil)
-	_ = XOrmEngine.Sync2(&tables.Dict{}, &tables.DictCategory{}, &tables.AdminRole{})
+	_ = XOrmEngine.Sync2(
+		&tables.Dict{},
+		&tables.DictCategory{},
+		&tables.AdminRole{},
+		&tables.Department{},
+		&tables.Position{},
+		&tables.District{})
 }
 
 func Server() {
@@ -90,10 +96,6 @@ func registerV2BackendRoutes() {
 		apidoc.New(app, nil),
 		middleware.StatesViz(app),
 	)
-	//admin := app // .Subdomain("admin.xiusin.cn")
-	//app.ANY("/aaa", func(ctx *pine.Context) {
-	//	ctx.WriteString("hello world admin")
-	//})
 	app.Group(
 		"/v2",
 		middleware.VerifyJwtToken(),
@@ -113,11 +115,13 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.DistrictController), "/district").
 		Handle(new(backend.AdController), "/ad").
 		Handle(new(backend.AdSpaceController), "/ad/space").
+		Handle(new(backend.DepartmentController), "/department").
+		Handle(new(backend.PositionController), "/position").
+		Handle(new(backend.StatController), "/stat").
 		Handle(new(backend.LoginController)).
 		Handle(new(backend.IndexController)).
 		Handle(new(backend.ContentController)).
-		Handle(new(backend.DatabaseController)).
-		Handle(new(backend.StatController))
+		Handle(new(backend.DatabaseController))
 
 	app.Group("/v2/public").Handle(new(backend.PublicController))
 	app.Group("/v2/api").Handle(new(backend.PublicController))
@@ -125,12 +129,16 @@ func registerV2BackendRoutes() {
 
 func runServe() {
 	app.SetRecoverHandler(func(ctx *pine.Context) {
-		_ = ctx.WriteJSON(pine.H{"code": http.StatusInternalServerError, "message": ctx.Msg})
+		if ctx.IsAjax() {
+			_ = ctx.WriteJSON(pine.H{"code": http.StatusInternalServerError, "message": ctx.Msg})
+		} else {
+			ctx.Abort(http.StatusInternalServerError, ctx.Msg)
+		}
 	})
 	//app.DumpRouteTable()
 	app.Run(
 		pine.Addr(fmt.Sprintf(":%d", conf.Port)),
-		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))), // 关闭加密cookie
+		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))),
 		pine.WithoutStartupLog(false),
 		pine.WithServerName("pinecms.xiusin.cn"),
 		pine.WithCookie(true),
@@ -139,12 +147,11 @@ func runServe() {
 
 func diConfig() {
 	cacheHandler = bitcask.New(int(conf.Session.Expires), conf.CacheDb, time.Minute*10)
-	//cacheHandler = badger.New(int(conf.Session.Expires), conf.CacheDb)
 
-	//theme, _ := cacheHandler.Get(controllers.CacheTheme)
-	//if len(theme) > 0 {
-	//	conf.View.Theme = string(theme)
-	//}
+	theme, _ := cacheHandler.Get(controllers.CacheTheme)
+	if len(theme) > 0 {
+		conf.View.Theme = string(theme)
+	}
 	di.Set(controllers.ServiceICache, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return cacheHandler, nil
 	}, true)

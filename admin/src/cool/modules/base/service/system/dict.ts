@@ -1,7 +1,7 @@
 import {BaseService, Service} from "/@/core";
 
-@Service("model")
-class SysModel extends BaseService {
+@Service("dict")
+class SysDict extends BaseService {
 }
 
-export default SysModel;
+export default SysDict;

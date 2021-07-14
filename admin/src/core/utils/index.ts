@@ -240,7 +240,12 @@ export function deepTree(list: Array<any>) {
 	list.forEach((e) => (map[e.id] = e));
 
 	list.forEach((e) => {
-		const parent = map[e.parentId];
+		let parent;
+		if (typeof e.parentId != "undefined") {
+			parent = map[e.parentId];
+		} else {
+			parent = map[e.parent_id];
+		}
 
 		if (parent) {
 			(parent.children || (parent.children = [])).push(e);

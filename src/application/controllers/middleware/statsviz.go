@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/arl/statsviz"
 	"github.com/fasthttp/websocket"
 	"github.com/valyala/fasthttp/fasthttpadaptor"
@@ -10,18 +9,16 @@ import (
 	"time"
 )
 
-type stats struct {
-	Mem          runtime.MemStats
-	NumGoroutine int
-}
-
-var upgrader = websocket.FastHTTPUpgrader{}
-
 func StatesViz(app *pine.Application) pine.Handler {
+	type stats struct {
+		Mem          runtime.MemStats
+		NumGoroutine int
+	}
+	upgrade := websocket.FastHTTPUpgrader{}
 	indexHandler := fasthttpadaptor.NewFastHTTPHandler(statsviz.Index)
 	app.GET("/debug/statsviz/*filepath", func(ctx *pine.Context) {
 		if ctx.Params().Get("filepath") == "ws" {
-			err := upgrader.Upgrade(ctx.RequestCtx, func(ws *websocket.Conn) {
+			err := upgrade.Upgrade(ctx.RequestCtx, func(ws *websocket.Conn) {
 				defer ws.Close()
 				tick := time.NewTicker(time.Second)
 				defer tick.Stop()
@@ -30,12 +27,11 @@ func StatesViz(app *pine.Application) pine.Handler {
 					runtime.ReadMemStats(&stats.Mem)
 					stats.NumGoroutine = runtime.NumGoroutine()
 					if err := ws.WriteJSON(stats); err != nil {
-						fmt.Println("发送数据失败", err)
+						pine.Logger().Print(err)
 						break
 					}
 				}
 			})
-
 			if err != nil {
 				if _, ok := err.(websocket.HandshakeError); ok {
 					pine.Logger().Error(err)

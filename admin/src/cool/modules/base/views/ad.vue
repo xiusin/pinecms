@@ -337,10 +337,10 @@ export default defineComponent({
 		async function onLoad({ ctx, app }: any) {
 			ctx.service(service.system.ad).done();
 			const cats = await service.system.adSpace.list({ size: 1 });
-			if (cats.length) {
-				catId.value = cats[0].id;
-				catKey.value = cats[0].key;
-				catName.value = cats[0].name;
+			if (cats.list.length) {
+				catId.value = cats.list[0].id;
+				catKey.value = cats.list[0].key;
+				catName.value = cats.list[0].name;
 				app.refresh({ cid: catId });
 			}
 		}

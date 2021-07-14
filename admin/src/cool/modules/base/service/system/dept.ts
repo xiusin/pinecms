@@ -1,7 +1,7 @@
 import { BaseService, Service, Permission } from "/@/core";
 
 @Service("base/sys/department")
-class SysDepartment extends BaseService {
+class SysDepartment1 extends BaseService {
 	@Permission("order")
 	order(data: any) {
 		return this.request({
@@ -12,4 +12,4 @@ class SysDepartment extends BaseService {
 	}
 }
 
-export default SysDepartment;
+export default SysDepartment1;

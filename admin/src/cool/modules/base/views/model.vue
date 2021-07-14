@@ -29,7 +29,7 @@ export default defineComponent({
 
 		const models = ref([]);
 
-		service.system.assets.select().then((data) => {
+		service.system.assets.select().then((data: any[]) => {
 			models.value?.push(...data);
 		});
 

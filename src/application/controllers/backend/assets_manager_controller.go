@@ -20,6 +20,7 @@ import (
 
 type AssetsManagerController struct {
 	BaseController
+	conf *config.Config
 }
 
 func (c *AssetsManagerController) Construct() {
@@ -27,11 +28,11 @@ func (c *AssetsManagerController) Construct() {
 		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
 	}
 	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
+	c.conf = di.MustGet("pinecms.config").(*config.Config)
 }
 
 func (c *AssetsManagerController) GetSelect() {
-	conf := di.MustGet("pinecms.config").(*config.Config)
-	themeDir := filepath.Join(conf.View.FeDirname, conf.View.Theme)
+	themeDir := filepath.Join(c.conf.View.FeDirname, c.conf.View.Theme)
 	files := c.getTempList(themeDir)
 	var kv []tables.KV
 	for _, file := range files {
@@ -61,8 +62,7 @@ func (c *AssetsManagerController) getTempList(dir string) []map[string]interface
 }
 
 func (c *AssetsManagerController) PostList() {
-	conf := di.MustGet("pinecms.config").(*config.Config)
-	themeDir := filepath.Join(conf.View.FeDirname, conf.View.Theme)
+	themeDir := filepath.Join(c.conf.View.FeDirname, c.conf.View.Theme)
 	var p listParam
 	_ = parseParam(c.Ctx(), &p)
 	files := c.getTempList(themeDir)
@@ -87,12 +87,11 @@ func (c *AssetsManagerController) PostEdit() {
 		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
-	conf := di.MustGet("pinecms.config").(*config.Config)
 	if len(p.Id) == 0 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	fullPath := filepath.Join(conf.View.FeDirname, conf.View.Theme, p.Id)
+	fullPath := filepath.Join(c.conf.View.FeDirname, c.conf.View.Theme, p.Id)
 	f, err := os.OpenFile(fullPath, os.O_WRONLY, os.ModePerm)
 	if err != nil {
 		helper.Ajax(err, 1, c.Ctx())
@@ -108,16 +107,15 @@ func (c *AssetsManagerController) PostEdit() {
 }
 
 func (c *AssetsManagerController) GetThemes() {
-	conf := di.MustGet("pinecms.config").(*config.Config)
-	fs, err := ioutil.ReadDir(conf.View.FeDirname)
+	files, err := ioutil.ReadDir(c.conf.View.FeDirname)
 	if err != nil {
 		helper.Ajax("读取主题目录失败: "+err.Error(), 1, c.Ctx())
 		return
 	}
 	var dirs []*ThemeConfig
-	for _, f := range fs {
+	for _, f := range files {
 		if f.IsDir() {
-			contentByts, err := ioutil.ReadFile(filepath.Join(conf.View.FeDirname, f.Name(), "config.json"))
+			contentByts, err := ioutil.ReadFile(filepath.Join(c.conf.View.FeDirname, f.Name(), "config.json"))
 			if err != nil {
 				continue
 			}
@@ -127,7 +125,7 @@ func (c *AssetsManagerController) GetThemes() {
 				continue
 			}
 			tConf.Dir = f.Name()
-			if tConf.Dir == conf.View.Theme {
+			if tConf.Dir == c.conf.View.Theme {
 				tConf.IsDefault = true
 			}
 			dirs = append(dirs, &tConf)
@@ -137,7 +135,6 @@ func (c *AssetsManagerController) GetThemes() {
 }
 
 func (c *AssetsManagerController) PostTheme(cache cache.AbstractCache) {
-	conf := di.MustGet("pinecms.config").(*config.Config)
 	var p = map[string]interface{}{}
 	_ = c.Ctx().BindJSON(&p)
 	name := p["theme"].(string)
@@ -146,13 +143,13 @@ func (c *AssetsManagerController) PostTheme(cache cache.AbstractCache) {
 		helper.Ajax("模板主题参数错误", 1, c.Ctx())
 		return
 	}
-	fs, err := os.Stat(filepath.Join(conf.View.FeDirname, name))
-	if err != nil || !fs.IsDir() {
+	fileSys, err := os.Stat(filepath.Join(c.conf.View.FeDirname, name))
+	if err != nil || !fileSys.IsDir() {
 		helper.Ajax("模板主题不存在", 1, c.Ctx())
 		return
 	}
 	if cache.Set(controllers.CacheTheme, []byte(name)) == nil {
-		conf.View.Theme = name
+		c.conf.View.Theme = name
 		helper.Ajax("设置主题成功", 0, c.Ctx())
 	} else {
 		helper.Ajax("设置主题失败", 1, c.Ctx())
@@ -160,13 +157,12 @@ func (c *AssetsManagerController) PostTheme(cache cache.AbstractCache) {
 }
 
 func (c *AssetsManagerController) GetInfo() {
-	conf := di.MustGet("pinecms.config").(*config.Config)
 	name := c.Ctx().GetString("id")
 	if name == "" {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	fullPath := filepath.Join(conf.View.FeDirname, conf.View.Theme, name)
+	fullPath := filepath.Join(c.conf.View.FeDirname, c.conf.View.Theme, name)
 	f, err := os.Open(fullPath)
 	if err != nil {
 		helper.Ajax(err, 1, c.Ctx())
@@ -190,7 +186,6 @@ func (c *AssetsManagerController) GetInfo() {
 }
 
 func (c *AssetsManagerController) PostAdd(orm *xorm.Engine) {
-	conf := di.MustGet("pinecms.config").(*config.Config)
 	if c.Ctx().IsPost() {
 		name := c.Ctx().PostValue("name")
 		if !strings.HasSuffix(name, ".jet") {
@@ -198,7 +193,7 @@ func (c *AssetsManagerController) PostAdd(orm *xorm.Engine) {
 			return
 		}
 		content := c.Ctx().PostValue("content")
-		f := filepath.Join(conf.View.FeDirname, conf.View.Theme, name)
+		f := filepath.Join(c.conf.View.FeDirname, c.conf.View.Theme, name)
 		_, err := os.Stat(f)
 		if err == nil {
 			helper.Ajax("模板已经存在", 1, c.Ctx())
@@ -215,9 +210,8 @@ func (c *AssetsManagerController) PostAdd(orm *xorm.Engine) {
 }
 
 func (c *AssetsManagerController) GetThumb() {
-	conf := di.MustGet("pinecms.config").(*config.Config)
 	themeName := c.Ctx().GetString("id")
-	dirName := filepath.Join(conf.View.FeDirname, themeName, "thumb.png")
+	dirName := filepath.Join(c.conf.View.FeDirname, themeName, "thumb.png")
 	c.Ctx().SetContentType("img/png")
 	c.Ctx().SendFile(dirName)
 }

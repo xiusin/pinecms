@@ -19,11 +19,12 @@ func (c *AttachmentController) Construct() {
 	c.Group = "系统配置"
 	c.SubGroup = "附件管理"
 
+	c.BaseController.Construct()
+
 	c.apiEntities = map[string]apidoc.Entity{
 		"list":   {Title: "附件列表", Desc: "查询已上传系统的附件列表"},
 		"add":    {Title: "新增配置", Desc: "新增上传附件"},
 		"del":    {Title: "删除配置", Desc: "删除一个附件"},
 	}
-
-	c.BaseController.Construct()
+	c.setApiEntity()
 }

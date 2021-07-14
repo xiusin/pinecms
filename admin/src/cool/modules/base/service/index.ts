@@ -14,12 +14,15 @@ import SysAssets from "./system/assets";
 import SysAttachment from "./system/attachment";
 import SysDatabaseList from "./system/database_list";
 import SysDict from "./system/dict";
-import SysModel from "./system/dict";
+import SysModel from "./system/model";
 import SysDictCategory from "./system/dict_category";
 import SysDatabaseBackupList from "./system/database_backup_list";
 import SysCategory from "./system/category";
 import SysDocument from "./system/document";
 import SysAdSpace from "./system/ad_space";
+import SysDepartment from "./system/department";
+import SysPosition from "./system/position";
+import SysStat from "./system/stat";
 
 export default {
 	common: new Common(),
@@ -44,6 +47,9 @@ export default {
 		dictCategory: new SysDictCategory(),
 		category: new SysCategory(),
 		document: new SysDocument(),
+		department: new SysDepartment(),
+		position: new SysPosition(),
+		stat: new SysStat()
 	},
 	plugin: {
 		info: new PluginInfo()
