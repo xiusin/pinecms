@@ -42,11 +42,11 @@ axios.interceptors.request.use(
 
 		// 请求信息
 		if (isDev) {
-			console.log(config);
-			console.group(config.url);
-			console.log("method:", config.method);
-			console.table("data:", config.method == "get" ? config.params : config.data);
-			console.groupEnd();
+			// console.log(config);
+			// console.group(config.url);
+			// console.log("method:", config.method);
+			// console.table("data:", config.method == "get" ? config.params : config.data);
+			// console.groupEnd();
 		}
 		if (
 			config.method == "post" &&

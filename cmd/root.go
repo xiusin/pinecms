@@ -2,6 +2,9 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/cmd/plugin"
+	config "github.com/xiusin/pinecms/src/server"
 )
 
 // http://www.network-science.de/ascii/ Font: stop
@@ -20,4 +23,14 @@ func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		panic(err)
 	}
+}
+
+func init() {
+	di.Set("pinecms.cmd.root", func(builder di.AbstractBuilder) (interface{}, error) {
+		return rootCmd, nil
+	}, true)
+
+	config.InitApp()
+
+	rootCmd.AddCommand(plugin.PluginCmd)
 }

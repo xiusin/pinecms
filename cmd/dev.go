@@ -102,7 +102,7 @@ func build() error {
 		return err
 	}
 
-	logger.Print("构建耗时: " + time.Now().Sub(start).String())
+	logger.Printf("构建耗时: %.2fs", time.Now().Sub(start).String())
 
 	return nil
 }

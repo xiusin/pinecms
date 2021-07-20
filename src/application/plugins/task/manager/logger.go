@@ -1,6 +1,8 @@
-package tasks
+package manager
 
-import pineLogger "github.com/xiusin/logger"
+import (
+	pineLogger "github.com/xiusin/logger"
+)
 
 type logger struct {
 	pineLogger.AbstractLogger

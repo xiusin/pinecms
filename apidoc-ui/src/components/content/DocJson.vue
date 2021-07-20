@@ -4,7 +4,7 @@
       <h2>请求参数Parameters</h2>
       <div class="api-param-code">
         <div class="code">
-            {{ paramCode }}
+          {{ paramCode }}
         </div>
       </div>
     </div>
@@ -40,7 +40,9 @@
     <div class="api-param-table">
       <div class="api-param-code">
         <div class="code">
-          {{ returnCode }}
+          <highlight-code lang="json">
+            {{ returnCode }}
+          </highlight-code>
         </div>
       </div>
     </div>
@@ -48,19 +50,8 @@
 </template>
 
 <script>
-// import VueHighlightJS from "vue-highlight.js";
-import "highlight.js/styles/atom-one-dark.css";
-// import javascript from "highlight.js/lib/languages/javascript";
-// import json from "highlight.js/lib/languages/json";
 import { renderParamsCode } from "@/utils/utils";
 import { Popover, Icon } from "ant-design-vue";
-
-// Vue.use(VueHighlightJS, {
-//   languages: {
-//     javascript,
-//     json
-//   }
-// });
 
 export default {
   components: {

@@ -121,6 +121,13 @@ func (c *BaseController) PostList() {
 		if p.Export {
 			p.Size = 0
 		}
+
+		if c.OpBefore != nil {
+			if err := c.OpBefore(OpList, query); err != nil {
+				helper.Ajax("获取列表异常: "+err.Error(), 1, c.Ctx())
+			}
+		}
+
 		if p.Size == 0 {
 			err = query.Find(c.Entries)
 		} else {

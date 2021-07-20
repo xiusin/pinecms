@@ -74,4 +74,3 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - github.com/gokeeptech/gktemplate
 - github.com/traefik/yaegi
 - 性能监控重写
-- dist-category 路由段无法解析 /v2/dict-category/list

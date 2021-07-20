@@ -57,7 +57,7 @@ func New(app *pine.Application, config *Config) pine.Handler {
 			}
 		}
 		entity.Author = defaultConfig.DefaultAuthor
-		entity.RawQuery = string(ctx.RequestCtx.RequestURI())
+		entity.RawQuery = string(ctx.RequestCtx.QueryArgs().QueryString())
 		entity.QueryDataMethod = string(ctx.Response.Header.ContentType())
 		if strings.Contains(strings.ToLower(entity.QueryDataMethod), "application/json") {
 			entity.RawParam = string(ctx.Request.Body())

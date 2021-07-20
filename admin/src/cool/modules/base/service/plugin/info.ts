@@ -1,8 +1,7 @@
 import { BaseService, Service, Permission } from "/@/core";
 
-@Service("base/plugin/info")
+@Service("plugin")
 class PluginInfo extends BaseService {
-	@Permission("config")
 	config(data: any) {
 		return this.request({
 			url: "/config",
@@ -11,15 +10,13 @@ class PluginInfo extends BaseService {
 		});
 	}
 
-	@Permission("getConfig")
 	getConfig(params: any) {
 		return this.request({
-			url: "/getConfig",
+			url: "/config",
 			params
 		});
 	}
 
-	@Permission("enable")
 	enable(data: any) {
 		return this.request({
 			url: "/enable",

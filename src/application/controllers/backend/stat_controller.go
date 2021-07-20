@@ -4,6 +4,7 @@ import (
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
+	"github.com/shirou/gopsutil/net"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"runtime"
@@ -20,11 +21,18 @@ const (
 )
 
 type Server struct {
-	Os          Os    `json:"os"`
-	Cpu         Cpu   `json:"cpu"`
-	Rrm         Rrm   `json:"ram"`
-	Disk        Disk  `json:"disk"`
-	RunningTime int64 `json:"running_time"`
+	Nets        []*Net `json:"nets"`
+	Os          Os     `json:"os"`
+	Cpu         Cpu    `json:"cpu"`
+	Rrm         Rrm    `json:"ram"`
+	Disk        Disk   `json:"disk"`
+	RunningTime int64  `json:"running_time"`
+}
+
+type Net struct {
+	BytesRecv uint64 `json:"recv"`
+	BytesSent uint64 `json:"send"`
+	Name      string `json:"name"`
 }
 
 type Os struct {
@@ -105,6 +113,19 @@ func (_ *StatController) InitDisk() (d Disk, err error) {
 	return d, nil
 }
 
+func (_ *StatController) InitNet() (useages []*Net, err error) {
+	nv, err := net.IOCounters(false)
+	if err != nil {
+		return
+	}
+	useages = make([]*Net, 0, len(nv))
+	for _, status := range nv {
+		useage := &Net{BytesRecv: status.BytesRecv, BytesSent: status.BytesSent, Name: status.Name}
+		useages = append(useages, useage)
+	}
+	return
+}
+
 func (stat *StatController) GetData() {
 	var s Server
 	var err error
@@ -118,6 +139,9 @@ func (stat *StatController) GetData() {
 	if s.Disk, err = stat.InitDisk(); err != nil {
 		panic(err)
 	}
-	s.RunningTime = int64(time.Now().Sub(runningStart).Seconds())
+	s.RunningTime = int64(time.Now().Sub(runningStart).Hours())
+	if s.Nets, err = stat.InitNet(); err != nil {
+		panic(err)
+	}
 	helper.Ajax(s, 0, stat.Ctx())
 }

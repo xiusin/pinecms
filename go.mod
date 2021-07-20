@@ -41,6 +41,7 @@ require (
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/rivo/tview v0.0.0-20210624165335-29d673af0ce2
 	github.com/robfig/cron/v3 v3.0.0
+	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/savsgio/gotils v0.0.0-20210617111740-97865ed5a873 // indirect
 	github.com/schollz/progressbar v1.0.0
 	github.com/shirou/gopsutil v3.21.6+incompatible

@@ -1,6 +1,6 @@
 import { BaseService, Service, Permission } from "/@/core";
 
-@Service("task/info")
+@Service("task")
 class SysTask extends BaseService {
 	@Permission("stop")
 	stop(data: any) {

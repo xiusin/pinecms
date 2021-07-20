@@ -338,7 +338,6 @@ export default defineComponent({
 			return page != 1;
 		}
 
-		// 刷新任务
 		function refreshTask(params?: any, options?: any) {
 			const { index, more } = options || {};
 			const arr = index === undefined || index === null ? list.map((e, i) => i) : [index];
@@ -346,10 +345,14 @@ export default defineComponent({
 			arr.forEach(async (k) => {
 				const item = list[k];
 
+				const ps = JSON.parse(JSON.stringify(item.params))
+
 				Object.assign(item.params, {
 					...item.pagination,
 					...params
 				});
+
+				item.params['params'] = ps
 
 				item.loading = true;
 
@@ -365,7 +368,6 @@ export default defineComponent({
 			});
 		}
 
-		// 编辑任务
 		async function edit(params: any) {
 			const { id, type } = params || {};
 
@@ -493,6 +495,10 @@ export default defineComponent({
 							props: {
 								placeholder: "sys.test.add(params)"
 							}
+						},
+						rules: {
+							required: true,
+							message: "请填入执行脚本名称"
 						}
 					},
 					{
@@ -644,13 +650,13 @@ export default defineComponent({
 
 		// 刷新日志
 		async function refreshLog(newParams: any, options?: any) {
-			if (logs.loading) {
-				return false;
-			}
+			// if (logs.loading) {
+			// 	return false;
+			// }
 
-			if (!checkPerm(perm.value.log)) {
-				return false;
-			}
+			// if (!checkPerm(perm.value.log)) {
+			// 	return false;
+			// }
 
 			const { params, pagination } = logs;
 			const { more } = options || {};

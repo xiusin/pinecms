@@ -13,6 +13,7 @@ import MenuIcons from "./menu/icons.vue";
 import MenuPerms from "./menu/perms.vue";
 import MenuTree from "./menu/tree.vue";
 import CategoryTree from "./category/tree.vue";
+import DepartmentTree from "./department/tree.vue";
 import RoleSelect from "./role/select.vue";
 import RolePerms from "./role/perms.vue";
 import EditorQuill from "./editor-quill/index.vue";
@@ -38,4 +39,5 @@ export default {
 	EditorQuill,
 	Codemirror,
 	CategoryTree,
+	DepartmentTree,
 };

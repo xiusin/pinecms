@@ -16,7 +16,6 @@
 						<el-switch
 							v-model="scope.row._enable"
 							size="mini"
-							:disabled="!perms.enable"
 							@change="onEnableChange($event, scope.row)"
 						/>
 					</template>
@@ -24,7 +23,6 @@
 					<!-- 配置按钮 -->
 					<template #slot-conf="{ scope }">
 						<el-button
-							v-if="scope.row.view && perms.edit"
 							type="text"
 							size="mini"
 							@click="openConf(scope.row)"
@@ -85,13 +83,13 @@ export default defineComponent({
 		// 刷新钩子
 		function onRefresh(params: any, { next, render }: RefreshOp) {
 			next(params).then((res: any) => {
-				const list = res.map((e: any) => {
-					e._enable = e.enable ? true : false;
+				const list = res.list.map((e: any) => {
+					e._enable = e.enable;
 					return e;
 				});
 
 				render(list, {
-					total: res.length
+					total: res.list.length
 				});
 			});
 		}
@@ -100,7 +98,7 @@ export default defineComponent({
 		function onEnableChange(val: boolean, item: any) {
 			service.plugin.info
 				.enable({
-					namespace: item.namespace,
+					sign: item.sign,
 					enable: val
 				})
 				.then(() => {
@@ -112,15 +110,13 @@ export default defineComponent({
 		}
 
 		// 打开配置
-		async function openConf({ name, namespace, view }: any) {
-			const form = await service.plugin.info.getConfig({
-				namespace
-			});
+		async function openConf({ name, sign, view }: any) {
+			const form = await service.plugin.info.getConfig({ sign });
 
-			let items = [];
+			let items: any[];
 
 			try {
-				items = JSON.parse(view);
+				items = typeof view == "string" ? JSON.parse(view) : view;
 			} catch (e) {
 				items = [];
 			}
@@ -133,7 +129,7 @@ export default defineComponent({
 					submit: (data: any, { close, done }: any) => {
 						service.plugin.info
 							.config({
-								namespace,
+								sign,
 								config: data
 							})
 							.then(() => {
@@ -153,24 +149,16 @@ export default defineComponent({
 		const table = reactive<Table>({
 			props: {
 				"default-sort": {
-					prop: "createTime",
+					prop: "id",
 					order: "descending"
 				}
 			},
-			"context-menu": [
-				"refresh",
-				(scope: any) => {
-					return {
-						label: "配置",
-						hidden: !perms.edit || !scope.view,
-						callback: (_: any, done: Function) => {
-							openConf(scope);
-							done();
-						}
-					};
-				}
-			],
 			columns: [
+				{
+					label: "标志",
+					prop: "sign",
+					minWidth: 140
+				},
 				{
 					label: "名称",
 					prop: "name",
@@ -204,11 +192,6 @@ export default defineComponent({
 					minWidth: 110
 				},
 				{
-					label: "命名空间",
-					prop: "namespace",
-					minWidth: 110
-				},
-				{
 					label: "状态",
 					prop: "status",
 					width: 150,
@@ -237,7 +220,7 @@ export default defineComponent({
 				},
 				{
 					label: "创建时间",
-					prop: "createTime",
+					prop: "created_at",
 					width: 150,
 					sortable: "custom"
 				},

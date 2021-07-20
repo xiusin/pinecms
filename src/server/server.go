@@ -2,13 +2,17 @@ package config
 
 import (
 	"fmt"
-	"github.com/gorilla/securecookie"
 	"github.com/xiusin/pine/cache/providers/bitcask"
-	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
-	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pine/sessions"
+	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
 	"net/http"
 	"path/filepath"
 	"time"
+
+	"github.com/gorilla/securecookie"
+	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
+	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/application/plugins"
 
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
@@ -17,8 +21,6 @@ import (
 	"github.com/xiusin/pine/middlewares/cache304"
 	request_log "github.com/xiusin/pine/middlewares/request-log"
 	"github.com/xiusin/pine/render/engine/jet"
-	"github.com/xiusin/pine/sessions"
-	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/taglibs"
 	"github.com/xiusin/pinecms/src/application/controllers/tplfun"
@@ -54,7 +56,11 @@ func Ac() *config.Config {
 
 func initApp() {
 	app = pine.New()
+	di.Set("pine.application", func(builder di.AbstractBuilder) (interface{}, error) {
+		return app, nil
+	}, true)
 	diConfig()
+	registerV2BackendRoutes()
 	app.Use(request_log.RequestRecorder())
 	var staticPathPrefix []string
 	for _, static := range conf.Statics {
@@ -63,7 +69,12 @@ func initApp() {
 	app.Use(cache304.Cache304(30000*time.Second, staticPathPrefix...), middleware.CheckDatabaseBackupDownload())
 }
 
-func Bootstrap() {
+func InitApp() {
+	initApp()
+	plugins.Init()
+}
+
+func InitDB() {
 	XOrmEngine = config.InitDB(nil)
 	_ = XOrmEngine.Sync2(
 		&tables.Dict{},
@@ -71,14 +82,14 @@ func Bootstrap() {
 		&tables.AdminRole{},
 		&tables.Department{},
 		&tables.Position{},
-		&tables.District{})
+		&tables.District{},
+		&tables.Plugin{})
 }
 
 func Server() {
-	Bootstrap()
-	initApp()
+	InitDB()
+	InitCache()
 	registerStatic()
-	registerV2BackendRoutes()
 	router.InitRouter(app)
 	runServe()
 }
@@ -96,11 +107,12 @@ func registerV2BackendRoutes() {
 		apidoc.New(app, nil),
 		middleware.StatesViz(app),
 	)
-	app.Group(
+
+	g := app.Group(
 		"/v2",
 		middleware.VerifyJwtToken(),
-	).
-		Handle(new(backend.UserController), "/user").
+	)
+	g.Handle(new(backend.UserController), "/user").
 		Handle(new(backend.AdminRoleController), "/role").
 		Handle(new(backend.MenuController), "/menu").
 		Handle(new(backend.LinkController), "/link").
@@ -118,6 +130,7 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.DepartmentController), "/department").
 		Handle(new(backend.PositionController), "/position").
 		Handle(new(backend.StatController), "/stat").
+		Handle(new(backend.PluginController), "/plugin").
 		Handle(new(backend.LoginController)).
 		Handle(new(backend.IndexController)).
 		Handle(new(backend.ContentController)).
@@ -125,6 +138,10 @@ func registerV2BackendRoutes() {
 
 	app.Group("/v2/public").Handle(new(backend.PublicController))
 	app.Group("/v2/api").Handle(new(backend.PublicController))
+
+	di.Set("pine.backend_router_group", func(builder di.AbstractBuilder) (interface{}, error) {
+		return g, nil
+	}, true)
 }
 
 func runServe() {
@@ -145,7 +162,7 @@ func runServe() {
 	)
 }
 
-func diConfig() {
+func InitCache()  {
 	cacheHandler = bitcask.New(int(conf.Session.Expires), conf.CacheDb, time.Minute*10)
 
 	theme, _ := cacheHandler.Get(controllers.CacheTheme)
@@ -155,6 +172,17 @@ func diConfig() {
 	di.Set(controllers.ServiceICache, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return cacheHandler, nil
 	}, true)
+
+	di.Set(di.ServicePineSessions, func(builder di.AbstractBuilder) (i interface{}, err error) {
+		sess := sessions.New(cacheProvider.NewStore(cacheHandler), &sessions.Config{
+			CookieName: conf.Session.Name,
+			Expires:    conf.Session.Expires,
+		})
+		return sess, nil
+	}, true)
+}
+
+func diConfig() {
 
 	di.Set(controllers.ServiceConfig, func(builder di.AbstractBuilder) (i interface{}, e error) {
 		return conf, nil
@@ -167,13 +195,7 @@ func diConfig() {
 		return loggers, nil
 	}, false)
 
-	di.Set(di.ServicePineSessions, func(builder di.AbstractBuilder) (i interface{}, err error) {
-		sess := sessions.New(cacheProvider.NewStore(cacheHandler), &sessions.Config{
-			CookieName: conf.Session.Name,
-			Expires:    conf.Session.Expires,
-		})
-		return sess, nil
-	}, true)
+
 
 	pine.RegisterViewEngine(getJetEngine())
 

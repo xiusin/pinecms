@@ -18,3 +18,4 @@ pinecms-dev-build.exe~
 /apidoc.html.json
 /apidoc/
 dist
+*.so

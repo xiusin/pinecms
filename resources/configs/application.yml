@@ -25,6 +25,7 @@ upload:
   engine: "oss" #oss or file
   base_path: "assets" # 基本路径
 
+plugin_path: "plugins",
 
 statics:
   - {route: "/assets", path: "./dist/assets"}

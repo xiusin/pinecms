@@ -3,7 +3,6 @@
 		<el-row type="flex">
 			<cl-refresh-btn/>
 			<cl-add-btn/>
-			<cl-multi-delete-btn/>
 			<cl-flex1/>
 			<cl-search-key/>
 		</el-row>
@@ -24,8 +23,8 @@
 <script lang="ts">
 import {useRefs} from "/@/core";
 import {deepTree} from "/@/core/utils";
-import {CrudLoad, QueryList, RefreshOp, Table, Upsert} from "cl-admin-crud-vue3/types";
-import {defineComponent, inject, reactive, ref} from "vue";
+import {CrudLoad, RefreshOp, Table, Upsert} from "cl-admin-crud-vue3/types";
+import {defineComponent, inject, reactive} from "vue";
 
 export default defineComponent({
 	name: "sys-department",
@@ -41,8 +40,6 @@ export default defineComponent({
 			relevance: 1
 		});
 
-		let list = ref<QueryList[]>([])
-
 		// 新增、编辑配置
 		const upsert = reactive<Upsert>({
 			items: [
@@ -51,15 +48,7 @@ export default defineComponent({
 					label: "上级部门",
 					span: 24,
 					component: {
-						name: "el-select",
-						props: {
-							placeholder: "请选择分类"
-						},
-						options: list
-					},
-					rules: {
-						required: true,
-						message: "部门名称不能为空"
+						name: "el-department-tree"
 					}
 				},
 				{
@@ -111,9 +100,22 @@ export default defineComponent({
 					}
 				},
 				{
+					prop: "listorder",
+					label: "排序",
+					span: 8,
+					value: 0,
+					component: {
+						name: "el-input-number",
+						props: {
+							min: 0
+						}
+					}
+				},
+				{
 					prop: "status",
 					label: "状态",
 					value: true,
+					span: 12,
 					component: {
 						name: "el-radio-group",
 						options: [
@@ -219,9 +221,6 @@ export default defineComponent({
 		// crud 加载
 		function onLoad({ctx, app}: CrudLoad) {
 			ctx.service(service.system.department).done();
-			service.system.department.select({}).then((data: any) => {
-				list.value.push(...data)
-			});
 			app.refresh();
 		}
 

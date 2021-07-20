@@ -51,7 +51,7 @@ var crudCmd = &cobra.Command{
 	Use:   "crud",
 	Short: "生成基本crud模块",
 	Run: func(cmd *cobra.Command, args []string) {
-		config.Bootstrap() // 方法不可放到init里，否则缓存组件阻塞
+		config.InitDB() // 方法不可放到init里，否则缓存组件阻塞
 		if !config.Ac().Debug {
 			logger.SetReportCaller(false)
 			logger.Print("非Debug模式，不支持 CRUD 命令")

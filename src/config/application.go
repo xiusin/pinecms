@@ -31,7 +31,9 @@ type Config struct {
 	HashKey           string `yaml:"hashkey"`
 	BlockKey          string `yaml:"blockkey"`
 	BackendRouteParty string `yaml:"backend_route_party"`
-	Upload            struct {
+	PluginPath        string `json:"plugin_path"`
+
+	Upload struct {
 		MaxBodySize int64  `yaml:"max_bodysize"`
 		Engine      string `yaml:"engine"`
 		BasePath    string `yaml:"base_path"`
@@ -67,6 +69,10 @@ func init() {
 
 func AppConfig() *Config {
 	return config
+}
+
+func PluginLoader() {
+
 }
 
 func parseConfig(path string, out interface{}) {

@@ -1,10 +1,12 @@
 package backend
 
 import (
+	"errors"
 	"fmt"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/common/storage"
+	"reflect"
 	"strings"
 
 	"github.com/go-xorm/xorm"
@@ -71,4 +73,16 @@ func ucwords(str string) string {
 
 func parseParam(ctx *pine.Context, param interface{}) error {
 	return ctx.BindJSON(param)
+}
+
+func ArrayCol(arr interface{}, col string) []interface{} {
+	val := reflect.ValueOf(arr)
+	if val.Kind() != reflect.Slice {
+		panic(errors.New("ArrayCol第一个参数必须为切片类型"))
+	}
+	var cols []interface{}
+	for  i := 0; i < val.Len(); i++ {
+		cols = append(cols, val.Index(i).FieldByName(col).Interface())
+	}
+	return cols
 }
