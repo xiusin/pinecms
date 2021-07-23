@@ -2,7 +2,6 @@ package backend
 
 import (
 	"errors"
-	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -36,7 +35,6 @@ func (c *AdminRoleController) before(opType int, param interface{}) error {
 		}
 	} else if opType == OpEdit {
 		if c.Ctx().Value("roleid").(int64) != 1 {
-			fmt.Println("asdasda")
 			return errors.New("您的角色无法修改超级管理员信息")
 		}
 	}

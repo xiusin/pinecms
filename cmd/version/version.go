@@ -1,4 +1,4 @@
-package cmd
+package version
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 
 const Version = "dev 0.1.4"
 
-var versionCmd = &cobra.Command{
+var VersionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "显示版本号",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -16,6 +16,3 @@ var versionCmd = &cobra.Command{
 	},
 }
 
-func init() {
-	rootCmd.AddCommand(versionCmd)
-}

@@ -1,4 +1,4 @@
-package cmd
+package server
 
 import (
 	"context"
@@ -34,8 +34,8 @@ var (
 )
 
 func init() {
-	serveCmd.AddCommand(devCmd)
-	devCmd.Flags().StringSlice("ignoreDirs", []string{"vendor", ".git", ".idea", "node_modules"}, "忽略变动监听的目录")
+	ServeCmd.AddCommand(devCmd)
+	devCmd.Flags().StringSlice("ignoreDirs", []string{"vendor", ".git", ".idea", "node_modules", "admin", "apidoc-ui"}, "忽略变动监听的目录")
 	devCmd.Flags().StringSlice("types", []string{".go", ".yml"}, "需要监听的文件类型, .*为监听任意文件")
 	devCmd.Flags().String("root", util.AppPath(), "监听的根目录")
 	devCmd.Flags().Int32("delay", 3, "每次构建进程的延迟时间单位：秒")
@@ -97,12 +97,13 @@ func build() error {
 	cmd := exec.Command("go", "build", "-o", buildName)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
+	cmd.Env = os.Environ()
 	cmd.Dir = util.AppPath()
 	if err := cmd.Run(); err != nil {
 		return err
 	}
 
-	logger.Printf("构建耗时: %.2fs", time.Now().Sub(start).String())
+	logger.Printf("构建耗时: %.2fs", time.Now().Sub(start).Seconds())
 
 	return nil
 }

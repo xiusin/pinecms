@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -13,22 +14,33 @@ var buildPluginCmd = &cobra.Command{
 	Use:   "build",
 	Short: "构建插件",
 	Run: func(cmd *cobra.Command, args []string) {
-		name,_ := cmd.Flags().GetString("name")
+		name, _ := cmd.Flags().GetString("name")
 		if len(name) == 0 {
-			cmd.Usage()
+			_ = cmd.Usage()
 			return
 		}
-		os.Mkdir(outputPluginDir, os.ModePerm)
+		buildPluginDir := filepath.Join(outputPluginDir, name)
+		_ = os.MkdirAll(buildPluginDir, os.ModePerm)
 		//查找插件文件
-		scriptName := filepath.Join(sourcePluginDir, name, name + ".go")
+		scriptName := filepath.Join(sourcePluginDir, name, name+".go")
 		if _, err := os.Stat(scriptName); err != nil {
 			panic(err)
 		}
-		outPluginName := filepath.Join(outputPluginDir, name + ".so")
-		buildCmd := exec.Command("go","build", "-buildmode=plugin", "-o", outPluginName, scriptName)
+
+		configJson := filepath.Join(sourcePluginDir, name, configName)
+
+		if conf, err := ioutil.ReadFile(configJson); err != nil {
+			panic(err)
+		} else {
+			if err := ioutil.WriteFile(filepath.Join(buildPluginDir, configName), conf, os.ModePerm); err != nil {
+				panic(err)
+			}
+		}
+		outPluginName := filepath.Join(buildPluginDir, name+".so")
+		buildCmd := exec.Command("go", "build", "-buildmode=plugin", "-o", outPluginName, scriptName)
 		buildCmd.Stdout = os.Stdout
 		buildCmd.Stderr = os.Stderr
-
+		buildCmd.Env = os.Environ()
 		if err := buildCmd.Run(); err != nil {
 			panic(err)
 		}
@@ -37,5 +49,5 @@ var buildPluginCmd = &cobra.Command{
 }
 
 func init() {
-	buildPluginCmd.Flags().String("name","", "传入需要构建的插件文件名称")
+	buildPluginCmd.Flags().String("name", "", "传入需要构建的插件文件名称")
 }

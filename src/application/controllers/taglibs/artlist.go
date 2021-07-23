@@ -96,7 +96,6 @@ func ArcList(args jet.Arguments) reflect.Value {
 	if len(ids) == 0 || ids[0] == "0" { // 没有设置typeid直接查看模型ID
 		modelID = getNumber(args.Get(4))
 	} else if len(ids) > 1 { // 设置多个id以第一个ID查找对应模型
-		fmt.Println("ids", ids)
 		catid, _ := strconv.Atoi(ids[0])
 		catgory, err := m.GetCategoryFByIdForBE(int64(catid))
 		if err != nil {

@@ -1,6 +1,7 @@
 package plugin
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -14,6 +15,7 @@ import (
 
 const outputPluginDir = "plugins"
 const sourcePluginDir = "src/application/plugins"
+const configName = "config.json"
 
 const sourceTpl = `package main
 
@@ -81,43 +83,56 @@ func (p *[$s]) Init(app *pine.Application, backend *pine.Router) {
 // [$s]Plugin 导出插件可执行变量 不可删除
 var [$s]Plugin = [$s]{}`
 
-
+type PluginConfig struct {
+	Name        string `json:"name"`
+	Author      string `json:"author"`
+	Contact     string `json:"contact"`
+	Description string `json:"description"`
+	Version     string `json:"version"`
+	Page        string `json:"page"` // 页面说明
+	Error       string `json:"-"`    // 记录加载信息
+}
 
 var makePluginCmd = &cobra.Command{
 	Use:   "make",
-	Short: "创建一个新的插件",
+	Short: "创建一个新的插件以及配置文件",
 	Run: func(cmd *cobra.Command, args []string) {
-		os.Mkdir(sourcePluginDir, os.ModePerm)
-
-		name,_ := cmd.Flags().GetString("name")
+		name, _ := cmd.Flags().GetString("name")
 		if len(name) == 0 {
-			cmd.Usage()
+			_ = cmd.Usage()
 			return
 		}
+		var config = &PluginConfig{
+			Name: name + " plugin",
+			Page: "页面简介,可以是html和markdown",
+		}
+		pluginDir := filepath.Join(sourcePluginDir, name)
 
+		_ = os.MkdirAll(pluginDir, os.ModePerm)
 
-		sourcePluginPath := filepath.Join(sourcePluginDir, name, name + ".go")
+		sourcePluginPath := filepath.Join(pluginDir, name+".go")
 
 		if _, err := os.Stat(sourcePluginPath); err == nil {
 			panic(errors.New("已存在同名插件, 请换个名称"))
 		}
 
-		os.Mkdir(filepath.Dir(sourcePluginPath), os.ModePerm)
-
 		uuidCode := uuid.NewV4().String()
 
 		source := strings.ReplaceAll(strings.Replace(sourceTpl, "[$uuid]", uuidCode, 1), "[$s]", name)
 
-
-		err := ioutil.WriteFile(sourcePluginPath, []byte(source), os.ModePerm)
-		if err != nil {
+		if err := ioutil.WriteFile(sourcePluginPath, []byte(source), os.ModePerm); err != nil {
 			panic(err)
 		}
-		fmt.Println("生成插件", sourcePluginPath, "源代码文件成功")
+		configPath := filepath.Join(pluginDir, configName)
+		conf, _ := json.MarshalIndent(config, "", "    ")
+		if err := ioutil.WriteFile(configPath, conf, os.ModePerm); err != nil {
+			_ = os.RemoveAll(pluginDir)
+			panic(err)
+		}
+		fmt.Println("生成插件相关文件", sourcePluginPath, "和", configPath, "成功")
 	},
 }
 
-
 func init() {
-	makePluginCmd.Flags().String("name", "","插件名称, 会生成同名插件模板源文件")
+	makePluginCmd.Flags().String("name", "", "插件名称, 会生成同名插件模板源文件")
 }

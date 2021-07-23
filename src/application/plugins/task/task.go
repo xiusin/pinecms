@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/spf13/cobra"
 	"github.com/xiusin/pine"
@@ -14,6 +15,7 @@ import (
 
 type Task struct {
 	sync.Once
+	isCliMode bool
 	orm       *xorm.Engine
 	app       *pine.Application
 	prefix    string
@@ -25,53 +27,116 @@ func (p *Task) Name() string {
 }
 
 func (p *Task) Sign() string {
-	return "product_plugin"
-}
-
-func (p *Task) Version() string {
-	return "dev 0.0.1"
-}
-
-func (p *Task) Author() string {
-	return "xiusin"
-}
-
-func (p *Task) Description() string {
-	return "实现任务管理功能"
-}
-
-func (p *Task) Course() string {
-	return `# 任务管理模块教程
-
-## 安装 
-1. 下载编译完成的**task.so**放置到程序同级目录**plugins**下
-2. 程序每隔10秒扫描一次目录,自动注册程序信息到插件系统
-3. 本模块需要在开发环境时导入, 需要自动导出**pages.zip** 放到前端开发目录下使用
-
-## 修改路由前缀
-1. 默认路由前缀和插件名称一致,如果修改需要重启程序以载入.so实现.  
-2. 需要重新导入router.ts注入修改后的路由地址 (不建议修改)
-
-## 结束语
-如有问题望请各位PR或提交到个人邮箱或电话
-`
-}
-
-func (p *Task) Contact() string {
-	return "18888888888"
+	return "77975e7f-de8b-4f26-be90-38c24fcd7c7d"
 }
 
 func (p *Task) View() string {
-	return `{}`
+	return `[
+  {
+    "label": "accessKeyId",
+    "prop": "accessKeyId",
+    "component": {
+      "name": "el-input",
+      "attrs": {
+        "placeholder": "阿里云accessKeyId"
+      }
+    },
+    "props": {
+      "label-width": "130px"
+    },
+    "rules": {
+      "required": true,
+      "message": "值不能为空"
+    }
+  },
+  {
+    "label": "accessKeySecret",
+    "prop": "accessKeySecret",
+    "component": {
+      "name": "el-input",
+      "attrs": {
+        "placeholder": "阿里云accessKeySecret"
+      }
+    },
+    "props": {
+      "label-width": "130px"
+    },
+    "rules": {
+      "required": true,
+      "message": "值不能为空"
+    }
+  },
+  {
+    "label": "bucket",
+    "prop": "bucket",
+    "component": {
+      "name": "el-input",
+      "attrs": {
+        "placeholder": "阿里云oss的bucket"
+      }
+    },
+    "props": {
+      "label-width": "130px"
+    },
+    "rules": {
+      "required": true,
+      "message": "值不能为空"
+    }
+  },
+  {
+    "label": "endpoint",
+    "prop": "endpoint",
+    "component": {
+      "name": "el-input",
+      "attrs": {
+        "placeholder": "阿里云oss的endpoint"
+      }
+    },
+    "props": {
+      "label-width": "130px"
+    },
+    "rules": {
+      "required": true,
+      "message": "值不能为空"
+    }
+  },
+  {
+    "label": "timeout",
+    "prop": "timeout",
+    "value": "3600s",
+    "component": {
+      "name": "el-input",
+      "attrs": {
+        "placeholder": "阿里云oss的timeout"
+      }
+    },
+    "props": {
+      "label-width": "130px"
+    },
+    "rules": {
+      "required": true,
+      "message": "值不能为空"
+    }
+  }
+]`
+}
+
+func (p *Task) Uninstall() {
+
 }
 
 func (p *Task) Install() {
-	if err := p.orm.Sync2(&table.TaskInfo{}, &table.TaskLog{}); err != nil {
-		pine.Logger().Error("安装task插件数据库失败", err)
+	if !p.isInstall {
+		if err := p.orm.Sync2(&table.TaskInfo{}, &table.TaskLog{}); err != nil {
+			pine.Logger().Error("安装task插件数据库失败", err)
+		}
+		if !p.isCliMode {
+			// 查询菜单状况
+			_, _ = p.orm.Cols("entity_id", "error").Update(&table.TaskInfo{})
+			manager.TaskManager().Cron()
+		}
 	}
-	p.orm.Cols("entity_id", "error").Update(&table.TaskInfo{})
-
-	manager.TaskManager().Cron()
+	p.isInstall = true
 }
 
 func (p *Task) Prefix(prefix string) {
@@ -82,14 +147,24 @@ func (p *Task) Upgrade() {
 }
 
 func (p *Task) Init(
+	isCliMode bool,
 	app *pine.Application,
 	backend *pine.Router,
 	rootCmd *cobra.Command,
 ) {
 	p.Do(func() {
+		fmt.Println("初始化插件: Task")
+
+		p.isCliMode = true
+
 		rootCmd.AddCommand(cmd.TaskCmd)
 
+		p.app = app
+
 		p.orm = di.MustGet(&xorm.Engine{}).(*xorm.Engine)
+
+		p.Install()
+
 		if len(p.prefix) == 0 {
 			p.prefix = "/task"
 		}

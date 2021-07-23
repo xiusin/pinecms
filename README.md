@@ -66,6 +66,17 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - 后端 http://pinecms.xiusin.cn/b/login/index 
 - 新版后端 http://new_pinecms.xiusin.cn/
 
+
+# 新功能
+
+### 插件系统 (doing)
+支持动态插拔插件, 并注册到系统功能, 提供方便便捷的扩展功能. 
+系统可以动态扫描插件目录,自动发现并可以热加载进系统.  也可以导入第三方人员开发的扩展动态库(受限于系统和版本,后面会提供编译个版本的docker镜像)
+
+- 插件系统界面
+![插件系统界面](./images/plugin.png)
+
+
 # Doing
 - 重写为前后端分离
 - 一键CRUD(view models controllers menus)

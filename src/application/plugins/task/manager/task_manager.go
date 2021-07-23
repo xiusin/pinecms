@@ -79,7 +79,6 @@ func (tm *taskManager) Cron() {
 		tm.cron = cron.New(
 			cron.WithSeconds(),
 			cron.WithLocation(helper.GetLocation()),
-			cron.WithLogger(tm.logger),
 		)
 		var tasks []table.TaskInfo
 		_ = tm.orm.Table(&table.TaskInfo{}).Where("status = ?", 1).Find(&tasks)

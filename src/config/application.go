@@ -31,7 +31,7 @@ type Config struct {
 	HashKey           string `yaml:"hashkey"`
 	BlockKey          string `yaml:"blockkey"`
 	BackendRouteParty string `yaml:"backend_route_party"`
-	PluginPath        string `json:"plugin_path"`
+	PluginPath        string `yaml:"plugin_path"`
 
 	Upload struct {
 		MaxBodySize int64  `yaml:"max_bodysize"`

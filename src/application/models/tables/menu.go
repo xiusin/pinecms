@@ -6,6 +6,7 @@ type Menu struct {
 	Parentid  int64  `json:"parentId" form:"parentid" api:"remark:父菜单ID"`
 	C         string `json:"c" form:"c"  api:"remark:控制器（旧版）"`
 	A         string `json:"a" form:"a"  api:"remark:操作（旧版）"`
+	PluginId  int64  `json:"plugin_id" api:"remark: 插件ID,用于标记插件创建菜单,卸载时使用"`
 	Data      string `json:"data" form:"data" api:"remark:菜单附加参数"`
 	IsSystem  uint64 `json:"is_system" form:"is_system" api:"remark:是否为系统菜单"`
 	Listorder int64  `json:"orderNum" form:"listorder" api:"remark:排序号"`

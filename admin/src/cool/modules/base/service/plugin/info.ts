@@ -10,6 +10,14 @@ class PluginInfo extends BaseService {
 		});
 	}
 
+	install(data: any) {
+		return this.request({
+			url: "/install",
+			method: "POST",
+			data
+		});
+	}
+
 	getConfig(params: any) {
 		return this.request({
 			url: "/config",

@@ -1,6 +1,8 @@
-package cmd
+package server
 
 import (
+	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/cmd/version"
 	"os"
 	"runtime"
 
@@ -20,6 +22,12 @@ var startCmd = &cobra.Command{
 	Short: "启动pinecms服务",
 	Run: func(cmd *cobra.Command, args []string) {
 		banner, _ := cmd.Flags().GetBool("banner")
+
+		// 标识非serve模式
+		di.Set("pinecms.serve.mode", func(builder di.AbstractBuilder) (interface{}, error) {
+			return true, nil
+		}, false)
+
 		if banner {
 			p := tableprinter.New(os.Stdout)
 			p.BorderTop, p.BorderBottom, p.BorderLeft, p.BorderRight = true, true, true, true
@@ -30,7 +38,7 @@ var startCmd = &cobra.Command{
 				{"Status", "Development"},
 				{"Author", "xiusin"},
 				{"PineVersion", pine.Version},
-				{"Version", Version},
+				{"Version", version.Version},
 				{"GoVersion", runtime.Version()},
 			})
 		}
@@ -40,6 +48,6 @@ var startCmd = &cobra.Command{
 }
 
 func init() {
-	serveCmd.AddCommand(startCmd)
+	ServeCmd.AddCommand(startCmd)
 	startCmd.Flags().Bool("banner", true, "显示或隐藏banner信息, false为隐藏")
 }

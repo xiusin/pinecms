@@ -71,12 +71,18 @@ func initApp() {
 
 func InitApp() {
 	initApp()
+	InitDB()
 	plugins.Init()
 }
 
 func InitDB() {
 	XOrmEngine = config.InitDB(nil)
-	_ = XOrmEngine.Sync2(
+
+	di.Set(XOrmEngine, func(builder di.AbstractBuilder) (i interface{}, err error) {
+		return XOrmEngine, nil
+	}, true)
+
+	err := XOrmEngine.Sync2(
 		&tables.Dict{},
 		&tables.DictCategory{},
 		&tables.AdminRole{},
@@ -84,10 +90,12 @@ func InitDB() {
 		&tables.Position{},
 		&tables.District{},
 		&tables.Plugin{})
+	if err != nil {
+		pine.Logger().Error("同步表结构失败", err)
+	}
 }
 
 func Server() {
-	InitDB()
 	InitCache()
 	registerStatic()
 	router.InitRouter(app)
@@ -162,7 +170,7 @@ func runServe() {
 	)
 }
 
-func InitCache()  {
+func InitCache() {
 	cacheHandler = bitcask.New(int(conf.Session.Expires), conf.CacheDb, time.Minute*10)
 
 	theme, _ := cacheHandler.Get(controllers.CacheTheme)
@@ -195,13 +203,7 @@ func diConfig() {
 		return loggers, nil
 	}, false)
 
-
-
 	pine.RegisterViewEngine(getJetEngine())
-
-	di.Set(XOrmEngine, func(builder di.AbstractBuilder) (i interface{}, err error) {
-		return XOrmEngine, nil
-	}, true)
 
 	di.Set(controllers.ServiceTablePrefix, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return dc.Db.DbPrefix, nil

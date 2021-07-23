@@ -4,6 +4,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/cmd/plugin"
+	"github.com/xiusin/pinecms/cmd/server"
+	"github.com/xiusin/pinecms/cmd/version"
 	config "github.com/xiusin/pinecms/src/server"
 )
 
@@ -16,7 +18,7 @@ var rootCmd = &cobra.Command{
 |  _ \| |  _ \ / _  ) ___)    \ /___)
 | | | | | | | ( (/ ( (___| | | |___ |
 | ||_/|_|_| |_|\____)____)_|_|_(___/ 
-|_|     		      version: ` + Version,
+|_|     		      version: ` + version.Version,
 }
 
 func Execute() {
@@ -30,7 +32,11 @@ func init() {
 		return rootCmd, nil
 	}, true)
 
-	config.InitApp()
-
 	rootCmd.AddCommand(plugin.PluginCmd)
+	rootCmd.AddCommand(version.VersionCmd)
+	rootCmd.AddCommand(server.ServeCmd)
+
+	// new cmd
+
+	config.InitApp()
 }
