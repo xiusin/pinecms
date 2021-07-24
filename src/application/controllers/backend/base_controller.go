@@ -1,7 +1,6 @@
 package backend
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
@@ -18,7 +17,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-	"time"
 )
 
 var validate = validator.New()
@@ -78,16 +76,16 @@ func (c *BaseController) Construct() {
 	c.TableStructKey = "Id"
 	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
 	c.AppId = "admin"
-
-	c.apiEntities = map[string]apidoc.Entity{ // 内置一个模板, 配合ApiEntityName使用
-		"__inner": {}, // 重写时不要附加此参数
-		"list":    {Title: "%s列表", Desc: "获取系统未删除的%s列表"},
-		"add":     {Title: "新增%s", Desc: "新增一个新的%s"},
-		"edit":    {Title: "编辑%s", Desc: "修改给定ID的%s信息"},
-		"delete":  {Title: "删除%s", Desc: "删除指定%s"},
-		"info":    {Title: "%s详情", Desc: "获取指定%s的详情信息"},
+	if c.apiEntities == nil {
+		c.apiEntities = map[string]apidoc.Entity{ // 内置一个模板, 配合ApiEntityName使用
+			"__inner": {}, // 重写时不要附加此参数
+			"list":    {Title: "%s列表", Desc: "获取系统未删除的%s列表"},
+			"add":     {Title: "新增%s", Desc: "新增一个新的%s"},
+			"edit":    {Title: "编辑%s", Desc: "修改给定ID的%s信息"},
+			"delete":  {Title: "删除%s", Desc: "删除指定%s"},
+			"info":    {Title: "%s详情", Desc: "获取指定%s的详情信息"},
+		}
 	}
-
 	c.setApiEntity()
 }
 
@@ -144,11 +142,11 @@ func (c *BaseController) PostList() {
 			}
 		}
 		if p.Size == 0 {
-			if p.Export {
-				c.export()
-			} else {
-				helper.Ajax(c.Entries, 0, c.Ctx())
-			}
+			//if p.Export {
+			//	c.export()
+			//} else {
+			//	helper.Ajax(c.Entries, 0, c.Ctx())
+			//}
 		} else {
 			helper.Ajax(pine.H{
 				"list": c.Entries,
@@ -271,10 +269,6 @@ func (c *BaseController) edit() bool {
 	return result > 0
 }
 
-func (c *BaseController) PostOrder() {
-
-}
-
 func (c *BaseController) PostDelete() {
 	var ids idParams
 	if err := parseParam(c.Ctx(), &ids); err != nil {
@@ -330,32 +324,6 @@ func (c *BaseController) GetInfo() {
 	}
 }
 
-func (c *BaseController) export() {
-	entities := c.convertEntities()
-	f := excelize.NewFile()
-	for i, header := range c.ExportHeaders {
-		f.SetCellValue("Sheet1", cells(0, i), header.HeaderName)
-	}
-	for idx, entity := range entities {
-		for i, header := range c.ExportHeaders {
-			val := entity.Elem().FieldByName(header.Field)
-			if val.IsValid() {
-				helper.Ajax("导出字段"+header.Field+"无效", 1, c.Ctx())
-				return
-			}
-			f.SetCellValue("Sheet1", cells(idx+1, i), val.Interface())
-		}
-	}
-	var buffer bytes.Buffer
-	if _, err := f.WriteTo(&buffer); err != nil {
-		helper.Ajax("导出失败", 1, c.Ctx())
-	} else {
-		c.Ctx().Response.Header.Set("Access-Control-Expose-Headers", "content-disposition")
-		c.Ctx().Response.Header.Set("content-disposition", `attachment; filename=export_data_`+time.Now().Format("2006-01-02")+`.xlsx`)
-		c.Ctx().Response.SetBodyStream(&buffer, buffer.Len())
-	}
-}
-
 func (c *BaseController) setApiEntity() {
 	ps := strings.Split(c.Ctx().Path(), "/")
 	key := ps[len(ps)-1]
@@ -387,38 +355,12 @@ func (c *BaseController) setApiEntity() {
 		apiEntity.Group = c.Group
 	}
 	if len(apiEntity.SubGroup) == 0 {
-		apiEntity.SubGroup = c.SubGroup
+		if len(c.SubGroup) > 0 {
+			apiEntity.SubGroup = c.SubGroup
+		} else {
+			apiEntity.SubGroup = c.Group
+		}
 	}
 	apidoc.SetApiEntity(c.Ctx(), &apiEntity)
 }
 
-// todo 后面查看是否能够直接反射
-func (c *BaseController) convertEntities() []reflect.Value {
-	panic("must rewrite method convertEntities")
-}
-
-func cells(row int, col int) string { // todo 看官方有没有更好的方法
-	letters := [26]string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
-	var let, let2, let3, letter string
-	var i, i2, i3 int
-	for _, let = range letters {
-		i++
-		if col == i {
-			letter = let
-		}
-		for _, let2 = range letters {
-			i2++
-			if col-26 == i2 {
-				letter = let + let2
-			}
-			for _, let3 = range letters {
-				i3++
-				if col-702 == i3 {
-					letter = let + let2 + let3
-				}
-			}
-		}
-	}
-	rows := strconv.Itoa(row)
-	return letter + rows
-}

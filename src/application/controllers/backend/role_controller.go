@@ -14,6 +14,8 @@ type AdminRoleController struct {
 }
 
 func (c *AdminRoleController) Construct() {
+	c.Group = "角色管理"
+	c.ApiEntityName = "角色"
 	c.KeywordsSearch = []KeywordWhere{
 		{Field: "rolename", Op: "LIKE", DataExp: "%$?%"},
 	}

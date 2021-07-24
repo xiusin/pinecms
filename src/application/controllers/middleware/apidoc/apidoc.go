@@ -9,6 +9,11 @@ import (
 	"strings"
 )
 
+/**
+1. 可以自定义字段备注， 比如想要修改部分字段备注
+2. 修改接口信息， 为响应字段添加备注
+3. 
+ */
 var simdbDriver *simdb.Driver
 
 func New(app *pine.Application, config *Config) pine.Handler {

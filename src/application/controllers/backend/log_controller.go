@@ -11,7 +11,6 @@ type LogController struct {
 }
 
 func (c *LogController) Construct() {
-	c.AppId = "admin"
 	c.Group = "日志模块"
 
 	c.KeywordsSearch = []KeywordWhere{

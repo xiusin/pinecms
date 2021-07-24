@@ -3,7 +3,6 @@ package backend
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/russross/blackfriday"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -92,7 +91,6 @@ func (c *PluginController) PostInstall() {
 			if err != nil {
 				return nil, err
 			}
-			fmt.Println(viewConf)
 			sign := entity.Sign()
 			if len(sign) == 0 {
 				return nil, errors.New("插件无签名, 无效")
@@ -112,6 +110,7 @@ func (c *PluginController) PostInstall() {
 			if err != nil {
 				return nil, err
 			}
+			entity.Menu(&tables.Menu{}, int(pluginDb.Id))
 		}
 		return nil, nil
 	}); err != nil {
@@ -119,7 +118,6 @@ func (c *PluginController) PostInstall() {
 	} else {
 		helper.Ajax("success", 0, c.Ctx())
 	}
-
 }
 
 func (c *PluginController) PostEnable() {

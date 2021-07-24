@@ -29,8 +29,6 @@ require (
 	github.com/gookit/color v1.4.2
 	github.com/gorilla/securecookie v1.1.1
 	github.com/kataras/go-mailer v0.1.0
-	github.com/kataras/tablewriter v0.0.0-20180708051242-e063d29b7c23 // indirect
-	github.com/klauspost/compress v1.13.1 // indirect
 	github.com/landoop/tableprinter v0.0.0-20201125135848-89e81fc956e7
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.7.0 // indirect
@@ -41,8 +39,8 @@ require (
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/rivo/tview v0.0.0-20210624165335-29d673af0ce2
 	github.com/robfig/cron/v3 v3.0.0
-	github.com/russross/blackfriday v1.6.0 // indirect
-	github.com/satori/go.uuid v1.2.0 // indirect
+	github.com/russross/blackfriday v1.6.0
+	github.com/satori/go.uuid v1.2.0
 	github.com/savsgio/gotils v0.0.0-20210617111740-97865ed5a873 // indirect
 	github.com/schollz/progressbar v1.0.0
 	github.com/shirou/gopsutil v3.21.6+incompatible
@@ -52,12 +50,11 @@ require (
 	github.com/traefik/yaegi v0.9.19
 	github.com/valyala/fasthttp v1.28.0
 	github.com/xiusin/logger v0.0.5
-	github.com/xiusin/pine v0.0.0-20210611061920-584b667194ae
+	github.com/xiusin/pine v0.0.0-20210723025204-34f50f4858d5
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/exp v0.0.0-20210712160552-8235cf48b5f6 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
-	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
 	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b // indirect
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6 // indirect
 	gopkg.in/yaml.v2 v2.4.0
@@ -65,6 +62,6 @@ require (
 	xorm.io/core v0.7.3
 )
 
-replace github.com/xiusin/pine => ../pine
+//replace github.com/xiusin/pine => ../pine
 
 //replace github.com/xiusin/logger => ../logger

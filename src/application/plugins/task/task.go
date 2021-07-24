@@ -30,6 +30,26 @@ func (p *Task) Sign() string {
 	return "77975e7f-de8b-4f26-be90-38c24fcd7c7d"
 }
 
+func (p *Task) Menu(table interface{}, pluginId int) {
+	exist, _ := p.orm.Table(table).Where("plugin_id = ?", pluginId).Exist()
+	if !exist {
+		p.orm.Table(table).Insert(map[string]interface{}{
+			"plugin_id":  pluginId,
+			"name":       p.Name(),
+			"parentid":   0,
+			"c":          "task",
+			"a":          "list",
+			"router":     "/sys/plugin/task",
+			"icon":       "icon-menu",
+			"keep_alive": 1,
+			"type":       1,
+			"display":    1,
+			"is_system":  1,
+			"view_path":  "cool/modules/task/views/task.vue",
+		})
+	}
+}
+
 func (p *Task) View() string {
 	return `[
   {
@@ -131,6 +151,7 @@ func (p *Task) Install() {
 			pine.Logger().Error("安装task插件数据库失败", err)
 		}
 		if !p.isCliMode {
+			fmt.Println("启动定时任务")
 			// 查询菜单状况
 			_, _ = p.orm.Cols("entity_id", "error").Update(&table.TaskInfo{})
 			manager.TaskManager().Cron()
@@ -153,18 +174,11 @@ func (p *Task) Init(
 	rootCmd *cobra.Command,
 ) {
 	p.Do(func() {
-		fmt.Println("初始化插件: Task")
-
-		p.isCliMode = true
-
+		p.isCliMode = isCliMode
 		rootCmd.AddCommand(cmd.TaskCmd)
-
 		p.app = app
-
 		p.orm = di.MustGet(&xorm.Engine{}).(*xorm.Engine)
-
 		p.Install()
-
 		if len(p.prefix) == 0 {
 			p.prefix = "/task"
 		}

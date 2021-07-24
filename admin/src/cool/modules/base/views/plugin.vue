@@ -30,12 +30,8 @@
 							>配置</el-button
 						>
 
-						<el-button
-							v-else
-							type="text"
-							size="mini"
-							@click="installPlugin(scope.row)"
-						>安装</el-button
+						<el-button v-else type="text" size="mini" @click="installPlugin(scope.row)"
+							>安装</el-button
 						>
 					</template>
 				</cl-table>
@@ -56,7 +52,7 @@
 			<span slot="footer" class="drawer-footer">
 				<el-button type="primary" @click="onInstallClick" size="mini">确 定</el-button>
 				<el-button @click="onDrawClose" size="mini">取 消</el-button>
-			  </span>
+			</span>
 		</el-drawer>
 
 		<!-- 表单 -->
@@ -81,9 +77,9 @@ export default defineComponent({
 		// 编辑权限
 		const { config, getConfig, enable } = service.plugin.info.permission;
 
-		const visible = ref<boolean>(false)
-		const pageHTML = ref("")
-		const installPath = ref("")
+		const visible = ref<boolean>(false);
+		const pageHTML = ref("");
+		const installPath = ref("");
 
 		const perms = reactive<any>({
 			edit: checkPerm({
@@ -133,27 +129,28 @@ export default defineComponent({
 				});
 		}
 
-
 		async function installPlugin({ page, path }: any) {
-			visible.value = true
-			pageHTML.value = page
-			installPath.value = path
+			visible.value = true;
+			pageHTML.value = page;
+			installPath.value = path;
 		}
 
-
-		 function onInstallClick() {
-			service.plugin.info.install({ path: installPath.value }).then(() => {
-				ElMessage.success("安装插件成功");
-				close();
-			}).catch((err: string) => {
-				ElMessage.error(err);
-			});
+		function onInstallClick() {
+			service.plugin.info
+				.install({ path: installPath.value })
+				.then(() => {
+					ElMessage.success("安装插件成功");
+					close();
+				})
+				.catch((err: string) => {
+					ElMessage.error(err);
+				});
 		}
 
 		function onDrawClose() {
-			visible.value = false
-			pageHTML.value = ""
-			installPath.value = ""
+			visible.value = false;
+			pageHTML.value = "";
+			installPath.value = "";
 		}
 
 		// 打开配置
@@ -205,7 +202,7 @@ export default defineComponent({
 					label: "插件路径",
 					prop: "path",
 					width: 180,
-					align:"left",
+					align: "left"
 				},
 				{
 					label: "名称",
@@ -299,14 +296,13 @@ export default defineComponent({
 });
 </script>
 
-
 <style>
 /*1.显示滚动条：当内容超出容器的时候，可以拖动：*/
 .el-drawer__body {
 	overflow: auto;
 }
 /*2.隐藏滚动条，太丑了*/
-.el-drawer__container ::-webkit-scrollbar{
+.el-drawer__container ::-webkit-scrollbar {
 	display: none;
 }
 
@@ -327,7 +323,8 @@ export default defineComponent({
 	margin-bottom: 0;
 }
 .markdown-body {
-	font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif,
+		"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 	font-size: 16px;
 	color: #333;
 	line-height: 1.6;
@@ -483,7 +480,7 @@ export default defineComponent({
 	padding-bottom: 0.2em;
 	margin: 0;
 	font-size: 85%;
-	background-color: rgba(0,0,0,0.04);
+	background-color: rgba(0, 0, 0, 0.04);
 	-webkit-border-radius: 3px;
 	border-radius: 3px;
 }
@@ -518,7 +515,8 @@ export default defineComponent({
 	list-style-type: none;
 }
 .task-list-item input {
-	font: 13px/1.4 Helvetica, arial, nimbussansl, liberationsans, freesans, clean, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	font: 13px/1.4 Helvetica, arial, nimbussansl, liberationsans, freesans, clean, sans-serif,
+		"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 	margin: 0 0.35em 0.25em -1.6em;
 	vertical-align: middle;
 }

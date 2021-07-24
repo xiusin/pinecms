@@ -3,7 +3,7 @@
 		<el-row>
 			<cl-table v-bind="table">
 				<template #slot-model-define="{ scope }">
-					<el-button @click="" type="text" size="mini">定义模型</el-button>
+					<el-button @click="modelDef(scope.row)" type="text" size="mini">定义模型</el-button>
 				</template>
 			</cl-table>
 		</el-row>
@@ -13,12 +13,16 @@
 		</el-row>
 		<cl-upsert v-bind="upsert" />
 	</cl-crud>
+
+	<!-- 表单 -->
+	<cl-form :ref="setRefs('form')" />
 </template>
 
 <script lang="ts">
 import { defineComponent, inject, reactive, ref } from "vue";
 import { useRefs } from "/@/core";
 import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
+import {ElMessage} from "element-plus";
 
 export default defineComponent({
 	name: "sys-model",
@@ -179,11 +183,23 @@ export default defineComponent({
 			ctx.service(service.system.model).done();
 			app.refresh();
 		}
+		// 打开配置
+		async function modelDef() {
+			refs.value.form.open({
+				title: `配置`,
+				on: {
+					submit: (data: any, { close, done }: any) => {
+
+					}
+				}
+			});
+		}
 
 		return {
 			refs,
 			table,
 			upsert,
+			modelDef,
 			setRefs,
 			onLoad
 		};

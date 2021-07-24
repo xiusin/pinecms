@@ -43,13 +43,14 @@ type PluginIntf interface {
 		*pine.Application,
 		*pine.Router,
 		*cobra.Command,
-	)              // 初始化插件
-	Prefix(string) // 路由前缀, 注册后修改需要重启程序
-	Sign() string  // 插件的唯一标识, 需要开发者搞一个独一无二如 uuid
-	View() string  // 配置视图json信息
-	Install()      // 安装插件, 首次扫描后执行.
-	Uninstall()    // 卸载后禁止访问
-	Upgrade()      // 更新插件
+	)                 // 初始化插件
+	Prefix(string)    // 路由前缀, 注册后修改需要重启程序
+	Sign() string     // 插件的唯一标识, 需要开发者搞一个独一无二如 uuid
+	View() string     // 配置视图json信息
+	Menu(interface{}, int) // 安装插件位置
+	Install()         // 安装插件, 首次扫描后执行.
+	Uninstall()       // 卸载后禁止访问
+	Upgrade()         // 更新插件
 }
 
 type Plug struct {
@@ -160,18 +161,13 @@ func (p *pluginManager) Install(filename string) (PluginIntf, error) {
 		delete(pluginMgr.scannedPlugins, filename)
 		return nil, errors.New(filename + "没有实现PluginIntf接口")
 	}
-
-
-	// mode
 	serveMode, _ := di.Get("pinecms.serve.mode")
-
 	pluginEntity.Init(
 		serveMode.(bool),
 		di.MustGet("pine.application").(*pine.Application),
 		di.MustGet("pine.backend_router_group").(*pine.Router),
 		di.MustGet("pinecms.cmd.root").(*cobra.Command),
 	)
-
 	pluginMgr.plugins[filename] = &Plug{plug: plug, pi: pluginEntity}
 	pluginMgr.installPlugins[filename] = struct{}{} // 记录安装
 	return pluginEntity, nil
