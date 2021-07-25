@@ -130,7 +130,7 @@ type Configure func(entity *apiEntity)
 
 func WithImmutable(immutable bool) Configure {
 	return func(entity *apiEntity) {
-		entity.immutable = immutable
+		entity.Immutable = immutable
 	}
 }
 

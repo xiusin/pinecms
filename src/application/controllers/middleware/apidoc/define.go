@@ -61,8 +61,8 @@ type apiParam struct {
 }
 
 type apiEntity struct {
-	configed        bool        //程序内调用 SetApiEntity置为true
-	immutable       bool        //immutable设置不可变, 在文档存在的情况下不会覆盖已生成的文档, 一般用于确定的文档信息
+	configured      bool        //程序内调用 SetApiEntity置为true
+	Immutable       bool        `json:"immutable"`         //immutable设置不可变, 在文档存在的情况下不会覆盖已生成的文档, 一般用于确定的文档信息, 接口处提交自定义将此参数设置为不可变
 	AppId           string      `json:"app_id"`            // 应用ID
 	Group           apiGroup    `json:"group"`             // 分组ID
 	SubGroup        string      `json:"sub_group"`         // 子分组
@@ -81,6 +81,7 @@ type apiEntity struct {
 	RawReturn       string      `json:"raw_return"`        // 原始返回参数
 	RawQuery        string      `json:"raw_query"`         // 原始query
 	QueryDataMethod string      `json:"query_data_method"` // 原始请求数据方法
+	Enable          bool        `json:"enable"`            // 是否启用参数
 	OnlyParams      []string    // 只允许部分参数
 	ExcludeParams   []string    // 过滤部分参数
 	NoParams        bool

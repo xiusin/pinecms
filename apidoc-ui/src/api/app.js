@@ -5,7 +5,8 @@ export const url = {
   apiData: "/apidoc/apiData",
   verifyAuth: "/apidoc/verifyAuth",
   createCrud: "/apidoc/createCrud",
-  mdDetail: "/apidoc/mdDetail"
+  mdDetail: "/apidoc/mdDetail",
+  edit: "/apidoc/edit"
 };
 
 export const getConfig = param => {
@@ -22,4 +23,7 @@ export const createCrud = param => {
 };
 export const getMdDetail = param => {
   return sendRequest(url.mdDetail, param, "get");
+};
+export const postApiData = (param, type) => {
+  return sendRequest(url.edit + "?type=" + type, param, "post");
 };

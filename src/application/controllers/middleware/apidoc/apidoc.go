@@ -12,8 +12,8 @@ import (
 /**
 1. 可以自定义字段备注， 比如想要修改部分字段备注
 2. 修改接口信息， 为响应字段添加备注
-3. 
- */
+3.
+*/
 var simdbDriver *simdb.Driver
 
 func New(app *pine.Application, config *Config) pine.Handler {
@@ -26,7 +26,7 @@ func New(app *pine.Application, config *Config) pine.Handler {
 	if err != nil {
 		panic(err)
 	}
-	app.ANY(config.RoutePrefix + "/:action", func(ctx *pine.Context) {
+	app.ANY(config.RoutePrefix+"/:action", func(ctx *pine.Context) {
 		if !config.Enable {
 			ctx.Next()
 			return
@@ -37,13 +37,15 @@ func New(app *pine.Application, config *Config) pine.Handler {
 		case "apiData":
 			getApiData(ctx)
 		case "edit":
-			panic("修改接口信息, 一般用于确定接口数据, 为字段添加详细备注")
+		//标注接口字段为不可再修改， go端不可直接配置
+		case "reset":
+
 		}
 	})
 
 	return func(ctx *pine.Context) {
 		method := string(ctx.Method())
-		if strings.Contains(ctx.Path(), config.RoutePrefix + "/") || method == http.MethodOptions {
+		if strings.Contains(ctx.Path(), config.RoutePrefix+"/") || method == http.MethodOptions {
 			ctx.Next()
 			return
 		}
@@ -52,10 +54,10 @@ func New(app *pine.Application, config *Config) pine.Handler {
 		entity := &apiEntity{URL: ctx.Path(), Method: method, Name: ps[len(ps)-1], Header: defaultConfig.Headers, MenuKey: key}
 		ctx.Set(apiDocKey, entity)
 		ctx.Next()
-		if !entity.configed {
+		if !entity.configured {
 			return
 		}
-		if entity.immutable == true {
+		if entity.Immutable == true {
 			if simdbDriver.Where("menu_key", "=", entity.MenuKey).First().Raw() != nil {
 				fmt.Println("api", entity.MenuKey, "exists")
 				return

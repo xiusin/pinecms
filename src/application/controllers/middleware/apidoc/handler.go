@@ -17,7 +17,7 @@ func getApiData(ctx *pine.Context) {
 	var entities []apiEntity
 	_ = simdbDriver.Open(&apiEntity{}).Where("app_id", "=", appKey).Get().AsEntity(&entities)
 	groups := []apiGroup{{Title: "全部", Name: 0}}
-	lists := []apiList{}
+	var lists []apiList
 	for _, entity := range entities {
 		var flag = true
 		for _, group := range groups {

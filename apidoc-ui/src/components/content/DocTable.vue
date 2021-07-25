@@ -17,7 +17,33 @@
       </div>
     </div>
     <div v-if="apiData.param && apiData.param.length">
-      <h2>请求参数Parameters</h2>
+      <h2>
+        请求参数Parameters &nbsp;
+        <Tooltip title="编辑请求参数信息" v-if="!recordEditable">
+          <Button type="primary" size="small" @click="recordEditable = true"
+            >编辑</Button
+          >
+        </Tooltip>
+        <template v-else>
+          <Button
+            type="primary"
+            size="small"
+            @click="saveData(apiData.param, 'request')"
+            >保存</Button
+          >
+          &nbsp;&nbsp;
+          <Button
+            type="info"
+            size="small"
+            @click="addParam(apiData.param)"
+            >新增</Button
+          >
+          &nbsp;&nbsp;
+          <Tooltip title="清除后， 系统将根据请求响应生成新的文档">
+            <Button type="danger" size="small">清除保存数据</Button>
+          </Tooltip>
+        </template>
+      </h2>
       <div class="api-param-table">
         <Table
           :columns="paramsColumns"
@@ -30,8 +56,63 @@
           defaultExpandAllRows
           childrenColumnName="params"
         >
-          <template slot="rowDesc" slot-scope="text">
-            <div v-html="textToHtml(text)"></div>
+          <template
+            v-for="col in ['name', 'default', 'address', 'rowDesc']"
+            :slot="col"
+            slot-scope="text"
+          >
+            <div :key="col">
+              <Input
+                v-if="recordEditable"
+                style="margin: -5px 0"
+                :value="text"
+              />
+              <template v-else-if="col === 'rowDesc'">
+                <div v-html="textToHtml(text)"></div>
+              </template>
+              <template v-else>
+                {{ text }}
+              </template>
+            </div>
+          </template>
+
+          <template
+            v-for="slot in ['require', 'enable']"
+            :slot="slot"
+            slot-scope="text, record"
+          >
+            <template v-if="recordEditable">
+              <Checkbox
+                :key="slot"
+                :checked="text"
+                @change="e => (record[slot] = e.target.checked)"
+              />
+            </template>
+            <template v-else>
+              <Icon
+                :key="slot"
+                type="check"
+                style="color:#1890ff"
+                v-if="text"
+              />
+            </template>
+          </template>
+
+          <template slot="type" slot-scope="text, record">
+            <template v-if="recordEditable">
+              <Select
+                :defaultValue="text"
+                style="width: 90px"
+                @change="v => (record.type = v)"
+              >
+                <Option v-for="item in types" :key="item">
+                  {{ item }}
+                </Option>
+              </Select>
+            </template>
+            <template v-else>
+              {{ text }}
+            </template>
           </template>
         </Table>
       </div>
@@ -79,24 +160,38 @@
         childrenColumnName="params"
         @expandedRowsChange="onExpandedRowsChange"
       >
-        <template slot="rowDesc" slot-scope="text">
-          <div v-html="textToHtml(text)"></div>
-        </template>
       </Table>
     </div>
   </div>
 </template>
 
 <script>
-import { Table, Icon, Popover } from "ant-design-vue";
+import {
+  Table,
+  Icon,
+  Popover,
+  Input,
+  Checkbox,
+  Select,
+  Button,
+  Tooltip
+} from "ant-design-vue";
 import { textToHtml } from "../../utils/utils";
+import request from "../../utils/request";
+import { url } from "@/api/app";
 
 let paramsRowKey = 0;
 export default {
   components: {
     Table,
     Icon,
-    Popover
+    Popover,
+    Input,
+    Checkbox,
+    Select,
+    Option: Select.Option,
+    Button,
+    Tooltip
   },
   props: {
     apiData: {
@@ -111,48 +206,47 @@ export default {
   computed: {},
   data() {
     return {
+      recordEditable: false,
+      types: ["string", "number", "bool", "any"],
       paramsColumns: [
         {
           title: "名称",
           dataIndex: "name",
-          width: 240
+          width: 240,
+          scopedSlots: { customRender: "name" }
         },
         {
           title: "类型",
           dataIndex: "type",
           align: "center",
           width: 130,
-          customRender: (text, record) => {
-            if (text == "array" && record.childrenType) {
-              return `${text}<${record.childrenType}>`;
-            } else {
-              return text;
-            }
-          }
+          scopedSlots: { customRender: "type" }
         },
         {
           title: "必填",
           dataIndex: "require",
           width: 60,
           align: "center",
-          customRender: text => {
-            if (text == 1) {
-              return <Icon type="check" style="color:#1890ff" />;
-            } else {
-              return "";
-            }
-          }
+          scopedSlots: { customRender: "require" }
         },
         {
           title: "默认值",
           dataIndex: "default",
           align: "center",
+          scopedSlots: { customRender: "default" },
           width: 80
         },
         {
           title: "说明",
           dataIndex: "desc",
           scopedSlots: { customRender: "rowDesc" }
+        },
+        {
+          title: "启用",
+          dataIndex: "enable",
+          align: "center",
+          width: 50,
+          scopedSlots: { customRender: "enable" }
         }
       ],
       returnColumns: [
@@ -203,6 +297,26 @@ export default {
     this.returnData = this.handleReturnData(this.apiData.return);
   },
   methods: {
+    saveData(record, type) {
+      request.post(url.edit + "?type=" + type, record);
+      this.recordEditable = false;
+    },
+    addParam(record) {
+      for (const idx in record) {
+        if (record[idx].name === "") {
+          this.$message.error("已存在未填写的参数行");
+          return;
+        }
+      }
+      record.push({
+        name: "",
+        default: "",
+        rowDesc: "",
+        type: "string",
+        require: false,
+        enable: true
+      });
+    },
     textToHtml,
     handleReturnData(data) {
       return data

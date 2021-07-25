@@ -27,10 +27,10 @@ const handleError = error => {
 // 创建实例
 // eslint-disable-next-line no-undef
 const host = config.HOST;
-const authApis = [url.apiData, url.createCrud, url.mdDetail];
+const authApis = [url.apiData, url.createCrud, url.mdDetail, url.edit];
 const service = axios.create({
   baseURL:
-      process.env.NODE_ENV === "development" ? "http://localhost:2019" : host,
+    process.env.NODE_ENV === "development" ? "http://localhost:2019" : host,
   timeout: 60 * 1000
 });
 // 请求拦截器
