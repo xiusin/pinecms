@@ -98,7 +98,7 @@ func DefaultConfig() *Config {
 		Copyright:     "https://github.com/xiusin/pinecms.git",
 		DefaultAuthor: "xiusin",
 		Debug:         true,
-		DataPath:      "apidoc",
+		DataPath:      "docdb",
 		ResponseParam: &DemoResponseParam{},
 		//Responses: []apiPublicResponse{ // todo 使用解析
 		//	{Name: "code", Desc: "状态码", Type: "int"},

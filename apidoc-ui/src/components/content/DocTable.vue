@@ -77,20 +77,19 @@
           </template>
 
           <template
-            v-for="slot in ['require', 'enable']"
-            :slot="slot"
+            slot="require"
+            @change="e => (record.require = e.target.checked)"
             slot-scope="text, record"
           >
             <template v-if="recordEditable">
               <Checkbox
-                :key="slot"
+                key="require"
                 :checked="text"
-                @change="e => (record[slot] = e.target.checked)"
               />
             </template>
             <template v-else>
               <Icon
-                :key="slot"
+                key="require"
                 type="check"
                 style="color:#1890ff"
                 v-if="text"
@@ -240,14 +239,15 @@ export default {
           title: "说明",
           dataIndex: "desc",
           scopedSlots: { customRender: "rowDesc" }
-        },
-        {
-          title: "启用",
-          dataIndex: "enable",
-          align: "center",
-          width: 50,
-          scopedSlots: { customRender: "enable" }
         }
+        // ,
+        // {
+        //   title: "启用",
+        //   dataIndex: "enable",
+        //   align: "center",
+        //   width: 50,
+        //   scopedSlots: { customRender: "enable" }
+        // }
       ],
       returnColumns: [
         {
