@@ -32,10 +32,7 @@
             >保存</Button
           >
           &nbsp;&nbsp;
-          <Button
-            type="info"
-            size="small"
-            @click="addParam(apiData.param)"
+          <Button type="info" size="small" @click="addParam(apiData.param)"
             >新增</Button
           >
           &nbsp;&nbsp;
@@ -64,27 +61,37 @@
             <div :key="col">
               <template v-if="recordEditable">
                 <Input
-                    style="margin: -5px 0"
-                    :value="text"
-                    @blur="(e) => (record[col] = e.target.value)"
+                  style="margin: -5px 0"
+                  :value="text"
+                  @blur="e => (record[col] = e.target.value)"
                 >
-                  <Icon v-if="col === 'name'" type="delete" slot="addonAfter" @click="() => { removeParam(record) }" />
+                  <Icon
+                    v-if="col === 'name'"
+                    type="delete"
+                    slot="addonAfter"
+                    @click="
+                      () => {
+                        removeParam(record);
+                      }
+                    "
+                  />
                 </Input>
               </template>
 
-              <div  v-else-if="col === 'desc'" v-html="textToHtml(text)"></div>
+              <div v-else-if="col === 'desc'" v-html="textToHtml(text)"></div>
               <template v-else>
                 {{ text }}
               </template>
             </div>
           </template>
 
-          <template
-            slot="require"
-            slot-scope="text, record"
-          >
+          <template slot="require" slot-scope="text, record">
             <template v-if="recordEditable">
-              <Checkbox key="require" @change="e => (record.require = e.target.checked)" :checked="text" />
+              <Checkbox
+                key="require"
+                @change="e => (record.require = e.target.checked)"
+                :checked="text"
+              />
             </template>
             <template v-else>
               <Icon
@@ -118,10 +125,7 @@
 
     <h2>
       响应结果Responses
-<!--      v-if="config && config.responses && config.responses.jsonStr"-->
-      <Popover
-        title="统一响应体"
-      >
+      <Popover title="统一响应体">
         <template slot="content">
           <textarea
             class="code-textarea"
@@ -256,7 +260,7 @@ export default {
           align: "center",
           width: 130,
           customRender: (text, record) => {
-            if (text == "array" && record.childrenType) {
+            if (text === "array" && record.childrenType) {
               return `${text}<${record.childrenType}>`;
             } else {
               return text;
@@ -293,7 +297,10 @@ export default {
   },
   methods: {
     saveData(record, type) {
-      request.post(url.edit + "?type=" + type + "&menu_key=" + this.apiData.menu_key, record);
+      request.post(
+        url.edit + "?type=" + type + "&menu_key=" + this.apiData.menu_key,
+        record
+      );
       this.recordEditable = false;
     },
     removeParam(record) {

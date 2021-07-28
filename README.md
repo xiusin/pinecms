@@ -44,20 +44,6 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 # 内置标签系统 #
 支持类似织梦的标签系统, 可以让您在不写任何代码的情况下完成网站建设. 
 
-# 内置多种功能 #
-- 个人信息
-- 系统设置
-- 内容管理
-- 分类管理
-- 模型管理
-- 数据库管理
-- 资源管理
-- 管理员设置
-- 广告管理
-- 日志管理
-- 友链管理
-
-
 # 文档 #
 [doc.xiusin.cn](http://doc.xiusin.cn/)
 
@@ -85,3 +71,7 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - github.com/gokeeptech/gktemplate
 - github.com/traefik/yaegi
 - 性能监控重写
+- Bleve 全文检索
+- hook方式支持插件钩子注入信息
+- 文章标签
+- http://demo4.xunruicms.com/admin.php?time=1627481316

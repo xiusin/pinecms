@@ -11,21 +11,24 @@
 
     <Tabs defaultActiveKey="1" type="card">
       <TabPane tab="响应结果Responses" key="1">
-        <json-viewer :value="getJsonViewData()" :expand-depth="3" copyable boxed></json-viewer>
+        <json-viewer
+          :value="getJsonViewData()"
+          :expand-depth="3"
+          copyable
+          boxed
+        ></json-viewer>
       </TabPane>
     </Tabs>
   </div>
 </template>
 
 <script>
-import {renderParamsCode} from "@/utils/utils";
-import {Icon, Popover, Tabs} from "ant-design-vue";
+import { renderParamsCode } from "@/utils/utils";
+import { Tabs } from "ant-design-vue";
 import JsonViewer from "vue-json-viewer";
 
 export default {
   components: {
-    Popover,
-    Icon,
     Tabs,
     TabPane: Tabs.TabPane,
     JsonViewer
@@ -55,10 +58,10 @@ export default {
   created() {},
   methods: {
     getJsonViewData() {
-      try{
-        return JSON.parse(this.apiData.raw_return)
+      try {
+        return JSON.parse(this.apiData.raw_return);
       } catch (e) {
-        return {}
+        return {};
       }
     }
   }

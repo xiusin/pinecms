@@ -14,7 +14,7 @@
         >
           <template slot="headerValue" slot-scope="text, record">
             <TableInput
-              :style="{ width: device == 'mobile' ? '200px' : '350px' }"
+              :style="{ width: device === 'mobile' ? '200px' : '350px' }"
               :data="text"
               @change="onHeaderCellChange(record.name, 'default', $event)"
             />
@@ -37,7 +37,7 @@
               :key="item.name"
               :label="item.name"
             >
-              <div v-if="item.type == 'file'">
+              <div v-if="item.type === 'file'">
                 <Upload
                   :file-list="fileList[item.name]"
                   :remove="
@@ -78,7 +78,7 @@
       <h2>响应结果Responses</h2>
       <div v-if="returnData && returnData.status" class="api-param-table">
         <Alert
-          v-if="returnData.status == 200"
+          v-if="returnData.status === 200"
           :message="returnData.status"
           type="success"
           show-icon
@@ -91,9 +91,12 @@
               class="string-code"
               v-html="returnString"
             ></div>
-<!--            <highlight-code v-else lang="javascript">-->
-              {{ returnData.data }}
-<!--            </highlight-code>-->
+            <json-viewer
+              :value="returnData.data"
+              :expand-depth="3"
+              copyable
+              boxed
+            ></json-viewer>
           </div>
         </div>
       </div>
@@ -115,18 +118,11 @@ import {
   Upload,
   message
 } from "ant-design-vue";
-import "highlight.js/styles/atom-one-dark.css";
 import { sendRequest } from "@/utils/request";
-import { renderParamsCode } from "@/utils/utils";
 import TableInput from "@/utils/Input";
 import cloneDeep from "lodash/cloneDeep";
 import { ls } from "@/utils/cache";
-// Vue.use(VueHighlightJS, {
-//   languages: {
-//     javascript,
-//     json
-//   }
-// });
+import JsonViewer from "vue-json-viewer";
 
 export default {
   components: {
@@ -139,7 +135,8 @@ export default {
     TableInput,
     Form,
     FormItem: Form.Item,
-    Upload
+    Upload,
+    JsonViewer
   },
   props: {
     apiData: {
@@ -175,7 +172,7 @@ export default {
         {
           title: "Value",
           dataIndex: "default",
-          width: this.device == "mobile" ? 150 : 350,
+          width: this.device === "mobile" ? 150 : 350,
           scopedSlots: { customRender: "headerValue" }
         },
         {
@@ -211,9 +208,8 @@ export default {
   },
   methods: {
     initApiData() {
-      this.handleParameters(this.apiData.param);
-
-      if (this.apiData.paramType == "formdata") {
+      this.handleParameters();
+      if (this.apiData.paramType === "formdata") {
         let fileList = {};
         let formdata = {};
         this.apiData.param.forEach(item => {
@@ -243,8 +239,8 @@ export default {
       }
       this.headerData = this.renderHeaderData(this.apiData.header);
     },
-    handleParameters(params) {
-      let newParams = params;
+    handleParameters() {
+      let newParams = JSON.parse(this.apiData.raw_param);
       // 处理全局请求参数
       this.globalParams = ls.get("globalParams");
       if (
@@ -263,7 +259,7 @@ export default {
         }
       }
 
-      this.parameters = renderParamsCode(params);
+      this.parameters = JSON.stringify(newParams, null, 4); // renderParamsCode(params);
     },
 
     excute() {
