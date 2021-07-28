@@ -22,6 +22,7 @@
     "vue": "^2.6.10",
     "vue-clipboard2": "^0.3.1",
     "vue-highlight.js": "^3.1.0",
+    "vue-json-viewer": "^2.2.19",
     "vue-ls": "^3.2.1",
     "webpack-theme-color-replacer": "^1.2.17"
   },

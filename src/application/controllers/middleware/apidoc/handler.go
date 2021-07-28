@@ -2,6 +2,7 @@ package apidoc
 
 import (
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 func getConfig(ctx *pine.Context) {
@@ -57,4 +58,39 @@ func getApiData(ctx *pine.Context) {
 		Groups: groups,
 		List:   lists,
 	}})
+}
+
+func saveApiData(ctx *pine.Context) {
+	typ := ctx.GetString("type")
+	switch typ {
+	case "request":
+		saveRequestData(ctx)
+	default:
+
+	}
+}
+
+func saveRequestData(ctx *pine.Context) {
+	var data []apiParam
+	var entity apiEntity
+	if err := ctx.BindJSON(&data); err != nil {
+		helper.Ajax(err.Error(), 1, ctx)
+		return
+	}
+	entity.MenuKey = ctx.GetString("menu_key")
+	err := simdbDriver.Open(&entity).Where("menu_key", "=", entity.MenuKey).First().AsEntity(&entity)
+	if err != nil {
+		helper.Ajax(err.Error(), 1, ctx)
+		return
+	}
+	entity.Immutable = true
+	entity.Param = data
+
+	err = simdbDriver.Open(&entity).Where("menu_key", "=", entity.MenuKey).Update(&entity)
+	if err != nil {
+		helper.Ajax(err.Error(), 1, ctx)
+		return
+	}
+
+	helper.Ajax("更新成功", 0, ctx)
 }

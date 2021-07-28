@@ -37,6 +37,7 @@ func New(app *pine.Application, config *Config) pine.Handler {
 		case "apiData":
 			getApiData(ctx)
 		case "edit":
+			saveApiData(ctx)
 		//标注接口字段为不可再修改， go端不可直接配置
 		case "reset":
 
@@ -57,11 +58,14 @@ func New(app *pine.Application, config *Config) pine.Handler {
 		if !entity.configured {
 			return
 		}
-		if entity.Immutable == true {
-			if simdbDriver.Where("menu_key", "=", entity.MenuKey).First().Raw() != nil {
-				fmt.Println("api", entity.MenuKey, "exists")
-				return
-			}
+
+		var existData apiEntity
+		exist := simdbDriver.Open(entity).Where("menu_key", "=", key).First().AsEntity(&existData)
+		if entity.Immutable == true && exist == nil { // 代码内传入不可变
+			return
+		}
+		if existData.Immutable == true { // 实体内传入不可变
+			return
 		}
 		entity.Author = defaultConfig.DefaultAuthor
 		entity.RawQuery = string(ctx.RequestCtx.QueryArgs().QueryString())

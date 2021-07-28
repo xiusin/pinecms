@@ -9,54 +9,26 @@
       </div>
     </div>
 
-    <h2>
-      响应结果Responses
-      <Popover
-        v-if="config && config.responses && config.responses.jsonStr"
-        title="统一响应体"
-      >
-        <template slot="content">
-          <textarea
-            class="code-textarea"
-            cols="30"
-            rows="8"
-            readonly
-            v-model="config.responses.jsonStr"
-          ></textarea>
-          <div class="note-text">
-            <span style="color:#f00;">*</span>以下只展示{{
-              config.responses.main && config.responses.main.desc
-                ? config.responses.main.desc
-                : "业务数据"
-            }}内容
-          </div>
-        </template>
-        <Icon
-          style="float:right;color:#999;font-size:18px;"
-          type="question-circle"
-        />
-      </Popover>
-    </h2>
-    <div class="api-param-table">
-      <div class="api-param-code">
-        <div class="code">
-          <highlight-code lang="json">
-            {{ returnCode }}
-          </highlight-code>
-        </div>
-      </div>
-    </div>
+    <Tabs defaultActiveKey="1" type="card">
+      <TabPane tab="响应结果Responses" key="1">
+        <json-viewer :value="getJsonViewData()" :expand-depth="3" copyable boxed></json-viewer>
+      </TabPane>
+    </Tabs>
   </div>
 </template>
 
 <script>
-import { renderParamsCode } from "@/utils/utils";
-import { Popover, Icon } from "ant-design-vue";
+import {renderParamsCode} from "@/utils/utils";
+import {Icon, Popover, Tabs} from "ant-design-vue";
+import JsonViewer from "vue-json-viewer";
 
 export default {
   components: {
     Popover,
-    Icon
+    Icon,
+    Tabs,
+    TabPane: Tabs.TabPane,
+    JsonViewer
   },
   props: {
     apiData: {
@@ -70,12 +42,10 @@ export default {
   },
   computed: {
     paramCode() {
-      const code = renderParamsCode(this.apiData.param, 0, true);
-      return code;
+      return renderParamsCode(this.apiData.param, 0, true);
     },
     returnCode() {
-      const code = renderParamsCode(this.apiData.return, 0, true);
-      return code;
+      return renderParamsCode(this.apiData.return, 0, true);
     }
   },
   data() {
@@ -83,7 +53,15 @@ export default {
   },
 
   created() {},
-  methods: {}
+  methods: {
+    getJsonViewData() {
+      try{
+        return JSON.parse(this.apiData.raw_return)
+      } catch (e) {
+        return {}
+      }
+    }
+  }
 };
 </script>
 

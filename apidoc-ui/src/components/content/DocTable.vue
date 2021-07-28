@@ -16,7 +16,7 @@
         </Table>
       </div>
     </div>
-    <div v-if="apiData.param && apiData.param.length">
+    <div>
       <h2>
         请求参数Parameters &nbsp;
         <Tooltip title="编辑请求参数信息" v-if="!recordEditable">
@@ -57,19 +57,22 @@
           childrenColumnName="params"
         >
           <template
-            v-for="col in ['name', 'default', 'address', 'rowDesc']"
+            v-for="col in ['name', 'default', 'address', 'desc']"
             :slot="col"
-            slot-scope="text"
+            slot-scope="text, record"
           >
             <div :key="col">
-              <Input
-                v-if="recordEditable"
-                style="margin: -5px 0"
-                :value="text"
-              />
-              <template v-else-if="col === 'rowDesc'">
-                <div v-html="textToHtml(text)"></div>
+              <template v-if="recordEditable">
+                <Input
+                    style="margin: -5px 0"
+                    :value="text"
+                    @blur="(e) => (record[col] = e.target.value)"
+                >
+                  <Icon v-if="col === 'name'" type="delete" slot="addonAfter" @click="() => { removeParam(record) }" />
+                </Input>
               </template>
+
+              <div  v-else-if="col === 'desc'" v-html="textToHtml(text)"></div>
               <template v-else>
                 {{ text }}
               </template>
@@ -78,14 +81,10 @@
 
           <template
             slot="require"
-            @change="e => (record.require = e.target.checked)"
             slot-scope="text, record"
           >
             <template v-if="recordEditable">
-              <Checkbox
-                key="require"
-                :checked="text"
-              />
+              <Checkbox key="require" @change="e => (record.require = e.target.checked)" :checked="text" />
             </template>
             <template v-else>
               <Icon
@@ -119,8 +118,8 @@
 
     <h2>
       响应结果Responses
+<!--      v-if="config && config.responses && config.responses.jsonStr"-->
       <Popover
-        v-if="config && config.responses && config.responses.jsonStr"
         title="统一响应体"
       >
         <template slot="content">
@@ -129,14 +128,10 @@
             cols="30"
             rows="8"
             readonly
-            v-model="config.responses.jsonStr"
+            v-model="apiData.raw_return"
           ></textarea>
           <div class="note-text">
-            <span style="color:#f00;">*</span>以下只展示{{
-              config.responses.main && config.responses.main.desc
-                ? config.responses.main.desc
-                : "业务数据"
-            }}内容
+            <span style="color:#f00;">*</span>响应案例
           </div>
         </template>
         <Icon
@@ -238,7 +233,7 @@ export default {
         {
           title: "说明",
           dataIndex: "desc",
-          scopedSlots: { customRender: "rowDesc" }
+          scopedSlots: { customRender: "desc" }
         }
         // ,
         // {
@@ -298,8 +293,11 @@ export default {
   },
   methods: {
     saveData(record, type) {
-      request.post(url.edit + "?type=" + type, record);
+      request.post(url.edit + "?type=" + type + "&menu_key=" + this.apiData.menu_key, record);
       this.recordEditable = false;
+    },
+    removeParam(record) {
+      this.apiData.param.splice(this.apiData.param.indexOf(record), 1);
     },
     addParam(record) {
       for (const idx in record) {

@@ -9,7 +9,7 @@
         <Icon type="menu" />
       </div>
       <div class="logo">
-        <img :src="logoPath" alt="" />
+        <img :src="logoPath" style="width: 30px;" alt="" />
       </div>
       <div
         v-if="
@@ -48,7 +48,7 @@
               ? config.apps_title
               : this.config.versions
               ? "Select Version"
-              : "App/Version"
+              : "应用"
           }}:
         </span>
         <app-select
@@ -239,10 +239,9 @@ export default {
 .header {
   width: 100%;
   height: 40px;
-  background: #fafafa;
   border-bottom: 1px solid #ddd;
   display: flex;
-  padding: 0 30px;
+  padding: 0 5px;
   &.mobile {
     padding: 0 10px;
   }
