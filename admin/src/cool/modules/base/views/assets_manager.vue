@@ -1,147 +1,114 @@
 <template>
-	<cl-crud @load="onLoad">
-		<el-row type="flex">
-			<cl-refresh-btn />
-<!--			<cl-add-btn />-->
-		</el-row>
+	<div class="system-user">
+		<div class="pane">
+			<div class="dir">
+				<div class="container">
+				</div>
+			</div>
 
-		<el-row>
-			<cl-table v-bind="table" />
-		</el-row>
-
-
-		<cl-upsert :ref="setRefs('upsert')" v-bind="upsert" @open="onUpsertOpen">
-			<template #slot-content="{ scope }">
-				<component is="cl-codemirror" v-model="scope.content" mode="htmlmixed" height="500px" />
-			</template>
-		</cl-upsert>
-	</cl-crud>
+			<div class="editor">
+				<div class="container">
+					<component is="cl-codemirror" mode="htmlmixed" height="500px" />
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script lang="ts">
-import { ElMessageBox } from "element-plus";
-import { defineComponent, inject, nextTick, reactive } from "vue";
+import { defineComponent, inject, reactive, ref } from "vue";
 import { useRefs } from "/@/core";
-import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { QueryList, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { ElMessage } from "element-plus";
 
 export default defineComponent({
-	name: "sys-assets-manager",
+	name: "sys-dict",
 
 	setup() {
 		const service = inject<any>("service");
+
 		const { refs, setRefs } = useRefs();
 
-		// 选项卡
-		const tab = reactive<any>({index: null});
-
-		// 表格配置
-		const table = reactive<Table>({
-			columns: [
-				{
-					label: "文件名",
-					prop: "name",
-					align:"left",
-				},
-				{
-					label: "文件大小",
-					prop: "size",
-					width: 150
-				},
-				{
-					label: "更新时间",
-					prop: "updated",
-					width: 200,
-					showOverflowTooltip: true
-				},
-				{
-					label: "操作",
-					type: "op",
-					width: 100,
-					buttons: ["edit"]
-				}
-			]
-		});
-
-		// 新增编辑配置
-		const upsert = reactive<Upsert>({
-			width: "1000px",
-			items: [
-				{
-					prop: "name",
-					label: "名称",
-					span: 24,
-					component: {
-						name: "el-input",
-						props: {
-							placeholder: "名称"
-						}
-					},
-				},
-				{
-					prop: "content",
-					label: "内容",
-					component: {
-						name: "slot-content"
-					}
-				}
-			]
-		});
-
-		// crud 加载
-		function onLoad({ ctx, app }: CrudLoad) {
-			ctx.service(service.system.assets).done();
-			app.refresh();
-		}
-
-		// 切换编辑器
-		function changeTab(i: number) {
-			ElMessageBox.confirm("切换编辑器会清空输入内容，是否继续？", "提示", {
-				type: "warning"
-			})
-				.then(() => {
-					tab.index = i;
-					refs.value.upsert.setForm("data", "");
-				})
-				.catch(() => null);
-		}
-
-		// 监听打开
-		function onUpsertOpen(isEdit: boolean, data: any) {
-			tab.index = null;
-
-			nextTick(() => {
-				if (isEdit) {
-					tab.index = /<*>/g.test(data.data) ? 1 : 0;
-				} else {
-					tab.index = 1;
-				}
-			});
-		}
-
 		return {
+			service,
 			refs,
-			tab,
-			table,
-			upsert,
 			setRefs,
-			onLoad,
-			changeTab,
-			onUpsertOpen
 		};
 	}
 });
 </script>
 
 <style lang="scss" scoped>
-.change-btn {
+.system-user {
+.pane {
 	display: flex;
-	position: absolute;
-	right: 10px;
-	bottom: 10px;
-	z-index: 9;
+	height: 100%;
+	width: 100%;
+	position: relative;
+}
+
+.dir {
+	height: 100%;
+	width: 250px;
+	max-width: calc(100% - 50px);
+	background-color: #fff;
+	transition: width 0.3s;
+	margin-right: 10px;
+	flex-shrink: 0;
+
+	&._collapse {
+	  margin-right: 0;
+	  width: 0;
+  	}
 }
 
 .editor {
-	transition: all 0.3s;
+	width: calc(100% - 260px);
+	flex: 1;
+	background-color: #fff;
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 40px;
+	position: relative;
+	background-color: #fff;
+
+span {
+	font-size: 14px;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.icon {
+	position: absolute;
+	left: 0;
+	top: 0;
+	font-size: 18px;
+	cursor: pointer;
+	background-color: #fff;
+	height: 40px;
+	width: 80px;
+	line-height: 40px;
+	padding-left: 10px;
+}
+}
+}
+
+.dept,
+.user {
+	overflow: hidden;
+
+.container {
+	height: calc(100% - 40px);
+}
+}
+
+@media only screen and (max-width: 768px) {
+	.dept {
+		width: calc(100% - 100px);
+	}
+}
 }
 </style>

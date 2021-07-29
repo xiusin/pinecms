@@ -89,7 +89,8 @@ func InitDB() {
 		&tables.Department{},
 		&tables.Position{},
 		&tables.District{},
-		&tables.Plugin{})
+		&tables.Plugin{},
+		&tables.Tags{})
 	if err != nil {
 		pine.Logger().Error("同步表结构失败", err)
 	}
@@ -139,6 +140,7 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.PositionController), "/position").
 		Handle(new(backend.StatController), "/stat").
 		Handle(new(backend.PluginController), "/plugin").
+		Handle(new(backend.TagsController), "/tags").
 		Handle(new(backend.LoginController)).
 		Handle(new(backend.IndexController)).
 		Handle(new(backend.ContentController)).

@@ -23,6 +23,7 @@ import SysAdSpace from "./system/ad_space";
 import SysDepartment from "./system/department";
 import SysPosition from "./system/position";
 import SysStat from "./system/stat";
+import SysTags from "./system/tags";
 
 export default {
 	common: new Common(),
@@ -49,7 +50,8 @@ export default {
 		document: new SysDocument(),
 		department: new SysDepartment(),
 		position: new SysPosition(),
-		stat: new SysStat()
+		stat: new SysStat(),
+		tags: new SysTags()
 	},
 	plugin: {
 		info: new PluginInfo()

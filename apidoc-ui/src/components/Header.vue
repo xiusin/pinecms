@@ -125,11 +125,11 @@
 </template>
 
 <script>
-import { Select, Tooltip, Button, Icon } from "ant-design-vue";
+import {Button, Icon, Select, Tooltip} from "ant-design-vue";
 import GlobalParamsModal from "./globalParamsModal";
 import AppSelect from "./AppSelect";
-import { ls } from "@/utils/cache";
-import { getUrlQuery } from "@/utils/utils";
+import {ls} from "@/utils/cache";
+import {getUrlQuery} from "@/utils/utils";
 
 export default {
   components: {
@@ -229,8 +229,7 @@ export default {
       // config.HOST = v;
 
       const pathname = window.location.pathname ? window.location.pathname : "";
-      const url = pathname + "?host=" + v;
-      window.location.href = url;
+      window.location.href = pathname + "?host=" + v;
     }
   }
 };
