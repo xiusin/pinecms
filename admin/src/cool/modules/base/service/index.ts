@@ -24,6 +24,8 @@ import SysDepartment from "./system/department";
 import SysPosition from "./system/position";
 import SysStat from "./system/stat";
 import SysTags from "./system/tags";
+import SysMember from "./system/member";
+import SysMemberGroup from "./system/member_group";
 
 export default {
 	common: new Common(),
@@ -51,7 +53,9 @@ export default {
 		department: new SysDepartment(),
 		position: new SysPosition(),
 		stat: new SysStat(),
-		tags: new SysTags()
+		tags: new SysTags(),
+		member: new SysMember(),
+		memberGroup: new SysMemberGroup()
 	},
 	plugin: {
 		info: new PluginInfo()

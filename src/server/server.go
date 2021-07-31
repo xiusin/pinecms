@@ -86,6 +86,8 @@ func InitDB() {
 		&tables.Dict{},
 		&tables.DictCategory{},
 		&tables.AdminRole{},
+		&tables.Member{},
+		&tables.MemberGroup{},
 		&tables.Department{},
 		&tables.Position{},
 		&tables.District{},
@@ -141,6 +143,8 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.StatController), "/stat").
 		Handle(new(backend.PluginController), "/plugin").
 		Handle(new(backend.TagsController), "/tags").
+		Handle(new(backend.MemberController), "/member").
+		Handle(new(backend.MemberGroupController), "/member/group").
 		Handle(new(backend.LoginController)).
 		Handle(new(backend.IndexController)).
 		Handle(new(backend.ContentController)).

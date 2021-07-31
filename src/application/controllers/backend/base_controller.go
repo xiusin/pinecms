@@ -233,7 +233,10 @@ func (c *BaseController) PostAdd() {
 }
 
 func (c *BaseController) add() bool {
-	result, _ := c.Orm.InsertOne(c.Table)
+	result, err := c.Orm.InsertOne(c.Table)
+	if err != nil {
+		pine.Logger().Error("新增记录失败", err)
+	}
 	return result > 0
 }
 

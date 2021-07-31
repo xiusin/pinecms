@@ -63,18 +63,7 @@ func (c *AssetsManagerController) getTempList(dir string) []map[string]interface
 
 func (c *AssetsManagerController) PostList() {
 	themeDir := filepath.Join(c.conf.View.FeDirname, c.conf.View.Theme)
-	var p listParam
-	_ = parseParam(c.Ctx(), &p)
-	files := c.getTempList(themeDir)
-	helper.Ajax(pine.H{
-		"list": files,
-		"pagination": pine.H{
-			"page":  p.Page,
-			"size":  p.Size,
-			"total": len(files),
-		},
-	}, 0, c.Ctx())
-
+	helper.Ajax(dirTree(themeDir), 0, c.Ctx())
 }
 
 func (c *AssetsManagerController) PostEdit() {
@@ -157,12 +146,11 @@ func (c *AssetsManagerController) PostTheme(cache cache.AbstractCache) {
 }
 
 func (c *AssetsManagerController) GetInfo() {
-	name := c.Ctx().GetString("id")
-	if name == "" {
+	fullPath := c.Ctx().GetString("path")
+	if fullPath == "" {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	fullPath := filepath.Join(c.conf.View.FeDirname, c.conf.View.Theme, name)
 	f, err := os.Open(fullPath)
 	if err != nil {
 		helper.Ajax(err, 1, c.Ctx())
@@ -176,13 +164,7 @@ func (c *AssetsManagerController) GetInfo() {
 		helper.Ajax("读取模板错误: "+err.Error(), 1, c.Ctx())
 		return
 	}
-	helper.Ajax(map[string]interface{}{
-		"id":      name,
-		"name":    name,
-		"size":    stat.Size(),
-		"updated": stat.ModTime().In(helper.GetLocation()).Format(helper.TimeFormat),
-		"content": string(content),
-	}, 0, c.Ctx())
+	helper.Ajax(string(content), 0, c.Ctx())
 }
 
 func (c *AssetsManagerController) PostAdd(orm *xorm.Engine) {
@@ -214,4 +196,39 @@ func (c *AssetsManagerController) GetThumb() {
 	dirName := filepath.Join(c.conf.View.FeDirname, themeName, "thumb.png")
 	c.Ctx().SetContentType("img/png")
 	c.Ctx().SendFile(dirName)
+}
+
+type DirInfo struct {
+	Label    string      `json:"label"`
+	FullPath string      `json:"full_path"`
+	IsDir    bool        `json:"is_dir"`
+	Children interface{} `json:"children"`
+}
+
+func dirTree(dir string) []DirInfo {
+	fileInfos, _ := ioutil.ReadDir(dir)
+	var ms []DirInfo
+	for _, f := range fileInfos {
+		fullPath := filepath.Join(dir, f.Name())
+		if f.IsDir() {
+			s := DirInfo{
+				Label:    f.Name(),
+				IsDir:    true,
+				FullPath: fullPath,
+				Children: dirTree(fullPath),
+			}
+			ms = append(ms, s)
+		} else {
+			ext := strings.ToLower(filepath.Ext(f.Name()))
+			if ext != ".css" && ext != ".js" && ext != ".jet" && ext != ".html" && ext != ".htm" {
+				continue
+			}
+			ms = append(ms, DirInfo{
+				Label:    f.Name(),
+				FullPath: fullPath,
+				Children: "",
+			})
+		}
+	}
+	return ms
 }
