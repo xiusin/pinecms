@@ -5,10 +5,8 @@ class SysDocument extends BaseService {
 	select(params: any) {
 		return this.request({
 			url: "/select",
-			method: "POST",
-			data: {
-				...params
-			}
+			method: "GET",
+			params
 		});
 	}
 }

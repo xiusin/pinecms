@@ -26,6 +26,8 @@ import SysStat from "./system/stat";
 import SysTags from "./system/tags";
 import SysMember from "./system/member";
 import SysMemberGroup from "./system/member_group";
+import SysTable from "./system/table";
+import SysContent from "./system/content";
 
 export default {
 	common: new Common(),
@@ -55,7 +57,9 @@ export default {
 		stat: new SysStat(),
 		tags: new SysTags(),
 		member: new SysMember(),
-		memberGroup: new SysMemberGroup()
+		memberGroup: new SysMemberGroup(),
+		table: new SysTable(),
+		content: new SysContent()
 	},
 	plugin: {
 		info: new PluginInfo()

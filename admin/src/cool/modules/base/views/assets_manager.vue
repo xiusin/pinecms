@@ -8,13 +8,23 @@
 					<el-button size="mini" type="success" @click="save"> 保存 </el-button>
 				</el-row>
 				<div class="container">
-					<el-tree :data="data" :props="{ children: 'children', label: 'label' }" @node-click="handleNodeClick"></el-tree>
+					<el-tree
+						:data="data"
+						:props="{ children: 'children', label: 'label' }"
+						@node-click="handleNodeClick"
+					/>
 				</div>
 			</div>
 
 			<div class="editor">
 				<div class="container">
-					<component is="cl-codemirror" class="htmleditor" :modelValue="modelValue" mode="htmlmixed" height="700px" />
+					<component
+						is="cl-codemirror"
+						class="htmleditor"
+						:modelValue="modelValue"
+						mode="htmlmixed"
+						height="700px"
+					/>
 				</div>
 			</div>
 		</div>
@@ -37,17 +47,17 @@ export default defineComponent({
 		const formRef = ref();
 
 		function reload() {
-			service.system.assets.list().then((list) => {
-				data.value = list
-			})
+			service.system.assets.list().then((list: never[]) => {
+				data.value = list;
+			});
 		}
 
 		reload();
 
 		function handleNodeClick(data: any) {
-			service.system.assets.info({"path": data.full_path}).then((data) => {
-				modelValue.value = data
-			})
+			service.system.assets.info({ path: data.full_path }).then((data: string) => {
+				modelValue.value = data;
+			});
 		}
 
 		function addDir() {
@@ -82,23 +92,18 @@ export default defineComponent({
 					}
 				],
 				on: {
-					submit(data, { done }) {
+					submit(data: any, { done }: any) {
 						console.log(data);
-						reload()
+						reload();
 						done();
 					}
 				}
 			});
 		}
 
-		function addAsset() {
+		function addAsset() {}
 
-		}
-
-		function save() {
-
-		}
-
+		function save() {}
 
 		return {
 			service,
@@ -118,75 +123,75 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .system-user {
-.pane {
-	display: flex;
-	height: 100%;
-	width: 100%;
-	position: relative;
-}
-
-.dir {
-	height: 100%;
-	width: 250px;
-	max-width: calc(100% - 50px);
-	background-color: #fff;
-	transition: width 0.3s;
-	margin-right: 10px;
-	flex-shrink: 0;
-
-	&._collapse {
-	  margin-right: 0;
-	  width: 0;
-  	}
-}
-
-.editor {
-	width: calc(100% - 260px);
-	flex: 1;
-	background-color: #fff;
-
-.header {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 40px;
-	position: relative;
-	background-color: #fff;
-
-span {
-	font-size: 14px;
-	white-space: nowrap;
-	overflow: hidden;
-}
-
-.icon {
-	position: absolute;
-	left: 0;
-	top: 0;
-	font-size: 18px;
-	cursor: pointer;
-	background-color: #fff;
-	height: 40px;
-	width: 80px;
-	line-height: 40px;
-	padding-left: 10px;
-}
-}
-}
-
-.dept,
-.user {
-	overflow: hidden;
-
-.container {
-	height: calc(100% - 40px);
-}
-}
-
-@media only screen and (max-width: 768px) {
-	.dept {
-		width: calc(100% - 100px);
+	.pane {
+		display: flex;
+		height: 100%;
+		width: 100%;
+		position: relative;
 	}
-}
+
+	.dir {
+		height: 100%;
+		width: 250px;
+		max-width: calc(100% - 50px);
+		background-color: #fff;
+		transition: width 0.3s;
+		margin-right: 10px;
+		flex-shrink: 0;
+
+		&._collapse {
+			margin-right: 0;
+			width: 0;
+		}
+	}
+
+	.editor {
+		width: calc(100% - 260px);
+		flex: 1;
+		background-color: #fff;
+
+		.header {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 40px;
+			position: relative;
+			background-color: #fff;
+
+			span {
+				font-size: 14px;
+				white-space: nowrap;
+				overflow: hidden;
+			}
+
+			.icon {
+				position: absolute;
+				left: 0;
+				top: 0;
+				font-size: 18px;
+				cursor: pointer;
+				background-color: #fff;
+				height: 40px;
+				width: 80px;
+				line-height: 40px;
+				padding-left: 10px;
+			}
+		}
+	}
+
+	.dept,
+	.user {
+		overflow: hidden;
+
+		.container {
+			height: calc(100% - 40px);
+		}
+	}
+
+	@media only screen and (max-width: 768px) {
+		.dept {
+			width: calc(100% - 100px);
+		}
+	}
 }
 </style>

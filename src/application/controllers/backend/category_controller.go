@@ -6,6 +6,7 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"regexp"
 )
 
@@ -17,14 +18,13 @@ type CategoryController struct {
 func (c *CategoryController) Construct() {
 	c.Table = &tables.Category{}
 	c.Entries = &[]*tables.Category{}
-	c.AppId = "admin"
 	c.Group = "内容管理"
 	c.SubGroup = "分类管理"
 	c.ApiEntityName = "分类"
-	c.BaseController.Construct()
 	c.OpBefore = c.before
 	c.sql = "SELECT COUNT(*) total FROM `%s` WHERE id=? and deleted_time IS NULL"
 	c.TableStructKey = "Catid"
+	c.BaseController.Construct()
 }
 
 func (c *CategoryController) before(act int, params interface{}) error {
@@ -81,4 +81,17 @@ func (c *CategoryController) before(act int, params interface{}) error {
 		}
 	}
 	return nil
+}
+
+func (c *CategoryController) GetSelect() {
+	_ = c.Orm.OrderBy("listorder").Find(c.Entries)
+	m := c.Entries.(*[]*tables.Category)
+	var kv []tables.KV
+	for _, model := range *m {
+		kv = append(kv, tables.KV{
+			Label: model.Catname,
+			Value: model.Catid,
+		})
+	}
+	helper.Ajax(kv, 0, c.Ctx())
 }

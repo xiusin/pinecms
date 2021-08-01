@@ -84,6 +84,7 @@ func InitDB() {
 
 	err := XOrmEngine.Sync2(
 		&tables.Dict{},
+		&tables.DocumentModelDsl{},
 		&tables.DictCategory{},
 		&tables.AdminRole{},
 		&tables.Member{},
@@ -145,9 +146,10 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.TagsController), "/tags").
 		Handle(new(backend.MemberController), "/member").
 		Handle(new(backend.MemberGroupController), "/member/group").
+		Handle(new(backend.TableController), "/table").
+		Handle(new(backend.ContentController), "/content").
 		Handle(new(backend.LoginController)).
 		Handle(new(backend.IndexController)).
-		Handle(new(backend.ContentController)).
 		Handle(new(backend.DatabaseController))
 
 	app.Group("/v2/public").Handle(new(backend.PublicController))

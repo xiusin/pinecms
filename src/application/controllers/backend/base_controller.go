@@ -141,22 +141,22 @@ func (c *BaseController) PostList() {
 				helper.Ajax("获取列表异常: "+err.Error(), 1, c.Ctx())
 			}
 		}
-		if p.Size == 0 {
-			//if p.Export {
-			//	c.export()
-			//} else {
-			//	helper.Ajax(c.Entries, 0, c.Ctx())
-			//}
-		} else {
-			helper.Ajax(pine.H{
-				"list": c.Entries,
-				"pagination": pine.H{
-					"page":  p.Page,
-					"size":  p.Size,
-					"total": count,
-				},
-			}, 0, c.Ctx())
-		}
+		//if p.Size == 0 {
+		//	//if p.Export {
+		//	//	c.export()
+		//	//} else {
+		//	//	helper.Ajax(c.Entries, 0, c.Ctx())
+		//	//}
+		//} else {
+		helper.Ajax(pine.H{
+			"list": c.Entries,
+			"pagination": pine.H{
+				"page":  p.Page,
+				"size":  p.Size,
+				"total": count,
+			},
+		}, 0, c.Ctx())
+		//}
 	}
 }
 
@@ -211,6 +211,7 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 			query.Asc(c.p.OrderField)
 		}
 	}
+
 	return &c.p, nil
 }
 
@@ -366,4 +367,3 @@ func (c *BaseController) setApiEntity() {
 	}
 	apidoc.SetApiEntity(c.Ctx(), &apiEntity)
 }
-

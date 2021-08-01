@@ -111,6 +111,11 @@ export default defineComponent({
 					minWidth: 150
 				},
 				{
+					prop: "clicks",
+					label: "点击数",
+					minWidth: 150
+				},
+				{
 					prop: "status",
 					label: "状态",
 					minWidth: 50,

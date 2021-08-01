@@ -2,8 +2,11 @@
 	<cl-crud @load="onLoad">
 		<el-row>
 			<cl-table v-bind="table">
-				<template #slot-model-define="{ scope }">
-					<el-button @click="modelDef(scope.row)" type="text" size="mini">定义模型</el-button>
+				<template #slot-btns="{ scope }">
+					<el-button @click="getSQL(scope.row.id)" type="text" size="mini">SQL</el-button>
+					<el-button @click="modelDef(scope.row.id)" type="text" size="mini"
+						>表字段</el-button
+					>
 				</template>
 			</cl-table>
 		</el-row>
@@ -14,6 +17,10 @@
 		<cl-upsert v-bind="upsert" />
 	</cl-crud>
 
+	<cl-dialog v-model="visible" title="对话">
+		<component is="cl-codemirror" :modelValue="sql" mode="sql" height="700px" />
+	</cl-dialog>
+
 	<!-- 表单 -->
 	<cl-form :ref="setRefs('form')" />
 </template>
@@ -22,7 +29,7 @@
 import { defineComponent, inject, reactive, ref } from "vue";
 import { useRefs } from "/@/core";
 import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
-import {ElMessage} from "element-plus";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
 	name: "sys-model",
@@ -30,13 +37,13 @@ export default defineComponent({
 	setup() {
 		const service = inject<any>("service");
 		const { refs, setRefs } = useRefs();
-
 		const models = ref([]);
-
+		const router = useRouter();
 		service.system.assets.select().then((data: any[]) => {
 			models.value?.push(...data);
 		});
 
+		const visible = ref(false);
 		// 表格配置
 		const table = reactive<Table>({
 			columns: [
@@ -89,8 +96,8 @@ export default defineComponent({
 				{
 					label: "操作",
 					type: "op",
-					width: 180,
-					buttons: ["slot-model-define", "edit", "delete"]
+					width: 200,
+					buttons: ["slot-btns", "edit", "delete"]
 				}
 			]
 		});
@@ -184,14 +191,16 @@ export default defineComponent({
 			app.refresh();
 		}
 		// 打开配置
-		async function modelDef() {
-			refs.value.form.open({
-				title: `配置`,
-				on: {
-					submit: (data: any, { close, done }: any) => {
+		function modelDef(id: any) {
+			router.push("/sys/table/fields?mid=" + id);
+		}
 
-					}
-				}
+		const sql = ref<string>("");
+
+		function getSQL(mid: any) {
+			service.system.model.getSQL({ mid: mid }).then((data: any) => {
+				sql.value = data;
+				visible.value = true;
 			});
 		}
 
@@ -199,9 +208,12 @@ export default defineComponent({
 			refs,
 			table,
 			upsert,
+			getSQL,
 			modelDef,
 			setRefs,
-			onLoad
+			onLoad,
+			visible,
+			sql
 		};
 	}
 });

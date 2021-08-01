@@ -77,4 +77,4 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - hook方式支持插件钩子注入信息
 - 文章标签
 - https://my.oschina.net/u/4532842/blog/5122562?_from=gitee_rec
-- http://demo4.xunruicms.com/admin.php?time=1627481316
+- http://beta.kuafucloud.com/#/login?redirect=%2Fdashboard

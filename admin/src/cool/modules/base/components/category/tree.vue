@@ -68,20 +68,6 @@ export default defineComponent({
 			emit("update:modelValue", id);
 		}
 
-		// 刷新列表
-		function refresh() {
-			service.system.category.list().then((res: any) => {
-				const _list = res.filter((e: any) => e.type != 2);
-
-				_list.unshift({
-					name: "一级菜单",
-					id: null
-				});
-
-				list.value = _list;
-			});
-		}
-
 		// 过滤节点
 		function filterNode(value: string, data: any) {
 			if (!value) return true;
@@ -102,8 +88,14 @@ export default defineComponent({
 			treeRef.value.filter(val);
 		});
 
-		onMounted(function () {
-			refresh();
+		onMounted(async function () {
+			const ret = await service.system.category.list();
+			const _list = ret.list.filter((e: any) => e.type != 2);
+			_list.unshift({
+				name: "一级栏目",
+				id: null
+			});
+			list.value = _list;
 		});
 
 		return {
@@ -113,7 +105,6 @@ export default defineComponent({
 			treeRef,
 			name,
 			treeList,
-			refresh,
 			filterNode,
 			onCurrentChange
 		};

@@ -30,11 +30,6 @@ func (c *DictController) Construct() {
 
 func (c *DictController) before(act int, param interface{}) error {
 	switch act {
-	case OpList:
-		cid, _ := param.(*listParam).Params["cid"]
-		if uint(cid.(float64)) < 1 {
-			return errors.New("必须选择字典分类")
-		}
 	case OpAdd, OpEdit:
 		p := param.(*tables.Dict)
 		id, cid, name := p.Id, p.Cid, p.Name

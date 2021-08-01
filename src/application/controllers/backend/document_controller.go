@@ -1,13 +1,50 @@
 package backend
 
+import "C"
 import (
 	"errors"
+	"fmt"
+	"github.com/go-xorm/xorm"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"regexp"
+	"strings"
 )
 
 type DocumentController struct {
+	sqlFieldTypeMap map[string]string
+	extraFields     []map[string]string
 	BaseController
+}
+
+type table struct {
+	Columns []column    `json:"columns"`
+	Props   interface{} `json:"props"`
+}
+
+type column struct {
+	Prop  string     `json:"prop"`
+	Label string     `json:"label"`
+	Width uint       `json:"width"`
+	Dict  []dictItem `json:"dict"`
+	//Hidden              interface{} `json:"hidden"`
+	//Component           interface{} `json:"component"`
+	Sortable bool `json:"sortable"`
+	//SortMethod          interface{} `json:"sortMethod"`
+	//SortBy              interface{} `json:"sortBy"`
+	ShowOverflowTooltip bool `json:"showOverflowTooltip"`
+	//Formatter           interface{} `json:"formatter"`
+	//ColumnKey           string      `json:"columnKey"`
+	//ClassName           string      `json:"className"`
+	//Index               interface{} `json:"index"`
+}
+
+type dictItem struct {
+	Label string      `json:"label"`
+	Value interface{} `json:"value"`
+	Type  string      `json:"type"`
 }
 
 func (c *DocumentController) Construct() {
@@ -23,6 +60,52 @@ func (c *DocumentController) Construct() {
 	c.Table = &tables.DocumentModel{}
 	c.Entries = &[]*tables.DocumentModel{}
 	c.ApiEntityName = "模型"
+	c.sqlFieldTypeMap = map[string]string{
+		"varchar": "varchar(100)",
+		"int":     "int(10)",
+	}
+	c.extraFields = []map[string]string{
+		{
+			"COLUMN_NAME":    "catid",
+			"EXTRA":          "",
+			"COLUMN_TYPE":    "int",
+			"IS_NULLABLE":    "NO",
+			"COLUMN_COMMENT": "所属栏目ID",
+			"COLUMN_DEFAULT": "0",
+		},
+		{
+			"COLUMN_NAME":    "mid",
+			"EXTRA":          "",
+			"COLUMN_TYPE":    "int",
+			"IS_NULLABLE":    "NO",
+			"COLUMN_COMMENT": "模型ID",
+			"COLUMN_DEFAULT": "0",
+		},
+		{
+			"COLUMN_NAME":    "created_time",
+			"EXTRA":          "",
+			"COLUMN_TYPE":    "datetime",
+			"IS_NULLABLE":    "YES",
+			"COLUMN_COMMENT": "",
+			"COLUMN_DEFAULT": "",
+		},
+		{
+			"COLUMN_NAME":    "updated_time",
+			"EXTRA":          "",
+			"COLUMN_TYPE":    "datetime",
+			"IS_NULLABLE":    "YES",
+			"COLUMN_COMMENT": "",
+			"COLUMN_DEFAULT": "",
+		},
+		{
+			"COLUMN_NAME":    "deleted_time",
+			"EXTRA":          "",
+			"COLUMN_TYPE":    "datetime",
+			"IS_NULLABLE":    "YES",
+			"COLUMN_COMMENT": "",
+			"COLUMN_DEFAULT": "",
+		},
+	}
 
 	c.OpBefore = c.before
 	c.BaseController.Construct()
@@ -41,15 +124,162 @@ func (c *DocumentController) before(act int, params interface{}) error {
 	return nil
 }
 
-func (c *DocumentController) PostSelect() {
+func (c *DocumentController) GetSelect() {
 	_ = c.Orm.Find(c.Entries)
-	models := c.Entries.(*[]*tables.DocumentModel)
+	m := c.Entries.(*[]*tables.DocumentModel)
 	var kv []tables.KV
-	for _, model := range *models {
+	for _, model := range *m {
 		kv = append(kv, tables.KV{
 			Label: model.Name,
 			Value: model.Id,
 		})
 	}
 	helper.Ajax(kv, 0, c.Ctx())
+}
+
+func (c *DocumentController) GetSql(orm *xorm.Engine) {
+	modelID, _ := c.Ctx().GetInt64("mid")
+	model := models.NewDocumentModel()
+	dm := model.GetByID(modelID)
+	if dm == nil {
+		helper.Ajax("模型不存在", 1, c.Ctx())
+		return
+	}
+	dm.Execed = 0
+	// 如果已经执行过SQL 直接返回一个错误
+	if dm.Execed == 1 {
+		helper.Ajax("没有任何改动可以执行", 1, c.Ctx())
+		return
+	}
+	//由于执行与SQL显示在同一个控制器内, 所以通过exec区分一下
+	exec, _ := c.Ctx().GetBool("exec")
+	// 模型字段
+	fields := models.NewDocumentFieldDslModel().GetList(modelID)
+	// 关联数据
+	fieldTypes := models.NewDocumentModelFieldModel().GetMap()
+	preg, _ := regexp.Compile("/(.+?)\\?")
+	tableSchema := strings.TrimLeft(preg.FindString(orm.DataSourceName()), "/")
+	tableSchema = strings.TrimRight(tableSchema, "?")
+
+	var existsFields []map[string]string
+	var fieldStrs []string
+	querySQL := ""
+	tableName := controllers.GetTableName(dm.Table)
+	if ok, _ := orm.IsTableExist(tableName); ok {
+		querySQL = "ALTER TABLE `" + tableName + "` "
+		existsFields, _ = orm.QueryString("select * from information_schema.columns where TABLE_NAME='" + tableName + "' and  table_schema = '" + tableSchema + "'")
+		for _, field := range fields {
+			var exists bool
+			for _, existsField := range existsFields {
+				if field.TableField == existsField["COLUMN_NAME"] {
+					exists = true
+					break
+				}
+			}
+			if !exists {
+				colType, ok := c.sqlFieldTypeMap[fieldTypes[field.FieldType].Type]
+				if !ok {
+					colType = fieldTypes[field.FieldType].Type
+				}
+				fieldStrs = append(fieldStrs, fmt.Sprintf("\tADD `%s` %s %s %s %s %s", field.TableField, colType, "", "", "", `COMMENT "`+field.FormName+`"`))
+			}
+		}
+		if len(fieldStrs) > 0 {
+			querySQL += "\n" + regexp.MustCompile(" +").ReplaceAllString(strings.Join(fieldStrs, ",\n"), " ")
+		} else {
+			querySQL = ""
+		}
+	} else {
+		existsFields = append(existsFields, c.extraFields...)
+		querySQL += "CREATE TABLE `" + tableName + "` ( \n"
+		querySQL += fmt.Sprintf("\t`%s` %s %s %s %s %s,\n", "id", "int", "NOT NULL", "", "auto_increment", `COMMENT "ID自增字段"`)
+
+		for _, field := range fields {
+			colType, ok := c.sqlFieldTypeMap[fieldTypes[field.FieldType].Type]
+			if !ok {
+				colType = fieldTypes[field.FieldType].Type
+			}
+			querySQL += fmt.Sprintf("\t`%s` %s %s %s %s %s,\n", field.TableField, strings.ToUpper(colType), "", "", "", `COMMENT "`+field.FormName+`"`)
+		}
+		for _, f := range existsFields {
+			var notNull = ""
+			if f["IS_NULLABLE"] == "NO" {
+				notNull = "NOT NULL"
+			}
+			var defaultVal = ""
+			if f["COLUMN_DEFAULT"] != "" {
+				defaultVal = "DEFAULT '" + f["COLUMN_DEFAULT"] + "'"
+			}
+			querySQL += fmt.Sprintf("\t`%s` %s %s %s %s %s,\n", f["COLUMN_NAME"], strings.ToUpper(f["COLUMN_TYPE"]), notNull, defaultVal, f["EXTRA"], `COMMENT "`+f["COLUMN_COMMENT"]+`"`)
+		}
+		querySQL += "\tPRIMARY KEY (`id`) USING BTREE) \nENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT \"" +
+			strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(dm.Remark, "\"", ""), "`", ""), "\n", "\t") + "\";"
+
+	}
+	querySQL = regexp.MustCompile(" +").ReplaceAllString(querySQL, " ")
+	if exec && querySQL != "" {
+		_, err := c.Ctx().Value("orm").(*xorm.Engine).Exec(querySQL)
+		if err != nil {
+			helper.Ajax(err.Error(), 1, c.Ctx())
+			return
+		}
+		ret, _ := orm.ID(modelID).Table(&tables.DocumentModel{}).Update(map[string]interface{}{"execed": 1})
+		if ret > 0 {
+			helper.Ajax("执行SQL成功", 0, c.Ctx())
+			return
+		}
+		helper.Ajax("执行SQL失败", 1, c.Ctx())
+	} else {
+		helper.Ajax(querySQL, 0, c.Ctx())
+	}
+}
+
+func (c *DocumentController) GetTable() {
+	mid, err := c.publicLogic()
+	if err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
+	}
+	var fields []tables.DocumentModelDsl
+	//.Where("status = 1").Where("list_visible = 1")
+	c.Orm.Where("mid = ?", mid).Asc("listorder").Find(&fields)
+	table := table{Props: nil, Columns: []column{}}
+	// 生成JSON
+	for _, field := range fields {
+		column := column{
+			Prop:                field.TableField,
+			Label:               field.FormName,
+			Width:               field.FieldLen,
+			Dict:                nil,
+			Sortable:            field.Sortable,
+			ShowOverflowTooltip: false,
+		}
+		table.Columns = append(table.Columns, column)
+	}
+	// 处理插槽
+
+	// 动态注入函数
+	helper.Ajax(table, 0, c.Ctx())
+}
+
+func (c *DocumentController) GetModelForm() {
+
+}
+
+func (c *DocumentController) publicLogic() (int, error) {
+	mid, _ := c.Ctx().GetInt("mid")
+	if mid < 1 {
+		return 0, errors.New("模型ID错误")
+	}
+
+	var model tables.DocumentModel
+	c.Orm.Where("id = ?", mid).Get(&model)
+	if model.Id == 0 {
+		return 0, errors.New("模型不存在")
+	}
+
+	if model.Enabled == 0 {
+		return 0, errors.New("模型被禁用")
+	}
+	return mid, nil
 }

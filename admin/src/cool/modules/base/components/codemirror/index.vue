@@ -8,11 +8,14 @@
 import { defineComponent, nextTick, onMounted, ref, watch } from "vue";
 import CodeMirror from "codemirror";
 
-import "codemirror/theme/idea.css";
+import "codemirror/theme/midnight.css";
 import "codemirror/lib/codemirror.css";
 import "codemirror/addon/hint/show-hint.css";
 import "codemirror/addon/hint/javascript-hint";
 import "codemirror/mode/javascript/javascript";
+import "codemirror/mode/go/go";
+import "codemirror/mode/css/css";
+import "codemirror/mode/sql/sql";
 import "codemirror/mode/htmlmixed/htmlmixed";
 
 export default defineComponent({
@@ -33,9 +36,9 @@ export default defineComponent({
 
 		let editor: any = null;
 
-		let mode: String | undefined = props.mode
+		let mode: String | undefined = props.mode;
 		if (mode == "") {
-			mode = "htmlmixed"
+			mode = "htmlmixed";
 		}
 
 		// 获取内容
@@ -116,5 +119,4 @@ export default defineComponent({
 	box-sizing: border-box;
 	font-family: monospace;
 }
-
 </style>

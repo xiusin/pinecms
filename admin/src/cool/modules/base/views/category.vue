@@ -15,16 +15,20 @@
 						effect="dark"
 						type="danger"
 						style="margin-left: 10px"
-						>隐藏
+						>隐
 					</el-tag>
 				</template>
 
 				<template #column-url="{ scope }">
 					<el-button size="mini" round>
-						<el-link :underline="false" :href="scope.row.url" target="_blank" icon="el-icon-share"></el-link>
+						<el-link
+							:underline="false"
+							:href="scope.row.url"
+							target="_blank"
+							icon="el-icon-share"
+						/>
 					</el-button>
 				</template>
-
 			</cl-table>
 		</el-row>
 
@@ -43,32 +47,32 @@ import { useRefs } from "/@/core";
 import { deepTree } from "/@/core/utils";
 import { defineComponent, inject, reactive, ref } from "vue";
 import { CrudLoad, RefreshOp, Table, Upsert } from "cl-admin-crud-vue3/types";
-import IconSvg from "../components/icon-svg/index.vue";
 
 export default defineComponent({
 	name: "sys-category",
-	components: {IconSvg},
 	setup() {
 		const { refs, setRefs } = useRefs();
 		const service = inject<any>("service");
 
-		let models = ref([])
+		let models = ref([]);
 
 		const catType = [
 			{
 				label: "栏目",
-				value: 0
+				value: 0,
+				type: "success"
 			},
 			{
 				label: "单页",
-				value: 1
+				value: 1,
+				type: "warning"
 			},
 			{
 				label: "链接",
-				value: 2
+				value: 2,
+				type: "info"
 			}
 		];
-
 
 		// crud 加载
 		function onLoad({ ctx, app }: CrudLoad) {
@@ -76,14 +80,14 @@ export default defineComponent({
 			app.refresh();
 
 			// 读取模型文档列表
-			service.system.document.select().then((list: any[]) => {
-				models.value.push(...list)
+			service.system.model.select().then((list: any[]) => {
+				models.value.push(...list);
 			});
-
 		}
 
 		function onRefresh(_: any, { render }: RefreshOp) {
-			service.system.category.list().then((list: any[]) => {
+			service.system.category.list().then(({ list }: any) => {
+				console.log("list", list);
 				render(deepTree(list), {
 					total: list.length
 				});
@@ -106,7 +110,11 @@ export default defineComponent({
 		// 表格配置
 		const table = reactive<Table>({
 			props: {
-				"row-key": "id"
+				"row-key": "id",
+				"default-sort": {
+					prop: "listorder",
+					order: "ascending"
+				}
 			},
 			columns: [
 				{
@@ -206,7 +214,7 @@ export default defineComponent({
 						props: {
 							placeholder: "请选择文档模型"
 						},
-						options:models
+						options: models
 					},
 					rules: {
 						required: true,
