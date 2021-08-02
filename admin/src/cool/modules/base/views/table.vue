@@ -271,6 +271,19 @@ export default defineComponent({
 						min: 4
 					}
 				},
+
+				{
+					prop: "component",
+					label: "自定义渲染",
+					span: 24,
+					component: {
+						name: "el-input",
+						type: "textarea",
+						row: 4,
+						placeholder: "自定义渲染, 用于替换默认渲染信息"
+					}
+				},
+
 				{
 					prop: "sortable",
 					label: "允许排序",

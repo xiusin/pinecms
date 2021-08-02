@@ -2,6 +2,7 @@ package backend
 
 import "C"
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/go-xorm/xorm"
@@ -25,11 +26,12 @@ type table struct {
 }
 
 type column struct {
-	Prop  string     `json:"prop"`
-	Label string     `json:"label"`
-	Width uint       `json:"width"`
-	Dict  []dictItem `json:"dict"`
-	Align string     `json:"align"`
+	Prop      string      `json:"prop"`
+	Label     string      `json:"label"`
+	Width     uint        `json:"width"`
+	Dict      []dictItem  `json:"dict"`
+	Align     string      `json:"align"`
+	Component interface{} `json:"component"`
 	//Hidden              interface{} `json:"hidden"`
 	//Component           interface{} `json:"component"`
 	Sortable bool `json:"sortable"`
@@ -257,7 +259,16 @@ func (c *DocumentController) GetTable() {
 			Dict:                nil,
 			Sortable:            field.Sortable,
 			ShowOverflowTooltip: true,
-			Align: "left",
+			Align:               "left",
+		}
+
+		if len(field.Component) > 0 { // 必须是可以解析的参数
+			var component = map[string]interface{}{}
+			if err := json.Unmarshal([]byte(field.Component), &component); err == nil {
+				column.Component = component
+			} else if strings.HasPrefix(field.Component, "{") {
+				column.Component = field.Component // 前端再次处理一次
+			}
 		}
 
 		table.Columns = append(table.Columns, column)

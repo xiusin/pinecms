@@ -7,7 +7,6 @@ type DocumentModelDsl struct {
 	FormName       string     `json:"form_name"  xorm:"comment('表单名称') varchar(50)"`
 	TableField     string     `json:"table_field" xorm:"comment('表字段') varchar(50)"`
 	ListOrder      int64      `xorm:"listorder comment('排序值')" json:"listorder"`
-	Html           string     `json:"html" xorm:"comment('自定义html') text"`
 	Required       bool       `json:"required"  xorm:"comment('是否必填') tinyint(1)"`
 	Datasource     string     `json:"datasource" xorm:"comment('数据源，链接或json') text"`
 	RequiredTips   string     `json:"required_tips"  xorm:"comment('必填字段信息') varchar(100)"`
@@ -15,6 +14,7 @@ type DocumentModelDsl struct {
 	Default        string     `json:"default"  xorm:"comment('默认值') varchar(100)"` //默认值
 	Status         bool       `json:"status" xorm:"comment('状态 0=禁用 1=启用') tinyint(1)"`
 	MainTableField bool       `json:"main_table_field" xorm:"comment('是否为主表字段') tinyint(1)"`
+	Component      string     `json:"component" xorm:"comment('自定义组件配置') text"`
 	Searchable     bool       `json:"searchable" xorm:"comment('是否可搜索') tinyint(1)"`
 	Span           uint       `json:"span" xorm:"comment('表单span宽度') tinyint(3)"`
 	Sortable       bool       `json:"sortable" xorm:"comment('是否可排序') tinyint(1)"`
@@ -125,7 +125,6 @@ type FormItemNumberInput struct {
 
 //FormItemCheckbox 多选框
 type FormItemCheckbox struct {
-
 }
 
 // FormItemRadio 单选框

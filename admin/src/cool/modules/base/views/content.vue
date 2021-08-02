@@ -72,20 +72,36 @@
 					<iframe v-if="catType === 2" src="http://www.baidu.com">
 					</iframe>
 					<template v-else>
-<!--						<cl-form :ref="setRefs('pageFormRef')" :inner="true" showLoading />-->
+						<cl-form inner>
+							<el-form-item label="用户名">
+								<el-input
+									placeholder="请输入用户名"
+									maxlength="20"
+									auto-complete="off"
+								/>
+							</el-form-item>
+
+							<el-form-item label="密码">
+								<el-input
+									type="password"
+									placeholder="请输入密码"
+									maxlength="20"
+									auto-complete="off"
+								/>
+							</el-form-item>
+						</cl-form>
 					</template>
 				</div>
 			</div>
 		</div>
 	</div>
-	<cl-form :ref="setRefs('pageFormRef')" :inner="true" showLoading />
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, onBeforeMount, reactive, ref } from "vue";
+import { computed, defineComponent, inject, onBeforeMount, reactive, ref, watch } from "vue";
 import { useRefs } from "/@/core";
 import { deepTree } from "/@/core/utils";
-import { QueryList, Table, Upsert } from "cl-admin-crud-vue3/types";
+import {FormRef, QueryList, Table, Upsert} from "cl-admin-crud-vue3/types";
 
 export default defineComponent({
 	name: "sys-content",
@@ -102,11 +118,14 @@ export default defineComponent({
 		// el-tree 组件
 		const treeRef = ref<any>({});
 		// 绑定值回调
-		function onCurrentChange({ id, catname, type }: any) {
+		function onCurrentChange({ id, catname, type, model_id }: any) {
 			catId.value = id;
 			catName.value = catname;
 			catType.value = type
-			refresh({ cid: id });
+			if (catType.value == 0) {
+				midRef.value = model_id;
+				refresh({ cid: catId.value });
+			}
 		}
 		// 表格配置
 		const table = ref<Table>();
@@ -115,6 +134,7 @@ export default defineComponent({
 
 		const catId = ref<any>(0);
 		const catType = ref<any>(0);
+		const midRef = ref<any>(0);
 		const catName = ref<string>("");
 		const catKey = ref<string>("");
 
@@ -122,41 +142,13 @@ export default defineComponent({
 			const ret = await service.system.category.list();
 			menuList.value = ret.list.filter((e: any) => e.type != 2);
 			catId.value = menuList.value[0].id
+
 			catName.value = menuList.value[0].catname
 			catType.value = menuList.value[0].type
-			// // 获取模型表结果
-			table.value = await service.system.model.modelTable({ mid: 1 });
-			table.value?.columns.push({
-				label: "操作",
-				type: "op",
-				buttons: ["edit", "delete"]
-			});
-			refs.value.pageFormRef.create({
-				items: [
-					{
-						label: "昵称",
-						prop: "name",
-						component: {
-							name: "el-input",
-
-							attrs: {
-								placeholder: "请填写昵称"
-							}
-						},
-						rules: {
-							required: true,
-							message: "昵称不能为空"
-						}
-					}
-				],
-				on: {
-					submit: (data, { close, done }) => {
-						close();
-					}
-				}
-			});
-			refresh({ cid: catId.value });
-
+			if (catType.value == 0) {
+				midRef.value = menuList.value[0].model_id;
+				refresh({ cid: catId.value });
+			}
 		});
 
 		const list = ref<QueryList[]>([]);
@@ -248,32 +240,6 @@ export default defineComponent({
 		function refresh(params: any) {
 			if (!catType.value) {
 				refs.value.crud.refresh(params);
-			} else {
-				console.log(refs.value.pageFormRef.create)
-				refs.value.pageFormRef.create({
-					items: [
-						{
-							label: "昵称",
-							prop: "name",
-							component: {
-								name: "el-input",
-
-								attrs: {
-									placeholder: "请填写昵称"
-								}
-							},
-							rules: {
-								required: true,
-								message: "昵称不能为空"
-							}
-						}
-					],
-					on: {
-						submit: (data, { close, done }) => {
-							close();
-						}
-					}
-				});
 			}
 		}
 
@@ -281,6 +247,24 @@ export default defineComponent({
 		async function onLoad({ ctx }: any) {
 			ctx.service(service.system.content).done();
 		}
+
+		watch(midRef, (newValue, oldValue)=> {
+			service.system.model.modelTable({ mid: newValue }).then((data: any) => {
+				data.map((item: any) => {
+					item.component = typeof item.component == "string" ? Function("return " + item.component)() : item.component;
+					return item;
+				})
+				table.value = data
+				table.value?.columns.push({
+					label: "操作",
+					type: "op",
+					buttons: ["edit", "delete"]
+				});
+			}).catch(() => {
+				console.error(arguments)
+			})
+
+		})
 
 		return {
 			service,

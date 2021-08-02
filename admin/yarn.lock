@@ -930,17 +930,17 @@ change-case@^4.1.2:
   optionalDependencies:
     fsevents "~2.3.1"
 
-cl-admin-crud-vue3@^0.1.6:
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/cl-admin-crud-vue3/-/cl-admin-crud-vue3-0.1.6.tgz#65ca232ccae7764f627c71facc6d4ac720ae8c42"
-  integrity sha512-mzl/WyEYeywu5I3J3Noe+X4dhcQ3vKkMOadSTbVAbxJbhEcdg+G7cNm91f3uIdmM5RB8BEA0QNi/pIpMa8Gh/A==
+cl-admin-crud-vue3@^0.5.3:
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/cl-admin-crud-vue3/-/cl-admin-crud-vue3-0.5.3.tgz#3e8cde7a0fd0a9512c74d5ebc53fb54e8575e787"
+  integrity sha512-NSHQnWi3K+qmDFUHxs/E/y3dsCmxxNafBNf/FjJ9iYS9oNu8kLOAl+48iKze8GB+OAgZawiGKbCshIpLL9+eAw==
   dependencies:
     array.prototype.flat "^1.2.4"
     core-js "^3.6.5"
-    element-plus "^1.0.2-beta.40"
+    element-plus "^1.0.2-beta.65"
     merge "^2.1.1"
     mitt "^2.1.0"
-    vue "^3.0.0"
+    vue "3.0.11"
 
 class-utils@^0.3.5:
   version "0.3.6"
@@ -1305,10 +1305,10 @@ electron-to-chromium@^1.3.649:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.701.tgz#5e796ed7ce88cd77bc7bf831cf311ef6b067c389"
   integrity sha512-Zd9ofdIMYHYhG1gvnejQDvC/kqSeXQvtXF0yRURGxgwGqDZm9F9Fm3dYFnm5gyuA7xpXfBlzVLN1sz0FjxpKfw==
 
-element-plus@^1.0.2-beta.40:
-  version "1.0.2-beta.40"
-  resolved "https://registry.npm.taobao.org/element-plus/download/element-plus-1.0.2-beta.40.tgz#30fc9b161496ae587fab86235c80b728ea43d909"
-  integrity sha1-MPybFhSWrlh/q4YjXIC3KOpD2Qk=
+element-plus@^1.0.2-beta.45:
+  version "1.0.2-beta.45"
+  resolved "https://registry.nlark.com/element-plus/download/element-plus-1.0.2-beta.45.tgz#d7d84d284ead4f9de5aa7289b9a2af4b7f109a1e"
+  integrity sha1-19hNKE6tT53lqnKJuaKvS38Qmh4=
   dependencies:
     "@popperjs/core" "^2.4.4"
     "@types/lodash" "^4.14.161"
@@ -1319,13 +1319,12 @@ element-plus@^1.0.2-beta.40:
     normalize-wheel "^1.0.1"
     resize-observer-polyfill "^1.5.1"
 
-element-plus@^1.0.2-beta.45:
-  version "1.0.2-beta.45"
-  resolved "https://registry.nlark.com/element-plus/download/element-plus-1.0.2-beta.45.tgz#d7d84d284ead4f9de5aa7289b9a2af4b7f109a1e"
-  integrity sha1-19hNKE6tT53lqnKJuaKvS38Qmh4=
+element-plus@^1.0.2-beta.65:
+  version "1.0.2-beta.65"
+  resolved "https://registry.yarnpkg.com/element-plus/-/element-plus-1.0.2-beta.65.tgz#e1ff997fe395dd2e31a16517970058bc4d45fb3c"
+  integrity sha512-qQLubUvseYlz5xIatDh4M1wd9mQ3ceEjE/cDtzJ4Y8/63fip96H/JCl39za7wEXiwhqglnu3Ag48MmMbqwgBdw==
   dependencies:
     "@popperjs/core" "^2.4.4"
-    "@types/lodash" "^4.14.161"
     async-validator "^3.4.0"
     dayjs "1.x"
     lodash "^4.17.20"
@@ -3806,7 +3805,7 @@ vue-tsc@^0.0.8:
   dependencies:
     unzipper latest
 
-vue@^3.0.0, vue@^3.0.11:
+vue@3.0.11, vue@^3.0.11:
   version "3.0.11"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.0.11.tgz#c82f9594cbf4dcc869241d4c8dd3e08d9a8f4b5f"
   integrity sha512-3/eUi4InQz8MPzruHYSTQPxtM3LdZ1/S/BvaU021zBnZi0laRUyH6pfuE4wtUeLvI8wmUNwj5wrZFvbHUXL9dw==
