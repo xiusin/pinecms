@@ -40,8 +40,9 @@ func (c TableController) GetFields() {
 
 func (c *TableController) before(act int, params interface{}) error {
 	if OpList == act {
-		if v := c.Input().Get("mid"); v != nil {
-			params.(*xorm.Session).Where("mid = ?", v.String())
+		params.(*xorm.Session).Unscoped().Where("mid <> ?", 0)
+		if v := c.Input().GetInt64("mid"); v != 0 {
+			params.(*xorm.Session).Where("mid = ?", v)
 		}
 	} else if OpAdd == act || OpEdit == act {
 		data := params.(*tables.DocumentModelDsl)

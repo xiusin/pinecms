@@ -24,6 +24,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unsafe"
 
 	"golang.org/x/image/bmp"
 
@@ -506,7 +507,6 @@ func ToInterfaces(values interface{}) []interface{} {
 	return is
 }
 
-
 func InArray(val interface{}, array interface{}) (exists bool, index int) {
 	exists = false
 	index = -1
@@ -525,15 +525,17 @@ func InArray(val interface{}, array interface{}) (exists bool, index int) {
 	return
 }
 
-
 func UcFirst(str string) string {
 	if len(str) < 1 {
 		return ""
 	}
 	strArr := []rune(str)
-	if strArr[0] >= 97 && strArr[0] <= 122  {
+	if strArr[0] >= 97 && strArr[0] <= 122 {
 		strArr[0] -= 32
 	}
 	return string(strArr)
 }
 
+func Bytes2String(b []byte) *string {
+	return (*string)(unsafe.Pointer(&b))
+}

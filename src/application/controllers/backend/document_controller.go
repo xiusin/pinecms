@@ -29,12 +29,13 @@ type column struct {
 	Label string     `json:"label"`
 	Width uint       `json:"width"`
 	Dict  []dictItem `json:"dict"`
+	Align string     `json:"align"`
 	//Hidden              interface{} `json:"hidden"`
 	//Component           interface{} `json:"component"`
 	Sortable bool `json:"sortable"`
 	//SortMethod          interface{} `json:"sortMethod"`
-	//SortBy              interface{} `json:"sortBy"`
-	ShowOverflowTooltip bool `json:"showOverflowTooltip"`
+	SortBy              interface{} `json:"sortBy"`
+	ShowOverflowTooltip bool        `json:"showOverflowTooltip"`
 	//Formatter           interface{} `json:"formatter"`
 	//ColumnKey           string      `json:"columnKey"`
 	//ClassName           string      `json:"className"`
@@ -240,9 +241,12 @@ func (c *DocumentController) GetTable() {
 		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
-	var fields []tables.DocumentModelDsl
-	//.Where("status = 1").Where("list_visible = 1")
-	c.Orm.Where("mid = ?", mid).Asc("listorder").Find(&fields)
+	var fields tables.ModelDslFields
+	//.Where("status = 1")
+	c.Orm.Where("mid = ?", mid).Where("list_visible = 1").Asc("listorder").Find(&fields)
+
+	// 允许搜索字段构建
+
 	table := table{Props: nil, Columns: []column{}}
 	// 生成JSON
 	for _, field := range fields {
@@ -252,8 +256,10 @@ func (c *DocumentController) GetTable() {
 			Width:               field.FieldLen,
 			Dict:                nil,
 			Sortable:            field.Sortable,
-			ShowOverflowTooltip: false,
+			ShowOverflowTooltip: true,
+			Align: "left",
 		}
+
 		table.Columns = append(table.Columns, column)
 	}
 	// 处理插槽

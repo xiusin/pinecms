@@ -18,19 +18,48 @@
 
 			<div class="editor">
 				<div class="container">
-					<cl-crud :ref="setRefs('crud')" @load="onLoad">
+					<cl-crud :ref="setRefs('crud')" @load="onLoad" v-if="!catType">
 						<el-row type="flex">
-							<el-button size="small" v-if="catId > 0"
-								>当前栏目: {{ catName }}({{ catKey }})</el-button
-							>
-							<cl-refresh-btn />
-							<cl-add-btn />
-							<cl-flex1 />
-							<cl-search-key />
+
+								<cl-filter label="状态">
+									<el-select size="mini" >
+										<el-option value="" label="全部"></el-option>
+										<el-option :value="0" label="禁用"></el-option>
+										<el-option :value="1" label="启用"></el-option>
+									</el-select>
+								</cl-filter>
+
+								<cl-filter label="姓名">
+									<el-input placeholder="请输入姓名" clearable size="mini"></el-input>
+								</cl-filter>
+
+							<cl-filter label="日期">
+								<el-date-picker
+									size="mini"
+									type="datetimerange"
+									range-separator="至"
+									start-placeholder="开始日期"
+									end-placeholder="结束日期">
+								</el-date-picker>
+							</cl-filter>
+
+							<cl-filter label="日期">
+
+							</cl-filter>
+								<cl-flex1 />
+								<cl-search-key />
+								<cl-refresh-btn />
+								<cl-add-btn />
 						</el-row>
 
 						<el-row>
-							<cl-table :ref="setRefs('table')" v-bind="table" />
+							<cl-table :ref="setRefs('table')" v-bind="table" :props="{
+								height: '700px',
+								fit: true,
+								'highlight-current-row': true,
+								stripe: true,
+								'max-height': 900,
+								}" :autoHeight="false" />
 						</el-row>
 
 						<el-row type="flex">
@@ -40,15 +69,20 @@
 
 						<cl-upsert :ref="setRefs('upsert')" :items="upsert.items" />
 					</cl-crud>
+					<iframe v-if="catType === 2" src="http://www.baidu.com">
+					</iframe>
+					<template v-else>
+<!--						<cl-form :ref="setRefs('pageFormRef')" :inner="true" showLoading />-->
+					</template>
 				</div>
 			</div>
 		</div>
 	</div>
-	<cl-form ref="formRef" />
+	<cl-form :ref="setRefs('pageFormRef')" :inner="true" showLoading />
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, onMounted, reactive, ref } from "vue";
+import { computed, defineComponent, inject, onBeforeMount, reactive, ref } from "vue";
 import { useRefs } from "/@/core";
 import { deepTree } from "/@/core/utils";
 import { QueryList, Table, Upsert } from "cl-admin-crud-vue3/types";
@@ -60,7 +94,7 @@ export default defineComponent({
 		const { refs, setRefs } = useRefs();
 		const data = ref([]);
 		const modelValue = ref("");
-		const formRef = ref();
+
 		// 树形列表
 		const menuList = ref<any[]>([]);
 		// 展开值
@@ -68,30 +102,64 @@ export default defineComponent({
 		// el-tree 组件
 		const treeRef = ref<any>({});
 		// 绑定值回调
-		function onCurrentChange({ id, catname }: any) {
+		function onCurrentChange({ id, catname, type }: any) {
 			catId.value = id;
 			catName.value = catname;
+			catType.value = type
 			refresh({ cid: id });
 		}
+		// 表格配置
+		const table = ref<Table>();
 		// 树形列表
 		const treeList = computed(() => deepTree(menuList.value));
 
-		onMounted(async function () {
+		const catId = ref<any>(0);
+		const catType = ref<any>(0);
+		const catName = ref<string>("");
+		const catKey = ref<string>("");
+
+		onBeforeMount(async function () {
 			const ret = await service.system.category.list();
 			menuList.value = ret.list.filter((e: any) => e.type != 2);
-			// 获取模型表结果
+			catId.value = menuList.value[0].id
+			catName.value = menuList.value[0].catname
+			catType.value = menuList.value[0].type
+			// // 获取模型表结果
 			table.value = await service.system.model.modelTable({ mid: 1 });
 			table.value?.columns.push({
 				label: "操作",
 				type: "op",
 				buttons: ["edit", "delete"]
 			});
-		});
-		const list = ref<QueryList[]>([]);
+			refs.value.pageFormRef.create({
+				items: [
+					{
+						label: "昵称",
+						prop: "name",
+						component: {
+							name: "el-input",
 
-		const catId = ref<any>(0);
-		const catName = ref<string>("");
-		const catKey = ref<string>("");
+							attrs: {
+								placeholder: "请填写昵称"
+							}
+						},
+						rules: {
+							required: true,
+							message: "昵称不能为空"
+						}
+					}
+				],
+				on: {
+					submit: (data, { close, done }) => {
+						close();
+					}
+				}
+			});
+			refresh({ cid: catId.value });
+
+		});
+
+		const list = ref<QueryList[]>([]);
 
 		const upsert = reactive<Upsert>({
 			items: [
@@ -178,15 +246,42 @@ export default defineComponent({
 
 		// 刷新列表
 		function refresh(params: any) {
-			refs.value.crud.refresh(params);
+			if (!catType.value) {
+				refs.value.crud.refresh(params);
+			} else {
+				console.log(refs.value.pageFormRef.create)
+				refs.value.pageFormRef.create({
+					items: [
+						{
+							label: "昵称",
+							prop: "name",
+							component: {
+								name: "el-input",
+
+								attrs: {
+									placeholder: "请填写昵称"
+								}
+							},
+							rules: {
+								required: true,
+								message: "昵称不能为空"
+							}
+						}
+					],
+					on: {
+						submit: (data, { close, done }) => {
+							close();
+						}
+					}
+				});
+			}
 		}
 
-		// 表格配置
-		const table = ref<Table>();
 		// crud 加载
 		async function onLoad({ ctx }: any) {
 			ctx.service(service.system.content).done();
 		}
+
 		return {
 			service,
 			data,
@@ -202,13 +297,13 @@ export default defineComponent({
 			catName,
 			catKey,
 			catId,
-			formRef,
 			treeList,
 			refresh,
 			treeRef,
+			catType,
 			onCurrentChange
 		};
-	}
+	},
 });
 </script>
 

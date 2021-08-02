@@ -85,6 +85,7 @@ func InitDB() {
 	err := XOrmEngine.Sync2(
 		&tables.Dict{},
 		&tables.DocumentModelDsl{},
+		&tables.DocumentModelField{},
 		&tables.DictCategory{},
 		&tables.AdminRole{},
 		&tables.Member{},

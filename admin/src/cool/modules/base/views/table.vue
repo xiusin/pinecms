@@ -248,7 +248,20 @@ export default defineComponent({
 				{
 					prop: "span",
 					label: "表单宽度",
-					span: 24,
+					span: 12,
+					value: 12,
+					component: {
+						name: "el-slider",
+						step: 4,
+						"show-stops": true,
+						max: 24,
+						min: 4
+					}
+				},
+				{
+					prop: "list_width",
+					label: "列表宽度",
+					span: 12,
 					value: 12,
 					component: {
 						name: "el-slider",
@@ -346,7 +359,7 @@ export default defineComponent({
 		async function onRefresh(params: any, { next, render }: any) {
 			let { list } = await next({
 				...params,
-				mid: route.query.mid
+				mid: parseInt(route.query.mid)
 			});
 			render(list);
 		}
