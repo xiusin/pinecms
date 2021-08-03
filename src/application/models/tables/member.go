@@ -12,8 +12,8 @@ type Member struct {
 	Description string     `json:"description" xorm:"comment('个人简介')"`
 	CreatedAt   LocalTime  `json:"created" xorm:"created"`
 	UpdatedAt   *LocalTime `json:"updated" xorm:"updated"`
-	LoginTime   LocalTime  `json:"login_time" xorm:"datetime"`
-	LoginIp     string     `json:"login_ip" xorm:"varchar(15)"`
+	LoginTime   LocalTime  `json:"login_time" xorm:"datetime comment('最后登录时间')"`
+	LoginIp     string     `json:"login_ip" xorm:"varchar(15) comment('最后登录IP')"`
 	Email       string     `json:"email" xorm:"comment('邮箱') varchar(30)"`
 	Status      uint       `json:"status" xorm:"comment('状态: 0=禁用 1=待验证 2=正常')"`
 	Sex         uint       `json:"sex" xorm:"comment('性别: 0=保密 1=男 2=女') tinyint(3)"`

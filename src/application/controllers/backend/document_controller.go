@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-xorm/xorm"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -26,22 +28,16 @@ type table struct {
 }
 
 type column struct {
-	Prop      string      `json:"prop"`
-	Label     string      `json:"label"`
-	Width     uint        `json:"width"`
-	Dict      []dictItem  `json:"dict"`
-	Align     string      `json:"align"`
-	Component interface{} `json:"component"`
-	//Hidden              interface{} `json:"hidden"`
-	//Component           interface{} `json:"component"`
-	Sortable bool `json:"sortable"`
-	//SortMethod          interface{} `json:"sortMethod"`
-	SortBy              interface{} `json:"sortBy"`
-	ShowOverflowTooltip bool        `json:"showOverflowTooltip"`
-	//Formatter           interface{} `json:"formatter"`
-	//ColumnKey           string      `json:"columnKey"`
-	//ClassName           string      `json:"className"`
-	//Index               interface{} `json:"index"`
+	Prop                string      `json:"prop"`                // 绑定字段
+	Label               string      `json:"label"`               // 显示内容
+	Width               uint        `json:"width"`               // 固定宽度
+	MinWidth            uint        `json:"minWidth"`            // 最小宽度
+	Dict                []dictItem  `json:"dict"`                // 字典, 一般针对下拉数据
+	Align               string      `json:"align"`               // 对齐
+	Component           interface{} `json:"component"`           // 自渲染组件
+	Sortable            bool        `json:"sortable"`            // 可排序
+	SortBy              interface{} `json:"sortBy"`              // 排序字段
+	ShowOverflowTooltip bool        `json:"showOverflowTooltip"` // 溢出自动tooltip
 }
 
 type dictItem struct {
@@ -148,9 +144,9 @@ func (c *DocumentController) GetSql(orm *xorm.Engine) {
 		helper.Ajax("模型不存在", 1, c.Ctx())
 		return
 	}
-	dm.Execed = 0
+	dm.Execed = false
 	// 如果已经执行过SQL 直接返回一个错误
-	if dm.Execed == 1 {
+	if dm.Execed  {
 		helper.Ajax("没有任何改动可以执行", 1, c.Ctx())
 		return
 	}
@@ -237,46 +233,67 @@ func (c *DocumentController) GetSql(orm *xorm.Engine) {
 	}
 }
 
-func (c *DocumentController) GetTable() {
+func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 	mid, err := c.publicLogic()
 	if err != nil {
 		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
-	var fields tables.ModelDslFields
-	//.Where("status = 1")
-	c.Orm.Where("mid = ?", mid).Where("list_visible = 1").Asc("listorder").Find(&fields)
-
-	// 允许搜索字段构建
-
-	table := table{Props: nil, Columns: []column{}}
-	// 生成JSON
-	for _, field := range fields {
-		column := column{
-			Prop:                field.TableField,
-			Label:               field.FormName,
-			Width:               field.FieldLen,
-			Dict:                nil,
-			Sortable:            field.Sortable,
-			ShowOverflowTooltip: true,
-			Align:               "left",
+	data := table{Props: nil, Columns: []column{}}
+	if err := cacher.Remember(fmt.Sprintf(controllers.CacheModelTablePrefix, mid), &data, func() ([]byte, error) {
+		pine.Logger().Print("无缓存, 生成")
+		var fields tables.ModelDslFields
+		if err := c.Orm.Where("mid = ?", mid).Where("list_visible = 1").
+			Asc("listorder").Find(&fields); err != nil {
+			return nil, err
 		}
 
-		if len(field.Component) > 0 { // 必须是可以解析的参数
-			var component = map[string]interface{}{}
-			if err := json.Unmarshal([]byte(field.Component), &component); err == nil {
-				column.Component = component
-			} else if strings.HasPrefix(field.Component, "{") {
-				column.Component = field.Component // 前端再次处理一次
+		// TODO 允许搜索字段构建
+		table := table{Props: nil, Columns: []column{}}
+		for _, field := range fields {
+			column := column{
+				Prop:                field.TableField,
+				Label:               field.FormName,
+				Width:               field.FieldLen,
+				Dict:                nil,
+				Sortable:            field.Sortable,
+				ShowOverflowTooltip: true,
+				Align:               "left",
+				MinWidth:            80,
 			}
+			if field.Center {
+				column.Align = "center"
+			}
+			if field.ListWidth > 80 {
+				column.MinWidth = field.ListWidth
+			}
+
+			// 只有指定组件可以使用值  下拉, tree, dict 等复杂类型
+			if len(field.Datasource) > 0 {
+
+			}
+
+			if len(field.Component) > 0 {
+				var component = map[string]interface{}{}
+				if err := json.Unmarshal([]byte(field.Component), &component); err == nil {
+					column.Component = component
+				} else {
+					column.Component = field.Component
+				}
+			}
+
+			if field.TableField == "thumb" {
+				column.Component = `{name: "el-image", fit: "contain", style: {"width": "40px", "height": "40px"}}`
+			}
+
+			table.Columns = append(table.Columns, column)
 		}
-
-		table.Columns = append(table.Columns, column)
+		return json.Marshal(table)
+	}); err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+	} else {
+		helper.Ajax(data, 0, c.Ctx())
 	}
-	// 处理插槽
-
-	// 动态注入函数
-	helper.Ajax(table, 0, c.Ctx())
 }
 
 func (c *DocumentController) GetModelForm() {

@@ -250,8 +250,11 @@ export default defineComponent({
 
 		watch(midRef, (newValue, oldValue)=> {
 			service.system.model.modelTable({ mid: newValue }).then((data: any) => {
-				data.map((item: any) => {
-					item.component = typeof item.component == "string" ? Function("return " + item.component)() : item.component;
+				console.log(data)
+				data.columns.map((item: any) => {
+					if (item.component) {
+						item.component = typeof item.component == "string" ? Function("return " + item.component)() : item.component;
+					}
 					return item;
 				})
 				table.value = data
@@ -260,8 +263,6 @@ export default defineComponent({
 					type: "op",
 					buttons: ["edit", "delete"]
 				});
-			}).catch(() => {
-				console.error(arguments)
 			})
 
 		})
@@ -302,7 +303,7 @@ export default defineComponent({
 
 	.dir {
 		height: 100%;
-		width: 250px;
+		width: 180px;
 		padding: 10px;
 		max-width: calc(100% - 50px);
 		background-color: #fff;
@@ -317,7 +318,7 @@ export default defineComponent({
 	}
 
 	.editor {
-		width: calc(100% - 260px);
+		width: calc(100% - 190px);
 		flex: 1;
 		background-color: #fff;
 

@@ -5,6 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-xorm/xorm"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"strings"
@@ -71,4 +75,16 @@ func (c *TableController) before(act int, params interface{}) error {
 		}
 	}
 	return nil
+}
+
+func (c *TableController) after(act int, params interface{}) {
+	if act == OpDel || act == OpAdd || act == OpEdit {
+		pine.Logger().Print("操作模型字段, 清除缓存")
+		cacher := di.MustGet(controllers.ServiceICache).(cache.AbstractCache)
+		if act == OpDel {
+			cacher.Delete(fmt.Sprintf(controllers.CacheModelTablePrefix, params.(*idParams).Id))
+		} else {
+			cacher.Delete(fmt.Sprintf(controllers.CacheModelTablePrefix, c.Input().GetInt("mid")))
+		}
+	}
 }

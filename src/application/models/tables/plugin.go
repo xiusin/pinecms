@@ -11,9 +11,9 @@ type Plugin struct {
 	Path        string                   `json:"path" xorm:"comment('插件本地路径') unique"`
 	Enable      bool                     `json:"enable" xorm:"comment('是否启用 0：否 1：是')"`
 	Status      uint                     `json:"status" xorm:"comment('状态 0:缺少配置 1:可用 2: 配置错误 3:未知错误')"`
-	View        []map[string]interface{} `json:"view" xorm:"json comment('页面json配置信息')"`
+	View        []map[string]interface{} `json:"view" xorm:"json comment('页面配置信息')"`
 	Page        string                   `json:"page" xorm:"-"`
-	Config      map[string]interface{}   `json:"config" xorm:"json"`
+	Config      map[string]interface{}   `json:"config" xorm:"json comment('插件绑定配置')"`
 	Prefix      string                   `json:"prefix" xorm:"comment('插件访问前缀')"`
 	NoInstall   bool                     `json:"no_install" xorm:"-"`
 	ErrMsg      string                   `json:"errmsg" xorm:"-"`

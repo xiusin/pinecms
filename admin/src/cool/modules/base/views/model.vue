@@ -3,10 +3,9 @@
 		<el-row>
 			<cl-table v-bind="table">
 				<template #slot-btns="{ scope }">
-					<el-button @click="getSQL(scope.row.id)" type="text" size="mini">SQL</el-button>
 					<el-button @click="modelDef(scope.row.id)" type="text" size="mini"
-						>表字段</el-button
-					>
+					>字段</el-button>
+					<el-button @click="getSQL(scope.row.id)" type="text" size="mini">SQL</el-button>
 				</template>
 			</cl-table>
 		</el-row>
@@ -17,7 +16,7 @@
 		<cl-upsert v-bind="upsert" />
 	</cl-crud>
 
-	<cl-dialog v-model="visible" title="对话">
+	<cl-dialog v-model="visible" title="建表SQL">
 		<component is="cl-codemirror" :modelValue="sql" mode="sql" height="700px" />
 	</cl-dialog>
 
@@ -96,7 +95,7 @@ export default defineComponent({
 				{
 					label: "操作",
 					type: "op",
-					width: 200,
+					width: 160,
 					buttons: ["slot-btns", "edit", "delete"]
 				}
 			]

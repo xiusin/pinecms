@@ -9,7 +9,6 @@ import (
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/config"
 	"strings"
-	"time"
 )
 
 func VerifyJwtToken() pine.Handler {
@@ -37,7 +36,6 @@ func VerifyJwtToken() pine.Handler {
 					Params:   string(ctx.PostBody()),
 					Username: pl.AdminName,
 					Ip:       ctx.ClientIP(),
-					Time:     time.Now(),
 					Method:   string(ctx.Method()),
 				})
 			}

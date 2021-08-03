@@ -22,6 +22,7 @@ type DocumentModelDsl struct {
 	ListVisible    bool       `json:"list_visible" xorm:"comment('是否列表可见') tinyint(1)"`
 	FieldLen       uint       `json:"field_len" xorm:"comment('字段长度') bigint"`
 	ListWidth      uint       `json:"list_width" xorm:"comment('列表字段宽度') int(10)"`
+	Center         bool       `json:"center" xorm:"comment('是否列表居中显示内容') tinyint(1)"`
 	CreatedAt      *LocalTime `xorm:"created" json:"created_at"`
 	UpdatedAt      *LocalTime `xorm:"updated" json:"updated_at"`
 	DeletedAt      *LocalTime `xorm:"deleted" json:"deleted_at"`

@@ -10,7 +10,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
 	"regexp"
 	"strconv"
@@ -122,7 +121,7 @@ func createModelTable(table string, channel map[string]string) *tables.DocumentM
 	}
 	data.Name = channel["typename"]
 	data.Enabled, _ = strconv.Atoi(channel["isshow"])
-	data.Execed = 1
+	data.Execed = true
 	pineOrm.Table(table).InsertOne(&data)
 
 	return &data
@@ -146,14 +145,12 @@ func importChannelType() {
 		// 选出默认字段 model = 0
 		var defaultFields []tables.DocumentModelDsl
 		pineOrm.Where("mid = 0").Find(&defaultFields)
-		dmField := &tables.DocumentModelField{Id: 11}
 		defaultFields = append(defaultFields, tables.DocumentModelDsl{
 			Mid:        data.Id,
 			FieldType:  11,
 			ListOrder:  7,
 			FormName:   "缩略图",
 			TableField: "thumb",
-			Html:       dmField.Html,
 		})
 		// pinecms默认字段
 		var modelFields = map[string]string{}
@@ -188,7 +185,6 @@ func importChannelType() {
 					FormName:   f.ItemName,
 					TableField: f.Field,
 					ListOrder:  int64(k),
-					Html:       dmField.Html,
 					Default:    f.Default,
 				}
 				dataSource := f.Default
@@ -327,12 +323,11 @@ func importArcType() {
 		if arctype["ispart"] == "1" || len(arctype["content"]) > 0 {
 			tid, _ := strconv.Atoi(arctype["id"])
 			pineOrm.InsertOne(&tables.Page{
-				Catid:       int64(tid),
+				Id:       int64(tid),
 				Title:       arctype["typename"],
 				Keywords:    arctype["keywords"],
 				Description: arctype["description"],
 				Content:     arctype["content"],
-				Updatetime:  time.Now().In(helper.GetLocation()).Unix(),
 			})
 		}
 	}
@@ -435,7 +430,6 @@ func GenSQLFromSQLite3(mid int64, dedeMainTable, tableName string, hasFields map
 				FieldType:  dmf.Id,
 				FormName:   mtf["COLUMN_NAME"],
 				TableField: mtf["COLUMN_NAME"],
-				Html:       dmf.Html,
 				ListOrder:  int64(autoIndex),
 			}
 			pineOrm.InsertOne(&dsl)

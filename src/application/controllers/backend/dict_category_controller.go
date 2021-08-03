@@ -2,8 +2,8 @@ package backend
 
 import (
 	"errors"
-	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 type DictCategoryController struct {
@@ -23,15 +23,8 @@ func (c *DictCategoryController) Construct() {
 	}
 	c.Table = &tables.DictCategory{}
 	c.Entries = &[]*tables.DictCategory{}
-	c.apiEntities = map[string]apidoc.Entity{
-		"list":   {Title: "分类列表", Desc: "查询系统内未删除的分类列表"},
-		"add":    {Title: "新增分类", Desc: "新增一个分类，标识不可重复"},
-		"edit":   {Title: "编辑分类", Desc: "编辑一个分类，标识不可重复"},
-		"delete": {Title: "删除分类", Desc: "删除指定分类"},
-		"info":   {Title: "分类详情", Desc: "获取指定分类的详情信息"},
-	}
+	c.ApiEntityName = "字典分类"
 	c.BaseController.Construct()
-
 	c.OpBefore = c.before
 }
 
@@ -61,4 +54,15 @@ func (c *DictCategoryController) before(act int, param interface{}) error {
 		}
 	}
 	return nil
+}
+
+// GetSelect 下拉列表
+func (c *DictCategoryController) GetSelect() {
+	_ = c.Orm.Where("status = 1").Find(c.Entries)
+	m := c.Entries.(*[]*tables.DictCategory)
+	var kv []tables.KV
+	for _, model := range *m {
+		kv = append(kv, tables.KV{Label: model.Name, Value: model.Key})
+	}
+	helper.Ajax(kv, 0, c.Ctx())
 }

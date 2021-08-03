@@ -1,11 +1,12 @@
 package tables
 
+// Category 分类
 type Category struct {
 	Catid       int64          `xorm:"pk autoincr id" json:"id"`
-	Parentid    int64          `json:"parentId"`
-	Topid       int64          `json:"topid"`
-	ModelId     int64          `json:"model_id"`
-	Catname     string         `json:"name"`
+	Parentid    int64          `json:"parentId" xorm:"comment('所属栏目ID')"`
+	Topid       int64          `json:"topid" xorm:"comment('顶级栏目ID')"`
+	ModelId     int64          `json:"model_id" xorm:"comment('绑定模型ID')"`
+	Catname     string         `json:"name" xorm:"分类ID"`
 	Type        int64          `json:"type"`
 	Keywords    string         `json:"keywords"`
 	Description string         `json:"description"`
