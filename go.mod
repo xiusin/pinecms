@@ -29,7 +29,7 @@ require (
 	github.com/gookit/color v1.4.2
 	github.com/gorilla/securecookie v1.1.1
 	github.com/kataras/go-mailer v0.1.0
-	github.com/klauspost/compress v1.13.2 // indirect
+	github.com/klauspost/compress v1.13.3 // indirect
 	github.com/landoop/tableprinter v0.0.0-20201125135848-89e81fc956e7
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.7.0 // indirect
@@ -51,7 +51,7 @@ require (
 	github.com/traefik/yaegi v0.9.19
 	github.com/valyala/fasthttp v1.28.0
 	github.com/xiusin/logger v0.0.5
-	github.com/xiusin/pine v0.0.0-20210803024201-403b7dba5520
+	github.com/xiusin/pine v0.0.0-20210803025503-1f746452ac1f
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/exp v0.0.0-20210712160552-8235cf48b5f6 // indirect

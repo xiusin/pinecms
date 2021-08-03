@@ -20,18 +20,17 @@
 				<div class="container">
 					<cl-crud :ref="setRefs('crud')" @load="onLoad" v-if="!catType">
 						<el-row type="flex">
+							<cl-filter label="状态">
+								<el-select size="mini">
+									<el-option value="" label="全部" />
+									<el-option :value="0" label="禁用" />
+									<el-option :value="1" label="启用" />
+								</el-select>
+							</cl-filter>
 
-								<cl-filter label="状态">
-									<el-select size="mini" >
-										<el-option value="" label="全部"></el-option>
-										<el-option :value="0" label="禁用"></el-option>
-										<el-option :value="1" label="启用"></el-option>
-									</el-select>
-								</cl-filter>
-
-								<cl-filter label="姓名">
-									<el-input placeholder="请输入姓名" clearable size="mini"></el-input>
-								</cl-filter>
+							<cl-filter label="姓名">
+								<el-input placeholder="请输入姓名" clearable size="mini" />
+							</cl-filter>
 
 							<cl-filter label="日期">
 								<el-date-picker
@@ -39,27 +38,34 @@
 									type="datetimerange"
 									range-separator="至"
 									start-placeholder="开始日期"
-									end-placeholder="结束日期">
-								</el-date-picker>
+									end-placeholder="结束日期"
+								/>
 							</cl-filter>
 
-							<cl-filter label="日期">
-
-							</cl-filter>
-								<cl-flex1 />
-								<cl-search-key />
-								<cl-refresh-btn />
-								<cl-add-btn />
+							<cl-filter label="日期" />
+							<cl-flex1 />
+							<cl-search-key />
+							<cl-refresh-btn />
+							<cl-add-btn />
 						</el-row>
 
 						<el-row>
-							<cl-table :ref="setRefs('table')" v-bind="table" :props="{
-								height: '700px',
-								fit: true,
-								'highlight-current-row': true,
-								stripe: true,
-								'max-height': 900,
-								}" :autoHeight="false" />
+							<cl-table
+								:ref="setRefs('table')"
+								v-bind="table"
+								:props="{
+									height: '700px',
+									fit: true,
+									'highlight-current-row': true,
+									stripe: true,
+									'max-height': 900
+								}"
+								:autoHeight="false"
+							>
+								<template #slot-flag="{ scope }">
+									文档属性
+								</template>
+							</cl-table>
 						</el-row>
 
 						<el-row type="flex">
@@ -69,8 +75,7 @@
 
 						<cl-upsert :ref="setRefs('upsert')" :items="upsert.items" />
 					</cl-crud>
-					<iframe v-if="catType === 2" src="http://www.baidu.com">
-					</iframe>
+					<iframe v-if="catType === 2" src="http://www.baidu.com"> </iframe>
 					<template v-else>
 						<cl-form inner>
 							<el-form-item label="用户名">
@@ -101,7 +106,7 @@
 import { computed, defineComponent, inject, onBeforeMount, reactive, ref, watch } from "vue";
 import { useRefs } from "/@/core";
 import { deepTree } from "/@/core/utils";
-import {FormRef, QueryList, Table, Upsert} from "cl-admin-crud-vue3/types";
+import { FormRef, QueryList, Table, Upsert } from "cl-admin-crud-vue3/types";
 
 export default defineComponent({
 	name: "sys-content",
@@ -121,7 +126,7 @@ export default defineComponent({
 		function onCurrentChange({ id, catname, type, model_id }: any) {
 			catId.value = id;
 			catName.value = catname;
-			catType.value = type
+			catType.value = type;
 			if (catType.value == 0) {
 				midRef.value = model_id;
 				refresh({ cid: catId.value });
@@ -141,10 +146,10 @@ export default defineComponent({
 		onBeforeMount(async function () {
 			const ret = await service.system.category.list();
 			menuList.value = ret.list.filter((e: any) => e.type != 2);
-			catId.value = menuList.value[0].id
+			catId.value = menuList.value[0].id;
 
-			catName.value = menuList.value[0].catname
-			catType.value = menuList.value[0].type
+			catName.value = menuList.value[0].catname;
+			catType.value = menuList.value[0].type;
 			if (catType.value == 0) {
 				midRef.value = menuList.value[0].model_id;
 				refresh({ cid: catId.value });
@@ -248,24 +253,26 @@ export default defineComponent({
 			ctx.service(service.system.content).done();
 		}
 
-		watch(midRef, (newValue, oldValue)=> {
+		watch(midRef, (newValue) => {
 			service.system.model.modelTable({ mid: newValue }).then((data: any) => {
-				console.log(data)
+				console.log(data);
 				data.columns.map((item: any) => {
 					if (item.component) {
-						item.component = typeof item.component == "string" ? Function("return " + item.component)() : item.component;
+						item.component =
+							typeof item.component == "string"
+								? Function("return " + item.component)()
+								: item.component;
 					}
 					return item;
-				})
-				table.value = data
+				});
+				table.value = data;
 				table.value?.columns.push({
 					label: "操作",
 					type: "op",
 					buttons: ["edit", "delete"]
 				});
-			})
-
-		})
+			});
+		});
 
 		return {
 			service,
@@ -288,7 +295,7 @@ export default defineComponent({
 			catType,
 			onCurrentChange
 		};
-	},
+	}
 });
 </script>
 

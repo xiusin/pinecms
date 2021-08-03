@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-xorm/xorm"
-	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
@@ -146,7 +145,7 @@ func (c *DocumentController) GetSql(orm *xorm.Engine) {
 	}
 	dm.Execed = false
 	// 如果已经执行过SQL 直接返回一个错误
-	if dm.Execed  {
+	if dm.Execed {
 		helper.Ajax("没有任何改动可以执行", 1, c.Ctx())
 		return
 	}
@@ -239,61 +238,129 @@ func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
-	data := table{Props: nil, Columns: []column{}}
-	if err := cacher.Remember(fmt.Sprintf(controllers.CacheModelTablePrefix, mid), &data, func() ([]byte, error) {
-		pine.Logger().Print("无缓存, 生成")
-		var fields tables.ModelDslFields
-		if err := c.Orm.Where("mid = ?", mid).Where("list_visible = 1").
-			Asc("listorder").Find(&fields); err != nil {
-			return nil, err
-		}
-
-		// TODO 允许搜索字段构建
-		table := table{Props: nil, Columns: []column{}}
-		for _, field := range fields {
-			column := column{
-				Prop:                field.TableField,
-				Label:               field.FormName,
-				Width:               field.FieldLen,
-				Dict:                nil,
-				Sortable:            field.Sortable,
-				ShowOverflowTooltip: true,
-				Align:               "left",
-				MinWidth:            80,
-			}
-			if field.Center {
-				column.Align = "center"
-			}
-			if field.ListWidth > 80 {
-				column.MinWidth = field.ListWidth
-			}
-
-			// 只有指定组件可以使用值  下拉, tree, dict 等复杂类型
-			if len(field.Datasource) > 0 {
-
-			}
-
-			if len(field.Component) > 0 {
-				var component = map[string]interface{}{}
-				if err := json.Unmarshal([]byte(field.Component), &component); err == nil {
-					column.Component = component
-				} else {
-					column.Component = field.Component
-				}
-			}
-
-			if field.TableField == "thumb" {
-				column.Component = `{name: "el-image", fit: "contain", style: {"width": "40px", "height": "40px"}}`
-			}
-
-			table.Columns = append(table.Columns, column)
-		}
-		return json.Marshal(table)
-	}); err != nil {
-		helper.Ajax(err, 1, c.Ctx())
-	} else {
-		helper.Ajax(data, 0, c.Ctx())
+	//data := table{Props: nil, Columns: []column{}}
+	cacheKey := fmt.Sprintf(controllers.CacheModelTablePrefix, mid)
+	if !cacher.Exists(cacheKey) {
+		cacher.Set(cacheKey, []byte(""))
 	}
+
+	var fields tables.ModelDslFields
+	c.Orm.Where("mid = ?", mid).Where("list_visible = 1").
+		Asc("listorder").Find(&fields)
+	// TODO 允许搜索字段构建
+	table := table{Props: nil, Columns: []column{}}
+	for _, field := range fields {
+		column := column{
+			Prop:                field.TableField,
+			Label:               field.FormName,
+			Width:               field.FieldLen,
+			Dict:                nil,
+			Sortable:            field.Sortable,
+			ShowOverflowTooltip: true,
+			Align:               "left",
+			MinWidth:            80,
+		}
+		if field.Center {
+			column.Align = "center"
+		}
+		if field.ListWidth > 80 {
+			column.MinWidth = field.ListWidth
+		}
+
+		// 只有指定组件可以使用值  下拉, tree, dict 等复杂类型
+		if len(field.Datasource) > 0 {
+
+		}
+
+		if len(field.Component) > 0 {
+			var component = map[string]interface{}{}
+			if err := json.Unmarshal([]byte(field.Component), &component); err == nil {
+				column.Component = component
+			} else {
+				column.Component = field.Component
+			}
+		}
+
+		if field.TableField == "thumb" {
+			column.Component = `{name: "el-image", fit: "contain", style: {"width": "40px", "height": "40px"}}`
+		}
+
+		if field.TableField == "flag" {
+			column.Component = `({ h, scope }) => {
+		return h("el-input", {
+			type: "textarea",
+			placeholder: "请填写内容"
+		});
+	};
+`
+		}
+
+		table.Columns = append(table.Columns, column)
+	}
+
+	helper.Ajax(table, 0, c.Ctx())
+
+	//return
+	//
+	//if err := cacher.Remember(cacheKey, &data, func() ([]byte, error) {
+	//	pine.Logger().Print("无缓存, 生成")
+	//	var fields tables.ModelDslFields
+	//	if err := c.Orm.Where("mid = ?", mid).Where("list_visible = 1").
+	//		Asc("listorder").Find(&fields); err != nil {
+	//		return nil, err
+	//	}
+	//
+	//	// TODO 允许搜索字段构建
+	//	table := table{Props: nil, Columns: []column{}}
+	//	for _, field := range fields {
+	//		column := column{
+	//			Prop:                field.TableField,
+	//			Label:               field.FormName,
+	//			Width:               field.FieldLen,
+	//			Dict:                nil,
+	//			Sortable:            field.Sortable,
+	//			ShowOverflowTooltip: true,
+	//			Align:               "left",
+	//			MinWidth:            80,
+	//		}
+	//		if field.Center {
+	//			column.Align = "center"
+	//		}
+	//		if field.ListWidth > 80 {
+	//			column.MinWidth = field.ListWidth
+	//		}
+	//
+	//		// 只有指定组件可以使用值  下拉, tree, dict 等复杂类型
+	//		if len(field.Datasource) > 0 {
+	//
+	//		}
+	//
+	//		if len(field.Component) > 0 {
+	//			var component = map[string]interface{}{}
+	//			if err := json.Unmarshal([]byte(field.Component), &component); err == nil {
+	//				column.Component = component
+	//			} else {
+	//				column.Component = field.Component
+	//			}
+	//		}
+	//
+	//		if field.TableField == "thumb" {
+	//			column.Component = `{name: "el-image", fit: "contain", style: {"width": "40px", "height": "40px"}}`
+	//		}
+	//
+	//
+	//		if field.TableField == "flag" {
+	//			column.Component = `{name: "slot-documentAttr"}`
+	//		}
+	//
+	//		table.Columns = append(table.Columns, column)
+	//	}
+	//	return json.Marshal(table)
+	//}, 1); err != nil {
+	//	helper.Ajax(err.Error(), 1, c.Ctx())
+	//} else {
+	//	helper.Ajax(data, 0, c.Ctx())
+	//}
 }
 
 func (c *DocumentController) GetModelForm() {

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"regexp"
@@ -51,7 +50,7 @@ var crudCmd = &cobra.Command{
 	Use:   "crud",
 	Short: "生成基本crud模块",
 	Run: func(cmd *cobra.Command, args []string) {
-		config.InitDB() // 方法不可放到init里，否则缓存组件阻塞
+		config.InitDB()
 		if !config.Ac().Debug {
 			logger.SetReportCaller(false)
 			logger.Print("非Debug模式，不支持 CRUD 命令")
@@ -59,7 +58,7 @@ var crudCmd = &cobra.Command{
 		}
 		table, _ := cmd.Flags().GetString("table")
 		force, _ := cmd.Flags().GetBool("force")
-		print, _ := cmd.Flags().GetBool("print")
+		onlyInfo, _ := cmd.Flags().GetBool("info")
 		if table == "" {
 			_ = cmd.Help()
 			return
@@ -80,16 +79,10 @@ var crudCmd = &cobra.Command{
 		for _, v := range tableMata.Columns() {
 			cols[v.Name] = v
 		}
-		// 表字段
-		modelName, modelPath := getModelName(table)
 		controllerName, controllerPath := getControllerName(table)
 		tablePath := tableDir + table + ".go"
-		if !force && !print {
-			f, err := os.Stat(modelPath)
-			if !os.IsNotExist(err) && !f.IsDir() {
-				logger.Print("已有存在的文件: " + modelPath)
-			}
-			f, err = os.Stat(controllerPath)
+		if !force && !onlyInfo {
+			f, err := os.Stat(controllerPath)
 			if !os.IsNotExist(err) && !f.IsDir() {
 				logger.Print("已有存在的文件: " + controllerPath)
 			}
@@ -98,17 +91,12 @@ var crudCmd = &cobra.Command{
 				logger.Print("已有存在的文件: " + tablePath)
 			}
 		}
-		err := genModelFile(print, modelName, modelPath)
+		err := genTableFile(onlyInfo, table, tableDir+table+".go")
 		if err != nil {
 			logger.Error(err)
 			return
 		}
-		err = genTableFile(print, table, tableDir+table+".go")
-		if err != nil {
-			logger.Error(err)
-			return
-		}
-		err = genControllerFile(print, controllerName, table, controllerPath)
+		err = genControllerFile(onlyInfo, controllerName, table, controllerPath)
 		if err != nil {
 			logger.Error(err)
 			return
@@ -178,7 +166,7 @@ func genControllerFile(print bool, controllerName, tableName, controllerPath str
 
 func genTableFile(print bool, tableName, tablePath string) error {
 	realTableName := config.Dc().Db.DbPrefix + strings.ToLower(tableName)
-	res, err := config.XOrmEngine.QueryString(`show create table ` + realTableName)
+	res, err := config.XOrmEngine.QueryString(`SHOW CREATE TABLE ` + realTableName)
 
 	if err != nil {
 		return err
@@ -201,7 +189,7 @@ func genTableFile(print bool, tableName, tablePath string) error {
 	switch stmt := stmt.(type) {
 	case *sqlparser.DDL:
 		if stmt.TableSpec == nil {
-			logger.Error("Canont get table spec")
+			logger.Error("Can't get table spec")
 			break
 		}
 		var table SQLTable
@@ -215,7 +203,7 @@ func genTableFile(print bool, tableName, tablePath string) error {
 			case "unique key":
 				uniqueKeys = append(uniqueKeys, ind.Columns[0].Column.String())
 			default:
-				fmt.Fprintln(os.Stderr, "unknown type ", ind.Info.Type)
+				logger.Warning("未知类型 ", ind.Info.Type)
 			}
 		}
 
@@ -265,6 +253,7 @@ func genTableFile(print bool, tableName, tablePath string) error {
 	return err
 }
 
+// genFrontendFile 生成前端模块 （需满足开发环境）
 func genFrontendFile(print bool, table string, tableDsl, formDsl, filterDSL []map[string]interface{}) {
 	// 根据路由创建目录文件
 	moduleFeDir := feDir + table + "/list"
@@ -302,6 +291,7 @@ func genFrontendFile(print bool, table string, tableDsl, formDsl, filterDSL []ma
 	}
 }
 
+// getFieldType 生成表单和列表字段类型
 func getFieldType(fieldName, fieldType string) string {
 	inputType := "text"
 	switch fieldType {

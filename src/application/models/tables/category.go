@@ -6,7 +6,7 @@ type Category struct {
 	Parentid    int64          `json:"parentId" xorm:"comment('所属栏目ID')"`
 	Topid       int64          `json:"topid" xorm:"comment('顶级栏目ID')"`
 	ModelId     int64          `json:"model_id" xorm:"comment('绑定模型ID')"`
-	Catname     string         `json:"name" xorm:"分类ID"`
+	Catname     string         `json:"name" xorm:"comment('分类ID')"`
 	Type        int64          `json:"type"`
 	Keywords    string         `json:"keywords"`
 	Description string         `json:"description"`
