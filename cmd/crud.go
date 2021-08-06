@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"os"
@@ -48,7 +46,7 @@ var matchSuffix = struct {
 
 var crudCmd = &cobra.Command{
 	Use:   "crud",
-	Short: "生成基本crud模块",
+	Short: "生成模块的crud功能",
 	Run: func(cmd *cobra.Command, args []string) {
 		config.InitDB()
 		if !config.Ac().Debug {
@@ -59,11 +57,14 @@ var crudCmd = &cobra.Command{
 		table, _ := cmd.Flags().GetString("table")
 		force, _ := cmd.Flags().GetBool("force")
 		onlyInfo, _ := cmd.Flags().GetBool("info")
-		if table == "" {
+		if len(table) == 0 {
 			_ = cmd.Help()
 			return
 		}
-		metas, _ := config.XOrmEngine.DBMetas()
+		metas, err := config.XOrmEngine.DBMetas()
+		if err != nil {
+			panic(err)
+		}
 		var tableMata *core.Table
 		for _, meta := range metas {
 			if meta.Name == getTableName(table) {
@@ -75,7 +76,6 @@ var crudCmd = &cobra.Command{
 			logger.Errorf("无法获取数据表[%s]元信息", getTableName(table))
 			return
 		}
-
 		for _, v := range tableMata.Columns() {
 			cols[v.Name] = v
 		}
@@ -91,15 +91,12 @@ var crudCmd = &cobra.Command{
 				logger.Print("已有存在的文件: " + tablePath)
 			}
 		}
-		err := genTableFile(onlyInfo, table, tableDir+table+".go")
-		if err != nil {
-			logger.Error(err)
-			return
+		if err = genTableFile(onlyInfo, table, tableDir+table+".go"); err != nil {
+			panic(err)
 		}
-		err = genControllerFile(onlyInfo, controllerName, table, controllerPath)
-		if err != nil {
-			logger.Error(err)
-			return
+
+		if err = genControllerFile(onlyInfo, controllerName, table, controllerPath); err != nil {
+			panic(err)
 		}
 		logger.Print("创建模块文件成功, 请将控制器注册到路由: registerV2BackendRoutes方法内")
 	},
@@ -108,14 +105,9 @@ var crudCmd = &cobra.Command{
 func init() {
 	crudCmd.Flags().String("table", "", "数据库表名")
 	crudCmd.Flags().Bool("force", false, "是否强制覆盖（可能导致已有代码丢失）")
-	crudCmd.Flags().Bool("print", false, "是否只打印生成文件以及操作步骤")
+	crudCmd.Flags().Bool("info", false, "是否只打印生成文件以及操作步骤")
+	crudCmd.Flags().String("frontendPath", "admin", "前端开发根目录")
 	rootCmd.AddCommand(crudCmd)
-}
-
-func getModelName(tableName string) (model string, filename string) {
-	model = camelString(tableName) + "Model"
-	filename = modelDir + snakeString(tableName) + "_model.go"
-	return
 }
 
 func getControllerName(tableName string) (controller string, filename string) {
@@ -132,26 +124,9 @@ func getTableName(table string) string {
 	return prefix + table
 }
 
-func genModelFile(print bool, modelName, modelPath string) error {
-	var err error
-	content := strings.ReplaceAll(modelTpl, "[model]", modelName)
-	if !print {
-		err = ioutil.WriteFile(modelPath, []byte(content), os.ModePerm)
-	}
-	if err == nil {
-		logger.Print("创建文件： " + color.Green.Sprint(modelPath))
-	}
-	if print {
-		quick.Highlight(logger.DefaultWriter(), content, "go", "terminal256", theme)
-	}
-	return err
-}
-
 func genControllerFile(print bool, controllerName, tableName, controllerPath string) error {
 	var err error
-	content := strings.ReplaceAll(controllerTpl, "[ctrl]", controllerName)
-	content = strings.ReplaceAll(content, "[table]", camelString(tableName))
-	content = strings.ReplaceAll(content, "[searchFieldDsl]", searchFieldDsl)
+	content := strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(controllerTpl, "[ctrl]", controllerName), "[table]", camelString(tableName)), "[searchFieldDsl]", searchFieldDsl)
 	if !print {
 		err = ioutil.WriteFile(controllerPath, []byte(content), os.ModePerm)
 	}
@@ -167,7 +142,6 @@ func genControllerFile(print bool, controllerName, tableName, controllerPath str
 func genTableFile(print bool, tableName, tablePath string) error {
 	realTableName := config.Dc().Db.DbPrefix + strings.ToLower(tableName)
 	res, err := config.XOrmEngine.QueryString(`SHOW CREATE TABLE ` + realTableName)
-
 	if err != nil {
 		return err
 	}
@@ -236,7 +210,7 @@ func genTableFile(print bool, tableName, tablePath string) error {
 		tableStruct = table.toXorm(print, tableName)
 	}
 
-	if tableStruct == "" {
+	if len(tableStruct) == 0 {
 		return errors.New("没有生成模型内容, 请检查数据表是否正确")
 	}
 
@@ -248,7 +222,7 @@ func genTableFile(print bool, tableName, tablePath string) error {
 		logger.Print("创建文件： " + color.Green.Sprint(tablePath))
 	}
 	if print {
-		quick.Highlight(logger.DefaultWriter(), content, "go", "terminal256", theme)
+		_ = quick.Highlight(logger.DefaultWriter(), content, "go", "terminal256", theme)
 	}
 	return err
 }
@@ -256,39 +230,39 @@ func genTableFile(print bool, tableName, tablePath string) error {
 // genFrontendFile 生成前端模块 （需满足开发环境）
 func genFrontendFile(print bool, table string, tableDsl, formDsl, filterDSL []map[string]interface{}) {
 	// 根据路由创建目录文件
-	moduleFeDir := feDir + table + "/list"
-	indexFile := strFirstToUpper(moduleFeDir + "/index.ts")
-	presetFile := strFirstToUpper(moduleFeDir + "/preset.ts")
-
-	data, _ := JSONMarshal(tableDsl)
-	content := bytes.ReplaceAll([]byte(indexTsTpl), []byte("[tableDSL]"), append(bytes.Trim(data, "[]\n"), ','))
-
-	content = bytes.ReplaceAll(content, []byte("[registerDataVar]"), []byte(strings.Join(topCode, "\r\n")))
-
-	data, _ = json.MarshalIndent(filterDSL, "", "\t")
-	content = bytes.ReplaceAll(content, []byte("[filterDSL]"), append(bytes.Trim(data, "[]"), ','))
-
-	data, _ = json.MarshalIndent(formDsl, "", "\t")
-	content = bytes.ReplaceAll(content, []byte("[formDSL]"), data)
-
-	presetContent := bytes.ReplaceAll([]byte(presetTsTpl), []byte("[table]"), []byte(table))
-	if !print {
-		os.RemoveAll(moduleFeDir) // 强制创建
-		os.MkdirAll(moduleFeDir, os.ModePerm)
-		err := ioutil.WriteFile(indexFile, content, os.ModePerm)
-		if err == nil {
-			logger.Print("创建文件: " + indexFile)
-		}
-		err = ioutil.WriteFile(presetFile, presetContent, os.ModePerm)
-		if err == nil {
-			logger.Print("创建文件: " + presetFile)
-		}
-	} else {
-		logger.Print("创建文件: " + indexFile)
-		quick.Highlight(logger.DefaultWriter(), string(content), "typescript", "terminal256", theme)
-		logger.Print("创建文件: " + presetFile)
-		quick.Highlight(logger.DefaultWriter(), string(presetContent), "typescript", "terminal256", theme)
-	}
+	//moduleFeDir := feDir + table + "/list"
+	//indexFile := strFirstToUpper(moduleFeDir + "/index.ts")
+	//presetFile := strFirstToUpper(moduleFeDir + "/preset.ts")
+	//
+	//data, _ := JSONMarshal(tableDsl)
+	//content := bytes.ReplaceAll([]byte(indexTsTpl), []byte("[tableDSL]"), append(bytes.Trim(data, "[]\n"), ','))
+	//
+	//content = bytes.ReplaceAll(content, []byte("[registerDataVar]"), []byte(strings.Join(topCode, "\r\n")))
+	//
+	//data, _ = json.MarshalIndent(filterDSL, "", "\t")
+	//content = bytes.ReplaceAll(content, []byte("[filterDSL]"), append(bytes.Trim(data, "[]"), ','))
+	//
+	//data, _ = json.MarshalIndent(formDsl, "", "\t")
+	//content = bytes.ReplaceAll(content, []byte("[formDSL]"), data)
+	//
+	//presetContent := bytes.ReplaceAll([]byte(presetTsTpl), []byte("[table]"), []byte(table))
+	//if !print {
+	//	_ = os.RemoveAll(moduleFeDir) // 强制创建
+	//	_ = os.MkdirAll(moduleFeDir, os.ModePerm)
+	//	err := ioutil.WriteFile(indexFile, content, os.ModePerm)
+	//	if err == nil {
+	//		logger.Print("创建文件: " + indexFile)
+	//	}
+	//	err = ioutil.WriteFile(presetFile, presetContent, os.ModePerm)
+	//	if err == nil {
+	//		logger.Print("创建文件: " + presetFile)
+	//	}
+	//} else {
+	//	logger.Print("创建文件: " + indexFile)
+	//	quick.Highlight(logger.DefaultWriter(), string(content), "typescript", "terminal256", theme)
+	//	logger.Print("创建文件: " + presetFile)
+	//	quick.Highlight(logger.DefaultWriter(), string(presetContent), "typescript", "terminal256", theme)
+	//}
 }
 
 // getFieldType 生成表单和列表字段类型

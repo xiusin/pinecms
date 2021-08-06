@@ -25,7 +25,6 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/go-xorm/xorm v0.7.9
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
-	github.com/golang/glog v0.0.0-20210429001901-424d2337a529
 	github.com/gookit/color v1.4.2
 	github.com/gorilla/securecookie v1.1.1
 	github.com/kataras/go-mailer v0.1.0
@@ -36,7 +35,6 @@ require (
 	github.com/magefile/mage v1.11.0 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
-	github.com/microcosm-cc/bluemonday v1.0.15
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/rivo/tview v0.0.0-20210624165335-29d673af0ce2
 	github.com/robfig/cron/v3 v3.0.0
@@ -47,6 +45,8 @@ require (
 	github.com/shirou/gopsutil v3.21.6+incompatible
 	github.com/sonyarouje/simdb v0.1.0
 	github.com/spf13/cobra v1.2.1
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/apigateway v1.0.221
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.221
 	github.com/tklauser/go-sysconf v0.3.7 // indirect
 	github.com/traefik/yaegi v0.9.19
 	github.com/valyala/fasthttp v1.28.0
@@ -56,6 +56,7 @@ require (
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/exp v0.0.0-20210712160552-8235cf48b5f6 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
+	golang.org/x/net v0.0.0-20210614182718-04defd469f4e // indirect
 	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b // indirect
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6 // indirect
 	gopkg.in/yaml.v2 v2.4.0

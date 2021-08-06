@@ -30,9 +30,9 @@ func (t *SQLTable) toXorm(print bool, tableName string) string {
 	var str strings.Builder
 	str.WriteString(fmt.Sprintf("type %s struct {\n", camelString(tableName)))
 
-	var tableDsl = []map[string]interface{}{}
-	var formDsl = []map[string]interface{}{}
-	var filterDsl = []map[string]interface{}{}
+	var tableDsl []map[string]interface{}
+	var formDsl []map[string]interface{}
+	var filterDsl []map[string]interface{}
 
 	for _, col := range t.Cols {
 		str.WriteRune('\t')
@@ -94,7 +94,6 @@ func (t *SQLTable) toXorm(print bool, tableName string) string {
 		str.WriteString("\"")
 		// 添加Json和schematag
 		str.WriteString(" json:\"" + snakeString(col.Name) + "\"")
-		str.WriteString(" schema:\"" + snakeString(col.Name) + "\"")
 		// 添加验证规则选项
 		if !col.IsPrimaryKey {
 			str.WriteString(" validate:\"required\"")
@@ -153,7 +152,7 @@ func (t *SQLTable) toXorm(print bool, tableName string) string {
 				case "tinyint": // 如果仅仅为tinyint但是备注有可以解析的配置信息
 					vmap := parseCommentInfo(xormCol.Comment)
 					if len(vmap) > 0 {
-						opts := []map[string]interface{}{}
+						var opts []map[string]interface{}
 						for k, v := range vmap {
 							opts = append(opts, map[string]interface{}{"label": v, "value": k})
 						}
@@ -192,7 +191,7 @@ func (t *SQLTable) toXorm(print bool, tableName string) string {
 	}
 	str.WriteString("}")
 
-	genFrontendFile(print, tableName, tableDsl, formDsl, filterDsl)
+	//genFrontendFile(print, tableName, tableDsl, formDsl, filterDsl)
 
 	return str.String()
 }

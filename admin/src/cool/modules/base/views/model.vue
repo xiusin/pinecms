@@ -4,7 +4,8 @@
 			<cl-table v-bind="table">
 				<template #slot-btns="{ scope }">
 					<el-button @click="modelDef(scope.row.id)" type="text" size="mini"
-					>字段</el-button>
+						>字段</el-button
+					>
 					<el-button @click="getSQL(scope.row.id)" type="text" size="mini">SQL</el-button>
 				</template>
 			</cl-table>
@@ -17,7 +18,7 @@
 	</cl-crud>
 
 	<cl-dialog v-model="visible" title="建表SQL">
-		<component is="cl-codemirror" :modelValue="sql" mode="sql" height="700px" />
+		<component :is="'cl-codemirror'" :modelValue="sql" mode="sql" height="700px" />
 	</cl-dialog>
 
 	<!-- 表单 -->

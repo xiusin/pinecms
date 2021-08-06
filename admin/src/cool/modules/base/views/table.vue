@@ -1,34 +1,36 @@
 <template>
-	<cl-crud @load="onLoad" :on-refresh="onRefresh">
-		<el-row type="flex">
-			<cl-refresh-btn/>
-			<cl-add-btn/>
-		</el-row>
-		<el-row>
-			<cl-table v-bind="table"/>
-		</el-row>
-		<el-row type="flex">
-			<cl-flex1/>
-			<cl-pagination/>
-		</el-row>
-		<cl-upsert v-bind="upsert"/>
-	</cl-crud>
+	<div>
+		<cl-crud @load="onLoad" :on-refresh="onRefresh">
+			<el-row type="flex">
+				<cl-refresh-btn />
+				<cl-add-btn />
+			</el-row>
+			<el-row>
+				<cl-table v-bind="table" />
+			</el-row>
+			<el-row type="flex">
+				<cl-flex1 />
+				<cl-pagination />
+			</el-row>
+			<cl-upsert v-bind="upsert" />
+		</cl-crud>
 
-	<!-- 表单 -->
-	<cl-form :ref="setRefs('form')"/>
+		<!-- 表单 -->
+		<cl-form :ref="setRefs('form')" />
+	</div>
 </template>
 
 <script lang="ts">
-import {defineComponent, inject, reactive, ref} from "vue";
-import {useRefs} from "/@/core";
-import {CrudLoad, Table, Upsert} from "cl-admin-crud-vue3/types";
-import {useRoute} from "vue-router";
+import { defineComponent, inject, reactive, ref } from "vue";
+import { useRefs } from "/@/core";
+import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { useRoute } from "vue-router";
 
 export default defineComponent({
 	name: "sys-table",
 	setup() {
 		const service = inject<any>("service");
-		const {refs, setRefs} = useRefs();
+		const { refs, setRefs } = useRefs();
 		const fields = ref<any[]>([]);
 
 		service.system.table.fields().then((data: any) => {
@@ -207,9 +209,9 @@ export default defineComponent({
 					value: true,
 					flex: false,
 					component: {
-						name: "el-switch",
-						"active-value": true,
-						"inactive-value": false
+						name: "el-checkbox",
+						"true-label": true,
+						"false-label": false
 					}
 				},
 				{
@@ -219,9 +221,9 @@ export default defineComponent({
 					value: true,
 					flex: false,
 					component: {
-						name: "el-switch",
-						"active-value": true,
-						"inactive-value": false
+						name: "el-checkbox",
+						"true-label": true,
+						"false-label": false
 					}
 				},
 				{
@@ -239,7 +241,7 @@ export default defineComponent({
 					prop: "default",
 					label: "默认值",
 					span: 24,
-					hidden: ({scope}: any) => scope.type == 2,
+					hidden: ({ scope }: any) => scope.type == 2,
 					component: {
 						name: "el-input",
 						placeholder: "请输入默认值"
@@ -274,7 +276,7 @@ export default defineComponent({
 				{
 					prop: "center",
 					label: "居中",
-					span: 6,
+					span: 4,
 					value: true,
 					flex: false,
 					component: {
@@ -286,56 +288,68 @@ export default defineComponent({
 				{
 					prop: "sortable",
 					label: "允许排序",
-					span: 6,
+					span: 4,
 					value: true,
 					flex: false,
 					component: {
-						name: "el-switch",
-						"active-value": true,
-						"inactive-value": false
+						name: "el-checkbox",
+						"true-label": true,
+						"false-label": false
 					}
 				},
 				{
 					prop: "searchable",
 					label: "允许搜索",
-					span: 6,
+					span: 4,
 					value: true,
 					flex: false,
 					component: {
-						name: "el-switch",
-						"active-value": true,
-						"inactive-value": false
+						name: "el-checkbox",
+						"true-label": true,
+						"false-label": false
 					}
 				},
 				{
 					prop: "list_visible",
 					label: "列表显示",
-					span: 6,
+					span: 4,
 					value: true,
 					flex: false,
 					component: {
-						name: "el-switch",
-						"active-value": true,
-						"inactive-value": false
+						name: "el-checkbox",
+						"true-label": true,
+						"false-label": false
+					}
+				},
+				{
+					prop: "visible",
+					label: "表单显示",
+					span: 4,
+					value: true,
+					flex: false,
+					component: {
+						name: "el-checkbox",
+						"true-label": true,
+						"false-label": false
 					}
 				},
 				{
 					prop: "show_component",
 					label: "自定义渲染",
-					span: 6,
-					value: false,
+					span: 4,
+					value: true,
 					flex: false,
 					component: {
-						name: "el-switch",
-						"active-value": true,
-						"inactive-value": false
+						name: "el-checkbox",
+						"true-label": true,
+						"false-label": false
 					}
 				},
 				{
 					prop: "component",
 					label: "渲染配置",
 					span: 24,
-					hidden: ({scope} : any) => !scope.show_component,
+					hidden: ({ scope }: any) => !scope.show_component,
 					component: {
 						name: "el-input",
 						type: "textarea",
@@ -352,23 +366,12 @@ export default defineComponent({
 				// 		height: 100,
 				// 	}
 				// },
-				{
-					prop: "visible",
-					label: "表单显示",
-					span: 24,
-					value: true,
-					flex: false,
-					component: {
-						name: "el-switch",
-						"active-value": true,
-						"inactive-value": false
-					}
-				},
+
 				{
 					prop: "datasource",
 					label: "数据源",
 					span: 24,
-					hidden: ({scope}: any) => scope.type == 2,
+					hidden: ({ scope }: any) => scope.field_type.includes(),
 					component: {
 						name: "el-input",
 						type: "textarea",
@@ -379,7 +382,7 @@ export default defineComponent({
 					prop: "validator",
 					label: "验证规则",
 					span: 24,
-					hidden: ({scope}: any) => scope.type == 2,
+					hidden: ({ scope }: any) => scope.type == 2,
 					component: {
 						name: "el-input",
 						type: "textarea",
@@ -401,15 +404,15 @@ export default defineComponent({
 			]
 		});
 
-		async function onRefresh(params: any, {next, render}: any) {
-			let {list} = await next({
+		async function onRefresh(params: any, { next, render }: any) {
+			let { list } = await next({
 				...params,
 				mid: parseInt(route.query.mid)
 			});
 			render(list);
 		}
 
-		function onLoad({ctx, app}: CrudLoad) {
+		function onLoad({ ctx, app }: CrudLoad) {
 			ctx.service(service.system.table).done();
 			app.refresh();
 		}

@@ -20,7 +20,7 @@
 				<div class="container">
 					<cl-crud :ref="setRefs('crud')" @load="onLoad" v-if="!catType">
 						<el-row type="flex">
-							<cl-filter label="状态">
+							<cl-filter label="单选">
 								<el-select size="mini">
 									<el-option value="" label="全部" />
 									<el-option :value="0" label="禁用" />
@@ -28,11 +28,28 @@
 								</el-select>
 							</cl-filter>
 
-							<cl-filter label="姓名">
+							<cl-filter label="通用渲染">
+								<component
+									:is="'cms-select'"
+									v-bind="{
+										size: 'mini',
+										options: [{ label: '第一', value: 'No.1' }]
+									}"
+								/>
+							</cl-filter>
+
+							<cl-filter label="输入">
 								<el-input placeholder="请输入姓名" clearable size="mini" />
 							</cl-filter>
 
-							<cl-filter label="日期">
+							<cl-filter label="级联">
+								<el-cascader
+									size="mini"
+									:options="[]"
+									:props="{ expandTrigger: 'hover' }"
+								/>
+							</cl-filter>
+							<cl-filter label="日期时间">
 								<el-date-picker
 									size="mini"
 									type="datetimerange"
@@ -42,7 +59,38 @@
 								/>
 							</cl-filter>
 
-							<cl-filter label="日期" />
+							<div></div>
+							<cl-filter label="日期范围">
+								<el-date-picker
+									type="daterange"
+									size="mini"
+									align="right"
+									unlink-panels
+									range-separator="至"
+									start-placeholder="开始日期"
+									end-placeholder="结束日期"
+								/>
+							</cl-filter>
+
+							<cl-filter label="日期">
+								<el-select
+									multiple
+									size="mini"
+									collapse-tags
+									style="margin-left: 20px"
+									placeholder="请选择"
+								>
+									<el-option
+										v-for="item in [
+											{ label: '参数1', value: '1' },
+											{ label: '参数2', value: '2' }
+										]"
+										:key="item.value"
+										:label="item.label"
+										:value="item.value"
+									/>
+								</el-select>
+							</cl-filter>
 							<cl-flex1 />
 							<cl-search-key />
 							<cl-refresh-btn />
@@ -62,9 +110,7 @@
 								}"
 								:autoHeight="false"
 							>
-								<template #slot-flag="{ scope }">
-									文档属性
-								</template>
+								<template> 文档属性 </template>
 							</cl-table>
 						</el-row>
 
@@ -106,7 +152,7 @@
 import { computed, defineComponent, inject, onBeforeMount, reactive, ref, watch } from "vue";
 import { useRefs } from "/@/core";
 import { deepTree } from "/@/core/utils";
-import { FormRef, QueryList, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { QueryList, Table, Upsert } from "cl-admin-crud-vue3/types";
 
 export default defineComponent({
 	name: "sys-content",

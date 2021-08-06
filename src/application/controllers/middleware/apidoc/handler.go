@@ -94,3 +94,8 @@ func saveRequestData(ctx *pine.Context) {
 
 	helper.Ajax("更新成功", 0, ctx)
 }
+
+// 同步到腾讯云
+func syncApiDataToTencent(ctx *pine.Context)  {
+
+}

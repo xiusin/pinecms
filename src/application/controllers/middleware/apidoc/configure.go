@@ -1,16 +1,17 @@
 package apidoc
 
 type Config struct {
-	RoutePrefix   string      `json:"route_prefix"`
-	Enable        bool        `json:"enable"`         // 是否启用apidoc
-	DataPath      string      `json:"-"`              // 配置数据存储目录
-	ResponseParam interface{} `json:"-"`              // 用于反射返回值信息
-	Title         string      `json:"title"`          // 标题目录
-	Desc          string      `json:"desc"`           // 描述
-	Copyright     string      `json:"copyright"`      // 版权
-	DefaultAuthor string      `json:"default_author"` // 默认作者
-	Apps          []apiApp    `json:"apps"`           // 应用， 例如 前端接口，后端接口
-	Groups        []apiGroup  `json:"groups"`         //  应用分组
+	RoutePrefix   string         `json:"route_prefix"`
+	Enable        bool           `json:"enable"`         // 是否启用apidoc
+	DataPath      string         `json:"-"`              // 配置数据存储目录
+	ResponseParam interface{}    `json:"-"`              // 用于反射返回值信息
+	Title         string         `json:"title"`          // 标题目录
+	Desc          string         `json:"desc"`           // 描述
+	Copyright     string         `json:"copyright"`      // 版权
+	DefaultAuthor string         `json:"default_author"` // 默认作者
+	Apps          []apiApp       `json:"apps"`           // 应用， 例如 前端接口，后端接口
+	Groups        []apiGroup     `json:"groups"`         //  应用分组
+	TencentApi    tencentApiConf `json:"-"`
 	Cache         struct {
 		Enable bool   `json:"enable"`
 		Path   string `json:"path"`

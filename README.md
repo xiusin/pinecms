@@ -78,3 +78,6 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - 文章标签
 - https://my.oschina.net/u/4532842/blog/5122562?_from=gitee_rec
 - http://beta.kuafucloud.com/#/login?redirect=%2Fdashboard
+- http://8.140.114.57:7000/opsli-boot/doc.html#/opsli%202.X/%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8-%E6%97%A5%E5%BF%97/createUsingGET
+- https://github.com/chuzhixin/vue-admin-beautiful-pro (主要参照一些样板,如监控什么的)
+- https://chu1204505056.gitee.io/admin-pro/#/mall/goods
