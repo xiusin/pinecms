@@ -1,0 +1,2962 @@
+[
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取系统未删除的插件列表",
+		"enable": false,
+		"group": {
+			"name": "插件管理",
+			"title": "插件管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": true,
+		"menu_key": "post__v2_plugin_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "sss",
+				"desc": "ssssss",
+				"name": "ssss",
+				"require": true,
+				"type": "any"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"page\":1,\"size\":20,\"sort\":\"desc\",\"order\":\"id\"}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":5,\"name\":\"任务管理\",\"author\":\"xiusin\",\"contact\":\"18818818818\",\"description\":\"实现任务管理功能\",\"version\":\"dev 0.0.1\",\"sign\":\"77975e7f-de8b-4f26-be90-38c24fcd7c7d\",\"path\":\"plugins/task/task.so\",\"enable\":true,\"status\":1,\"view\":[{\"component\":{\"attrs\":{\"placeholder\":\"阿里云accessKeyId\"},\"name\":\"el-input\"},\"label\":\"accessKeyId\",\"prop\":\"accessKeyId\",\"props\":{\"label-width\":\"130px\"},\"rules\":{\"message\":\"值不能为空\",\"required\":true}},{\"component\":{\"attrs\":{\"placeholder\":\"阿里云accessKeySecret\"},\"name\":\"el-input\"},\"label\":\"accessKeySecret\",\"prop\":\"accessKeySecret\",\"props\":{\"label-width\":\"130px\"},\"rules\":{\"message\":\"值不能为空\",\"required\":true}},{\"component\":{\"attrs\":{\"placeholder\":\"阿里云oss的bucket\"},\"name\":\"el-input\"},\"label\":\"bucket\",\"prop\":\"bucket\",\"props\":{\"label-width\":\"130px\"},\"rules\":{\"message\":\"值不能为空\",\"required\":true}},{\"component\":{\"attrs\":{\"placeholder\":\"阿里云oss的endpoint\"},\"name\":\"el-input\"},\"label\":\"endpoint\",\"prop\":\"endpoint\",\"props\":{\"label-width\":\"130px\"},\"rules\":{\"message\":\"值不能为空\",\"required\":true}},{\"component\":{\"attrs\":{\"placeholder\":\"阿里云oss的timeout\"},\"name\":\"el-input\"},\"label\":\"timeout\",\"prop\":\"timeout\",\"props\":{\"label-width\":\"130px\"},\"rules\":{\"message\":\"值不能为空\",\"required\":true},\"value\":\"3600s\"}],\"page\":\"\",\"config\":{\"accessKeyId\":\"23124123123123\",\"accessKeySecret\":\"234234w123\",\"bucket\":\"234234qweqw\",\"endpoint\":\"234234234\",\"timeout\":\"3600s\"},\"prefix\":\"\",\"no_install\":false,\"errmsg\":\"\",\"created_at\":\"2021-07-22 14:09:35\",\"updated_at\":\"2021-07-23 15:25:57\"}],\"pagination\":{\"page\":1,\"size\":20,\"total\":1}}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "插件管理",
+		"tag": "",
+		"title": "插件列表",
+		"url": "/v2/plugin/list"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取系统未删除的标签列表",
+		"enable": false,
+		"group": {
+			"name": "标签管理",
+			"title": "标签管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_tags_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"page\":1,\"size\":20,\"sort\":\"desc\",\"order\":\"listorder\"}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":2,\"name\":\"爆品\",\"ref_num\":0,\"clicks\":0,\"seo_title\":\"\",\"seo_keywords\":\"\",\"seo_description\":\"\",\"listorder\":30,\"status\":1,\"created_at\":\"\"}],\"pagination\":{\"page\":1,\"size\":20,\"total\":1}}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "标签管理",
+		"tag": "",
+		"title": "标签列表",
+		"url": "/v2/tags/list"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "新增一个新的标签",
+		"enable": false,
+		"group": {
+			"name": "标签管理",
+			"title": "标签管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_tags_add",
+		"method": "POST",
+		"name": "add",
+		"param": null,
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"name\":\"爆品\",\"listorder\":30,\"status\":1}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":\"新增数据成功\",\"message\":\"新增数据成功\"}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "标签管理",
+		"tag": "",
+		"title": "新增标签",
+		"url": "/v2/tags/add"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "删除指定标签",
+		"enable": false,
+		"group": {
+			"name": "标签管理",
+			"title": "标签管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_tags_delete",
+		"method": "POST",
+		"name": "delete",
+		"param": [
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "删除单个记录",
+				"name": "id",
+				"require": false,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "删除多个记录",
+				"name": "ids",
+				"require": false,
+				"type": "array"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"ids\":[1]}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":\"删除成功\",\"message\":\"删除成功\"}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "标签管理",
+		"tag": "",
+		"title": "删除标签",
+		"url": "/v2/tags/delete"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取指定标签的详情信息",
+		"enable": false,
+		"group": {
+			"name": "标签管理",
+			"title": "标签管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "get__v2_tags_info",
+		"method": "GET",
+		"name": "info",
+		"param": null,
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "",
+		"raw_query": "id=2",
+		"raw_return": "{\"code\":1000,\"data\":{\"id\":2,\"name\":\"爆品\",\"ref_num\":0,\"listorder\":30,\"status\":0,\"created_at\":\"0001-01-01 08:05:43\"}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "标签管理",
+		"tag": "",
+		"title": "标签详情",
+		"url": "/v2/tags/info"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "修改给定ID的标签信息",
+		"enable": false,
+		"group": {
+			"name": "标签管理",
+			"title": "标签管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_tags_edit",
+		"method": "POST",
+		"name": "edit",
+		"param": null,
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"name\":\"爆品\",\"listorder\":30,\"status\":1,\"id\":2,\"ref_num\":0,\"created_at\":\"0001-01-01 08:05:43\"}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":\"修改数据成功\",\"message\":\"修改数据成功\"}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "标签管理",
+		"tag": "",
+		"title": "编辑标签",
+		"url": "/v2/tags/edit"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取系统未删除的分类列表",
+		"enable": false,
+		"group": {
+			"name": "内容管理",
+			"title": "内容管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_category_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":1,\"parentId\":0,\"topid\":0,\"model_id\":1,\"name\":\"Win8之家\",\"type\":0,\"keywords\":\" \",\"description\":\"\",\"Content\":\"\",\"thumb\":\"\",\"dir\":\"win8\",\"url\":\"\",\"listorder\":30,\"ismenu\":true,\"list_tpl\":\"\",\"detail_tpl\":\"\",\"url_prefix\":\"\",\"Active\":false,\"HasSon\":false,\"model\":null,\"Page\":null},{\"id\":2,\"parentId\":0,\"topid\":0,\"model_id\":1,\"name\":\"资讯\",\"type\":0,\"keywords\":\" \",\"description\":\"\",\"Content\":\"\",\"thumb\":\"\",\"dir\":\"news\",\"url\":\"\",\"listorder\":30,\"ismenu\":true,\"list_tpl\":\"\",\"detail_tpl\":\"\",\"url_prefix\":\"\",\"Active\":false,\"HasSon\":false,\"model\":null,\"Page\":null},{\"id\":5,\"parentId\":0,\"topid\":0,\"model_id\":1,\"name\":\"苹果之家\",\"type\":0,\"keywords\":\" \",\"description\":\"\",\"Content\":\"\",\"thumb\":\"\",\"dir\":\"apple\",\"url\":\"\",\"listorder\":30,\"ismenu\":true,\"list_tpl\":\"\",\"detail_tpl\":\"\",\"url_prefix\":\"\",\"Active\":false,\"HasSon\":false,\"model\":null,\"Page\":null},{\"id\":6,\"parentId\":0,\"topid\":0,\"model_id\":1,\"name\":\"谷歌之家\",\"type\":0,\"keywords\":\" \",\"description\":\"\",\"Content\":\"\",\"thumb\":\"\",\"dir\":\"google\",\"url\":\"\",\"listorder\":30,\"ismenu\":true,\"list_tpl\":\"\",\"detail_tpl\":\"\",\"url_prefix\":\"\",\"Active\":false,\"HasSon\":false,\"model\":null,\"Page\":null},{\"id\":7,\"parentId\":0,\"topid\":0,\"model_id\":1,\"name\":\"壁纸之家\",\"type\":0,\"keywords\":\"壁纸|壁纸下载\",\"description\":\"这是一个描述信息\",\"Content\":\"\",\"thumb\":\"\",\"dir\":\"bizhi\",\"url\":\"\",\"listorder\":36,\"ismenu\":true,\"list_tpl\":\"\",\"detail_tpl\":\"\",\"url_prefix\":\"\",\"Active\":false,\"HasSon\":false,\"model\":null,\"Page\":null},{\"id\":10,\"parentId\":1,\"topid\":1,\"model_id\":1,\"name\":\"Win8快讯\",\"type\":0,\"keywords\":\" \",\"description\":\"\",\"Content\":\"\",\"thumb\":\"\",\"dir\":\"win8news\",\"url\":\"\",\"listorder\":30,\"ismenu\":true,\"list_tpl\":\"\",\"detail_tpl\":\"\",\"url_prefix\":\"\",\"Active\":false,\"HasSon\":false,\"model\":null,\"Page\":null},{\"id\":11,\"parentId\":1,\"topid\":1,\"model_id\":1,\"name\":\"Win8学院\",\"type\":0,\"keywords\":\" \",\"description\":\"\",\"Content\":\"\",\"thumb\":\"\",\"dir\":\"win8xueyuan\",\"url\":\"\",\"listorder\":30,\"ismenu\":true,\"list_tpl\":\"\",\"detail_tpl\":\"\",\"url_prefix\":\"\",\"Active\":false,\"HasSon\":false,\"model\":null,\"Page\":null},{\"id\":12,\"parentId\":1,\"topid\":1,\"model_id\":1,\"name\":\"Win8系统下载\",\"type\":0,\"keywords\":\" \",\"description\":\"\",\"Content\":\"\",\"thumb\":\"\",\"dir\":\"win8xiazai\",\"url\":\"\",\"listorder\":30,\"ismenu\":true,\"list_tpl\":\"\",\"detail_tpl\":\"\",\"url_prefix\":\"\",\"Active\":false,\"HasSon\":false,\"model\":null,\"Page\":null},{\"id\":13,\"parentId\":1,\"topid\":1,\"model_id\":1,\"name\":\"Win8软件下载\",\"type\":0,\"keywords\":\" \",\"description\":\"\",\"Content\":\"\",\"thumb\":\"\",\"dir\":\"win8soft\",\"url\":\"\",\"listorder\":30,\"ismenu\":true,\"list_tpl\":\"\",\"detail_tpl\":\"\",\"url_prefix\":\"\",\"Active\":false,\"HasSon\":false,\"model\":null,\"Page\":null},{\"id\":14,\"parentId\":1,\"topid\":1,\"model_id\":1,\"name\":\"Win8主题\",\"type\":0,\"keywords\":\" \",\"description\":\"\",\"Content\":\"\",\"thumb\":\"\",\"dir\":\"win8zhuti\",\"url\":\"\",\"listorder\":30,\"ismenu\":true,\"list_tpl\":\"\",\"detail_tpl\":\"\",\"url_prefix\":\"\",\"Active\":false,\"HasSon\":false,\"model\":null,\"Page\":null},{\"id\":15,\"parentId\":2,\"topid\":2,\"model_id\":1,\"name\":\"IT资讯\",\"type\":0,\"keywords\":\" \",\"description\":\"\",\"Content\":\"\",\"thumb\":\"\",\"dir\":\"it\",\"url\":\"\",\"listorder\":30,\"ismenu\":true,\"list_tpl\":\"\",\"detail_tpl\":\"\",\"url_prefix\":\"\",\"Active\":false,\"HasSon\":false,\"model\":null,\"Page\":null},{\"id\":16,\"parentId\":2,\"topid\":2,\"model_id\":1,\"name\":\"QQ之家\",\"type\":0,\"keywords\":\"  \",\"description\":\"\",\"Content\":\"\",\"thumb\":\"\",\"dir\":\"qq\",\"url\":\"\",\"listorder\":30,\"ismenu\":true,\"list_tpl\":\"\",\"detail_tpl\":\"\",\"url_prefix\":\"\",\"Active\":false,\"HasSon\":false,\"model\":null,\"Page\":null},{\"id\":17,\"parentId\":2,\"topid\":2,\"model_id\":1,\"name\":\"IT之外\",\"type\":0,\"keywords\":\"  \",\"description\":\"\",\"Content\":\"\",\"thumb\":\"\",\"dir\":\"other\",\"url\":\"\",\"listorder\":30,\"ismenu\":true,\"list_tpl\":\"\",\"detail_tpl\":\"\",\"url_prefix\":\"\",\"Active\":false,\"HasSon\":false,\"model\":null,\"Page\":null},{\"id\":18,\"parentId\":0,\"topid\":0,\"model_id\":0,\"name\":\"投稿反馈\",\"type\":1,\"keywords\":\"\",\"description\":\"\",\"Content\":\"\",\"thumb\":\"\",\"dir\":\"tougao\",\"url\":\"\",\"listorder\":0,\"ismenu\":false,\"list_tpl\":\"\",\"detail_tpl\":\"\",\"url_prefix\":\"\",\"Active\":false,\"HasSon\":false,\"model\":null,\"Page\":null},{\"id\":19,\"parentId\":0,\"topid\":0,\"model_id\":0,\"name\":\"加入我们\",\"type\":1,\"keywords\":\"\",\"description\":\"\",\"Content\":\"\",\"thumb\":\"\",\"dir\":\"join\",\"url\":\"\",\"listorder\":0,\"ismenu\":false,\"list_tpl\":\"\",\"detail_tpl\":\"\",\"url_prefix\":\"\",\"Active\":false,\"HasSon\":false,\"model\":null,\"Page\":null},{\"id\":20,\"parentId\":0,\"topid\":0,\"model_id\":0,\"name\":\"联系我们\",\"type\":1,\"keywords\":\"\",\"description\":\"\",\"Content\":\"\",\"thumb\":\"\",\"dir\":\"contact\",\"url\":\"\",\"listorder\":0,\"ismenu\":false,\"list_tpl\":\"\",\"detail_tpl\":\"\",\"url_prefix\":\"\",\"Active\":false,\"HasSon\":false,\"model\":null,\"Page\":null},{\"id\":21,\"parentId\":0,\"topid\":0,\"model_id\":0,\"name\":\"关于我们\",\"type\":1,\"keywords\":\"\",\"description\":\"\",\"Content\":\"\",\"thumb\":\"\",\"dir\":\"about\",\"url\":\"\",\"listorder\":0,\"ismenu\":false,\"list_tpl\":\"\",\"detail_tpl\":\"\",\"url_prefix\":\"\",\"Active\":false,\"HasSon\":false,\"model\":null,\"Page\":null}],\"pagination\":{\"page\":0,\"size\":0,\"total\":0}}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "分类管理",
+		"tag": "",
+		"title": "分类列表",
+		"url": "/v2/category/list"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取系统未删除的部门列表",
+		"enable": false,
+		"group": {
+			"name": "系统管理",
+			"title": "系统管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_department_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
+		"query_data_method": "text/plain; charset=utf-8",
+		"raw_param": "{}",
+		"raw_query": "",
+		"raw_return": "",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "部门管理",
+		"tag": "",
+		"title": "部门列表",
+		"url": "/v2/department/list"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取系统未删除的岗位列表",
+		"enable": false,
+		"group": {
+			"name": "系统管理",
+			"title": "系统管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_position_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"page\":1,\"size\":20,\"sort\":\"desc\",\"order\":\"listorder\"}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[],\"pagination\":{\"page\":1,\"size\":20,\"total\":0}}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "岗位管理",
+		"tag": "",
+		"title": "岗位列表",
+		"url": "/v2/position/list"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取系统未删除的字典分类列表",
+		"enable": false,
+		"group": {
+			"name": "字典管理",
+			"title": "字典管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_dict_category_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"page\":1,\"size\":20,\"sort\":\"desc\",\"order\":\"id\"}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":9,\"key\":\"status\",\"name\":\"状态字典\",\"remark\":\"用于系统状态切换\",\"status\":true,\"CreatedAt\":\"2021-08-06T18:02:41+08:00\",\"UpdatedAt\":\"2021-08-06T18:02:41+08:00\"}],\"pagination\":{\"page\":1,\"size\":20,\"total\":1}}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "字典分类管理",
+		"tag": "",
+		"title": "字典分类列表",
+		"url": "/v2/dict/category/list"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "查询已上传系统的附件列表",
+		"enable": false,
+		"group": {
+			"name": "系统配置",
+			"title": "系统配置"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_attachment_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"page\":1,\"size\":20}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":153,\"name\":\"BrcMqB37Cf.jpg\",\"url\":\"http://iriscms-test.oss-cn-beijing.aliyuncs.com/upload/public/20200324/BrcMqB37Cf.jpg\",\"original\":\"4.jpg\",\"size\":97919,\"upload_time\":\"2020-03-24T18:49:39+08:00\",\"type\":\"img\"},{\"id\":154,\"name\":\"5K2giheHM5.jpg\",\"url\":\"http://iriscms-test.oss-cn-beijing.aliyuncs.com/upload/public/20200324/5K2giheHM5.jpg\",\"original\":\"longad.jpg\",\"size\":90292,\"upload_time\":\"2020-03-24T18:51:37+08:00\",\"type\":\"img\"},{\"id\":155,\"name\":\"2nYZoj2iLI.jpg\",\"url\":\"http://iriscms-test.oss-cn-beijing.aliyuncs.com/upload/public/20200324/2nYZoj2iLI.jpg\",\"original\":\"ad.jpg\",\"size\":155818,\"upload_time\":\"2020-03-24T18:52:45+08:00\",\"type\":\"img\"},{\"id\":156,\"name\":\"40B5hc9v5I.jpg\",\"url\":\"http://iriscms-test.oss-cn-beijing.aliyuncs.com/upload/public/20200324/40B5hc9v5I.jpg\",\"original\":\"ad02.jpg\",\"size\":116775,\"upload_time\":\"2020-03-24T18:53:22+08:00\",\"type\":\"img\"},{\"id\":157,\"name\":\"4kyS4LoTIS.png\",\"url\":\"http://iriscms-test.oss-cn-beijing.aliyuncs.com/upload/public/20200324/4kyS4LoTIS.png\",\"original\":\"joinwx.png\",\"size\":21736,\"upload_time\":\"2020-03-24T18:54:17+08:00\",\"type\":\"img\"},{\"id\":158,\"name\":\"y2LHji2RGI.jpg\",\"url\":\"http://iriscms-test.oss-cn-beijing.aliyuncs.com/upload/public/20200325/y2LHji2RGI.jpg\",\"original\":\"3.jpg\",\"size\":43351,\"upload_time\":\"2020-03-25T16:58:59+08:00\",\"type\":\"img\"},{\"id\":169,\"name\":\"H156oCxCpT.png\",\"url\":\"/uploads/public/20200413/H156oCxCpT.png\",\"original\":\"center.png\",\"size\":7960,\"upload_time\":\"2020-04-13T10:30:32+08:00\",\"type\":\"img\"},{\"id\":170,\"name\":\"JxvQHZJIg9.jpg\",\"url\":\"/uploads/public/20200413/JxvQHZJIg9.jpg\",\"original\":\"left1.jpg\",\"size\":43310,\"upload_time\":\"2020-04-13T10:31:00+08:00\",\"type\":\"img\"},{\"id\":171,\"name\":\"3VVwkb03OU.jpg\",\"url\":\"/uploads/public/20200413/3VVwkb03OU.jpg\",\"original\":\"left2.jpg\",\"size\":43459,\"upload_time\":\"2020-04-13T10:31:16+08:00\",\"type\":\"img\"},{\"id\":172,\"name\":\"q92SSCjq0R.jpg\",\"url\":\"/uploads/public/20200413/q92SSCjq0R.jpg\",\"original\":\"footer.jpg\",\"size\":16774,\"upload_time\":\"2020-04-13T10:31:33+08:00\",\"type\":\"img\"},{\"id\":173,\"name\":\"44twXycv3u.jpg\",\"url\":\"/uploads/public/20200413/44twXycv3u.jpg\",\"original\":\"article_ad1.jpg\",\"size\":34354,\"upload_time\":\"2020-04-13T10:31:54+08:00\",\"type\":\"img\"},{\"id\":174,\"name\":\"48PktdpOMG.jpg\",\"url\":\"/uploads/public/20200413/48PktdpOMG.jpg\",\"original\":\"article_ad2.jpg\",\"size\":21965,\"upload_time\":\"2020-04-13T10:32:13+08:00\",\"type\":\"img\"},{\"id\":175,\"name\":\"1789ez9j0L.jpg\",\"url\":\"/uploads/public/20200413/1789ez9j0L.jpg\",\"original\":\"right4.jpg\",\"size\":27499,\"upload_time\":\"2020-04-13T10:32:40+08:00\",\"type\":\"img\"},{\"id\":176,\"name\":\"66OBu3Za08.jpg\",\"url\":\"/uploads/public/20200413/66OBu3Za08.jpg\",\"original\":\"right2.jpg\",\"size\":49343,\"upload_time\":\"2020-04-13T10:32:57+08:00\",\"type\":\"img\"},{\"id\":177,\"name\":\"3lnooWbZ4d.jpg\",\"url\":\"/uploads/public/20200413/3lnooWbZ4d.jpg\",\"original\":\"right3.jpg\",\"size\":36814,\"upload_time\":\"2020-04-13T10:33:37+08:00\",\"type\":\"img\"},{\"id\":178,\"name\":\"sopAEUX29h.jpg\",\"url\":\"/uploads/public/20200413/sopAEUX29h.jpg\",\"original\":\"right1.jpg\",\"size\":27716,\"upload_time\":\"2020-04-13T10:33:55+08:00\",\"type\":\"img\"},{\"id\":179,\"name\":\"qq0g4e1Im6.png\",\"url\":\"/uploads/public/20200413/qq0g4e1Im6.png\",\"original\":\"top.png\",\"size\":8238,\"upload_time\":\"2020-04-13T10:34:21+08:00\",\"type\":\"img\"}],\"pagination\":{\"page\":1,\"size\":20,\"total\":17}}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "附件管理",
+		"tag": "",
+		"title": "附件列表",
+		"url": "/v2/attachment/list"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取系统未删除的角色列表",
+		"enable": false,
+		"group": {
+			"name": "角色管理",
+			"title": "角色管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_role_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"page\":1,\"size\":20,\"sort\":\"asc\",\"order\":\"id\"}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":1,\"rolename\":\"超级管理员\",\"description\":\"拥有系统最高权限\",\"listorder\":1,\"disabled\":0,\"menuIdList\":[9,98,101,10,62,64,86,16,17,18,19,20,21,97,3,34,36,35,53,54,99,100,37,38,39,40,41,79,80,81,82,84,87,11,12,24,25,26,27,13,28,29,30,31]}],\"pagination\":{\"page\":1,\"size\":20,\"total\":1}}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "角色管理",
+		"tag": "",
+		"title": "角色列表",
+		"url": "/v2/role/list"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取系统未删除的会员列表",
+		"enable": false,
+		"group": {
+			"name": "会员管理",
+			"title": "会员管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_member_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"page\":1,\"size\":20}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":1,\"account\":\"xiusin\",\"password\":\"xiusin\",\"avatar\":\"\",\"nickname\":\"xiusin\",\"integral\":0,\"telphone\":\"16601313660\",\"qq\":\"xiusin\",\"description\":\"xiusin\",\"created\":\"2021-07-30 17:24:36\",\"updated\":\"2021-07-30 23:12:13\",\"login_time\":\"0001-01-01 00:00:00\",\"login_ip\":\"\",\"email\":\"xiusin@qq.com\",\"status\":2,\"sex\":1,\"group_id\":1}],\"pagination\":{\"page\":1,\"size\":20,\"total\":1}}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "会员管理",
+		"tag": "",
+		"title": "会员列表",
+		"url": "/v2/member/list"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "新增一个新的会员",
+		"enable": false,
+		"group": {
+			"name": "会员管理",
+			"title": "会员管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_member_add",
+		"method": "POST",
+		"name": "add",
+		"param": null,
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"email\":\"xiusin@gmail.com\",\"account\":\"xiusin\",\"nickname\":\"xiusin\",\"password\":\"xiusin\",\"qq\":\"xiusin\",\"telphone\":\"xiusin\",\"description\":\"xiusin\",\"sex\":0,\"status\":2}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":\"新增数据成功\",\"message\":\"新增数据成功\"}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "会员管理",
+		"tag": "",
+		"title": "新增会员",
+		"url": "/v2/member/add"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "删除指定会员",
+		"enable": false,
+		"group": {
+			"name": "会员管理",
+			"title": "会员管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_member_delete",
+		"method": "POST",
+		"name": "delete",
+		"param": [
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "删除单个记录",
+				"name": "id",
+				"require": false,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "删除多个记录",
+				"name": "ids",
+				"require": false,
+				"type": "array"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"ids\":[1]}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":\"删除成功\",\"message\":\"删除成功\"}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "会员管理",
+		"tag": "",
+		"title": "删除会员",
+		"url": "/v2/member/delete"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取指定会员的详情信息",
+		"enable": false,
+		"group": {
+			"name": "会员管理",
+			"title": "会员管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "get__v2_member_info",
+		"method": "GET",
+		"name": "info",
+		"param": null,
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "",
+		"raw_query": "id=1",
+		"raw_return": "{\"code\":1000,\"data\":{\"id\":1,\"account\":\"xiusin\",\"password\":\"xiusin\",\"avatar\":\"\",\"nickname\":\"xiusin\",\"integral\":0,\"telphone\":\"xiusin\",\"qq\":\"xiusin\",\"description\":\"xiusin\",\"created\":\"2021-07-30 17:24:36\",\"updated\":\"2021-07-30 17:42:04\",\"login_time\":\"0001-01-01 00:00:00\",\"login_ip\":\"\",\"email\":\"xiusin@qq.com\",\"status\":2,\"sex\":1,\"group_id\":1}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "会员管理",
+		"tag": "",
+		"title": "会员详情",
+		"url": "/v2/member/info"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "修改给定ID的会员信息",
+		"enable": false,
+		"group": {
+			"name": "会员管理",
+			"title": "会员管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_member_edit",
+		"method": "POST",
+		"name": "edit",
+		"param": null,
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"avatar\":\"\",\"email\":\"xiusin@qq.com\",\"account\":\"xiusin\",\"nickname\":\"xiusin\",\"password\":\"xiusin\",\"qq\":\"xiusin\",\"telphone\":\"16601313660\",\"description\":\"xiusin\",\"sex\":1,\"status\":2,\"id\":1,\"integral\":0,\"created\":\"2021-07-30 17:24:36\",\"updated\":\"2021-07-30 17:42:04\",\"login_time\":\"0001-01-01 00:00:00\",\"login_ip\":\"\",\"group_id\":1}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":\"修改数据成功\",\"message\":\"修改数据成功\"}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "会员管理",
+		"tag": "",
+		"title": "编辑会员",
+		"url": "/v2/member/edit"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取系统未删除的会员分组列表",
+		"enable": false,
+		"group": {
+			"name": "会员分组管理",
+			"title": "会员分组管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_member_group_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"page\":1,\"size\":20,\"sort\":\"desc\",\"order\":\"listorder\"}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":1,\"name\":\"普通会员\",\"description\":\"普通会员\",\"status\":1,\"listorder\":3,\"created\":\"2021-07-30 17:56:38\",\"updated\":\"2021-07-30 17:56:53\"}],\"pagination\":{\"page\":1,\"size\":20,\"total\":1}}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "会员分组管理",
+		"tag": "",
+		"title": "会员分组列表",
+		"url": "/v2/member/group/list"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "新增一个新的会员分组",
+		"enable": false,
+		"group": {
+			"name": "会员分组管理",
+			"title": "会员分组管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_member_group_add",
+		"method": "POST",
+		"name": "add",
+		"param": null,
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"name\":\"普通会员\",\"listorder\":0,\"status\":1}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1,\"message\":\"分组已存在\"}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "会员分组管理",
+		"tag": "",
+		"title": "新增会员分组",
+		"url": "/v2/member/group/add"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取指定会员分组的详情信息",
+		"enable": false,
+		"group": {
+			"name": "会员分组管理",
+			"title": "会员分组管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "get__v2_member_group_info",
+		"method": "GET",
+		"name": "info",
+		"param": null,
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "",
+		"raw_query": "id=1",
+		"raw_return": "{\"code\":1000,\"data\":{\"id\":1,\"name\":\"asdasd\",\"description\":\"asdasdad\",\"status\":1,\"listorder\":0,\"created\":\"2021-07-30 17:56:38\",\"updated\":\"2021-07-30 17:56:38\"}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "会员分组管理",
+		"tag": "",
+		"title": "会员分组详情",
+		"url": "/v2/member/group/info"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "修改给定ID的会员分组信息",
+		"enable": false,
+		"group": {
+			"name": "会员分组管理",
+			"title": "会员分组管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_member_group_edit",
+		"method": "POST",
+		"name": "edit",
+		"param": null,
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"name\":\"普通会员\",\"description\":\"普通会员\",\"listorder\":3,\"status\":1,\"id\":1,\"created\":\"2021-07-30 17:56:38\",\"updated\":\"2021-07-30 17:56:38\"}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":\"修改数据成功\",\"message\":\"修改数据成功\"}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "会员分组管理",
+		"tag": "",
+		"title": "编辑会员分组",
+		"url": "/v2/member/group/edit"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取系统未删除的友链列表",
+		"enable": false,
+		"group": {
+			"name": "友情链接管理",
+			"title": "友情链接管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_link_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"page\":1,\"size\":20,\"sort\":\"desc\",\"order\":\"listorder\"}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[],\"pagination\":{\"page\":1,\"size\":20,\"total\":0}}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "友情链接管理",
+		"tag": "",
+		"title": "友链列表",
+		"url": "/v2/link/list"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取系统未删除的模型列表",
+		"enable": false,
+		"group": {
+			"name": "系统管理",
+			"title": "系统管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_model_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"page\":1,\"size\":20}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":1,\"table_name\":\"普通文章\",\"table\":\"articles\",\"enabled\":1,\"model_type\":1,\"fe_tpl_index\":\"\",\"fe_tpl_list\":\"asdasd.jet\",\"fe_tpl_detail\":\"list/index.jet\",\"remark\":\"系统默认模型\",\"created\":\"\",\"updated\":\"\",\"field_show_in_list\":\"\",\"fe_search_fields\":\"\",\"formatters\":\"\",\"execed\":true},{\"id\":4,\"table_name\":\"招聘模型\",\"table\":\"zhaopin\",\"enabled\":0,\"model_type\":1,\"fe_tpl_index\":\"\",\"fe_tpl_list\":\"\",\"fe_tpl_detail\":\"\",\"remark\":\"\",\"created\":\"\",\"updated\":\"\",\"field_show_in_list\":\"\",\"fe_search_fields\":\"\",\"formatters\":\"\",\"execed\":false},{\"id\":5,\"table_name\":\"商城模型\",\"table\":\"shop\",\"enabled\":1,\"model_type\":1,\"fe_tpl_index\":\"\",\"fe_tpl_list\":\"list_shop.jet\",\"fe_tpl_detail\":\"index.jet\",\"remark\":\"这是一个商城模型， 用于展示商城数据\",\"created\":\"\",\"updated\":\"\",\"field_show_in_list\":\"\",\"fe_search_fields\":\"\",\"formatters\":\"\",\"execed\":false}],\"pagination\":{\"page\":1,\"size\":20,\"total\":3}}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "模型管理",
+		"tag": "",
+		"title": "模型列表",
+		"url": "/v2/model/list"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取所有配置分组列表",
+		"enable": false,
+		"group": {
+			"name": "系统配置",
+			"title": "系统配置"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_setting_groups",
+		"method": "POST",
+		"name": "groups",
+		"param": null,
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":[{\"label\":\"OSS存储配置\",\"value\":\"OSS存储配置\"},{\"label\":\"前台设置\",\"value\":\"前台设置\"},{\"label\":\"存储配置\",\"value\":\"存储配置\"},{\"label\":\"微信配置\",\"value\":\"微信配置\"},{\"label\":\"邮箱设置\",\"value\":\"邮箱设置\"}]}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "配置模块",
+		"tag": "",
+		"title": "配置分组列表",
+		"url": "/v2/setting/groups"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "查询系统指定分组配置信息列表",
+		"enable": false,
+		"group": {
+			"name": "系统配置",
+			"title": "系统配置"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_setting_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"page\":1,\"size\":20,\"params\":{\"group\":\"OSS存储配置\"}}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":21,\"key\":\"OSS_HOST\",\"form_name\":\"HOST\",\"value\":\"http://iriscms-test.oss-cn-beijing.aliyuncs.com\",\"group\":\"OSS存储配置\",\"default\":\"\",\"listorder\":19,\"remark\":\"\",\"editor\":\"input\",\"extra\":\"\",\"options\":null},{\"id\":22,\"key\":\"OSS_ENDPOINT\",\"form_name\":\"ENDPOINT\",\"value\":\"oss-cn-beijing.aliyuncs.com\",\"group\":\"OSS存储配置\",\"default\":\"\",\"listorder\":17,\"remark\":\"\",\"editor\":\"input\",\"extra\":\"\",\"options\":null},{\"id\":23,\"key\":\"OSS_KEYID\",\"form_name\":\"KEYID\",\"value\":\"\",\"group\":\"OSS存储配置\",\"default\":\"\",\"listorder\":15,\"remark\":\"你还是不懂\",\"editor\":\"input\",\"extra\":\"\",\"options\":null},{\"id\":24,\"key\":\"OSS_BUCKETNAME\",\"form_name\":\"BUCKETNAME\",\"value\":\"iriscms-test\",\"group\":\"OSS存储配置\",\"default\":\"\",\"listorder\":18,\"remark\":\"\",\"editor\":\"input\",\"extra\":\"\",\"options\":null},{\"id\":25,\"key\":\"OSS_KEYSECRET\",\"form_name\":\"SECRET\",\"value\":\"\",\"group\":\"OSS存储配置\",\"default\":\"\",\"listorder\":16,\"remark\":\"\",\"editor\":\"input\",\"extra\":\"\",\"options\":null}],\"pagination\":{\"page\":1,\"size\":20,\"total\":5}}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "配置模块",
+		"tag": "",
+		"title": "配置列表",
+		"url": "/v2/setting/list"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获悉系统内配置的菜单列表",
+		"enable": false,
+		"group": {
+			"name": "菜单管理",
+			"title": "菜单管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_menu_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":[{\"id\":3,\"name\":\"内容管理\",\"parentId\":0,\"c\":\"content\",\"a\":\"top\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":3,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-menu\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":9,\"name\":\"系统设置\",\"parentId\":0,\"c\":\"setting\",\"a\":\"left\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":1,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-system\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":10,\"name\":\"站点设置\",\"parentId\":9,\"c\":\"setting\",\"a\":\"site\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":1,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-system\",\"viewPath\":\"cool/modules/base/views/setting.vue\",\"keepAlive\":false,\"router\":\"/sys/setting\"},{\"id\":11,\"name\":\"权限管理\",\"parentId\":0,\"c\":\"admin\",\"a\":\"left\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":2,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-dept\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":12,\"name\":\"管理员管理\",\"parentId\":11,\"c\":\"admin\",\"a\":\"memberlist\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":1,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"cool/modules/base/views/user.vue\",\"keepAlive\":false,\"router\":\"/sys/user\"},{\"id\":13,\"name\":\"角色管理\",\"parentId\":11,\"c\":\"role\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":2,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"cool/modules/base/views/role.vue\",\"keepAlive\":false,\"router\":\"/sys/role\"},{\"id\":14,\"name\":\"日志监控\",\"parentId\":0,\"c\":\"system\",\"a\":\"loglist\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":9,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-log\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":15,\"name\":\"操作日志\",\"parentId\":14,\"c\":\"system\",\"a\":\"loglist\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":1,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-log-new\",\"viewPath\":\"cool/modules/base/views/log.vue\",\"keepAlive\":false,\"router\":\"/sys/log\"},{\"id\":16,\"name\":\"菜单管理\",\"parentId\":9,\"c\":\"system\",\"a\":\"menulist\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":2,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-menu\",\"viewPath\":\"cool/modules/base/views/menu.vue\",\"keepAlive\":false,\"router\":\"/sys/menu\"},{\"id\":17,\"name\":\"查看菜单\",\"parentId\":16,\"c\":\"system\",\"a\":\"menuview\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":18,\"name\":\"添加菜单\",\"parentId\":16,\"c\":\"system\",\"a\":\"menuadd\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":19,\"name\":\"修改菜单\",\"parentId\":16,\"c\":\"system\",\"a\":\"menuedit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":20,\"name\":\"删除菜单\",\"parentId\":16,\"c\":\"system\",\"a\":\"menudelete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":21,\"name\":\"菜单排序\",\"parentId\":16,\"c\":\"system\",\"a\":\"menuorder\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":22,\"name\":\"查看日志\",\"parentId\":15,\"c\":\"system\",\"a\":\"logview\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":23,\"name\":\"删除日志\",\"parentId\":15,\"c\":\"system\",\"a\":\"log-delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":24,\"name\":\"查看管理员\",\"parentId\":12,\"c\":\"admin\",\"a\":\"member-view\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":25,\"name\":\"添加管理员\",\"parentId\":12,\"c\":\"admin\",\"a\":\"member-add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":26,\"name\":\"编辑管理员\",\"parentId\":12,\"c\":\"admin\",\"a\":\"member-edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":27,\"name\":\"删除管理员\",\"parentId\":12,\"c\":\"admin\",\"a\":\"member-delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":28,\"name\":\"查看角色\",\"parentId\":13,\"c\":\"role\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":29,\"name\":\"添加角色\",\"parentId\":13,\"c\":\"role\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":30,\"name\":\"编辑角色\",\"parentId\":13,\"c\":\"role\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":31,\"name\":\"删除角色\",\"parentId\":13,\"c\":\"role\",\"a\":\"delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":34,\"name\":\"发布管理\",\"parentId\":3,\"c\":\"content\",\"a\":\"right\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"cool/modules/base/views/content.vue\",\"keepAlive\":false,\"router\":\"/sys/content\"},{\"id\":35,\"name\":\"内容管理\",\"parentId\":3,\"c\":\"content\",\"a\":\"index\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":false,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"cool/modules/base/views/content.vue\",\"keepAlive\":false,\"router\":\"/sys/content\"},{\"id\":36,\"name\":\"栏目管理\",\"parentId\":3,\"c\":\"category\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-menu\",\"viewPath\":\"cool/modules/base/views/category.vue\",\"keepAlive\":false,\"router\":\"/sys/category\"},{\"id\":37,\"name\":\"查看栏目\",\"parentId\":36,\"c\":\"category\",\"a\":\"view\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":38,\"name\":\"添加栏目\",\"parentId\":36,\"c\":\"category\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":39,\"name\":\"编辑栏目\",\"parentId\":36,\"c\":\"category\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":40,\"name\":\"删除栏目\",\"parentId\":36,\"c\":\"category\",\"a\":\"delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":41,\"name\":\"栏目排序\",\"parentId\":36,\"c\":\"category\",\"a\":\"order\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":53,\"name\":\"新闻列表\",\"parentId\":35,\"c\":\"content\",\"a\":\"news-list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":54,\"name\":\"分类单页\",\"parentId\":35,\"c\":\"content\",\"a\":\"page\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":55,\"name\":\"会员管理\",\"parentId\":0,\"c\":\"user\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":5,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-user\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":56,\"name\":\"会员管理\",\"parentId\":55,\"c\":\"member\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-user\",\"viewPath\":\"cool/modules/base/views/member.vue\",\"keepAlive\":false,\"router\":\"/sys/member\"},{\"id\":57,\"name\":\"会员信息\",\"parentId\":56,\"c\":\"member\",\"a\":\"info\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":58,\"name\":\"微信管理\",\"parentId\":0,\"c\":\"wechat\",\"a\":\"userlist\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":7,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-auth\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":59,\"name\":\"微信会员信息\",\"parentId\":58,\"c\":\"wechat\",\"a\":\"userinfo\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":false,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":60,\"name\":\"编辑会员\",\"parentId\":55,\"c\":\"user\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":false,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":62,\"name\":\"模型管理\",\"parentId\":3,\"c\":\"model\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":1,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-pic\",\"viewPath\":\"cool/modules/base/views/model.vue\",\"keepAlive\":false,\"router\":\"/sys/model\"},{\"id\":64,\"name\":\"添加模型\",\"parentId\":62,\"c\":\"model\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":65,\"name\":\"微信会员列表\",\"parentId\":58,\"c\":\"wechat\",\"a\":\"userlist\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":67,\"name\":\"友链管理\",\"parentId\":0,\"c\":\"link\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":88,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-tag\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":68,\"name\":\"友链管理\",\"parentId\":67,\"c\":\"link\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":88,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-tag\",\"viewPath\":\"cool/modules/base/views/link.vue\",\"keepAlive\":false,\"router\":\"/sys/link\"},{\"id\":69,\"name\":\"友链添加\",\"parentId\":68,\"c\":\"link\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":70,\"name\":\"友链编辑\",\"parentId\":68,\"c\":\"link\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":71,\"name\":\"友链删除\",\"parentId\":68,\"c\":\"link\",\"a\":\"delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":72,\"name\":\"友链排序\",\"parentId\":68,\"c\":\"link\",\"a\":\"order\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":73,\"name\":\"数据库管理\",\"parentId\":0,\"c\":\"database\",\"a\":\"manager\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":16,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-monitor\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":74,\"name\":\"数据库管理\",\"parentId\":73,\"c\":\"database\",\"a\":\"manager\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-count\",\"viewPath\":\"cool/modules/base/views/database_list.vue\",\"keepAlive\":false,\"router\":\"/sys/database/list\"},{\"id\":75,\"name\":\"数据库备份\",\"parentId\":74,\"c\":\"database\",\"a\":\"backup\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":76,\"name\":\"数据库优化\",\"parentId\":74,\"c\":\"database\",\"a\":\"optimize\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":77,\"name\":\"数据库修复\",\"parentId\":74,\"c\":\"database\",\"a\":\"repair\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":78,\"name\":\"备份列表\",\"parentId\":73,\"c\":\"database\",\"a\":\"backup-list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-monitor\",\"viewPath\":\"cool/modules/base/views/databse_backup_list.vue\",\"keepAlive\":false,\"router\":\"/sys/database/backup-list\"},{\"id\":79,\"name\":\"资源管理\",\"parentId\":0,\"c\":\"assets-manager\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":17,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-pic\",\"viewPath\":\"cool/modules/base/views/assets_manager.vue\",\"keepAlive\":false,\"router\":\"/sys/assets-manager\"},{\"id\":80,\"name\":\"模板列表\",\"parentId\":79,\"c\":\"assets-manager\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-template\",\"viewPath\":\"cool/modules/base/views/assets_manager.vue\",\"keepAlive\":false,\"router\":\"/sys/assets-manager\"},{\"id\":81,\"name\":\"添加资源\",\"parentId\":80,\"c\":\"assets-manager\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":82,\"name\":\"修改资源\",\"parentId\":80,\"c\":\"assets-manager\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":84,\"name\":\"附件列表\",\"parentId\":79,\"c\":\"attachments\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-pic\",\"viewPath\":\"cool/modules/base/views/attachment.vue\",\"keepAlive\":false,\"router\":\"/sys/attachments\"},{\"id\":85,\"name\":\"系统监控\",\"parentId\":14,\"c\":\"system\",\"a\":\"tail\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"cool/modules/base/views/statsviz.vue\",\"keepAlive\":false,\"router\":\"/statsviz\"},{\"id\":86,\"name\":\"修改模型\",\"parentId\":62,\"c\":\"model\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":87,\"name\":\"主题列表\",\"parentId\":79,\"c\":\"assets-manager\",\"a\":\"theme\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-theme\",\"viewPath\":\"cool/modules/base/views/theme.vue\",\"keepAlive\":false,\"router\":\"/sys/theme\"},{\"id\":89,\"name\":\"广告管理\",\"parentId\":9,\"c\":\"ad\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-list\",\"viewPath\":\"cool/modules/base/views/ad.vue\",\"keepAlive\":false,\"router\":\"/ad/list\"},{\"id\":91,\"name\":\"添加广告\",\"parentId\":89,\"c\":\"ad\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":92,\"name\":\"修改广告\",\"parentId\":89,\"c\":\"ad\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":93,\"name\":\"删除广告\",\"parentId\":89,\"c\":\"ad\",\"a\":\"delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":94,\"name\":\"添加广告位\",\"parentId\":89,\"c\":\"ad-space\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":95,\"name\":\"删除广告位\",\"parentId\":89,\"c\":\"ad-space\",\"a\":\"delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":96,\"name\":\"编辑广告位\",\"parentId\":89,\"c\":\"ad-space\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":97,\"name\":\"TODO\",\"parentId\":9,\"c\":\"public\",\"a\":\"todos\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":10,\"isShow\":false,\"type\":1,\"children\":null,\"icon\":\"icon-emoji\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":98,\"name\":\"缓存管理\",\"parentId\":9,\"c\":\"setting\",\"a\":\"cache\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":99,\"name\":\"发布内容\",\"parentId\":35,\"c\":\"content\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":100,\"name\":\"修改内容\",\"parentId\":35,\"c\":\"content\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":101,\"name\":\"字典管理\",\"parentId\":9,\"c\":\"dict\",\"a\":\"list\",\"plugin_id\":0,\"data\":\" \",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-common\",\"viewPath\":\"cool/modules/base/views/dict.vue\",\"keepAlive\":false,\"router\":\"/sys/dict\"},{\"id\":103,\"name\":\"部门管理\",\"parentId\":11,\"c\":\"department\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-common\",\"viewPath\":\"cool/modules/base/views/department.vue\",\"keepAlive\":false,\"router\":\"/sys/department\"},{\"id\":104,\"name\":\"岗位管理\",\"parentId\":11,\"c\":\"position\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-common\",\"viewPath\":\"cool/modules/base/views/position.vue\",\"keepAlive\":false,\"router\":\"/sys/position\"},{\"id\":105,\"name\":\"服务器状态\",\"parentId\":14,\"c\":\"stat\",\"a\":\"data\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-common\",\"viewPath\":\"cool/modules/base/views/stat.vue\",\"keepAlive\":false,\"router\":\"/sys/stat\"},{\"id\":107,\"name\":\"任务管理\",\"parentId\":108,\"c\":\"task\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-menu\",\"viewPath\":\"cool/modules/task/views/task.vue\",\"keepAlive\":false,\"router\":\"/sys/task\"},{\"id\":108,\"name\":\"插件管理\",\"parentId\":0,\"c\":\"plugin\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":999,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":109,\"name\":\"标签管理\",\"parentId\":3,\"c\":\"tags\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-menu\",\"viewPath\":\"cool/modules/base/views/tags.vue\",\"keepAlive\":false,\"router\":\"/sys/tags\"},{\"id\":110,\"name\":\"插件列表\",\"parentId\":108,\"c\":\"plugin\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"cool/modules/base/views/plugin.vue\",\"keepAlive\":false,\"router\":\"/sys/plugin\"},{\"id\":111,\"name\":\"分组管理\",\"parentId\":55,\"c\":\"member_group\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"cool/modules/base/views/member_group.vue\",\"keepAlive\":false,\"router\":\"/sys/member/group\"},{\"id\":112,\"name\":\"字段管理\",\"parentId\":3,\"c\":\"table_field\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":false,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"cool/modules/base/views/table.vue\",\"keepAlive\":false,\"router\":\"/sys/table/fields\"}]}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "菜单管理",
+		"tag": "",
+		"title": "菜单列表",
+		"url": "/v2/menu/list"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取系统未删除的内容列表",
+		"enable": false,
+		"group": {
+			"name": "内容管理",
+			"title": "内容管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_content_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"page\":1,\"size\":20,\"cid\":7}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"author\":\"admin\",\"catid\":7,\"description\":\"IT之家的最新一期微软必应(Bing)桌面壁纸合集下载又来啦。2013年6月，必应壁纸共30张（Bing New Zealand，1920×1200）+30张（必应中国，1366×768）+2视频文件。\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":462,\"keywords\":\"2013年,6月,微软,必应,桌面壁纸,合集,下载,60P,\",\"listorder\":1390899479,\"pubtime\":\"2014-01-28 16:57:59\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/419.jpg\",\"title\":\"2013年6月微软必应桌面壁纸合集下载（60P）\",\"visit_count\":60},{\"author\":\"admin\",\"catid\":7,\"description\":\"2013款全新Nexus 7当仁不让的成为首款搭载Android 4.3系统的设备，说到这里，其实是全新的壁纸又来了，也有些壁纸是老款Nexus设备中就有的。分辨率主要为2975*1920、2160*1920、1340*1196、1920*1280\",\"flag\":\"c,p\",\"from_url\":\"未知\",\"id\":460,\"keywords\":\"谷歌,Nexus,二代,平板,安卓,4.3,壁纸下载,合集,\",\"listorder\":1390899477,\"pubtime\":\"2014-01-28 16:57:57\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/417.jpg\",\"title\":\"谷歌 Nexus 7 二代平板/安卓4.3 壁纸下载合集\",\"visit_count\":60},{\"author\":\"admin\",\"catid\":7,\"description\":\"“Lost One”是一组来自 DA 的壁纸精选集合，主打风景之美，分辨率多样，适用于各种大小的设备，一共18张\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":459,\"keywords\":\"之家,桌面,壁纸下载,精选,景美,如画,Lost,One,L\",\"listorder\":1390899476,\"pubtime\":\"2014-01-28 16:57:56\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/416.jpg\",\"title\":\"IT之家桌面壁纸下载精选：风景美如画 - Lost One\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":7,\"description\":\"微软 Major Nelson 博客分享了一组 Xbox One 的专题壁纸，适用于智能手机和PC等各种尺寸的设备，分辨率包括 480*800，640*1136，1080*1920，1920*1080\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":458,\"keywords\":\"之家,桌面,壁纸下载,精选,微软,Xbox,One,特辑,微\",\"listorder\":1390899476,\"pubtime\":\"2014-01-28 16:57:56\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/415.jpg\",\"title\":\"IT之家桌面壁纸下载精选：微软 Xbox One 特辑\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":7,\"description\":\"2013年7月必应壁纸包含：必应（New Zealand）31张，图片分辨率皆为1900×1200。必应（中国）图片31张，分辨率皆为1366×768，外加4个动态背景视频文件。\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":457,\"keywords\":\"2013年,7月,微软,必应,Bing,桌面,壁纸下载,62\",\"listorder\":1390899475,\"pubtime\":\"2014-01-28 16:57:55\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/414.jpg\",\"title\":\"2013年7月微软必应Bing桌面壁纸下载（62P）\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":7,\"description\":\"Android Central 的 Andrew Martonik 提供了 Moto X （AT\\u0026T版）的16张内置壁纸，预览图如下\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":456,\"keywords\":\"摩托罗拉,Moto,内置,壁纸下载,16P,谷歌,旗下,摩托\",\"listorder\":1390899474,\"pubtime\":\"2014-01-28 16:57:54\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/413.jpg\",\"title\":\"摩托罗拉 Moto X 内置壁纸下载（16P）\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":7,\"description\":\"我总是喜欢不厌其烦的勾勒着莫名其妙的文字，看着太阳升起落下，再升起再落下，无聊度日\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":455,\"keywords\":\"之家,桌面,壁纸下载,精选,八月,时光,总是,喜欢,不厌其烦\",\"listorder\":1390899473,\"pubtime\":\"2014-01-28 16:57:53\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/412.jpg\",\"title\":\"IT之家桌面壁纸下载精选：八月时光记\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":7,\"description\":\"Gabrielx86 在DA提供了Win8.1 RTM正式版默认壁纸下载，分辨率3794*2133，这显然不是Win8.1 RTM中提取的原图壁纸，而是 Gabrielx86 自行“加工”出来的，但实际使用效果是一样的哈\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":454,\"keywords\":\"Win8.1,RTM,Build,9600,正式版,默认,壁\",\"listorder\":1390899473,\"pubtime\":\"2014-01-28 16:57:53\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/411.jpg\",\"title\":\"Win8.1 RTM Build 9600 正式版默认壁纸下载\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":7,\"description\":\"Win8.1 RTM Build 9600 企业版（简中）下载已被泄露，其内置的壁纸也惯例来到。Win8.1 RTM中共20张内置壁纸，其中有8张是新增壁纸（较Win8而言），一起来收资源吧\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":453,\"keywords\":\"Win8.1,RTM,正式版,20张,内置,壁纸,打包,下载\",\"listorder\":1390899472,\"pubtime\":\"2014-01-28 16:57:52\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/409.jpg\",\"title\":\"Win8.1 RTM 正式版20张内置壁纸打包下载\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":7,\"description\":\"又到了IT之家每月一次分享微软Bing壁纸合集的时刻了。不得不说的是，8月份必应中国壁纸中有张必须要收的，就是羊驼那张，哈哈哈\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":452,\"keywords\":\"2013年,8月,微软,必应,桌面,壁纸下载,这次,群羊,8\",\"listorder\":1390899471,\"pubtime\":\"2014-01-28 16:57:51\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/410.jpg\",\"title\":\"2013年8月微软必应桌面壁纸下载：这次有群羊驼\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":7,\"description\":\"罗永浩锤子 ROM Smartisan v0.6.0 α 昨日发布了升级，今日便有名为“鄙人26了”的用户对外打包分享了其中内置的锁屏壁纸，此举也得到了罗永浩的同意。\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":451,\"keywords\":\"罗永浩,眼光,锤子,ROM,内置,锁屏,壁纸下载,罗永浩,锤\",\"listorder\":1390899471,\"pubtime\":\"2014-01-28 16:57:51\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/408.jpg\",\"title\":\"罗永浩的眼光，锤子ROM内置锁屏壁纸下载\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":7,\"description\":\"近期，必应搜索团队也为大家精选了2013年度十佳主页，搜集了不少精美的风景图，相信其中也有你喜爱的一道风景线\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":450,\"keywords\":\"必应,秀美,近期,必应,搜索,团队,也为,大家,精选,201\",\"listorder\":1390899470,\"pubtime\":\"2014-01-28 16:57:50\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/406.jpg\",\"title\":\"必应秀美\",\"visit_count\":61},{\"author\":\"admin\",\"catid\":7,\"description\":\"苹果在发布 Mac OS X 10.9 Mavericks DP7 预览版时，也为了用户带来全新桌面壁纸，除了大家最熟悉的“巨浪”那张，其它这八张如何？\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":449,\"keywords\":\"苹果,Mac,10.9,Mavericks,全新,壁纸下载,\",\"listorder\":1390899470,\"pubtime\":\"2014-01-28 16:57:50\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/407.jpg\",\"title\":\"苹果 Mac OS X 10.9 Mavericks 全新壁纸下载\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":7,\"description\":\"从眼前婆娑的树影抬头遥望天边那一片纯净，我愿在秋日的温煦中伴着和风起舞，在无瑕的阳光里与静谧的草儿私语，在人生坚实的臂膀里一世安然\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":448,\"keywords\":\"之家,桌面,壁纸下载,静己,守心,人生,安然,一路,走来,生\",\"listorder\":1390899470,\"pubtime\":\"2014-01-28 16:57:50\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/405.jpg\",\"title\":\"IT之家桌面壁纸下载：静己守心，人生安然\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":7,\"description\":\"今天IT之家为苹果iPad用户带来一组精选壁纸，一起探索下奇妙的树林风景：林中雾气、夕阳下树林、雪地中林地、绿意的树林，都演绎着大自然的魔法，感兴趣的读者可以下载装饰下iPad屏幕\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":447,\"keywords\":\"iPad,壁纸,精选,系列,奇妙,树林,风景,今天,之家,苹\",\"listorder\":1390899469,\"pubtime\":\"2014-01-28 16:57:49\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/403.jpg\",\"title\":\"iPad壁纸精选系列：奇妙的树林风景\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":7,\"description\":\"现在，IT之家和大家分享下 iOS7 GM 的33张内置壁纸，分辨率744*1392\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":446,\"keywords\":\"33张,苹果,iOS7,官方,内置,壁纸,打包,下载,苹果,\",\"listorder\":1390899469,\"pubtime\":\"2014-01-28 16:57:49\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/404.jpg\",\"title\":\"33张，苹果 iOS7 GM 版官方内置壁纸打包下载\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":7,\"description\":\"这是一群从动漫中翩然飘出的女孩，或拥有靡丽的菁华，步步生莲；或端重温情，袅袅生风。个个似如梦的水月，褶皱了一袭美的精绝，而青葱的花颜，更是惊艳婉转的秀雅\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":445,\"keywords\":\"之家,动漫壁纸,精选,推荐,Cute,Girl,这是,一群,\",\"listorder\":1390899469,\"pubtime\":\"2014-01-28 16:57:49\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/402.jpg\",\"title\":\"IT之家动漫壁纸精选推荐：Cute Girl\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":7,\"description\":\"微软Bing搜索引擎不可否认的一大亮点便是其主页绚丽多彩的背景图片。在背景图片中也经常嵌入一些有用的信息,使得整个页面布局更生动。Bing现已发布了其2013年10大最佳壁纸\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":444,\"keywords\":\"必应,发布,2013年,十佳,桌面壁纸,微软,Bing,搜索\",\"listorder\":1390899469,\"pubtime\":\"2014-01-28 16:57:49\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/401.jpg\",\"title\":\"美，必应发布2013年十佳桌面壁纸\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":7,\"description\":\"9月30日，每个月末，便到了IT之家打包分享微软Bing壁纸合集的时刻了。这一次，9月份必应中国壁纸中有张“红领巾举手抢答问题”，让人不禁忆起童年啊\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":443,\"keywords\":\"2013年,9月,微软,必应,桌面,壁纸下载,红领巾,举手,\",\"listorder\":1390899468,\"pubtime\":\"2014-01-28 16:57:48\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/400.jpg\",\"title\":\"2013年9月微软必应桌面壁纸下载：红领巾举手\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":7,\"description\":\"IT之家论坛的 159khkhk 同大家分享了一组鼓舞人心的励志语壁纸，黑色的酷，还藏着包袱在里面，总有几张让你不得不收的\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":442,\"keywords\":\"之家,壁纸,精选,黑的,鼓舞人心,励志语,之家,论坛,159\",\"listorder\":1390899468,\"pubtime\":\"2014-01-28 16:57:48\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140128/399.jpg\",\"title\":\"IT之家壁纸精选：黑的酷，鼓舞人心励志语\",\"visit_count\":59}],\"pagination\":{\"page\":1,\"size\":20,\"total\":39}}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "内容管理",
+		"tag": "",
+		"title": "内容列表",
+		"url": "/v2/content/list"
+	},
+	{
+		"immutable": false,
+		"app_id": "admin",
+		"group": {
+			"title": "字段管理",
+			"name": "字段管理"
+		},
+		"sub_group": "字段管理",
+		"title": "字段列表",
+		"desc": "获取系统未删除的字段列表",
+		"tag": "",
+		"author": "xiusin",
+		"url": "/v2/table/list",
+		"method": "POST",
+		"param": [
+			{
+				"name": "page",
+				"type": "number",
+				"desc": "分页数",
+				"default": "1",
+				"require": true,
+				"childrenType": ""
+			},
+			{
+				"name": "size",
+				"type": "number",
+				"desc": "分页条数",
+				"default": "10",
+				"require": true,
+				"childrenType": ""
+			},
+			{
+				"name": "order",
+				"type": "string",
+				"desc": "排序字段",
+				"default": null,
+				"require": false,
+				"childrenType": ""
+			},
+			{
+				"name": "sort",
+				"type": "string",
+				"desc": "排序方法desc=逆序,asc=正序",
+				"default": null,
+				"require": false,
+				"childrenType": ""
+			},
+			{
+				"name": "keyWord",
+				"type": "string",
+				"desc": "查询关键字",
+				"default": null,
+				"require": false,
+				"childrenType": ""
+			},
+			{
+				"name": "_isExport",
+				"type": "bool",
+				"desc": "是否导出",
+				"default": null,
+				"require": false,
+				"childrenType": ""
+			},
+			{
+				"name": "params",
+				"type": "any",
+				"desc": "额外参数用于非配置字段导出",
+				"default": null,
+				"require": false,
+				"childrenType": ""
+			}
+		],
+		"return": [
+			{
+				"name": "code",
+				"desc": "",
+				"type": "number",
+				"default": ""
+			},
+			{
+				"name": "message",
+				"desc": "",
+				"type": "string",
+				"default": ""
+			},
+			{
+				"name": "data",
+				"desc": "",
+				"type": "any",
+				"default": ""
+			}
+		],
+		"header": [
+			{
+				"name": "Authorization",
+				"type": "string",
+				"require": true,
+				"desc": "登录票据"
+			}
+		],
+		"name": "list",
+		"menu_key": "post__v2_table_list",
+		"raw_param": "{\"page\":1,\"size\":20,\"sort\":\"asc\",\"order\":\"listorder\",\"mid\":1}",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":412,\"mid\":1,\"field_type\":1,\"form_name\":\"文章标题\",\"table_field\":\"title\",\"listorder\":1,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":24,\"sortable\":true,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":150,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-03 09:49:12\",\"deleted_at\":null},{\"id\":413,\"mid\":1,\"field_type\":11,\"form_name\":\"缩略图\",\"table_field\":\"thumb\",\"listorder\":2,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":4,\"center\":true,\"created_at\":null,\"updated_at\":\"2021-08-02 21:44:31\",\"deleted_at\":null},{\"id\":414,\"mid\":1,\"field_type\":1,\"form_name\":\"关键字\",\"table_field\":\"keywords\",\"listorder\":2,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":4,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-02 17:54:36\",\"deleted_at\":null},{\"id\":415,\"mid\":1,\"field_type\":16,\"form_name\":\"文档属性\",\"table_field\":\"flag\",\"listorder\":2,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":4,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-02 17:53:09\",\"deleted_at\":null},{\"id\":416,\"mid\":1,\"field_type\":2,\"form_name\":\"内容摘要\",\"table_field\":\"description\",\"listorder\":3,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":4,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-02 17:53:14\",\"deleted_at\":null},{\"id\":417,\"mid\":1,\"field_type\":15,\"form_name\":\"TAG标签\",\"table_field\":\"tags\",\"listorder\":4,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":4,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-02 17:53:20\",\"deleted_at\":null},{\"id\":418,\"mid\":1,\"field_type\":1,\"form_name\":\"文章来源\",\"table_field\":\"from_url\",\"listorder\":5,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"pinecms.git\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":4,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-02 17:53:29\",\"deleted_at\":null},{\"id\":419,\"mid\":1,\"field_type\":1,\"form_name\":\"作者\",\"table_field\":\"author\",\"listorder\":6,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"pinecms\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":4,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-02 17:53:34\",\"deleted_at\":null},{\"id\":420,\"mid\":1,\"field_type\":3,\"form_name\":\"文章内容\",\"table_field\":\"content\",\"listorder\":7,\"required\":true,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":false,\"visible\":false,\"list_visible\":false,\"field_len\":0,\"list_width\":80,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-03 09:55:09\",\"deleted_at\":null},{\"id\":421,\"mid\":1,\"field_type\":14,\"form_name\":\"发布时间\",\"table_field\":\"pubtime\",\"listorder\":8,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":4,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-02 17:53:52\",\"deleted_at\":null},{\"id\":422,\"mid\":1,\"field_type\":13,\"form_name\":\"状态\",\"table_field\":\"status\",\"listorder\":10,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"1\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":4,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-02 17:53:58\",\"deleted_at\":null},{\"id\":423,\"mid\":1,\"field_type\":9,\"form_name\":\"访问次数\",\"table_field\":\"visit_count\",\"listorder\":11,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":4,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-02 17:54:08\",\"deleted_at\":null},{\"id\":424,\"mid\":1,\"field_type\":9,\"form_name\":\"排序\",\"table_field\":\"listorder\",\"listorder\":12,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"30\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":true,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":4,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-02 17:54:14\",\"deleted_at\":null},{\"id\":425,\"mid\":1,\"field_type\":11,\"form_name\":\"幻灯片\",\"table_field\":\"flash\",\"listorder\":888,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":false,\"visible\":false,\"list_visible\":false,\"field_len\":0,\"list_width\":80,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-03 09:55:19\",\"deleted_at\":null}],\"pagination\":{\"page\":1,\"size\":20,\"total\":14}}}",
+		"raw_query": "",
+		"query_data_method": "application/json; charset=utf-8",
+		"enable": false,
+		"OnlyParams": null,
+		"ExcludeParams": null,
+		"NoParams": false
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取指定字段的详情信息",
+		"enable": false,
+		"group": {
+			"name": "字段管理",
+			"title": "字段管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "get__v2_table_info",
+		"method": "GET",
+		"name": "info",
+		"param": null,
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "",
+		"raw_query": "id=412",
+		"raw_return": "{\"code\":1000,\"data\":{\"id\":412,\"mid\":1,\"field_type\":1,\"form_name\":\"文章标题\",\"table_field\":\"title\",\"listorder\":1,\"required\":false,\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":24,\"sortable\":true,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":150,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-03 09:49:12\",\"deleted_at\":null}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "字段管理",
+		"tag": "",
+		"title": "字段详情",
+		"url": "/v2/table/info"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "修改给定ID的字段信息",
+		"enable": false,
+		"group": {
+			"name": "字段管理",
+			"title": "字段管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_table_edit",
+		"method": "POST",
+		"name": "edit",
+		"param": null,
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"form_name\":\"幻灯片\",\"field_type\":11,\"table_field\":\"flash\",\"main_table_field\":false,\"required\":false,\"required_tips\":\"\",\"default\":\"\",\"span\":4,\"list_width\":80,\"center\":false,\"sortable\":false,\"searchable\":false,\"list_visible\":false,\"show_component\":false,\"visible\":false,\"datasource\":\"\",\"validator\":\"\",\"status\":true,\"id\":425,\"mid\":1,\"listorder\":888,\"field_len\":0,\"created_at\":null,\"updated_at\":\"2021-08-02 17:54:22\",\"deleted_at\":null}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":\"修改数据成功\",\"message\":\"修改数据成功\"}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "字段管理",
+		"tag": "",
+		"title": "编辑字段",
+		"url": "/v2/table/edit"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取指定内容的详情信息",
+		"enable": false,
+		"group": {
+			"name": "内容管理",
+			"title": "内容管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "get__v2_content_info",
+		"method": "GET",
+		"name": "info",
+		"param": null,
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "",
+		"raw_query": "id=53",
+		"raw_return": "{\"code\":1,\"message\":\"获取53信息失败: needs a pointer to a value\"}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "内容管理",
+		"tag": "",
+		"title": "内容详情",
+		"url": "/v2/content/info"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "新增一个新的字典分类",
+		"enable": false,
+		"group": {
+			"name": "字典管理",
+			"title": "字典管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_dict_category_add",
+		"method": "POST",
+		"name": "add",
+		"param": [
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "分类id",
+				"name": "id",
+				"require": false,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "分类标识，唯一",
+				"name": "key",
+				"require": true,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "分类名称",
+				"name": "name",
+				"require": true,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "分类备注信息",
+				"name": "remark",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "状态",
+				"name": "status",
+				"require": true,
+				"type": "bool"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"name\":\"状态字典\",\"key\":\"status\",\"remark\":\"用于系统状态切换\",\"status\":true}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":\"新增数据成功\",\"message\":\"新增数据成功\"}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "字典分类管理",
+		"tag": "",
+		"title": "新增字典分类",
+		"url": "/v2/dict/category/add"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "删除指定字典分类",
+		"enable": false,
+		"group": {
+			"name": "字典管理",
+			"title": "字典管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_dict_category_delete",
+		"method": "POST",
+		"name": "delete",
+		"param": [
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "删除单个记录",
+				"name": "id",
+				"require": false,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "删除多个记录",
+				"name": "ids",
+				"require": false,
+				"type": "array"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"ids\":[8]}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":\"删除成功\",\"message\":\"删除成功\"}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "字典分类管理",
+		"tag": "",
+		"title": "删除字典分类",
+		"url": "/v2/dict/category/delete"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取系统未删除的广告位列表",
+		"enable": false,
+		"group": {
+			"name": "广告管理",
+			"title": "广告管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_ad_space_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"size\":1}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":14,\"name\":\"全站\",\"key\":\"full_site\",\"remark\":\"\"}],\"pagination\":{\"page\":0,\"size\":1,\"total\":1}}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "广告位管理",
+		"tag": "",
+		"title": "广告位列表",
+		"url": "/v2/ad/space/list"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取系统未删除的广告列表",
+		"enable": false,
+		"group": {
+			"name": "广告管理",
+			"title": "广告管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_ad_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"page\":1,\"size\":20,\"cid\":14,\"sort\":\"desc\",\"order\":\"id\"}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":25,\"name\":\"top_all\",\"space_id\":14,\"space_name\":\"\",\"link_url\":\"\",\"image\":\"/uploads/public/20200413/qq0g4e1Im6.png\",\"listorder\":0,\"start_time\":\"2020-04-13 18:34:25\",\"end_time\":\"2021-04-13 18:34:25\",\"status\":true},{\"id\":24,\"name\":\"right1\",\"space_id\":14,\"space_name\":\"\",\"link_url\":\"\",\"image\":\"/uploads/public/20200413/sopAEUX29h.jpg\",\"listorder\":0,\"start_time\":\"2020-04-13 18:33:56\",\"end_time\":\"2021-04-13 18:33:56\",\"status\":true},{\"id\":23,\"name\":\"right3\",\"space_id\":14,\"space_name\":\"\",\"link_url\":\"\",\"image\":\"/uploads/public/20200413/3lnooWbZ4d.jpg\",\"listorder\":0,\"start_time\":\"2020-04-13 18:33:44\",\"end_time\":\"2021-04-13 18:33:44\",\"status\":true},{\"id\":22,\"name\":\"right2\",\"space_id\":14,\"space_name\":\"\",\"link_url\":\"\",\"image\":\"/uploads/public/20200413/66OBu3Za08.jpg\",\"listorder\":0,\"start_time\":\"2020-04-13 18:33:01\",\"end_time\":\"2021-04-13 18:33:01\",\"status\":true},{\"id\":21,\"name\":\"right4\",\"space_id\":14,\"space_name\":\"\",\"link_url\":\"\",\"image\":\"/uploads/public/20200413/1789ez9j0L.jpg\",\"listorder\":0,\"start_time\":\"2020-04-13 18:32:43\",\"end_time\":\"2021-04-13 18:32:43\",\"status\":true},{\"id\":20,\"name\":\"article2\",\"space_id\":14,\"space_name\":\"\",\"link_url\":\"\",\"image\":\"/uploads/public/20200413/48PktdpOMG.jpg\",\"listorder\":0,\"start_time\":\"2020-04-13 18:32:16\",\"end_time\":\"2021-04-13 18:32:16\",\"status\":true},{\"id\":19,\"name\":\"article1\",\"space_id\":14,\"space_name\":\"\",\"link_url\":\"\",\"image\":\"/uploads/public/20200413/44twXycv3u.jpg\",\"listorder\":0,\"start_time\":\"2020-04-13 18:31:56\",\"end_time\":\"2021-04-13 18:31:56\",\"status\":true},{\"id\":18,\"name\":\"footer\",\"space_id\":14,\"space_name\":\"\",\"link_url\":\"\",\"image\":\"/uploads/public/20200413/q92SSCjq0R.jpg\",\"listorder\":0,\"start_time\":\"2020-04-13 18:31:37\",\"end_time\":\"2021-04-13 18:31:37\",\"status\":true},{\"id\":17,\"name\":\"left2\",\"space_id\":14,\"space_name\":\"\",\"link_url\":\"\",\"image\":\"/uploads/public/20200413/3VVwkb03OU.jpg\",\"listorder\":0,\"start_time\":\"2020-04-13 18:31:19\",\"end_time\":\"2021-04-13 18:31:19\",\"status\":true}],\"pagination\":{\"page\":1,\"size\":20,\"total\":9}}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "广告管理",
+		"tag": "",
+		"title": "广告列表",
+		"url": "/v2/ad/list"
+	}
+]

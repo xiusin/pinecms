@@ -12,7 +12,23 @@
 				<cl-flex1 />
 				<cl-pagination />
 			</el-row>
-			<cl-upsert v-bind="upsert" />
+			<cl-upsert v-bind="upsert">
+				<template #slot-dictKey="{ scope }">
+					<el-select
+						:filterable="true"
+						placeholder="请选择字典类型"
+						:automatic-dropdown="true"
+						size="mini"
+					>
+						<el-option
+							v-for="(item, idx) in dictCatRef"
+							:key="idx + '-' + item.value"
+							:value="item.value"
+							:label="item.label"
+						/>
+					</el-select>
+				</template>
+			</cl-upsert>
 		</cl-crud>
 
 		<!-- 表单 -->
@@ -42,6 +58,8 @@ export default defineComponent({
 				});
 			}
 		});
+
+		const dictCatRef = ref([]);
 
 		const dict = [
 			{
@@ -158,7 +176,7 @@ export default defineComponent({
 			items: [
 				{
 					prop: "form_name",
-					label: "表单名称",
+					label: "名称",
 					span: 12,
 					component: {
 						name: "el-input",
@@ -173,7 +191,7 @@ export default defineComponent({
 				},
 				{
 					prop: "field_type",
-					label: "字段类型",
+					label: "类型",
 					span: 12,
 					component: {
 						name: "el-select",
@@ -189,7 +207,7 @@ export default defineComponent({
 				},
 				{
 					prop: "table_field",
-					label: "表字段",
+					label: "字段",
 					span: 18,
 					component: {
 						name: "el-input",
@@ -287,7 +305,7 @@ export default defineComponent({
 				},
 				{
 					prop: "sortable",
-					label: "允许排序",
+					label: "排序",
 					span: 4,
 					value: true,
 					flex: false,
@@ -299,7 +317,7 @@ export default defineComponent({
 				},
 				{
 					prop: "searchable",
-					label: "允许搜索",
+					label: "搜索",
 					span: 4,
 					value: true,
 					flex: false,
@@ -311,7 +329,7 @@ export default defineComponent({
 				},
 				{
 					prop: "list_visible",
-					label: "列表显示",
+					label: "列表",
 					span: 4,
 					value: true,
 					flex: false,
@@ -323,7 +341,7 @@ export default defineComponent({
 				},
 				{
 					prop: "visible",
-					label: "表单显示",
+					label: "表单",
 					span: 4,
 					value: true,
 					flex: false,
@@ -357,21 +375,46 @@ export default defineComponent({
 						placeholder: "自定义渲染, 用于替换默认渲染信息, Render函数, json配置等"
 					}
 				},
-				// {
-				// 	prop: "component",
-				// 	label: "渲染配置",
-				// 	span: 24,
-				// 	component: {
-				// 		name: "cl-codemirror",
-				// 		height: 100,
-				// 	}
-				// },
-
+				{
+					prop: "is_dict",
+					label: "字典",
+					span: 4,
+					value: true,
+					flex: false,
+					hidden: ({ scope }: any) => fn(scope),
+					component: {
+						name: "el-checkbox",
+						"true-label": true,
+						"false-label": false
+					}
+				},
+				{
+					prop: "dict_key",
+					label: "类型",
+					span: 20,
+					hidden: ({ scope }: any) => {
+						if (!fn(scope)) {
+							return !scope.is_dict;
+						} else {
+							return true;
+						}
+					},
+					component: {
+						name: "el-select",
+						options: dictCatRef
+					}
+				},
 				{
 					prop: "datasource",
 					label: "数据源",
-					span: 24,
-					hidden: ({ scope }: any) => scope.field_type.includes(),
+					span: 20,
+					hidden: ({ scope }: any) => {
+						if (!fn(scope)) {
+							return scope.is_dict;
+						} else {
+							return true;
+						}
+					},
 					component: {
 						name: "el-input",
 						type: "textarea",
@@ -404,6 +447,20 @@ export default defineComponent({
 			]
 		});
 
+		const fn = (scope: any) => {
+			return (
+				scope.field_type != 5 &&
+				scope.field_type != 6 &&
+				scope.field_type != 7 &&
+				scope.field_type != 8
+			);
+		};
+
+		// 拉取字典
+		service.system.dictCategory.select().then((data: any[]) => {
+			dictCatRef.value = data;
+		});
+
 		async function onRefresh(params: any, { next, render }: any) {
 			let { list } = await next({
 				...params,
@@ -419,6 +476,7 @@ export default defineComponent({
 
 		return {
 			refs,
+			dictCatRef,
 			table,
 			upsert,
 			onRefresh,

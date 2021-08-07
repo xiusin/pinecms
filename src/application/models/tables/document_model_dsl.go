@@ -8,6 +8,8 @@ type DocumentModelDsl struct {
 	TableField     string     `json:"table_field" xorm:"comment('表字段') varchar(50)"`
 	ListOrder      int64      `xorm:"listorder comment('排序值')" json:"listorder"`
 	Required       bool       `json:"required"  xorm:"comment('是否必填') tinyint(1)"`
+	IsDict         bool       `json:"is_dict"  xorm:"comment('字典数据源') tinyint(1)"`
+	DictKey        string     `json:"dict_key" xorm:"comment('字典分类name,启用is_dict后需设置此字段') varchar(100)"`
 	Datasource     string     `json:"datasource" xorm:"comment('数据源，链接或json') text"`
 	RequiredTips   string     `json:"required_tips"  xorm:"comment('必填字段信息') varchar(100)"`
 	Validator      string     `json:"validator"  xorm:"comment('验证器或规则') varchar(100)"`

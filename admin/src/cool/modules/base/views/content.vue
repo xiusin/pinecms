@@ -19,7 +19,7 @@
 			<div class="editor">
 				<div class="container">
 					<cl-crud :ref="setRefs('crud')" @load="onLoad" v-if="!catType">
-						<el-row type="flex">
+						<el-row>
 							<cl-filter label="单选">
 								<el-select size="mini">
 									<el-option value="" label="全部" />
@@ -41,7 +41,7 @@
 							<cl-filter label="输入">
 								<el-input placeholder="请输入姓名" clearable size="mini" />
 							</cl-filter>
-
+							<div></div>
 							<cl-filter label="级联">
 								<el-cascader
 									size="mini"
@@ -198,7 +198,7 @@ export default defineComponent({
 			catType.value = menuList.value[0].type;
 			if (catType.value == 0) {
 				midRef.value = menuList.value[0].model_id;
-				refresh({ cid: catId.value });
+				({ cid: catId.value });
 			}
 		});
 
