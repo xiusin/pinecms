@@ -16,7 +16,7 @@
 								@selection-change="onSelectionChange"
 							>
 								<template #column-image="{ scope }">
-									<img :src="scope.row.image"  alt=""/>
+									<img :src="scope.row.image" alt="" />
 								</template>
 								<template #slot-btn="{ scope }">
 									<el-button
@@ -171,7 +171,7 @@ export default defineComponent({
 				{
 					prop: "name",
 					label: "广告位名称",
-					align: "left",
+					align: "left"
 				},
 				{
 					prop: "key",

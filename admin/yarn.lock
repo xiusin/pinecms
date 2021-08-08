@@ -216,6 +216,13 @@
     "@babel/helper-plugin-utils" "^7.13.0"
     "@babel/plugin-syntax-typescript" "^7.12.13"
 
+"@babel/runtime@7.x":
+  version "7.14.8"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.14.8.tgz#7119a56f421018852694290b9f9148097391b446"
+  integrity sha512-twj3L8Og5SaCRCErB4x4ajbvBIVV77CGeFglHpeg5WC5FF8TZzBWXtTJ4MqaD9QszLYTtr+IsaAL2rEUevb+eg==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
 "@babel/template@^7.0.0", "@babel/template@^7.12.13":
   version "7.12.13"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.12.13.tgz#530265be8a2589dbb37523844c5bcb55947fb327"
@@ -3016,6 +3023,11 @@ readdirp@~3.5.0:
   dependencies:
     picomatch "^2.2.1"
 
+regenerator-runtime@^0.13.4:
+  version "0.13.9"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.9.tgz#8925742a98ffd90814988d7566ad30ca3b263b52"
+  integrity sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==
+
 regex-not@^1.0.0, regex-not@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/regex-not/-/regex-not-1.0.2.tgz#1f4ece27e00b0b65e0247a6810e6a85d83a5752c"
@@ -3804,6 +3816,13 @@ vue-tsc@^0.0.8:
   integrity sha512-LY3SqDGAvB+x2iLqxZSGCw5tdR0tFQ7QhJ/J0+HQ7FZ5pED9tr4wxBMNeUPliLgIDbi5yFLM86Q+I93DYA0Y6g==
   dependencies:
     unzipper latest
+
+vue-ueditor-wrap@^3.0.8:
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/vue-ueditor-wrap/-/vue-ueditor-wrap-3.0.8.tgz#b0c6b9d2fe4f4754c55876e60973b44c85b10a43"
+  integrity sha512-U1s30pKcz8rr6v2F2ivnomOf1vF1N+n+aNClas4jXfiEf4E5FEtNwkFJBugcyf2VTRFK0UVpx5WspX5nwmImYw==
+  dependencies:
+    "@babel/runtime" "7.x"
 
 vue@3.0.11, vue@^3.0.11:
   version "3.0.11"

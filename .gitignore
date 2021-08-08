@@ -19,3 +19,4 @@ pinecms-dev-build.exe~
 /apidoc/
 dist
 *.so
+/admin/public/Ueditor/

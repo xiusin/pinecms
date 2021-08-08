@@ -226,7 +226,7 @@ export default defineComponent({
 		watch(
 			() => browser.value.isMini,
 			(val) => {
-				category.visible = val ? false : true;
+				category.visible = !val;
 			},
 			{
 				immediate: true
