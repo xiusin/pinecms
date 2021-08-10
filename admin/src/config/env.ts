@@ -3,13 +3,13 @@ import { getUrlParam } from "/@/core/utils";
 import { MenuItem } from "/$/base/types";
 
 // 路由模式
-const routerMode: String = "history";
+const routerMode: String = "hash";
 
 // 开发模式
 const isDev: Boolean = import.meta.env.MODE === "development";
 
 // Host
-const host: String = "https://show.cool-admin.com";
+const host: String = "http://cms-api.xiusin.cn";
 
 // 请求地址
 const baseUrl: String = (function () {
@@ -21,7 +21,7 @@ const baseUrl: String = (function () {
 		proxy = store.get("proxy") || "dev";
 	}
 
-	return isDev ? `/${proxy}` : `/v2`;
+	return isDev ? `/${proxy}` : `/v2`; //${host}
 })();
 
 // Socket

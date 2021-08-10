@@ -108,13 +108,10 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { last, isArray, isNumber, isBoolean, basename } from "/@/core/utils";
+import { clone, last, isArray, isNumber, isBoolean, basename } from "/@/core/utils";
 import { v4 as uuidv4 } from "uuid";
-import { clone } from "/@/core/utils";
-
 export default {
 	name: "cl-upload",
-
 	props: {
 		modelValue: [Array, String],
 		// 尺寸
@@ -190,11 +187,14 @@ export default {
 		// 上传文件之前的钩子
 		beforeUpload: Function,
 		// 删除文件之前的钩子
-		beforeRemove: Function
+		beforeRemove: Function,
+		// 是否拼接
+		urlJoin: {
+			type: Boolean,
+			default: true
+		}
 	},
-
 	emits: ["update:modelValue", "change"],
-
 	data() {
 		return {
 			fileList: [],
@@ -206,29 +206,22 @@ export default {
 			}
 		};
 	},
-
 	computed: {
 		...mapGetters(["token", "modules"]),
-
 		conf() {
 			return this.modules.upload.options;
 		},
-
 		_size() {
 			return this.size || this.conf.size || "128px";
 		},
-
 		_icon() {
 			return this.icon || this.conf.icon || "el-icon-upload";
 		},
-
 		_text() {
-			return this.text || this.conf.text || "选择文件";
+			return this.text === undefined ? this.conf.text : this.text;
 		},
-
 		_accept() {
 			const d = this.accept || this.conf.accept;
-
 			switch (this.listType) {
 				case "picture-card":
 					return d || "image/*";
@@ -236,22 +229,17 @@ export default {
 					return d;
 			}
 		},
-
 		_name() {
 			return this.name || this.conf.name || "file";
 		},
-
 		_limitSize() {
 			return this.limitSize || this.conf.limitSize || 10;
 		},
-
 		_rename() {
 			return isBoolean(this.rename) ? this.rename : this.conf.rename;
 		},
-
 		_showFileList() {
 			let f = null;
-
 			switch (this.listType) {
 				case "picture-card":
 				case "text":
@@ -261,19 +249,15 @@ export default {
 					f = false;
 					break;
 			}
-
 			return this.showFileList === undefined ? f : this.showFileList;
 		},
-
 		_loading() {
-			return this.listType === "default" ? this.loading : false;
+			return this.listType == "default" ? this.loading : false;
 		},
-
 		_urls() {
 			const format = {
-				image: ["bmp", "jpg", "jpeg", "png", "tif", "gif", "svg"]
+				image: ["bmp", "jpg", "jpeg", "png", "tif", "gif", "svg", "webp"]
 			};
-
 			return this.urls
 				.filter((e) => Boolean(e.url))
 				.map((e) => {
@@ -283,23 +267,18 @@ export default {
 					return e;
 				});
 		},
-
 		_file() {
 			return this._urls[0];
 		},
-
 		_style() {
 			let arr = [];
-
 			if (isArray(this._size)) {
 				arr = this._size;
 			} else {
 				arr = [this._size, this._size];
 			}
-
 			const [height, width] = arr.map((e) => (isNumber(e) ? `${e}px` : e));
-
-			if (this.listType === "default" && !this.drag) {
+			if (this.listType == "default" && !this.drag) {
 				return {
 					height,
 					width
@@ -309,19 +288,16 @@ export default {
 			}
 		}
 	},
-
 	watch: {
 		modelValue: {
 			immediate: true,
 			handler: "parseValue"
 		}
 	},
-
 	methods: {
 		// 解析参数
 		parseValue(value) {
 			let list = [];
-
 			if (this.multiple) {
 				if (value instanceof Array) {
 					list = value;
@@ -333,7 +309,6 @@ export default {
 					list = [value];
 				}
 			}
-
 			// 比较数据，避免重复动画
 			if (
 				!this.urls.some((e) => {
@@ -347,23 +322,20 @@ export default {
 						uid: url
 					};
 				});
-
 				// 设置 URLS
 				this.urls = clone(this.fileList);
 			}
 		},
-
 		// 更新值
 		update() {
-			const urls = this.urls
-				.filter((e) => Boolean(e.url))
-				.map((e) => e.url)
-				.join(",");
-
+			let urls = this.urls.filter((e) => Boolean(e.url)).map((e) => e.url);
+			// 是否拼接
+			if (this.urlJoin) {
+				urls = urls.join(",");
+			}
 			this.$emit("update:modelValue", urls);
 			this.$emit("change", urls);
 		},
-
 		// 追加文件
 		append(data) {
 			if (this.multiple) {
@@ -371,15 +343,12 @@ export default {
 			} else {
 				this.urls = [data];
 			}
-
 			this.update();
 		},
-
 		// 关闭上传加载中
 		done() {
 			this.loading = false;
 		},
-
 		// 删除文件
 		_onRemove(file) {
 			this.urls.splice(
@@ -387,31 +356,25 @@ export default {
 				1
 			);
 			this.update();
-
 			// 删除文件之前的钩子
 			if (this.onRemove) {
 				this.onRemove(file, this.urls);
 			}
 		},
-
 		// 预览图片
 		_onPreview(file) {
 			this.preview.visible = true;
 			this.preview.url = file.url;
-
 			if (!file.url) {
 				const item = this.urls.find((e) => e.uid == file.uid);
-
 				if (item) {
 					this.preview.url = item.url;
 				}
 			}
 		},
-
 		// 上传前
 		_beforeUpload(file) {
 			this.loading = true;
-
 			if (this._limitSize) {
 				if (file.size / 1024 / 1024 >= this._limitSize) {
 					this.$message.error(`上传文件大小不能超过 ${this._limitSize}MB!`);
@@ -419,59 +382,49 @@ export default {
 					return false;
 				}
 			}
-
 			if (this.beforeUpload) {
 				return this.beforeUpload(file, {
 					done: this.done
 				});
 			}
-
 			return true;
 		},
-
 		// 上传成功
 		_onSuccess(res, file) {
 			this.loading = false;
-
 			this.append({
 				url: res.data,
 				name: file.raw.name,
 				uid: file.raw.uid
 			});
-
 			// 文件上传成功时的钩子
 			if (this.onSuccess) {
 				this.onSuccess(res, file.raw, this.urls);
 			}
 		},
-
 		// 重设上传请求
 		async httpRequest(req) {
+			const mode = await this.uploadMode();
 			// 多种上传请求
 			const upload = (file) => {
 				return new Promise((resolve, reject) => {
+					debugger;
 					const next = (res) => {
-						console.log("upload.next", res);
-						const data = new FormData();
-
+						let data = new FormData();
 						for (const i in res) {
 							if (i != "host") {
 								data.append(i, res[i]);
 							}
 						}
-
 						let fileName = file.name;
-
 						// 是否以 uuid 重新命名
 						if (this._rename) {
 							fileName = uuidv4() + "." + last((file.name || "").split("."));
 						}
-
-						data.append("key", `${fileName}`);
+						data.append("key", `app/${fileName}`);
 						data.append("file", file);
-						console.log(data)
 						// 上传
-						this.service.common
+						this.service.base.common
 							.request({
 								url: res.host,
 								method: "POST",
@@ -480,7 +433,6 @@ export default {
 								},
 								data,
 								onUploadProgress: (e) => {
-									debugger
 									if (this.onProgress) {
 										e.percent = parseInt((e.loaded / e.total) * 100);
 										this.onProgress(e, req.file);
@@ -488,40 +440,48 @@ export default {
 								}
 							})
 							.then((url) => {
-								resolve(url);
+								if (mode === "local") {
+									resolve(url);
+								} else {
+									resolve(`${res.host}/app/${fileName}`);
+								}
 							})
 							.catch((err) => {
 								reject(err);
 							});
 					};
-
-					this.service.common
-						.upload()
-						.then((res) => {
-							next(res);
-						})
-						.catch(reject);
+					if (mode == "local") {
+						next({
+							host: "/upload"
+						});
+					} else {
+						this.service.base.common
+							.upload()
+							.then((res) => {
+								next(res);
+							})
+							.catch(reject);
+					}
 				});
 			};
-
 			this.loading = true;
-
 			await upload(req.file)
 				.then((url) => {
-					debugger
 					this._onSuccess({ data: url }, { raw: req.file });
 				})
 				.catch((err) => {
 					console.error("upload error", err);
 					this.$message.error(err);
-
 					// 	文件上传失败时的钩子
 					if (this.onError) {
 						this.onError(err, req.file);
 					}
 				});
-
 			this.loading = false;
+		},
+		// 上传模式
+		uploadMode() {
+			return this.service.base.common.uploadMode().then((res) => res.mode);
 		}
 	}
 };
@@ -531,18 +491,15 @@ export default {
 .cl-upload {
 	display: flex;
 	flex-wrap: wrap;
-
 	&__hidden {
 		height: 0;
 		width: 0;
 	}
-
 	&.is-multiple {
 		.cl-upload__wrap {
 			margin-right: 10px;
 		}
 	}
-
 	&--default {
 		&:not(.is-drag) {
 			.el-upload {
@@ -555,22 +512,18 @@ export default {
 				position: relative;
 				overflow: hidden;
 				height: 100%;
-
 				i {
 					font-size: 28px;
 					color: #8c939d;
 				}
-
 				.cl-upload__cover {
 					position: relative;
-
 					img {
 						display: block;
 						height: 100%;
 						width: 100%;
 					}
 				}
-
 				.cl-upload__actions {
 					position: absolute;
 					width: 100%;
@@ -585,35 +538,28 @@ export default {
 					background-color: rgba(0, 0, 0, 0.5);
 					-webkit-transition: opacity 0.3s;
 					transition: opacity 0.3s;
-
 					&::after {
 						display: inline-block;
 						content: "";
 						height: 100%;
 						vertical-align: middle;
 					}
-
 					span {
 						display: none;
 						cursor: pointer;
 					}
-
 					span + span {
 						margin-left: 15px;
 					}
-
 					i {
 						color: #fff;
 						font-size: 20px;
 					}
 				}
-
 				&:hover {
 					border-color: $color-primary;
-
 					.cl-upload__actions {
 						opacity: 1;
-
 						span {
 							display: inline-block;
 						}
@@ -622,22 +568,18 @@ export default {
 			}
 		}
 	}
-
 	&--picture-card {
 		.el-upload {
 			background-color: #fff;
-
 			.cl-upload__icon {
 				position: relative;
 				top: 4px;
 			}
 		}
 	}
-
 	&__icon + span {
 		margin-left: 5px;
 	}
-
 	&__text {
 		font-size: 14px;
 	}

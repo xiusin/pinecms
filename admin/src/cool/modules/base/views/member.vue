@@ -13,10 +13,7 @@
 						</el-row>
 
 						<el-row>
-							<cl-table
-								:ref="setRefs('table')"
-								v-bind="table"
-							>
+							<cl-table :ref="setRefs('table')" v-bind="table">
 								<!-- 头像 -->
 								<template #column-avatar="{ scope }">
 									<cl-avatar
@@ -28,7 +25,7 @@
 								</template>
 
 								<template #column-group_id="{ scope }">
-									{{getGroupName(scope.row.group_id)}}
+									{{ getGroupName(scope.row.group_id) }}
 								</template>
 							</cl-table>
 						</el-row>
@@ -114,7 +111,7 @@ export default defineComponent({
 				{
 					prop: "group_id",
 					label: "会员分组",
-					width: 100,
+					width: 100
 				},
 				{
 					prop: "status",
@@ -161,9 +158,9 @@ export default defineComponent({
 			]
 		});
 
-		let groups = {}
+		let groups = {};
 
-		let kvGroups = [{"label": "请选择分组", "value": ""}]
+		let kvGroups = [{ label: "请选择分组", value: "" }];
 
 		// 新增、编辑配置
 		const upsert = reactive<Upsert>({
@@ -331,15 +328,14 @@ export default defineComponent({
 			for (const key in data) {
 				groups[data[key].id] = data[key].name;
 				kvGroups.push({
-					"label":  data[key].name,
-					"value": parseInt(data[key].id)
-				})
+					label: data[key].name,
+					value: parseInt(data[key].id)
+				});
 			}
-		})
-
+		});
 
 		function getGroupName(groupId) {
-			console.log(groups)
+			console.log(groups);
 			return groups[groupId];
 		}
 

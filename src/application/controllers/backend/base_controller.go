@@ -227,6 +227,12 @@ func (c *BaseController) PostAdd() {
 		}
 	}
 	if c.add() {
+		if c.OpAfter != nil {
+			if err := c.OpAfter(OpAdd, c.Table); err != nil {
+				helper.Ajax(err.Error(), 1, c.Ctx())
+				return
+			}
+		}
 		helper.Ajax("新增数据成功", 0, c.Ctx())
 	} else {
 		helper.Ajax("新增数据失败", 1, c.Ctx())

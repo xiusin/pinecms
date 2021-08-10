@@ -9,7 +9,6 @@
 			<cl-pagination />
 		</el-row>
 	</cl-crud>
-
 </template>
 
 <script lang="ts">
@@ -31,9 +30,8 @@ export default defineComponent({
 				$size /= 1024;
 				pos++;
 			}
-			return  $size.toFixed(2)  + unit[pos];
-		}
-
+			return $size.toFixed(2) + unit[pos];
+		};
 
 		// 表格配置
 		const table = reactive<Table>({
@@ -42,25 +40,25 @@ export default defineComponent({
 					label: "源名称",
 					prop: "original",
 					minWidth: 150,
-					align: "left",
+					align: "left"
 				},
 				{
 					label: "图片",
 					prop: "url",
-					component: ({h, scope}: any) => {
+					component: ({ h, scope }: any) => {
 						return h("img", {
 							src: scope.url,
 							height: 40
 						});
-					},
+					}
 				},
 				{
 					label: "文件大小",
 					prop: "size",
 					minWidth: 150,
-					component: ({h, scope}: any) => {
+					component: ({ h, scope }: any) => {
 						return file_size_format(scope.size);
-					},
+					}
 				},
 				{
 					label: "类型",
@@ -92,7 +90,7 @@ export default defineComponent({
 			refs,
 			table,
 			setRefs,
-			onLoad,
+			onLoad
 		};
 	}
 });

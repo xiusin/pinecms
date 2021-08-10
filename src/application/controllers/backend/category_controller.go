@@ -23,8 +23,8 @@ func (c *CategoryController) Construct() {
 	c.ApiEntityName = "分类"
 	c.OpBefore = c.before
 	c.sql = "SELECT COUNT(*) total FROM `%s` WHERE id=? and deleted_time IS NULL"
-	c.TableStructKey = "Catid"
 	c.BaseController.Construct()
+	c.TableStructKey = "Catid"
 }
 
 func (c *CategoryController) before(act int, params interface{}) error {

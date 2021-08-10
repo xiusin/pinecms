@@ -1,37 +1,36 @@
 <template>
 	<cl-crud :ref="setRefs('crud')" @load="onLoad" :on-refresh="onRefresh">
 		<el-row type="flex">
-			<cl-refresh-btn/>
-			<cl-add-btn/>
-			<cl-flex1/>
-			<cl-search-key/>
+			<cl-refresh-btn />
+			<cl-add-btn />
+			<cl-flex1 />
+			<cl-search-key />
 		</el-row>
 
 		<el-row>
-			<cl-table :ref="setRefs('table')" v-bind="table" @row-click="onRowClick"/>
+			<cl-table :ref="setRefs('table')" v-bind="table" @row-click="onRowClick" />
 		</el-row>
 
 		<el-row type="flex">
-			<cl-flex1/>
-			<cl-pagination/>
+			<cl-flex1 />
+			<cl-pagination />
 		</el-row>
 
-		<cl-upsert v-model="form" v-bind="upsert"/>
+		<cl-upsert v-model="form" v-bind="upsert" />
 	</cl-crud>
 </template>
 
 <script lang="ts">
-import {useRefs} from "/@/core";
-import {deepTree} from "/@/core/utils";
-import {CrudLoad, RefreshOp, Table, Upsert} from "cl-admin-crud-vue3/types";
-import {defineComponent, inject, reactive} from "vue";
+import { useRefs } from "/@/core";
+import { deepTree } from "/@/core/utils";
+import { CrudLoad, RefreshOp, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { defineComponent, inject, reactive } from "vue";
 
 export default defineComponent({
 	name: "sys-department",
 
 	setup() {
-
-		const {refs, setRefs} = useRefs();
+		const { refs, setRefs } = useRefs();
 
 		const service = inject<any>("service");
 
@@ -84,7 +83,7 @@ export default defineComponent({
 					component: {
 						name: "el-input",
 						props: {
-							placeholder: "请填写电话",
+							placeholder: "请填写电话"
 						}
 					}
 				},
@@ -95,7 +94,7 @@ export default defineComponent({
 					component: {
 						name: "el-input",
 						props: {
-							placeholder: "请填写邮箱",
+							placeholder: "请填写邮箱"
 						}
 					}
 				},
@@ -152,25 +151,25 @@ export default defineComponent({
 					prop: "name",
 					label: "名称",
 					width: 200,
-					align: "left",
+					align: "left"
 				},
 				{
 					prop: "leader_name",
 					label: "负责人",
 					width: 200,
-					align: "left",
+					align: "left"
 				},
 				{
 					prop: "leader_phone",
 					label: "联系电话",
 					width: 200,
-					align: "left",
+					align: "left"
 				},
 
 				{
 					prop: "email",
 					label: "邮箱",
-					align: "left",
+					align: "left"
 				},
 				{
 					prop: "status",
@@ -197,8 +196,8 @@ export default defineComponent({
 			]
 		});
 
-		function onRefresh(_: any, {render}: RefreshOp) {
-			service.system.department.list().then((list: any[]) => {
+		function onRefresh(_: any, { render }: RefreshOp) {
+			service.system.department.list().then(({ list }: any) => {
 				render(deepTree(list), {
 					total: list.length
 				});
@@ -211,7 +210,7 @@ export default defineComponent({
 			}
 		}
 
-		function upsertAppend({type, id}: any) {
+		function upsertAppend({ type, id }: any) {
 			refs.value.crud.rowAppend({
 				parentId: id,
 				type: type + 1
@@ -219,7 +218,7 @@ export default defineComponent({
 		}
 
 		// crud 加载
-		function onLoad({ctx, app}: CrudLoad) {
+		function onLoad({ ctx, app }: CrudLoad) {
 			ctx.service(service.system.department).done();
 			app.refresh();
 		}
@@ -232,7 +231,7 @@ export default defineComponent({
 			onRefresh,
 			onRowClick,
 			upsertAppend,
-			setRefs,
+			setRefs
 		};
 	}
 });

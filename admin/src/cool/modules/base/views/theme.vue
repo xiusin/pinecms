@@ -1,18 +1,19 @@
 <template>
 	<el-row :gutter="20">
-		<el-col :span="4" v-for="(o, index) in themeList" :key="index" >
+		<el-col :span="4" v-for="(o, index) in themeList" :key="index">
 			<el-card :body-style="{ padding: '0px' }">
-				<img :src="baseUrl + '/assets/thumb?id=' + o.dir"
-					 class="image">
-				<div style="padding: 14px;">
-					<span>{{o.name}}</span>
+				<img :src="baseUrl + '/assets/thumb?id=' + o.dir" class="image" />
+				<div style="padding: 14px">
+					<span>{{ o.name }}</span>
 					<div class="bottom clearfix">
-						<time class="time">{{o.description}}</time>
+						<time class="time">{{ o.description }}</time>
 						<template v-if="o.is_default">
 							<el-button type="text" class="button" disabled>√</el-button>
 						</template>
 						<template v-else>
-							<el-button type="text" class="button" onclick="setTheme(o.dir)">√</el-button>
+							<el-button type="text" class="button" onclick="setTheme(o.dir)"
+								>√</el-button
+							>
 						</template>
 					</div>
 				</div>
@@ -22,33 +23,35 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, inject, ref} from "vue";
+import { defineComponent, inject, ref } from "vue";
 import { baseUrl } from "/@/config/env";
 
-import {useRefs} from "/@/core";
+import { useRefs } from "/@/core";
 
 export default defineComponent({
 	name: "sys-theme",
 	setup() {
 		const service = inject<any>("service");
-		const {refs, setRefs} = useRefs();
+		const { refs, setRefs } = useRefs();
 
-		let themeList = ref([])
+		let themeList = ref([]);
 
 		function reloadThemes() {
 			service.system.assets.themes().then((data) => {
-				themeList.value?.push(...data)
-			})
+				themeList.value?.push(...data);
+			});
 		}
 
-		reloadThemes()
+		reloadThemes();
 
 		function setTheme(dirname) {
-			service.system.assets.theme({
-				"theme": dirname
-			}).then((data) => {
-				reloadThemes()
-			})
+			service.system.assets
+				.theme({
+					theme: dirname
+				})
+				.then((data) => {
+					reloadThemes();
+				});
 		}
 
 		const currentDate = new Date();
@@ -92,6 +95,6 @@ export default defineComponent({
 }
 
 .clearfix:after {
-	clear: both
+	clear: both;
 }
 </style>

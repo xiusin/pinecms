@@ -17,7 +17,7 @@
 <script lang="ts">
 import { defineComponent, inject, reactive, ref } from "vue";
 import { useRefs } from "/@/core";
-import {CrudLoad, FormRef, Table, Upsert} from "cl-admin-crud-vue3/types";
+import { CrudLoad, FormRef, Table, Upsert } from "cl-admin-crud-vue3/types";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 export default defineComponent({
@@ -135,10 +135,10 @@ export default defineComponent({
 				on: {
 					submit: async (data, { close }) => {
 						if (!data["undefined"]) {
-							ElMessage.error("SQL语句必须填写")
+							ElMessage.error("SQL语句必须填写");
 							return;
 						}
-						await service.system.databaseList.exec({sql: data["undefined"]})
+						await service.system.databaseList.exec({ sql: data["undefined"] });
 						close();
 					}
 				}
@@ -154,7 +154,7 @@ export default defineComponent({
 			onLoad,
 			sqlFormRef,
 			execSQL,
-			onSelectionChange,
+			onSelectionChange
 		};
 	}
 });

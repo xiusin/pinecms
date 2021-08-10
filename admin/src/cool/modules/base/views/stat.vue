@@ -7,27 +7,27 @@
 					<div>
 						<el-row :gutter="10">
 							<el-col :span="12">系统:</el-col>
-							<el-col :span="12" v-text="state.os.goos"/>
+							<el-col :span="12" v-text="state.os.goos" />
 						</el-row>
 						<el-row :gutter="10">
 							<el-col :span="12">cpu核心数:</el-col>
-							<el-col :span="12" v-text="state.os.numCpu"/>
+							<el-col :span="12" v-text="state.os.numCpu" />
 						</el-row>
 						<el-row :gutter="10">
 							<el-col :span="12">编译器:</el-col>
-							<el-col :span="12" v-text="state.os.compiler"/>
+							<el-col :span="12" v-text="state.os.compiler" />
 						</el-row>
 						<el-row :gutter="10">
 							<el-col :span="12">go版本:</el-col>
-							<el-col :span="12" v-text="state.os.goVersion"/>
+							<el-col :span="12" v-text="state.os.goVersion" />
 						</el-row>
 						<el-row :gutter="10">
 							<el-col :span="12">协程数:</el-col>
-							<el-col :span="12" v-text="state.os.numGoroutine"/>
+							<el-col :span="12" v-text="state.os.numGoroutine" />
 						</el-row>
 						<el-row :gutter="10">
 							<el-col :span="12">运行时长:</el-col>
-							<el-col :span="12" v-text="state.running_time + 'h'"/>
+							<el-col :span="12" v-text="state.running_time + 'h'" />
 						</el-row>
 					</div>
 				</el-card>
@@ -42,13 +42,11 @@
 					<div>
 						<el-row :gutter="10">
 							<el-col :span="12">物理核心数:</el-col>
-							<el-col :span="12" v-text="state.cpu.cores"/>
+							<el-col :span="12" v-text="state.cpu.cores" />
 						</el-row>
 						<el-row v-for="(item, index) in state.cpu.cpus" :key="index" :gutter="10">
 							<el-col :span="12">核心 {{ index }}:</el-col>
-							<el-col
-								:span="12"
-							>
+							<el-col :span="12">
 								<el-progress
 									type="line"
 									:percentage="+item.toFixed(0)"
@@ -69,19 +67,19 @@
 							<el-col :span="12">
 								<el-row :gutter="10">
 									<el-col :span="12">总大小 (MB)</el-col>
-									<el-col :span="12" v-text="state.disk.totalMb"/>
+									<el-col :span="12" v-text="state.disk.totalMb" />
 								</el-row>
 								<el-row :gutter="10">
 									<el-col :span="12">已使用 (MB)</el-col>
-									<el-col :span="12" v-text="state.disk.usedMb"/>
+									<el-col :span="12" v-text="state.disk.usedMb" />
 								</el-row>
 								<el-row :gutter="10">
 									<el-col :span="12">总大小 (GB)</el-col>
-									<el-col :span="12" v-text="state.disk.totalGb"/>
+									<el-col :span="12" v-text="state.disk.totalGb" />
 								</el-row>
 								<el-row :gutter="10">
 									<el-col :span="12">已使用 (GB)</el-col>
-									<el-col :span="12" v-text="state.disk.usedGb"/>
+									<el-col :span="12" v-text="state.disk.usedGb" />
 								</el-row>
 							</el-col>
 							<el-col :span="12">
@@ -103,19 +101,19 @@
 							<el-col :span="12">
 								<el-row :gutter="10">
 									<el-col :span="12">总大小 (MB)</el-col>
-									<el-col :span="12" v-text="state.disk.totalMb"/>
+									<el-col :span="12" v-text="state.disk.totalMb" />
 								</el-row>
 								<el-row :gutter="10">
 									<el-col :span="12">已使用 (MB)</el-col>
-									<el-col :span="12" v-text="state.disk.usedMb"/>
+									<el-col :span="12" v-text="state.disk.usedMb" />
 								</el-row>
 								<el-row :gutter="10">
 									<el-col :span="12">总大小 (GB)</el-col>
-									<el-col :span="12" v-text="state.disk.totalGb"/>
+									<el-col :span="12" v-text="state.disk.totalGb" />
 								</el-row>
 								<el-row :gutter="10">
 									<el-col :span="12">已使用 (GB)</el-col>
-									<el-col :span="12" v-text="state.disk.usedGb"/>
+									<el-col :span="12" v-text="state.disk.usedGb" />
 								</el-row>
 							</el-col>
 							<el-col :span="12">
@@ -137,15 +135,15 @@
 							<el-col :span="12">
 								<el-row :gutter="10">
 									<el-col :span="12">总数 (MB)</el-col>
-									<el-col :span="12" v-text="state.ram.totalMb"/>
+									<el-col :span="12" v-text="state.ram.totalMb" />
 								</el-row>
 								<el-row :gutter="10">
 									<el-col :span="12">已使用 (MB)</el-col>
-									<el-col :span="12" v-text="state.ram.usedMb"/>
+									<el-col :span="12" v-text="state.ram.usedMb" />
 								</el-row>
 								<el-row :gutter="10">
 									<el-col :span="12">总数 (GB)</el-col>
-									<el-col :span="12" v-text="state.ram.totalMb / 1024"/>
+									<el-col :span="12" v-text="state.ram.totalMb / 1024" />
 								</el-row>
 								<el-row :gutter="10">
 									<el-col :span="12">已使用 (GB)</el-col>
@@ -171,7 +169,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, inject, ref, onBeforeUnmount } from "vue";
+import { defineComponent, inject, ref, onBeforeUnmount } from "vue";
 
 export default defineComponent({
 	name: "sys-stat",
@@ -179,31 +177,31 @@ export default defineComponent({
 	setup() {
 		const service = inject<any>("service");
 		let timer: NodeJS.Timeout;
-		let state = ref({})
+		let state = ref({});
 		let colors = [
-			{color: '#5cb87a', percentage: 20},
-			{color: '#e6a23c', percentage: 40},
-			{color: '#f56c6c', percentage: 80}
+			{ color: "#5cb87a", percentage: 20 },
+			{ color: "#e6a23c", percentage: 40 },
+			{ color: "#f56c6c", percentage: 80 }
 		];
 
 		function reload() {
 			service.system.stat.data().then((data: any) => {
-				state.value = data
-			})
+				state.value = data;
+			});
 		}
-		reload()
+		reload();
 		timer = setInterval(() => {
-			reload()
-		}, 1000 * 10)
+			reload();
+		}, 1000 * 10);
 
 		onBeforeUnmount(() => {
-			clearInterval(timer)
-		})
+			clearInterval(timer);
+		});
 
 		return {
 			timer,
 			state,
-			colors,
+			colors
 		};
 	}
 });

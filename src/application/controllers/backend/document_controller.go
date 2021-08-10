@@ -6,13 +6,13 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-xorm/xorm"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"regexp"
 	"strings"
+	"time"
 )
 
 type DocumentController struct {
@@ -22,8 +22,9 @@ type DocumentController struct {
 }
 
 type table struct {
-	Columns []column    `json:"columns"`
-	Props   interface{} `json:"props"`
+	Columns    []column      `json:"columns"`
+	Props      interface{}   `json:"props"`
+	UpsetComps []interface{} `json:"upset_comps"`
 }
 
 type column struct {
@@ -106,6 +107,7 @@ func (c *DocumentController) Construct() {
 	}
 
 	c.OpBefore = c.before
+	c.OpAfter = c.after
 	c.BaseController.Construct()
 }
 
@@ -118,6 +120,28 @@ func (c *DocumentController) before(act int, params interface{}) error {
 		if modelID == 1 {
 			return errors.New("默认模型不可删除")
 		}
+	}
+	return nil
+}
+
+func (c *DocumentController) after(act int, params interface{}) error {
+	if act == OpAdd {
+		var fields tables.ModelDslFields
+		c.Orm.Where("mid = 0").Find(&fields)
+		// 生成固定类型的字段
+		for _, field := range fields {
+			field.Id = 0
+			field.Mid = c.Table.(*tables.DocumentModel).Id
+			t := tables.LocalTime(time.Now())
+			field.UpdatedAt = &t
+			_, err := c.Orm.InsertOne(field)
+			if err != nil {
+				c.Logger().Error(err)
+			}
+		}
+	}
+	if act == OpDel { // TODO 删除指定字段列表
+
 	}
 	return nil
 }
@@ -232,23 +256,29 @@ func (c *DocumentController) GetSql(orm *xorm.Engine) {
 	}
 }
 
-func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
+func (c *DocumentController) GetTable() {
 	mid, err := c.publicLogic()
 	if err != nil {
 		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
-	//data := table{Props: nil, Columns: []column{}}
-	cacheKey := fmt.Sprintf(controllers.CacheModelTablePrefix, mid)
-	if !cacher.Exists(cacheKey) {
-		cacher.Set(cacheKey, []byte(""))
+
+	// 系统字段定义
+	var fieldDefines []*tables.DocumentModelField
+
+	var fieldDefineMap = map[int64]*tables.DocumentModelField{}
+
+	c.Orm.Find(&fieldDefines)
+
+	for _, define := range fieldDefines {
+		fieldDefineMap[define.Id] = define
 	}
 
 	var fields tables.ModelDslFields
-	c.Orm.Where("mid = ?", mid).Where("list_visible = 1").
+	c.Orm.Where("mid = ?", mid). //Where("list_visible = 1").
 		Asc("listorder").Find(&fields)
 	// TODO 允许搜索字段构建
-	table := table{Props: nil, Columns: []column{}}
+	table := table{Props: nil, Columns: []column{}, UpsetComps: []interface{}{}}
 	for _, field := range fields {
 		column := column{
 			Prop:                field.TableField,
@@ -295,76 +325,53 @@ func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 `
 		}
 
+		//{
+		//	prop: "name",
+		//	label: "名称",
+		//	span: 24,
+		//	component: {
+		//		name: "el-input",
+		//		props: {
+		//		placeholder: "请填写名称"
+		//	}
+		//},
+		//rules: {
+		//	required: true,
+		//	message: "名称不能为空"
+		//}
+		//},
+
 		table.Columns = append(table.Columns, column)
+		var props = map[string]interface{}{}
+		_ = json.Unmarshal([]byte(fieldDefineMap[field.FieldType].Props), &props)
+		comp := map[string]interface{}{
+			"name":  fieldDefineMap[field.FieldType].FormComp,
+			"props": props,
+		}
+		if field.FieldLen == 0 {
+			field.FieldLen = 24
+		}
+
+		comp = map[string]interface{}{
+			"prop":      field.TableField,
+			"label":     field.FormName,
+			"span":      field.FieldLen,
+			"component": comp,
+		}
+
+		if field.Required {
+			comp["rules"] = map[string]interface{}{
+				"required": true,
+				"message":  field.RequiredTips,
+			}
+		}
+
+		// 构建组件
+		table.UpsetComps = append(table.UpsetComps, comp)
+
 	}
 
 	helper.Ajax(table, 0, c.Ctx())
-
-	//return
-	//
-	//if err := cacher.Remember(cacheKey, &data, func() ([]byte, error) {
-	//	pine.Logger().Print("无缓存, 生成")
-	//	var fields tables.ModelDslFields
-	//	if err := c.Orm.Where("mid = ?", mid).Where("list_visible = 1").
-	//		Asc("listorder").Find(&fields); err != nil {
-	//		return nil, err
-	//	}
-	//
-	//	// TODO 允许搜索字段构建
-	//	table := table{Props: nil, Columns: []column{}}
-	//	for _, field := range fields {
-	//		column := column{
-	//			Prop:                field.TableField,
-	//			Label:               field.FormName,
-	//			Width:               field.FieldLen,
-	//			Dict:                nil,
-	//			Sortable:            field.Sortable,
-	//			ShowOverflowTooltip: true,
-	//			Align:               "left",
-	//			MinWidth:            80,
-	//		}
-	//		if field.Center {
-	//			column.Align = "center"
-	//		}
-	//		if field.ListWidth > 80 {
-	//			column.MinWidth = field.ListWidth
-	//		}
-	//
-	//		// 只有指定组件可以使用值  下拉, tree, dict 等复杂类型
-	//		if len(field.Datasource) > 0 {
-	//
-	//		}
-	//
-	//		if len(field.Component) > 0 {
-	//			var component = map[string]interface{}{}
-	//			if err := json.Unmarshal([]byte(field.Component), &component); err == nil {
-	//				column.Component = component
-	//			} else {
-	//				column.Component = field.Component
-	//			}
-	//		}
-	//
-	//		if field.TableField == "thumb" {
-	//			column.Component = `{name: "el-image", fit: "contain", style: {"width": "40px", "height": "40px"}}`
-	//		}
-	//
-	//
-	//		if field.TableField == "flag" {
-	//			column.Component = `{name: "slot-documentAttr"}`
-	//		}
-	//
-	//		table.Columns = append(table.Columns, column)
-	//	}
-	//	return json.Marshal(table)
-	//}, 1); err != nil {
-	//	helper.Ajax(err.Error(), 1, c.Ctx())
-	//} else {
-	//	helper.Ajax(data, 0, c.Ctx())
-	//}
-}
-
-func (c *DocumentController) GetModelForm() {
-
 }
 
 func (c *DocumentController) publicLogic() (int, error) {

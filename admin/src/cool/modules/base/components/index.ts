@@ -19,6 +19,8 @@ import RolePerms from "./role/perms.vue";
 import EditorQuill from "./editor-quill/index.vue";
 import Codemirror from "./codemirror/index.vue";
 import CmsSelect from "./select/cms_select.vue";
+import InputTags from "./input-tags/input_tags.vue";
+import CmsFlag from "./flag/cms_flag.vue";
 
 export default {
 	Avatar,
@@ -41,5 +43,7 @@ export default {
 	Codemirror,
 	CategoryTree,
 	DepartmentTree,
-	CmsSelect
+	CmsSelect,
+	InputTags,
+	CmsFlag
 };

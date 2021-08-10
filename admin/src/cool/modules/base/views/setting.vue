@@ -9,7 +9,11 @@
 		</el-row>
 		<el-row>
 			<el-tabs type="border-card" style="width: 100%" v-model="tab">
-				<el-tab-pane v-for="(item, index) in list" :label="item.label" :key="index" :name="item.label"
+				<el-tab-pane
+					v-for="(item, index) in list"
+					:label="item.label"
+					:key="index"
+					:name="item.label"
 					><cl-table v-bind="table"
 				/></el-tab-pane>
 			</el-tabs>

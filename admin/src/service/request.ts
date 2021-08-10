@@ -5,7 +5,6 @@ import { href } from "/@/core/utils";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { ElMessage } from "element-plus";
-import {del} from "@vue/composition-api";
 
 axios.defaults.timeout = 30000;
 axios.defaults.withCredentials = true;

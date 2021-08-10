@@ -5,6 +5,7 @@ import (
 	"github.com/xiusin/pine/cache/providers/bitcask"
 	"github.com/xiusin/pine/sessions"
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
+	"io/ioutil"
 	"net/http"
 	"path/filepath"
 	"time"
@@ -43,9 +44,6 @@ var (
 	dc           = config.DBConfig()
 )
 
-////go:embed dist
-//var fs embed.FS
-
 func Dc() *config.DbConfig {
 	return dc
 }
@@ -82,21 +80,28 @@ func InitDB() {
 		return XOrmEngine, nil
 	}, true)
 
-	err := XOrmEngine.Sync2(
-		&tables.Dict{},
-		&tables.DocumentModelDsl{},
-		&tables.DocumentModelField{},
-		&tables.DictCategory{},
-		&tables.AdminRole{},
-		&tables.Member{},
-		&tables.MemberGroup{},
-		&tables.Department{},
-		&tables.Position{},
-		&tables.District{},
-		&tables.Plugin{},
-		&tables.Tags{})
-	if err != nil {
-		pine.Logger().Error("同步表结构失败", err)
+	if config.AppConfig().Debug {
+		go func() {
+			err := XOrmEngine.Sync2(
+				&tables.Dict{},
+				&tables.DocumentModelDsl{},
+				&tables.DocumentModelField{},
+				&tables.DictCategory{},
+				&tables.Category{},
+				&tables.AdminRole{},
+				&tables.Member{},
+				&tables.MemberGroup{},
+				&tables.Attachments{},
+				&tables.AttachmentType{},
+				&tables.Department{},
+				&tables.Position{},
+				&tables.District{},
+				&tables.Plugin{},
+				&tables.Tags{})
+			if err != nil {
+				pine.Logger().Error("同步表结构失败", err)
+			}
+		}()
 	}
 }
 
@@ -114,8 +119,20 @@ func registerStatic() {
 }
 
 func registerV2BackendRoutes() {
+	app.GET("/admin/", func(ctx *pine.Context) {
+		byts, err := ioutil.ReadFile("dist/index.html")
+		if err != nil{
+			_ = ctx.WriteString(err.Error())
+		} else {
+			_ = ctx.WriteHTMLBytes(byts)
+		}
+	})
+
+	if config.AppConfig().Debug {
+		app.Use(middleware.Cors())
+	}
+
 	app.Use(
-		middleware.Cors(),
 		middleware.SetGlobalConfigData(),
 		apidoc.New(app, nil),
 		middleware.StatesViz(app),
@@ -132,6 +149,7 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.LogController), "/log").
 		Handle(new(backend.AssetsManagerController), "/assets").
 		Handle(new(backend.AttachmentController), "/attachment").
+		Handle(new(backend.AttachmentTypeController), "/attachment/type").
 		Handle(new(backend.SettingController), "/setting").
 		Handle(new(backend.DictCategoryController), "/dict/category").
 		Handle(new(backend.DictController), "/dict").

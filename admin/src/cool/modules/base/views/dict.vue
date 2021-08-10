@@ -176,7 +176,8 @@ export default defineComponent({
 				{
 					prop: "name",
 					label: "字典名称",
-					width: 170
+					width: 150,
+					align: "center"
 				},
 				{
 					prop: "key",
@@ -457,7 +458,7 @@ export default defineComponent({
 
 	.dept {
 		height: 100%;
-		width: 600px;
+		width: 450px;
 		max-width: calc(100% - 50px);
 		background-color: #fff;
 		transition: width 0.3s;
@@ -471,7 +472,7 @@ export default defineComponent({
 	}
 
 	.user {
-		width: calc(100% - 610px);
+		width: calc(100% - 460px);
 		flex: 1;
 
 		.header {

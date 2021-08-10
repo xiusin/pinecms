@@ -114,20 +114,20 @@ export default defineComponent({
 					prop: "name",
 					label: "名称",
 					width: 180,
-					align:"left"
+					align: "left"
 				},
 				{
 					prop: "code",
 					label: "编码",
 					width: 150,
-					align:"left"
+					align: "left"
 				},
 
 				{
 					prop: "remark",
 					showOverflowTooltip: true,
 					label: "描述",
-					align:"left"
+					align: "left"
 				},
 				{
 					prop: "status",

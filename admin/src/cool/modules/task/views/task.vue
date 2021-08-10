@@ -345,14 +345,14 @@ export default defineComponent({
 			arr.forEach(async (k) => {
 				const item = list[k];
 
-				const ps = JSON.parse(JSON.stringify(item.params))
+				const ps = JSON.parse(JSON.stringify(item.params));
 
 				Object.assign(item.params, {
 					...item.pagination,
 					...params
 				});
 
-				item.params['params'] = ps
+				item.params["params"] = ps;
 
 				item.loading = true;
 

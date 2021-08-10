@@ -1,6 +1,10 @@
 <template>
 	<cl-crud @load="onLoad">
 		<el-row>
+			<cl-refresh-btn />
+			<cl-add-btn />
+		</el-row>
+		<el-row>
 			<cl-table v-bind="table">
 				<template #slot-btns="{ scope }">
 					<el-button @click="modelDef(scope.row.id)" type="text" size="mini"

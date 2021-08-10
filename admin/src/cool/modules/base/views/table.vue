@@ -5,7 +5,6 @@
 				<cl-refresh-btn />
 				<cl-add-btn />
 				<cl-upload-space accept=".jpg,.png,.txt" />
-				<vue-ueditor-wrap :config="{ UEDITOR_HOME_URL: '/UEditor/' }" />
 			</el-row>
 			<el-row>
 				<cl-table v-bind="table" />
@@ -33,7 +32,6 @@
 			</cl-upsert>
 		</cl-crud>
 
-		<!-- 表单 -->
 		<cl-form :ref="setRefs('form')" />
 	</div>
 </template>
@@ -44,11 +42,10 @@ import { useRefs } from "/@/core";
 import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
 import { useRoute } from "vue-router";
 import ClUploadSpace from "../../upload/components/space/index.vue";
-import VueUeditorWrap from "vue-ueditor-wrap";
 
 export default defineComponent({
 	name: "sys-table",
-	components: { ClUploadSpace, VueUeditorWrap },
+	components: { ClUploadSpace },
 	setup() {
 		const service = inject<any>("service");
 		const { refs, setRefs } = useRefs();
@@ -135,17 +132,6 @@ export default defineComponent({
 					width: 60,
 					dict: dict
 				},
-				// {
-				// 	prop: "required_tips",
-				// 	label: "验证提醒",
-				// 	align: "left"
-				// },
-				// {
-				// 	prop: "",
-				// 	label: "验证规则",
-				// 	width: 150,
-				// 	align: "left"
-				// },
 				{
 					prop: "default",
 					label: "默认值",

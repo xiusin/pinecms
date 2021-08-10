@@ -119,7 +119,7 @@ export default defineComponent({
 				{
 					prop: "description",
 					label: "描述",
-					align: "left",
+					align: "left"
 				},
 				{
 					prop: "status",

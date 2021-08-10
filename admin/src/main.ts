@@ -23,6 +23,8 @@ import mitt from "mitt";
 // echarts
 import VueECharts from "vue-echarts";
 
+import VueUeditorWrap from "vue-ueditor-wrap";
+
 const app = createApp(App);
 
 bootstrap(app)
@@ -33,7 +35,7 @@ bootstrap(app)
 		// 事件通讯
 		app.provide("mitt", mitt());
 
-		app.use(store).use(router).use(ElementPlus, { locale }).mount("#app");
+		app.use(store).use(router).use(VueUeditorWrap).use(ElementPlus, { locale }).mount("#app");
 	})
 	.catch((err: string) => {
 		console.error(`COOL-ADMIN 启动失败`, err);

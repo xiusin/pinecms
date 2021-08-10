@@ -1,6 +1,6 @@
 import { BaseService, Service } from "/@/core";
 
-@Service("space/info")
+@Service("attachment")
 class SpaceInfo extends BaseService {}
 
 export default SpaceInfo;

@@ -205,7 +205,7 @@ export default defineComponent({
 					}
 				},
 				{
-					prop: "modelid",
+					prop: "model_id",
 					label: "文档模型",
 					hidden: ({ scope }: any) => scope.type == 2,
 					span: 24,
