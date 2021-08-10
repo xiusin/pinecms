@@ -21,7 +21,7 @@
 		<cl-upsert v-bind="upsert" />
 	</cl-crud>
 
-	<cl-dialog v-model="visible" title="建表SQL">
+	<cl-dialog v-model="visible" title="建表SQL: 仅为建议, 如需改动请先备注原表数据再执行">
 		<component :is="'cl-codemirror'" :modelValue="sql" mode="sql" height="700px" />
 	</cl-dialog>
 

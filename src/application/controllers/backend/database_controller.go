@@ -27,7 +27,6 @@ func (c *DatabaseController) RegisterRoute(b pine.IRouterWrapper) {
 	b.POST("/database/repair", "Repair")
 	b.POST("/database/optimize", "Optimize")
 	b.POST("/database/backup", "Backup")
-	b.POST("/database/exec", "Exec")
 }
 
 func (c *DatabaseController) Manager(orm *xorm.Engine) {
@@ -65,36 +64,36 @@ func (c *DatabaseController) Repair(orm *xorm.Engine) {
 	helper.Ajax("表 "+c.Ctx().FormValue("tables")+" 修复成功", 0, c.Ctx())
 }
 
-func (c *DatabaseController) Exec(orm *xorm.Engine) {
-	var sql = struct {
-		Sql string `json:"sql"`
-	}{}
-	c.Ctx().BindJSON(&sql)
-	sql.Sql = strings.Trim(sql.Sql, "\n ")
-	if sql.Sql == "" {
-		helper.Ajax("请填入要操作的SQL语句", 1, c.Ctx())
-		return
-	}
-	if len(sql.Sql) < 6 {
-		helper.Ajax("请填入完整的SQL", 1, c.Ctx())
-		return
-	}
-	act := strings.ToLower(sql.Sql[:6])
-	if act == "select" {
-		helper.Ajax("暂不支持查询操作", 1, c.Ctx())
-		return
-	}
-	if (act == "delete" || act == "update") && !strings.Contains(strings.ToLower(sql.Sql), "where") {
-		helper.Ajax("更新或删除操作必须带有WHERE语句", 1, c.Ctx())
-		return
-	}
-	_, err := orm.Exec(sql.Sql)
-	if err != nil {
-		helper.Ajax(err.Error(), 1, c.Ctx())
-		return
-	}
-	helper.Ajax("操作成功", 0, c.Ctx())
-}
+//func (c *DatabaseController) Exec(orm *xorm.Engine) {
+//	var sql = struct {
+//		Sql string `json:"sql"`
+//	}{}
+//	c.Ctx().BindJSON(&sql)
+//	sql.Sql = strings.Trim(sql.Sql, "\n ")
+//	if sql.Sql == "" {
+//		helper.Ajax("请填入要操作的SQL语句", 1, c.Ctx())
+//		return
+//	}
+//	if len(sql.Sql) < 6 {
+//		helper.Ajax("请填入完整的SQL", 1, c.Ctx())
+//		return
+//	}
+//	act := strings.ToLower(sql.Sql[:6])
+//	if act == "select" {
+//		helper.Ajax("暂不支持查询操作", 1, c.Ctx())
+//		return
+//	}
+//	if (act == "delete" || act == "update") && !strings.Contains(strings.ToLower(sql.Sql), "where") {
+//		helper.Ajax("更新或删除操作必须带有WHERE语句", 1, c.Ctx())
+//		return
+//	}
+//	_, err := orm.Exec(sql.Sql)
+//	if err != nil {
+//		helper.Ajax(err.Error(), 1, c.Ctx())
+//		return
+//	}
+//	helper.Ajax("操作成功", 0, c.Ctx())
+//}
 
 func (c *DatabaseController) Optimize(orm *xorm.Engine) {
 	tables := strings.Split(c.Ctx().FormValue("ids"), ",")
