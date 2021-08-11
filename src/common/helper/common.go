@@ -7,9 +7,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-xorm/xorm"
+	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
+	logger2 "github.com/xiusin/pinecms/src/common/logger"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -538,4 +540,8 @@ func UcFirst(str string) string {
 
 func Bytes2String(b []byte) *string {
 	return (*string)(unsafe.Pointer(&b))
+}
+
+func Log2DB(level logger.Level, ctx *pine.Context, args ...interface{}) {
+	pine.Logger().(*logger2.PineCmsLogger).ToDB(level, ctx, args...)
 }

@@ -11,9 +11,8 @@ func (c *LinkController) Construct() {
 		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
 	}
 	c.Table = &tables.Link{}
-	c.Entries = &[]*tables.Link{}
+	c.Entries = &[]tables.Link{}
 	c.ApiEntityName = "友链"
 	c.Group = "友情链接管理"
-	c.SubGroup = "友情链接管理"
 	c.BaseController.Construct()
 }

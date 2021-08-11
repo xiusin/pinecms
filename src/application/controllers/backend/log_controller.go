@@ -23,7 +23,7 @@ func (c *LogController) Construct() {
 		"method": {Op: "="},
 	}
 	c.Table = &tables.Log{}
-	c.Entries = &[]*tables.Log{}
+	c.Entries = &[]tables.Log{}
 	c.apiEntities = map[string]apidoc.Entity{
 		"list":  {Title: "日志列表", Desc: "查询系统接口请求日志列表"},
 		"clear": {Title: "清空日志", Desc: "一键清理系统所有日志"},

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/spf13/cobra"
+	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	plugin2 "github.com/xiusin/pinecms/cmd/plugin"
@@ -181,7 +182,6 @@ func (p *pluginManager) Download(name string) {
 	}
 	pluginPath := filepath.Join(p.path, name+ext)
 	if _, err := os.Stat(pluginPath); err != nil {
-		pine.Logger().Warning("已经安装插件: ", err)
 		return
 	}
 
@@ -197,7 +197,7 @@ func (p *pluginManager) Download(name string) {
 		client.Timeout = time.Second * 60 * 10
 		resp, err := client.Get(url)
 		if err != nil {
-			pine.Logger().Error("下载插件"+name+"失败", err)
+			helper.Log2DB(logger.ErrorLevel, nil, "下载插件"+name+"失败", err)
 			return
 		}
 		defer resp.Body.Close()
@@ -205,7 +205,7 @@ func (p *pluginManager) Download(name string) {
 		_, err = io.Copy(f, resp.Body)
 
 		if err != nil {
-			pine.Logger().Error("保存插件"+pluginPath+"失败", err)
+			helper.Log2DB(logger.ErrorLevel, nil, "保存插件"+pluginPath+"失败", err)
 		} else {
 			// todo 解压缩 .gzip
 		}

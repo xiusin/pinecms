@@ -5,6 +5,7 @@ import (
 	"github.com/xiusin/pine/cache/providers/bitcask"
 	"github.com/xiusin/pine/sessions"
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
+	logger2 "github.com/xiusin/pinecms/src/common/logger"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
@@ -95,7 +96,8 @@ func InitDB() {
 				&tables.AttachmentType{},
 				&tables.Department{},
 				&tables.Position{},
-				&tables.District{},
+				&tables.Log{},
+				&tables.RequestLog{},
 				&tables.Plugin{},
 				&tables.Tags{})
 			if err != nil {
@@ -224,9 +226,18 @@ func diConfig() {
 	}, true)
 
 	di.Set(di.ServicePineLogger, func(builder di.AbstractBuilder) (i interface{}, err error) {
-		loggers := logger.New()
+		loggers := &logger2.PineCmsLogger{
+			Logger: logger.New(),
+			Orm: XOrmEngine,
+			Table: &tables.Log{},
+		}
+		logger.SetDefault(loggers)
 		loggers.SetReportCaller(true, 3)
-		loggers.SetLogLevel(logger.DebugLevel)
+		if config.AppConfig().Debug {
+			loggers.SetLogLevel(logger.DebugLevel)
+		} else {
+			loggers.SetLogLevel(logger.ErrorLevel)
+		}
 		return loggers, nil
 	}, false)
 

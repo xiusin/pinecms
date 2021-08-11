@@ -2,6 +2,7 @@ package backend
 
 import (
 	"encoding/json"
+	"github.com/xiusin/logger"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -99,6 +100,7 @@ func (c *AssetsManagerController) GetThemes() {
 	files, err := ioutil.ReadDir(c.conf.View.FeDirname)
 	if err != nil {
 		helper.Ajax("读取主题目录失败: "+err.Error(), 1, c.Ctx())
+		helper.Log2DB(logger.ErrorLevel, c.Ctx(), err)
 		return
 	}
 	var dirs []*ThemeConfig

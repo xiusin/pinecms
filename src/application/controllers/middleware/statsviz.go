@@ -4,7 +4,9 @@ import (
 	"github.com/arl/statsviz"
 	"github.com/fasthttp/websocket"
 	"github.com/valyala/fasthttp/fasthttpadaptor"
+	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"runtime"
 	"time"
 )
@@ -35,6 +37,7 @@ func StatesViz(app *pine.Application) pine.Handler {
 			if err != nil {
 				if _, ok := err.(websocket.HandshakeError); ok {
 					pine.Logger().Error(err)
+					helper.Log2DB(logger.ErrorLevel, ctx, err)
 				}
 				return
 			}
