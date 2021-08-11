@@ -2,7 +2,6 @@ package backend
 
 import (
 	"github.com/go-xorm/xorm"
-	"github.com/xiusin/logger"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"net/http"
@@ -26,7 +25,6 @@ func (c *DistrictController) PostImport() {
 	dbUrl := "https://github.com/eduosi/district/blob/master/district-full.sql"
 	resp, err := http.Get(dbUrl)
 	if err != nil {
-		helper.Log2DB(logger.ErrorLevel, c.Ctx(), err)
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
 	}
@@ -41,7 +39,6 @@ func (c *DistrictController) PostImport() {
 	})
 
 	if err != nil {
-		helper.Log2DB(logger.ErrorLevel, c.Ctx(), err)
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
 	}

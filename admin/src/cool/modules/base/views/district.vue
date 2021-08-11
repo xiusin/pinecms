@@ -1,38 +1,38 @@
 <template>
 	<cl-crud :ref="setRefs('crud')" @load="onLoad" :on-refresh="onRefresh">
 		<el-row type="flex">
-			<cl-refresh-btn/>
+			<cl-refresh-btn />
 			<el-button size="mini" type="primary" @click="syncRemoteDB">导入远程数据库</el-button>
-			<cl-add-btn/>
-			<cl-flex1/>
-			<cl-search-key/>
+			<cl-add-btn />
+			<cl-flex1 />
+			<cl-search-key />
 		</el-row>
 
 		<el-row>
-			<cl-table :ref="setRefs('table')" v-bind="table" @row-click="onRowClick"/>
+			<cl-table :ref="setRefs('table')" v-bind="table" @row-click="onRowClick" />
 		</el-row>
 
 		<el-row type="flex">
-			<cl-flex1/>
-			<cl-pagination/>
+			<cl-flex1 />
+			<cl-pagination />
 		</el-row>
 
-		<cl-upsert v-model="form" v-bind="upsert"/>
+		<cl-upsert v-model="form" v-bind="upsert" />
 	</cl-crud>
 </template>
 
 <script lang="ts">
-import {useRefs} from "/@/core";
-import {deepTree} from "/@/core/utils";
-import {CrudLoad, RefreshOp, Table, Upsert} from "cl-admin-crud-vue3/types";
-import {defineComponent, inject, reactive} from "vue";
-import {ElMessage, ElMessageBox} from "element-plus";
+import { useRefs } from "/@/core";
+import { deepTree } from "/@/core/utils";
+import { CrudLoad, RefreshOp, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { defineComponent, inject, reactive } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 export default defineComponent({
 	name: "sys-district",
 
 	setup() {
-		const {refs, setRefs} = useRefs();
+		const { refs, setRefs } = useRefs();
 		const service = inject<any>("service");
 		const form = reactive<any>({
 			relevance: 1
@@ -194,8 +194,8 @@ export default defineComponent({
 			]
 		});
 
-		function onRefresh(_: any, {render}: RefreshOp) {
-			service.system.department.list().then(({list}: any) => {
+		function onRefresh(_: any, { render }: RefreshOp) {
+			service.system.district.list().then(({ list }: any) => {
 				render(deepTree(list), {
 					total: list.length
 				});
@@ -208,7 +208,7 @@ export default defineComponent({
 			}
 		}
 
-		function upsertAppend({type, id}: any) {
+		function upsertAppend({ type, id }: any) {
 			refs.value.crud.rowAppend({
 				parentId: id,
 				type: type + 1
@@ -216,21 +216,24 @@ export default defineComponent({
 		}
 
 		// crud 加载
-		function onLoad({ctx, app}: CrudLoad) {
+		function onLoad({ ctx, app }: CrudLoad) {
 			ctx.service(service.system.district).done();
 			app.refresh();
 		}
 
 		function syncRemoteDB() {
-			ElMessageBox.confirm(`是否从Github上同步最新的数据库内容,此操作将会覆盖原始数据`, "提示", {
-				type: "warning"
-			})
+			ElMessageBox.confirm(
+				`是否从Github上同步最新的数据库内容,此操作将会覆盖原始数据`,
+				"重要提示",
+				{
+					type: "warning"
+				}
+			)
 				.then(() => {
 					service.system.district
 						.import()
-						.then((res: any) => {
+						.then(() => {
 							ElMessage.success("导入数据成功");
-							close();
 						})
 						.catch((err: any) => {
 							ElMessage.error(err);

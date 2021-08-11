@@ -130,15 +130,18 @@ export default defineComponent({
 				{
 					prop: "name",
 					label: "名称",
-					width: 170
+					width: 170,
+					align: "left"
 				},
 				{
 					prop: "value",
+					align: "left",
 					label: "值"
 				},
 				{
 					prop: "cat_name",
-					label: "所属分类"
+					label: "所属分类",
+					align: "left"
 				},
 				{
 					prop: "status",
@@ -177,11 +180,12 @@ export default defineComponent({
 					prop: "name",
 					label: "字典名称",
 					width: 150,
-					align: "center"
+					align: "left"
 				},
 				{
 					prop: "key",
-					label: "字典标识"
+					label: "字典标识",
+					align: "left",
 				},
 				{
 					prop: "status",
@@ -345,7 +349,7 @@ export default defineComponent({
 				{
 					prop: "status",
 					label: "状态",
-					value: 1,
+					value: true,
 					component: {
 						name: "el-radio-group",
 						options: [

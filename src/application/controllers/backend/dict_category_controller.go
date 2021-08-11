@@ -13,7 +13,6 @@ type DictCategoryController struct {
 func (c *DictCategoryController) Construct() {
 	c.AppId = "admin"
 	c.Group = "字典管理"
-	c.SubGroup = "字典分类管理"
 	c.KeywordsSearch = []KeywordWhere{
 		{Field: "key", Op: "LIKE", DataExp: "%$?%"},
 		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
@@ -45,7 +44,7 @@ func (c *DictCategoryController) before(act int, param interface{}) error {
 			return errors.New("该字典分类标识已经存在")
 		}
 	case OpDel:
-		exist, err := c.Orm.Table(&tables.Dict{}).Where("cid = ?", param.(*idParams).Id).Exist()
+		exist, err := c.Orm.Table(&tables.Dict{}).In("cid", param.(*idParams).Ids).Exist()
 		if err != nil {
 			return err
 		}

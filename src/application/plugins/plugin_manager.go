@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/spf13/cobra"
-	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	plugin2 "github.com/xiusin/pinecms/cmd/plugin"
@@ -44,14 +43,14 @@ type PluginIntf interface {
 		*pine.Application,
 		*pine.Router,
 		*cobra.Command,
-	)                 // 初始化插件
-	Prefix(string)    // 路由前缀, 注册后修改需要重启程序
-	Sign() string     // 插件的唯一标识, 需要开发者搞一个独一无二如 uuid
-	View() string     // 配置视图json信息
+	) // 初始化插件
+	Prefix(string)         // 路由前缀, 注册后修改需要重启程序
+	Sign() string          // 插件的唯一标识, 需要开发者搞一个独一无二如 uuid
+	View() string          // 配置视图json信息
 	Menu(interface{}, int) // 安装插件位置
-	Install()         // 安装插件, 首次扫描后执行.
-	Uninstall()       // 卸载后禁止访问
-	Upgrade()         // 更新插件
+	Install()              // 安装插件, 首次扫描后执行.
+	Uninstall()            // 卸载后禁止访问
+	Upgrade()              // 更新插件
 }
 
 type Plug struct {
@@ -197,7 +196,7 @@ func (p *pluginManager) Download(name string) {
 		client.Timeout = time.Second * 60 * 10
 		resp, err := client.Get(url)
 		if err != nil {
-			helper.Log2DB(logger.ErrorLevel, nil, "下载插件"+name+"失败", err)
+			pine.Logger().Error("下载插件"+name+"失败", err)
 			return
 		}
 		defer resp.Body.Close()
@@ -205,7 +204,7 @@ func (p *pluginManager) Download(name string) {
 		_, err = io.Copy(f, resp.Body)
 
 		if err != nil {
-			helper.Log2DB(logger.ErrorLevel, nil, "保存插件"+pluginPath+"失败", err)
+			pine.Logger().Error("保存插件"+pluginPath+"失败", err)
 		} else {
 			// todo 解压缩 .gzip
 		}
