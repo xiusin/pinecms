@@ -6,10 +6,10 @@ type District struct {
 	ParentId int64  `json:"parent_id"`
 	Initial  string `json:"initial"`
 	Initials string `json:"initials"`
-	PinYin   string `json:"pinyin"`
+	PinYin   string `json:"pinyin" xorm:"pinyin"`
 	Extra    string `json:"extra"`
 	Suffix   string `json:"suffix"`
 	Code     string `json:"code"`
-	AreaCode string `json:"area_code"`
-	OrderNum uint   `json:"order"`
+	AreaCode string `json:"area_code" xorm:"area_code"`
+	OrderNum uint   `json:"order" xorm:"order"`
 }

@@ -11,7 +11,7 @@ type LogController struct {
 }
 
 func (c *LogController) Construct() {
-	c.Group = "日志模块"
+	c.Group = "操作日志"
 
 	c.KeywordsSearch = []KeywordWhere{
 		{Field: "username", Op: "LIKE", DataExp: "%$?%"},

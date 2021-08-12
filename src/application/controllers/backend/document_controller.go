@@ -315,32 +315,6 @@ func (c *DocumentController) GetTable() {
 			column.Component = `{name: "el-image", fit: "contain", style: {"width": "40px", "height": "40px"}}`
 		}
 
-		if field.TableField == "flag" {
-			column.Component = `({ h, scope }) => {
-		return h("el-input", {
-			type: "textarea",
-			placeholder: "请填写内容"
-		});
-	};
-`
-		}
-
-		//{
-		//	prop: "name",
-		//	label: "名称",
-		//	span: 24,
-		//	component: {
-		//		name: "el-input",
-		//		props: {
-		//		placeholder: "请填写名称"
-		//	}
-		//},
-		//rules: {
-		//	required: true,
-		//	message: "名称不能为空"
-		//}
-		//},
-
 		table.Columns = append(table.Columns, column)
 		var props = map[string]interface{}{}
 		_ = json.Unmarshal([]byte(fieldDefineMap[field.FieldType].Props), &props)

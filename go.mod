@@ -51,12 +51,13 @@ require (
 	github.com/traefik/yaegi v0.9.19
 	github.com/valyala/fasthttp v1.28.0
 	github.com/xiusin/logger v0.0.5
-	github.com/xiusin/pine v0.0.0-20210803025503-1f746452ac1f
+	github.com/xiusin/pine v0.0.0-20210812021327-eca886f9f150
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/exp v0.0.0-20210712160552-8235cf48b5f6 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e // indirect
+	golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e // indirect
 	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b // indirect
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6 // indirect
 	gopkg.in/yaml.v2 v2.4.0
@@ -64,6 +65,6 @@ require (
 	xorm.io/core v0.7.3
 )
 
-//replace github.com/xiusin/pine => ../pine
+replace github.com/xiusin/pine => ../pine
 
 //replace github.com/xiusin/logger => ../logger

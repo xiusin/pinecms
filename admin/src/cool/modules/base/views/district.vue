@@ -3,9 +3,9 @@
 		<el-row type="flex">
 			<cl-refresh-btn />
 			<el-button size="mini" type="primary" @click="syncRemoteDB">导入远程数据库</el-button>
-			<cl-add-btn />
+<!--			<cl-add-btn />-->
 			<cl-flex1 />
-			<cl-search-key />
+<!--			<cl-search-key />-->
 		</el-row>
 
 		<el-row>
@@ -134,14 +134,14 @@ export default defineComponent({
 		const table = reactive<Table>({
 			props: {
 				"default-sort": {
-					prop: "listorder",
-					order: "descending"
+					prop: "order",
+					order: "ascending"
 				},
 				"row-key": "id"
 			},
 			columns: [
 				{
-					prop: "listorder",
+					prop: "order",
 					label: "排序值",
 					width: 80
 				},
@@ -152,39 +152,31 @@ export default defineComponent({
 					align: "left"
 				},
 				{
-					prop: "leader_name",
-					label: "负责人",
+					prop: "code",
+					label: "编码",
 					width: 200,
 					align: "left"
 				},
 				{
-					prop: "leader_phone",
-					label: "联系电话",
+					prop: "area_code",
+					label: "区域编码",
 					width: 200,
 					align: "left"
 				},
-
 				{
-					prop: "email",
-					label: "邮箱",
+					prop: "pinyin",
+					label: "拼音",
 					align: "left"
 				},
 				{
-					prop: "status",
-					label: "启用",
-					width: 80,
-					dict: [
-						{
-							label: "正常",
-							value: true,
-							type: "success"
-						},
-						{
-							label: "禁用",
-							value: false,
-							type: "danger"
-						}
-					]
+					prop: "initials",
+					label: "简拼",
+					align: "left"
+				},
+				{
+					prop: "suffix",
+					label: "后缀",
+					align: "left"
 				},
 				{
 					label: "操作",
@@ -194,10 +186,12 @@ export default defineComponent({
 			]
 		});
 
-		function onRefresh(_: any, { render }: RefreshOp) {
-			service.system.district.list().then(({ list }: any) => {
+		function onRefresh(pag: any, { render }: RefreshOp) {
+			pag.size = 5; //todo 异步加载吧
+			service.system.district.list(pag).then(({ list }: any) => {
 				render(deepTree(list), {
-					total: list.length
+					total: list.length,
+					size: 5,
 				});
 			});
 		}

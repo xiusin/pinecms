@@ -69,8 +69,7 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 # TODO  
 - github.com/gokeeptech/gktemplate
-- github.com/traefik/yaegi
-- 性能监控重写
+- github.com/traefik/yaegi `作为脚本处理`
 - Bleve 全文检索
 - 微信插件
 - 插件公共页面配置 (尽可能不让二次开发)

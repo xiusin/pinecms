@@ -2,9 +2,11 @@ package backend
 
 import (
 	"github.com/gbrlsnchs/jwt/v3"
+	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
+	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
 	"time"
@@ -18,7 +20,7 @@ func (c *LoginController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/login", "Login")
 }
 
-func (c *LoginController) Login() {
+func (c *LoginController) Login(orm *xorm.Engine) {
 	var p loginUserParam
 	apidoc.SetApiEntity(c.Ctx(), &apidoc.Entity{
 		ApiParam: &p,
@@ -33,7 +35,12 @@ func (c *LoginController) Login() {
 		helper.Ajax("参数不能为空", 1, c.Ctx())
 		return
 	}
-
+	// 读取登录人信息
+	admin, err := models.NewAdminModel().Login(p.Username, p.Password, c.Ctx().ClientIP())
+	if err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
+	}
 	var hs = jwt.NewHS256([]byte(config.AppConfig().JwtKey))
 	now := time.Now()
 	pl := controllers.LoginAdminPayload{
@@ -41,10 +48,10 @@ func (c *LoginController) Login() {
 			Subject:        "PineCMS",
 			ExpirationTime: jwt.NumericDate(now.Add(24 * 30 * 12 * time.Hour)),
 		},
-		Id:        1,
-		AdminId:   1,       //admin.Userid,
-		RoleID:    1,       //admin.Roleid,
-		AdminName: "admin", //admin.Username,
+		Id:        admin.Userid,
+		AdminId:   admin.Userid,   //admin.Userid,
+		RoleID:    admin.Roleid,   //admin.Roleid,
+		AdminName: admin.Username, //admin.Username,
 	}
 
 	if token, err := jwt.Sign(pl, hs); err != nil {
@@ -52,10 +59,10 @@ func (c *LoginController) Login() {
 	} else {
 		helper.Ajax(pine.H{
 			"role_name":  "超级管理员",
-			"role_id":    1,
-			"admin_id":   1,
-			"id":         1,
-			"admin_name": "admin",
+			"role_id":    admin.Roleid,
+			"admin_id":   admin.Userid,
+			"id":         admin.Userid,
+			"admin_name": admin.Username,
 			"token":      string(token),
 		}, 0, c.Ctx())
 	}

@@ -1,7 +1,6 @@
 package backend
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/xiusin/pine/cache"
@@ -76,7 +75,6 @@ func (c *DictController) after(act int, param interface{}) error {
 	return nil
 }
 
-// GetSelect 下拉列表
 func (c *DictController) GetSelect(cacher cache.AbstractCache) {
 	cid, _ := c.Ctx().GetInt64("cid")
 	if cid == 0 {
@@ -84,14 +82,14 @@ func (c *DictController) GetSelect(cacher cache.AbstractCache) {
 		return
 	}
 	var kv []tables.KV
-	if err := cacher.Remember(fmt.Sprintf(controllers.CacheDictPrefix, cid), &kv, func() ([]byte, error) {
+	if err := cacher.Remember(fmt.Sprintf(controllers.CacheDictPrefix, cid), &kv, func() (interface{}, error) {
 		var dicts []tables.KV
 		_ = c.Orm.Where("status = 1").Where("cid = ?", cid).Find(c.Entries)
 		m := c.Entries.(*[]*tables.Dict)
 		for _, model := range *m {
 			dicts = append(dicts, tables.KV{Label: model.Name, Value: model.Value})
 		}
-		return json.Marshal(dicts)
+		return &dicts, nil
 	}); err != nil {
 		helper.Ajax(err, 1, c.Ctx())
 		return

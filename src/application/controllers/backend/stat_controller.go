@@ -1,13 +1,18 @@
 package backend
 
 import (
+	"github.com/go-xorm/xorm"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/net"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pinecms/cmd/version"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"runtime"
+	"sync"
 	"time"
 )
 
@@ -21,12 +26,17 @@ const (
 )
 
 type Server struct {
-	Nets        []*Net `json:"nets"`
-	Os          Os     `json:"os"`
-	Cpu         Cpu    `json:"cpu"`
-	Rrm         Rrm    `json:"ram"`
-	Disk        Disk   `json:"disk"`
-	RunningTime int64  `json:"running_time"`
+	Nets           []*Net `json:"nets"`
+	Os             Os     `json:"os"`
+	Cpu            Cpu    `json:"cpu"`
+	Rrm            Rrm    `json:"ram"`
+	Disk           Disk   `json:"disk"`
+	RunningTime    int64  `json:"running_time"`
+	StartTime      string `json:"start_time"`
+	PineVersion    string `json:"pine_version"`
+	PineCmsVersion string `json:"pine_cms_version"`
+	XormVersion    string `json:"xorm_version"`
+	MysqlVersion   string `json:"mysql_version"`
 }
 
 type Net struct {
@@ -44,8 +54,9 @@ type Os struct {
 }
 
 type Cpu struct {
-	Cpus  []float64 `json:"cpus"`
-	Cores int       `json:"cores"`
+	Cpus       []float64 `json:"cpus"`
+	Cores      int       `json:"cores"`
+	CpuPercent []float64 `json:"cpu_percent"`
 }
 
 type Rrm struct {
@@ -86,6 +97,7 @@ func (_ *StatController) InitCPU() (c Cpu, err error) {
 	} else {
 		c.Cpus = cpus
 	}
+	c.CpuPercent, _ = cpu.Percent(time.Duration(200)*time.Millisecond, false)
 	return c, nil
 }
 
@@ -126,22 +138,30 @@ func (_ *StatController) InitNet() (useages []*Net, err error) {
 	return
 }
 
-func (stat *StatController) GetData() {
+func (stat *StatController) GetData(orm *xorm.Engine, cacher cache.AbstractCache) {
 	var s Server
-	var err error
-	s.Os = stat.InitOS()
-	if s.Cpu, err = stat.InitCPU(); err != nil {
-		panic(err)
-	}
-	if s.Rrm, err = stat.InitRAM(); err != nil {
-		panic(err)
-	}
-	if s.Disk, err = stat.InitDisk(); err != nil {
-		panic(err)
-	}
-	s.RunningTime = int64(time.Now().Sub(runningStart).Hours())
-	if s.Nets, err = stat.InitNet(); err != nil {
-		panic(err)
-	}
+
+	var wg sync.WaitGroup
+	wg.Add(5)
+	go func() { defer wg.Done(); s.Os = stat.InitOS() }()
+	go func() { defer wg.Done(); s.Cpu, _ = stat.InitCPU() }()
+	go func() { defer wg.Done(); s.Rrm, _ = stat.InitRAM() }()
+	go func() { defer wg.Done(); s.Disk, _ = stat.InitDisk() }()
+	go func() { defer wg.Done(); s.Nets, _ = stat.InitNet() }()
+	wg.Wait()
+
+	s.RunningTime = int64(time.Now().Sub(runningStart).Minutes())
+	s.StartTime = runningStart.Format(helper.TimeFormat)
+	s.PineVersion = pine.Version
+	s.PineCmsVersion = version.Version
+	s.XormVersion = xorm.Version
+
+	cacher.Remember(controllers.CacheMysqlVersion, &s.MysqlVersion, func() (interface{}, error) {
+		if version, err := orm.QueryString("SELECT VERSION() AS version"); err == nil {
+			return version[0]["version"], nil
+		} else {
+			return "", err
+		}
+	}, 24*3600)
 	helper.Ajax(s, 0, stat.Ctx())
 }
