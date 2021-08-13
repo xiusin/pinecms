@@ -29,6 +29,7 @@ import SysMemberGroup from "./system/member_group";
 import SysTable from "./system/table";
 import SysContent from "./system/content";
 import SysDistrict from "./system/district";
+import SysErrLog from "./system/errlog";
 
 export default {
 	common: new Common(),
@@ -61,7 +62,8 @@ export default {
 		memberGroup: new SysMemberGroup(),
 		table: new SysTable(),
 		content: new SysContent(),
-		district: new SysDistrict()
+		district: new SysDistrict(),
+		errorLog: new SysErrLog()
 	},
 	plugin: {
 		info: new PluginInfo()

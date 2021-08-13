@@ -10,6 +10,8 @@ import (
 
 func TestApiDoc(t *testing.T) {
 	cfg := tencentApiConf{
+		SecretId:  "AKIDRmCdPINEx6p13vfFdtiqlW6wd8RYUGuMBliT...",
+		SecretKey: "jHk4Dhz74pRuEPYWI4iibQ4YuPINE5966wb5...",
 		Region:    "ap-beijing",
 		Endpoint:  "apigateway.tencentcloudapi.com",
 	}
@@ -25,15 +27,10 @@ func TestApiDoc(t *testing.T) {
 
 	request.Protocol = common.StringPtr("HTTP")
 	request.EnableCORS = common.BoolPtr(true)
-	//
-	//request.ServiceConfig = &apigateway.ServiceConfig{
-	//	Url:    common.StringPtr("http://api.xiusin.cn"),
-	//	Path:   common.StringPtr("/user/list"),
-	//	Method: common.StringPtr("GET"),
-	//}
+
 
 	request.RequestConfig = &apigateway.ApiRequestConfig{
-		Path:   common.StringPtr("/user/list"),
+		Path:   common.StringPtr("/user/list/detail"),
 		Method: common.StringPtr("GET"),
 	}
 
@@ -45,7 +42,7 @@ func TestApiDoc(t *testing.T) {
 		{
 			Name: common.StringPtr("page"),
 			Desc: common.StringPtr("页码"),
-			//Position: common.StringPtr("query"),
+			Position: common.StringPtr("QUERY"),
 			Type: common.StringPtr("int"),
 			DefaultValue: common.StringPtr("1"),
 			Required: common.BoolPtr(true),
@@ -53,7 +50,7 @@ func TestApiDoc(t *testing.T) {
 		{
 			Name: common.StringPtr("pageSize"),
 			Desc: common.StringPtr("分页条目数"),
-			//Position: common.StringPtr("query"),
+			Position: common.StringPtr("QUERY"),
 			Type: common.StringPtr("int"),
 			DefaultValue: common.StringPtr("10"),
 			Required: common.BoolPtr(true),

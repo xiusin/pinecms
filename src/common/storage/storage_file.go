@@ -21,7 +21,7 @@ func NewFileUploader(fixDir, uploadDir string) *FileUploader {
 
 func (s *FileUploader) Upload(storageName string, LocalFile io.Reader) (string, error) {
 	saveFile := filepath.Join(s.baseDir, storageName)
-	_ = os.MkdirAll(saveFile, os.ModePerm)
+	_ = os.MkdirAll(filepath.Dir(saveFile), os.ModePerm)
 	out, err := os.OpenFile(saveFile, os.O_WRONLY|os.O_CREATE, os.ModePerm)
 	if err != nil {
 		return "", err
@@ -65,8 +65,4 @@ func (s *FileUploader) GetFullUrl(name string) string {
 
 func (s *FileUploader) Remove(name string) error {
 	return os.Remove(filepath.Join(s.baseDir, name))
-}
-
-func init()  {
-	//register("本地存储", NewFileUploader())
 }

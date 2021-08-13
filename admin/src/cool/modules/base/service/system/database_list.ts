@@ -12,9 +12,19 @@ class SysDatabaseList extends BaseService {
 		});
 	}
 
-	exec(params: any) {
+	repair(params: any) {
 		return this.request({
-			url: "/exec",
+			url: "/repair",
+			method: "POST",
+			data: {
+				...params
+			}
+		});
+	}
+
+	optimize(params: any) {
+		return this.request({
+			url: "/optimize",
 			method: "POST",
 			data: {
 				...params

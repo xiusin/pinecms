@@ -36,6 +36,7 @@ func (c *DistrictController) PostList()  {
 		helper.Ajax("参数错误: "+err.Error(), 1, c.Ctx())
 		return
 	} else {
+		c.Logger().Error("请求报错")
 		p.Size = 5
 		var count int64
 		var err error

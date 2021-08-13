@@ -1,13 +1,19 @@
 <template>
 	<cl-crud @load="onLoad">
 		<el-row>
-			<cl-table v-bind="table" />
+			<cl-refresh-btn />
 		</el-row>
-
-		<el-row type="flex">
-			<cl-flex1 />
-			<cl-pagination />
+		<el-row>
+			<cl-table v-bind="table">
+				<template #slot-download="{scope}" >
+					<el-button size="mini" type="text" @click="download(scope.row)">下载</el-button>
+				</template>
+			</cl-table>
 		</el-row>
+<!--		<el-row type="flex">-->
+<!--			<cl-flex1 />-->
+<!--			<cl-pagination />-->
+<!--		</el-row>-->
 	</cl-crud>
 </template>
 
@@ -37,20 +43,10 @@ export default defineComponent({
 		const table = reactive<Table>({
 			columns: [
 				{
-					label: "源名称",
-					prop: "original",
+					label: "备份名称",
+					prop: "name",
 					minWidth: 150,
 					align: "left"
-				},
-				{
-					label: "图片",
-					prop: "url",
-					component: ({ h, scope }: any) => {
-						return h("img", {
-							src: scope.url,
-							height: 40
-						});
-					}
 				},
 				{
 					label: "文件大小",
@@ -61,13 +57,8 @@ export default defineComponent({
 					}
 				},
 				{
-					label: "类型",
-					prop: "type",
-					minWidth: 50
-				},
-				{
-					label: "上传时间",
-					prop: "upload_time",
+					label: "备份时间",
+					prop: "ctime",
 					minWidth: 200,
 					showOverflowTooltip: true
 				},
@@ -75,7 +66,7 @@ export default defineComponent({
 					label: "操作",
 					type: "op",
 					width: 100,
-					buttons: ["delete"]
+					buttons: ["slot-download","delete"]
 				}
 			]
 		});
@@ -86,7 +77,16 @@ export default defineComponent({
 			app.refresh();
 		}
 
+		function download(row) {
+			service.system.databaseBackupList.download({
+				"name": row.name
+			}).then((data : any) => {
+				window.open(data)
+			})
+		}
+
 		return {
+			download,
 			refs,
 			table,
 			setRefs,

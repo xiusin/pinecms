@@ -2,15 +2,13 @@
 	<cl-crud @load="onLoad">
 		<el-row>
 			<el-button size="mini" type="success" @click="backup"> 备份 </el-button>
-			<el-button size="mini" type="danger"> 优化 </el-button>
-			<el-button size="mini" type="danger"> 修复 </el-button>
+			<el-button size="mini" type="danger" @click="optimize"> 优化 </el-button>
+			<el-button size="mini" type="danger" @click="repair"> 修复 </el-button>
 		</el-row>
 		<el-row>
 			<cl-table v-bind="table" @selection-change="onSelectionChange" />
 		</el-row>
 	</cl-crud>
-
-	<cl-form ref="sqlFormRef"></cl-form>
 </template>
 
 <script lang="ts">
@@ -26,8 +24,6 @@ export default defineComponent({
 		const service = inject<any>("service");
 
 		const { refs, setRefs } = useRefs();
-
-		const sqlFormRef = ref<FormRef>();
 
 		// 选择项
 		const selects = ref<any>([]);
@@ -58,31 +54,16 @@ export default defineComponent({
 				{
 					label: "备注",
 					prop: "comment",
-					align: "left"
-				}
-			]
-		});
-
-		// 新增编辑配置
-		const upsert = reactive<Upsert>({
-			width: "1000px",
-			items: [
-				{
-					prop: "name",
-					label: "名称",
-					span: 24,
+					align: "left",
 					component: {
-						name: "el-input",
-						props: {
-							placeholder: "名称"
+						"name": "el-input",
+						"props": {
+							"size": "mini",
+							"clearable": true,
+							onChange: (val, val1) => {
+								console.log(val, val1)
+							},
 						}
-					}
-				},
-				{
-					prop: "content",
-					label: "内容",
-					component: {
-						name: "slot-content"
 					}
 				}
 			]
@@ -108,8 +89,7 @@ export default defineComponent({
 							ids: selects.value
 						})
 						.then(() => {
-							ElMessage.success("清空成功");
-							refs.value.crud.refresh();
+							ElMessage.success("备份成功");
 						})
 						.catch((err: string) => {
 							ElMessage.error(err);
@@ -118,14 +98,43 @@ export default defineComponent({
 				.catch(() => null);
 		}
 
+
+		function repair() {
+			if (selects.value.length == 0) {
+				ElMessage.warning("请先选择要修复的表")
+				return
+			}
+			service.system.databaseList.repair({
+				"tables": selects.value
+			}).then((data) => {
+				ElMessage.success(data)
+			}).catch((e) => {
+				ElMessage.error(e)
+			})
+		}
+
+		function optimize() {
+			if (selects.value.length == 0) {
+				ElMessage.warning("请先选择要优化的表")
+				return
+			}
+			service.system.databaseList.optimize({
+				"tables": selects.value
+			}).then((data) => {
+				ElMessage.success(data)
+			}).catch((e) => {
+				ElMessage.error(e)
+			})
+		}
+
 		return {
 			refs,
 			table,
-			upsert,
 			backup,
+			repair,
+			optimize,
 			setRefs,
 			onLoad,
-			sqlFormRef,
 			onSelectionChange
 		};
 	}

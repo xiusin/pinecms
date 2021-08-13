@@ -5,8 +5,11 @@ import (
 	"github.com/xiusin/pine/cache/providers/bitcask"
 	"github.com/xiusin/pine/sessions"
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
+	logger2 "github.com/xiusin/pinecms/src/common/logger"
+	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -75,7 +78,6 @@ func InitApp() {
 
 func InitDB() {
 	XOrmEngine = config.InitDB(nil)
-
 	di.Set(XOrmEngine, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return XOrmEngine, nil
 	}, true)
@@ -122,7 +124,7 @@ func registerStatic() {
 func registerV2BackendRoutes() {
 	app.GET("/admin/", func(ctx *pine.Context) {
 		byts, err := ioutil.ReadFile("dist/index.html")
-		if err != nil{
+		if err != nil {
 			_ = ctx.WriteString(err.Error())
 		} else {
 			_ = ctx.WriteHTMLBytes(byts)
@@ -148,6 +150,7 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.MenuController), "/menu").
 		Handle(new(backend.LinkController), "/link").
 		Handle(new(backend.LogController), "/log").
+		Handle(new(backend.ErrorLogController), "/errlog").
 		Handle(new(backend.AssetsManagerController), "/assets").
 		Handle(new(backend.AttachmentController), "/attachment").
 		Handle(new(backend.AttachmentTypeController), "/attachment/type").
@@ -170,7 +173,8 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.ContentController), "/content").
 		Handle(new(backend.LoginController)).
 		Handle(new(backend.IndexController)).
-		Handle(new(backend.DatabaseController))
+		Handle(new(backend.DatabaseController)).
+		Handle(new(backend.DatabaseBackupController))
 
 	app.Group("/v2/public").Handle(new(backend.PublicController))
 	app.Group("/v2/api").Handle(new(backend.PublicController))
@@ -226,7 +230,12 @@ func diConfig() {
 
 	di.Set(di.ServicePineLogger, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		loggers := logger.New()
-		loggers.SetOutput()
+		logger.DisableColor = true
+		writer := logger2.NewPineCmsLogger(XOrmEngine, 10)
+		pine.RegisterOnInterrupt(func() {
+			writer.Close()
+		})
+		loggers.SetOutput(io.MultiWriter(os.Stdout, writer))
 		logger.SetDefault(loggers)
 		loggers.SetReportCaller(true, 3)
 		if config.AppConfig().Debug {

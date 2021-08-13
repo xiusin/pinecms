@@ -91,7 +91,6 @@ func InitDB(conf *DbConfig) *xorm.Engine {
 		if err = _orm.Ping(); err != nil {
 			panic(err.Error())
 		}
-
 		_orm.ShowSQL(o.ShowSql)
 		_orm.TZLocation, _ = time.LoadLocation("Asia/Shanghai")
 		_orm.ShowExecTime(o.ShowExecTime)
