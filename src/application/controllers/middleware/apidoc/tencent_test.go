@@ -10,10 +10,6 @@ import (
 
 func TestApiDoc(t *testing.T) {
 	cfg := tencentApiConf{
-		//SecretId:  "AKIDRmCdPINEx6p13vfFdtiqlW6wd8RYUGuMBliT...",
-		//SecretKey: "jHk4Dhz74pRuEPYWI4iibQ4YuPINE5966wb5...",
-		SecretId:  "AKIDRmCdx6p13vfFdtiqlW6wd8RYUGuMBliT",
-		SecretKey: "jHk4Dhz74pRuEPYWI4iibQ4Yu5966wb5",
 		Region:    "ap-beijing",
 		Endpoint:  "apigateway.tencentcloudapi.com",
 	}

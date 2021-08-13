@@ -5,7 +5,6 @@ import (
 	"github.com/xiusin/pine/cache/providers/bitcask"
 	"github.com/xiusin/pine/sessions"
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
-	logger2 "github.com/xiusin/pinecms/src/common/logger"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
@@ -226,11 +225,8 @@ func diConfig() {
 	}, true)
 
 	di.Set(di.ServicePineLogger, func(builder di.AbstractBuilder) (i interface{}, err error) {
-		loggers := &logger2.PineCmsLogger{
-			Logger: logger.New(),
-			Orm: XOrmEngine,
-			Table: &tables.Log{},
-		}
+		loggers := logger.New()
+		loggers.SetOutput()
 		logger.SetDefault(loggers)
 		loggers.SetReportCaller(true, 3)
 		if config.AppConfig().Debug {
