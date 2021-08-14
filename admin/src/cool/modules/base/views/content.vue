@@ -169,7 +169,14 @@ export default defineComponent({
 	},
 	setup() {
 		//todo 通过配置文件注入变量. 引用
-		const $ueditorConf = {UEDITOR_HOME_URL: "/UEditor/", width: "100%"};
+		const $ueditorConf = {
+			serverUrl: '/api/web/upload/ueditor',
+			UEDITOR_HOME_URL: '/UEditor/',
+			autoHeightEnabled: false,
+			initialFrameHeight: 400,
+			initialFrameWidth: '100%',
+			enableAutoSave: false
+		}
 
 		const service = inject<any>("service");
 

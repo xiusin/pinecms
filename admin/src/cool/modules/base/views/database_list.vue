@@ -14,7 +14,7 @@
 <script lang="ts">
 import { defineComponent, inject, reactive, ref } from "vue";
 import { useRefs } from "/@/core";
-import { CrudLoad, FormRef, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { CrudLoad, Table } from "cl-admin-crud-vue3/types";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 export default defineComponent({

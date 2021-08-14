@@ -171,6 +171,7 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.MemberGroupController), "/member/group").
 		Handle(new(backend.TableController), "/table").
 		Handle(new(backend.ContentController), "/content").
+		Handle(new(backend.ImSessionController)).
 		Handle(new(backend.LoginController)).
 		Handle(new(backend.IndexController)).
 		Handle(new(backend.DatabaseController)).
