@@ -5,6 +5,7 @@ import (
 	"github.com/xiusin/pine/cache/providers/bitcask"
 	"github.com/xiusin/pine/sessions"
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
+	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	logger2 "github.com/xiusin/pinecms/src/common/logger"
 	"io"
 	"io/ioutil"
@@ -14,7 +15,6 @@ import (
 	"time"
 
 	"github.com/gorilla/securecookie"
-	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/application/plugins"
 
@@ -23,7 +23,6 @@ import (
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pine/middlewares/cache304"
-	request_log "github.com/xiusin/pine/middlewares/request-log"
 	"github.com/xiusin/pine/render/engine/jet"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/taglibs"
@@ -62,7 +61,7 @@ func initApp() {
 	}, true)
 	diConfig()
 	registerV2BackendRoutes()
-	app.Use(request_log.RequestRecorder())
+	//app.Use(request_log.RequestRecorder())
 	var staticPathPrefix []string
 	for _, static := range conf.Statics {
 		staticPathPrefix = append(staticPathPrefix, static.Route)

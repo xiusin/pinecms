@@ -276,7 +276,7 @@ func (c *DocumentController) GetTable() {
 
 	var fields tables.ModelDslFields
 	c.Orm.Where("mid = ?", mid). //Where("list_visible = 1").
-		Asc("listorder").Find(&fields)
+					Asc("listorder").Find(&fields)
 	// TODO 允许搜索字段构建
 	table := table{Props: nil, Columns: []column{}, UpsetComps: []interface{}{}}
 	for _, field := range fields {
@@ -329,7 +329,7 @@ func (c *DocumentController) GetTable() {
 		comp = map[string]interface{}{
 			"prop":      field.TableField,
 			"label":     field.FormName,
-			"span":      field.FieldLen,
+			"span":      field.Span,
 			"component": comp,
 		}
 

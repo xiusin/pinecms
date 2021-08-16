@@ -51,6 +51,13 @@ export default defineComponent({
 		const { refs, setRefs } = useRefs();
 		const fields = ref<any[]>([]);
 
+		const searchType = [
+			{ label: "精确", value: 1 },
+			{ label: "模糊", value: 2 },
+			{ label: "多值", value: 3 },
+			{ label: "范围", value: 4 }
+		];
+
 		service.system.table.fields().then((data: any) => {
 			for (const idx in data) {
 				fields.value.push({
@@ -109,12 +116,6 @@ export default defineComponent({
 					dict: dict
 				},
 				{
-					label: "搜索",
-					prop: "searchable",
-					width: 60,
-					dict: dict
-				},
-				{
 					label: "排序",
 					prop: "sortable",
 					width: 60,
@@ -131,6 +132,18 @@ export default defineComponent({
 					prop: "visible",
 					width: 60,
 					dict: dict
+				},
+				{
+					label: "搜索",
+					prop: "searchable",
+					width: 60,
+					dict: dict
+				},
+				{
+					label: "搜索类型",
+					prop: "search_type",
+					width: 100,
+					dict: searchType
 				},
 				{
 					prop: "default",
@@ -260,7 +273,7 @@ export default defineComponent({
 					prop: "span",
 					label: "表单宽度",
 					span: 12,
-					value: 12,
+					value: 24,
 					component: {
 						name: "el-slider",
 						step: 4,
@@ -316,6 +329,20 @@ export default defineComponent({
 						name: "el-checkbox",
 						"true-label": true,
 						"false-label": false
+					}
+				},
+				{
+					prop: "search_type",
+					label: "搜索类型",
+					span: 4,
+					value: 1,
+					component: {
+						name: "el-select",
+						options: searchType
+					},
+					rules: {
+						required: true,
+						message: "请选择搜索类型"
 					}
 				},
 				{

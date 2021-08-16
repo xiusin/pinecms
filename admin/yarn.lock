@@ -3893,11 +3893,6 @@ vue-eslint-parser@^7.10.0:
     lodash "^4.17.21"
     semver "^6.3.0"
 
-vue-neditor-wrap@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/vue-neditor-wrap/-/vue-neditor-wrap-1.0.4.tgz#0e589a57aa76278f19921d074f2ccc0898b348ae"
-  integrity sha512-H6I9GAk6KZIK0Y+4eKFkkXc+buUO/Lx8QXo1kCiBJG7p/woedFaT3LxFpTeLpT51u3meAQAIv/DS5lunMSkTDQ==
-
 vue-router@^4.0.5:
   version "4.0.5"
   resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-4.0.5.tgz#dd0a4134bc950c37aef64b973e9ee1008428d8fa"

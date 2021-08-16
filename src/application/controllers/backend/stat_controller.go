@@ -9,7 +9,6 @@ import (
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/cmd/version"
-	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"runtime"
 	"sync"
@@ -156,12 +155,9 @@ func (stat *StatController) GetData(orm *xorm.Engine, cacher cache.AbstractCache
 	s.PineCmsVersion = version.Version
 	s.XormVersion = xorm.Version
 
-	cacher.Remember(controllers.CacheMysqlVersion, &s.MysqlVersion, func() (interface{}, error) {
-		if version, err := orm.QueryString("SELECT VERSION() AS version"); err == nil {
-			return version[0]["version"], nil
-		} else {
-			return "", err
-		}
-	}, 24*3600)
+	versions, err := orm.QueryString("SELECT VERSION() AS version")
+	if err == nil {
+		s.MysqlVersion = versions[0]["version"]
+	}
 	helper.Ajax(s, 0, stat.Ctx())
 }

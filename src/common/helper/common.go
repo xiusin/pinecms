@@ -139,7 +139,12 @@ func Ajax(msg interface{}, errcode int64, this *pine.Context) {
 	// 添加操作日志
 	data := pine.H{"code": errcode}
 	if errcode != 1000 {
-		data["message"] = msg
+		switch msg.(type) {
+		case error:
+			data["message"] = msg.(error).Error()
+		default:
+			data["message"] = msg
+		}
 	} else {
 		switch msg.(type) {
 		case string:

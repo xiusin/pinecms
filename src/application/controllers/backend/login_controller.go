@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"fmt"
 	"github.com/gbrlsnchs/jwt/v3"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
@@ -21,6 +22,11 @@ func (c *LoginController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *LoginController) Login(orm *xorm.Engine) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Println(err)
+		}
+	}()
 	var p loginUserParam
 	apidoc.SetApiEntity(c.Ctx(), &apidoc.Entity{
 		ApiParam: &p,
@@ -49,13 +55,12 @@ func (c *LoginController) Login(orm *xorm.Engine) {
 			ExpirationTime: jwt.NumericDate(now.Add(24 * 30 * 12 * time.Hour)),
 		},
 		Id:        admin.Userid,
-		AdminId:   admin.Userid,   //admin.Userid,
-		RoleID:    admin.Roleid,   //admin.Roleid,
-		AdminName: admin.Username, //admin.Username,
+		AdminId:   admin.Userid,
+		RoleID:    admin.Roleid,
+		AdminName: admin.Username,
 	}
-
 	if token, err := jwt.Sign(pl, hs); err != nil {
-		helper.Ajax("登录失败： 授权失败", 1, c.Ctx())
+		helper.Ajax("登录失败", 1, c.Ctx())
 	} else {
 		helper.Ajax(pine.H{
 			"role_name":  "超级管理员",

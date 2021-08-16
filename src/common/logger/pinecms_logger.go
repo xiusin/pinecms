@@ -26,7 +26,6 @@ func NewPineCmsLogger(orm *xorm.Engine, len uint) *pineCmsLoggerWriter {
 func (p *pineCmsLoggerWriter) BeginConsume() {
 	for {
 		log, isCloser := <-p.logCh
-		fmt.Println(string(log), isCloser)
 		if !isCloser {
 			return
 		}
@@ -53,7 +52,7 @@ func (p *pineCmsLoggerWriter) parseLog(logData []byte) *tables.Log {
 	return &tables.Log{
 		Level:   uint8(logger.ErrorLevel),
 		Message: *helper.Bytes2String(logData),
-		Time: tables.LocalTime(time.Now()),
+		Time:    tables.LocalTime(time.Now()),
 	}
 }
 

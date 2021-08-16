@@ -17,13 +17,23 @@
 		</el-row>
 
 		<el-row>
-			<cl-table v-bind="table" />
+			<cl-table v-bind="table">
+				<template #slot-detail="{ scope }">
+					<el-button size="mini" @click="detailDialog(scope)">详情</el-button>
+				</template>
+			</cl-table>
 		</el-row>
 
 		<el-row type="flex">
 			<cl-flex1 />
 			<cl-pagination />
 		</el-row>
+
+		<cl-dialog title="详细日志" v-model="detail.show">
+			<pre style="font-size: 13px">
+				{{ detail.message.replace("				[", "[") }}
+			</pre>
+		</cl-dialog>
 	</cl-crud>
 </template>
 
@@ -64,6 +74,7 @@ export default defineComponent({
 				{
 					prop: "level",
 					label: "日志级别",
+					value: "ERRO",
 					width: 100
 				},
 				{
@@ -71,6 +82,11 @@ export default defineComponent({
 					label: "信息",
 					showOverflowTooltip: true
 				},
+				{
+					type: "op",
+					width: 75,
+					buttons: ["slot-detail"]
+				}
 			]
 		});
 
@@ -78,6 +94,16 @@ export default defineComponent({
 		function onLoad({ ctx, app }: CrudLoad) {
 			ctx.service(service.system.errorLog).done();
 			app.refresh();
+		}
+
+		const detail = ref({
+			show: false,
+			message: ""
+		});
+
+		function detailDialog(scope: any) {
+			detail.value.message = scope.row.message;
+			detail.value.show = true;
 		}
 
 		// 清空日志
@@ -100,6 +126,8 @@ export default defineComponent({
 		}
 
 		return {
+			detail,
+			detailDialog,
 			service,
 			refs,
 			day,

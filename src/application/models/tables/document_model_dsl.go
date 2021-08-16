@@ -18,6 +18,7 @@ type DocumentModelDsl struct {
 	MainTableField bool       `json:"main_table_field" xorm:"comment('是否为主表字段') tinyint(1)"`
 	Component      string     `json:"component" xorm:"comment('自定义组件配置') text"`
 	Searchable     bool       `json:"searchable" xorm:"comment('是否可搜索') tinyint(1)"`
+	SearchType     uint       `json:"search_type" xorm:"comment('搜索类型 1=精确 2=模糊 3=多值 4=范围') tinyint(2)"`
 	Span           uint       `json:"span" xorm:"comment('表单span宽度') tinyint(3)"`
 	Sortable       bool       `json:"sortable" xorm:"comment('是否可排序') tinyint(1)"`
 	Visible        bool       `json:"visible" xorm:"comment('是否表单可见') tinyint(1)"`
