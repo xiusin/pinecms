@@ -2,7 +2,7 @@
 	<div class="demo-adv-search">
 		<cl-adv-btn />
 		<cl-adv-search :items="items" :op-list="opList" />
-	</div>
+	</div>,
 </template>
 
 <script lang="ts">

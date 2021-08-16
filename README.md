@@ -33,13 +33,13 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
     > `go run main.go serve dev`
 
 6. 访问后端登陆页面
-    > 访问 `http://localhost:2019/b/login/index` 默认账号密码 `用户名: admin 密码: 123456`
+    > 访问 `http://localhost:2019/admin/` 默认账号密码 `用户名: admin 密码: 123456`
 
 # 自动静态化路由 #
 完全自动静态文件和动态路由. 更友好的SEO方式
 
-# 支持多主体一键切换 #
-系统支持多种主题, 可自由切换不同风格的模板. 
+# 主题系统 #
+系统支持多种主题, 可自由切换不同风格的模板. (一般需要相同类型模型, 字段一致, 减少错误问题) 
 
 # 内置标签系统 #
 支持类似织梦的标签系统, 可以让您在不写任何代码的情况下完成网站建设. 
@@ -57,11 +57,42 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 ### 插件系统 (doing)
 支持动态插拔插件, 并注册到系统功能, 提供方便便捷的扩展功能. 
-系统可以动态扫描插件目录,自动发现并可以热加载进系统.  也可以导入第三方人员开发的扩展动态库(受限于系统和版本,后面会提供编译个版本的docker镜像)
+系统可以动态扫描插件目录,自动发现并可以热加载进系统.  
+也可以导入第三方人员开发的扩展动态库(受限于系统和版本,后面会提供编译个版本的docker镜像)
 
 - 插件系统界面
 ![插件系统界面](./images/plugin.png)
 
+
+### 服务器监控 
+> 常用的系统资源监控, 以及环境检测
+
+![服务器监控界面](./images/stat.png)
+
+### 模型配置
+- 模型列表
+> 模型管理界面
+
+![模型列表界面](./images/model.png)
+  
+- 模型变更SQL
+> 当模型变更时,会检测变更生成执行SQL, 需要手动操作
+
+![模型变更SQL](./images/presql.png)
+
+
+- 模型字段界面
+![模型字段界面](./images/field_list.png)
+  
+- 添加字段界面
+> 内置CMS常用字段, 可以设置表单显示, 列表显示, 可搜索字段, 搜索类型
+
+![添加模型字段](./images/add_field.png)
+
+- CRUD命令
+> 允许直接从表创建crud模块, 根据表字段自动解析form, 区别于cms是此命令仅适用于开发区间 
+
+![crud命令](./images/crud.png)
 
 # Doing
 - 重写为前后端分离
@@ -74,9 +105,5 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - 微信插件
 - 插件公共页面配置 (尽可能不让二次开发)
 - hook方式支持插件钩子注入信息
-- 文章标签
-- https://my.oschina.net/u/4532842/blog/5122562?_from=gitee_rec
-- http://beta.kuafucloud.com/#/login?redirect=%2Fdashboard
 - http://8.140.114.57:7000/opsli-boot/doc.html#/opsli%202.X/%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8-%E6%97%A5%E5%BF%97/createUsingGET
-- https://github.com/chuzhixin/vue-admin-beautiful-pro (主要参照一些样板,如监控什么的)
 - https://chu1204505056.gitee.io/admin-pro/#/mall/goods

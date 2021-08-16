@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"bytes"
 	"errors"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -55,9 +57,11 @@ var crudCmd = &cobra.Command{
 			return
 		}
 		table, _ := cmd.Flags().GetString("table")
-		force, _ := cmd.Flags().GetBool("force")
+		force, _ := cmd.Flags().GetBool("force") // 强制创建
 		onlyInfo, _ := cmd.Flags().GetBool("info")
+		frontendPath, _ := cmd.Flags().GetString("fepath")
 		if len(table) == 0 {
+			logger.Print(color.Red.Sprint("请输入要创建CRUD的表名"))
 			_ = cmd.Help()
 			return
 		}
@@ -73,32 +77,44 @@ var crudCmd = &cobra.Command{
 			}
 		}
 		if tableMata == nil {
-			logger.Errorf("无法获取数据表[%s]元信息", getTableName(table))
+			logger.Errorf("无法获取数据表[%s]元信息", color.Red.Sprint(getTableName(table)))
 			return
 		}
 		for _, v := range tableMata.Columns() {
 			cols[v.Name] = v
 		}
 		controllerName, controllerPath := getControllerName(table)
-		tablePath := tableDir + table + ".go"
-		if !force && !onlyInfo {
-			f, err := os.Stat(controllerPath)
-			if !os.IsNotExist(err) && !f.IsDir() {
-				logger.Print("已有存在的文件: " + controllerPath)
-			}
-			f, err = os.Stat(tablePath)
-			if !os.IsNotExist(err) && !f.IsDir() {
-				logger.Print("已有存在的文件: " + tablePath)
+		tablePath := tableDir + table + goExt
+		if !force {
+			for _, s := range []string{frontendPath + "/" + feModuleDir + table, controllerPath, tablePath} {
+				if _, err := os.Stat(s); !os.IsNotExist(err) {
+					logger.Print("已有存在: " + color.Red.Sprint(s))
+					return
+				}
 			}
 		}
-		if err = genTableFile(onlyInfo, table, tableDir+table+".go"); err != nil {
+		if err = genTableFile(onlyInfo, table, tableDir+table+goExt); err != nil {
 			panic(err)
 		}
-
 		if err = genControllerFile(onlyInfo, controllerName, table, controllerPath); err != nil {
 			panic(err)
 		}
-		logger.Print("创建模块文件成功, 请将控制器注册到路由: registerV2BackendRoutes方法内")
+
+		genFrontendFile(table, frontendPath)
+
+		byts, err := ioutil.ReadFile(routerFile)
+		if err != nil {
+			panic(err)
+		}
+		controllerNamespace := `"github.com/xiusin/pinecms/src/application/controllers/backend"`
+		pineNamespace := `"github.com/xiusin/pine"`
+		holder := "// holder"
+		if !bytes.Contains(byts, []byte(controllerNamespace)) {
+			byts = bytes.Replace(byts, []byte(pineNamespace), []byte(pineNamespace+"\r\n\t"+controllerNamespace), 1)
+		}
+		byts = bytes.Replace(byts, []byte(holder), []byte(holder+"\r\n\t"+`backendRouter.Handle(new(backend.`+controllerName+`), "/`+snakeString(table)+`")`), 1)
+		ioutil.WriteFile(routerFile, byts, os.ModePerm)
+		logger.Print("创建模块文件成功, 已注册路由信息至: " + color.Green.Sprint(routerFile))
 	},
 }
 
@@ -106,13 +122,13 @@ func init() {
 	crudCmd.Flags().String("table", "", "数据库表名")
 	crudCmd.Flags().Bool("force", false, "是否强制覆盖（可能导致已有代码丢失）")
 	crudCmd.Flags().Bool("info", false, "是否只打印生成文件以及操作步骤")
-	crudCmd.Flags().String("frontendPath", "admin", "前端开发根目录")
+	crudCmd.Flags().String("fepath", "admin", "前端开发根目录")
 	rootCmd.AddCommand(crudCmd)
 }
 
 func getControllerName(tableName string) (controller string, filename string) {
 	controller = camelString(tableName) + "Controller"
-	filename = controllerDir + snakeString(tableName) + "_controller.go"
+	filename = controllerDir + snakeString(tableName) + "_controller" + goExt
 	return
 }
 
@@ -126,7 +142,15 @@ func getTableName(table string) string {
 
 func genControllerFile(print bool, controllerName, tableName, controllerPath string) error {
 	var err error
-	content := strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(controllerTpl, "[ctrl]", controllerName), "[table]", camelString(tableName)), "[searchFieldDsl]", searchFieldDsl)
+	content := strings.ReplaceAll(
+		strings.ReplaceAll(
+			strings.ReplaceAll(controllerTpl, "[ctrl]", controllerName),
+			"[table]",
+			camelString(tableName),
+		),
+		"[searchFieldDsl]",
+		searchFieldDsl,
+	)
 	if !print {
 		err = ioutil.WriteFile(controllerPath, []byte(content), os.ModePerm)
 	}
@@ -227,42 +251,23 @@ func genTableFile(print bool, tableName, tablePath string) error {
 	return err
 }
 
-// genFrontendFile 生成前端模块 （需满足开发环境）
-func genFrontendFile(print bool, table string, tableDsl, formDsl, filterDSL []map[string]interface{}) {
-	// 根据路由创建目录文件
-	//moduleFeDir := feDir + table + "/list"
-	//indexFile := strFirstToUpper(moduleFeDir + "/index.ts")
-	//presetFile := strFirstToUpper(moduleFeDir + "/preset.ts")
-	//
-	//data, _ := JSONMarshal(tableDsl)
-	//content := bytes.ReplaceAll([]byte(indexTsTpl), []byte("[tableDSL]"), append(bytes.Trim(data, "[]\n"), ','))
-	//
-	//content = bytes.ReplaceAll(content, []byte("[registerDataVar]"), []byte(strings.Join(topCode, "\r\n")))
-	//
-	//data, _ = json.MarshalIndent(filterDSL, "", "\t")
-	//content = bytes.ReplaceAll(content, []byte("[filterDSL]"), append(bytes.Trim(data, "[]"), ','))
-	//
-	//data, _ = json.MarshalIndent(formDsl, "", "\t")
-	//content = bytes.ReplaceAll(content, []byte("[formDSL]"), data)
-	//
-	//presetContent := bytes.ReplaceAll([]byte(presetTsTpl), []byte("[table]"), []byte(table))
-	//if !print {
-	//	_ = os.RemoveAll(moduleFeDir) // 强制创建
-	//	_ = os.MkdirAll(moduleFeDir, os.ModePerm)
-	//	err := ioutil.WriteFile(indexFile, content, os.ModePerm)
-	//	if err == nil {
-	//		logger.Print("创建文件: " + indexFile)
-	//	}
-	//	err = ioutil.WriteFile(presetFile, presetContent, os.ModePerm)
-	//	if err == nil {
-	//		logger.Print("创建文件: " + presetFile)
-	//	}
-	//} else {
-	//	logger.Print("创建文件: " + indexFile)
-	//	quick.Highlight(logger.DefaultWriter(), string(content), "typescript", "terminal256", theme)
-	//	logger.Print("创建文件: " + presetFile)
-	//	quick.Highlight(logger.DefaultWriter(), string(presetContent), "typescript", "terminal256", theme)
-	//}
+// genFrontendFile 生成前端模块
+func genFrontendFile(table, frontendPath string) {
+	moduleBaseDir := frontendPath + "/" + feModuleDir + table
+	files := map[string]string{
+		filepath.Join(moduleBaseDir, "service", "index.ts"):  serviceTsTpl,
+		filepath.Join(moduleBaseDir, "service", "router.ts"): serviceRouterTpl,
+		filepath.Join(moduleBaseDir, "views", table+".vue"):  indexVueTpl,
+		filepath.Join(moduleBaseDir, "index.ts"):             serviceIndexTsTpl,
+	}
+	for filename, content := range files {
+		os.MkdirAll(filepath.Dir(filename), os.ModePerm)
+		if err := os.WriteFile(filename, bytes.ReplaceAll([]byte(content), []byte("[table]"), []byte(snakeString(table))), os.ModePerm); err == nil {
+			logger.Print("创建文件： " + color.Green.Sprint(filename))
+		} else {
+			logger.Print("创建文件", color.Red.Sprint(filename)+"失败")
+		}
+	}
 }
 
 // getFieldType 生成表单和列表字段类型

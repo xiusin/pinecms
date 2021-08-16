@@ -22,19 +22,20 @@ type DocumentController struct {
 }
 
 type table struct {
-	Columns    []column      `json:"columns"`
-	Props      interface{}   `json:"props"`
-	UpsetComps []interface{} `json:"upset_comps"`
+	Columns      []column       `json:"columns"`
+	Props        interface{}    `json:"props"`
+	UpsetComps   []interface{}  `json:"upset_comps"`
+	SearchFields []interface{} `json:"search_fields"`
 }
 
 type column struct {
 	Prop                string      `json:"prop"`                // 绑定字段
 	Label               string      `json:"label"`               // 显示内容
+	Component           interface{} `json:"component"`           // 自渲染组件
+	Dict                []dictItem  `json:"dict"`                // 字典, 一般针对下拉数据
 	Width               uint        `json:"width"`               // 固定宽度
 	MinWidth            uint        `json:"minWidth"`            // 最小宽度
-	Dict                []dictItem  `json:"dict"`                // 字典, 一般针对下拉数据
 	Align               string      `json:"align"`               // 对齐
-	Component           interface{} `json:"component"`           // 自渲染组件
 	Sortable            bool        `json:"sortable"`            // 可排序
 	SortBy              interface{} `json:"sortBy"`              // 排序字段
 	ShowOverflowTooltip bool        `json:"showOverflowTooltip"` // 溢出自动tooltip
@@ -276,11 +277,11 @@ func (c *DocumentController) GetTable() {
 
 	var fields tables.ModelDslFields
 	c.Orm.Where("mid = ?", mid). //Where("list_visible = 1").
-					Asc("listorder").Find(&fields)
+		Asc("listorder").Find(&fields)
 	// TODO 允许搜索字段构建
 	table := table{Props: nil, Columns: []column{}, UpsetComps: []interface{}{}}
 	for _, field := range fields {
-		column := column{
+		listColumn := column{
 			Prop:                field.TableField,
 			Label:               field.FormName,
 			Width:               field.FieldLen,
@@ -291,13 +292,12 @@ func (c *DocumentController) GetTable() {
 			MinWidth:            80,
 		}
 		if field.Center {
-			column.Align = "center"
+			listColumn.Align = "center"
 		}
 		if field.ListWidth > 80 {
-			column.MinWidth = field.ListWidth
+			listColumn.MinWidth = field.ListWidth
 		}
 
-		// 只有指定组件可以使用值  下拉, tree, dict 等复杂类型
 		if len(field.Datasource) > 0 {
 
 		}
@@ -305,17 +305,14 @@ func (c *DocumentController) GetTable() {
 		if len(field.Component) > 0 {
 			var component = map[string]interface{}{}
 			if err := json.Unmarshal([]byte(field.Component), &component); err == nil {
-				column.Component = component
+				listColumn.Component = component
 			} else {
-				column.Component = field.Component
+				listColumn.Component = field.Component
 			}
 		}
 
-		if field.TableField == "thumb" {
-			column.Component = `{name: "el-image", fit: "contain", style: {"width": "40px", "height": "40px"}}`
-		}
+		table.Columns = append(table.Columns, listColumn)
 
-		table.Columns = append(table.Columns, column)
 		var props = map[string]interface{}{}
 		_ = json.Unmarshal([]byte(fieldDefineMap[field.FieldType].Props), &props)
 		comp := map[string]interface{}{
@@ -339,12 +336,9 @@ func (c *DocumentController) GetTable() {
 				"message":  field.RequiredTips,
 			}
 		}
-
-		// 构建组件
 		table.UpsetComps = append(table.UpsetComps, comp)
-
 	}
-
+	table.SearchFields = fields.GetSearchableFields()
 	helper.Ajax(table, 0, c.Ctx())
 }
 

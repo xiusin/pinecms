@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"encoding/json"
 	"github.com/go-xorm/xorm"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
@@ -10,6 +11,9 @@ import (
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/cmd/version"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"io/ioutil"
+	cnet "net"
+	"net/http"
 	"runtime"
 	"sync"
 	"time"
@@ -25,17 +29,19 @@ const (
 )
 
 type Server struct {
-	Nets           []*Net `json:"nets"`
-	Os             Os     `json:"os"`
-	Cpu            Cpu    `json:"cpu"`
-	Rrm            Rrm    `json:"ram"`
-	Disk           Disk   `json:"disk"`
-	RunningTime    int64  `json:"running_time"`
-	StartTime      string `json:"start_time"`
-	PineVersion    string `json:"pine_version"`
-	PineCmsVersion string `json:"pine_cms_version"`
-	XormVersion    string `json:"xorm_version"`
-	MysqlVersion   string `json:"mysql_version"`
+	Nets           []*Net    `json:"nets"`
+	Os             Os        `json:"os"`
+	Cpu            Cpu       `json:"cpu"`
+	Rrm            Rrm       `json:"ram"`
+	Disk           Disk      `json:"disk"`
+	RunningTime    int64     `json:"running_time"`
+	StartTime      string    `json:"start_time"`
+	PineVersion    string    `json:"pine_version"`
+	PineCmsVersion string    `json:"pine_cms_version"`
+	XormVersion    string    `json:"xorm_version"`
+	LocalIp        string    `json:"local_ip"`
+	OutIp          *IPLocate `json:"out_ip"`
+	MysqlVersion   string    `json:"mysql_version"`
 }
 
 type Net struct {
@@ -71,6 +77,21 @@ type Disk struct {
 	TotalGB     int `json:"totalGb"`
 	UsedPercent int `json:"usedPercent"`
 }
+
+type Address struct {
+	Country  string `json:"Country"`
+	Province string `json:"Province"`
+	City     string `json:"City"`
+}
+
+type IPLocate struct {
+	Result  bool    `json:"result"`
+	IP      string  `json:"IP"`
+	Address Address `json:"Address"`
+	ISP     string  `json:"ISP"`
+}
+
+var outIp *IPLocate
 
 type StatController struct {
 	pine.Controller
@@ -137,6 +158,62 @@ func (_ *StatController) InitNet() (useages []*Net, err error) {
 	return
 }
 
+func (_ StatController) GetLocalIP() (ip string, err error) {
+	addrs, err := cnet.InterfaceAddrs()
+	if err != nil {
+		return
+	}
+	for _, addr := range addrs {
+		ipAddr, ok := addr.(*cnet.IPNet)
+		if !ok {
+			continue
+		}
+		if ipAddr.IP.IsLoopback() {
+			continue
+		}
+		if !ipAddr.IP.IsGlobalUnicast() {
+			continue
+		}
+		return ipAddr.IP.String(), nil
+	}
+	return
+}
+
+func (_ StatController) GetOutIp() (*IPLocate, error) {
+	if outIp == nil {
+		client := &http.Client{
+			Transport: &http.Transport{
+				Dial: func(netw, addr string) (cnet.Conn, error) {
+					conn, err := cnet.DialTimeout(netw, addr, time.Second*1)
+					if err != nil {
+						return nil, err
+					}
+					conn.SetDeadline(time.Now().Add(time.Second * 2))
+					return conn, nil
+				},
+				ResponseHeaderTimeout: time.Second * 1,
+			},
+		}
+		req, err := http.NewRequest("GET", "https://ipw.cn/api/ip/locate", nil)
+		if err != nil {
+			return nil, err
+		}
+		responseClient, err := client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		defer responseClient.Body.Close()
+		body, _ := ioutil.ReadAll(responseClient.Body)
+		var ipLocateResult IPLocate
+		err = json.Unmarshal(body, &ipLocateResult)
+		if err != nil {
+			return nil, err
+		}
+		outIp = &ipLocateResult
+	}
+	return outIp, nil
+}
+
 func (stat *StatController) GetData(orm *xorm.Engine, cacher cache.AbstractCache) {
 	var s Server
 
@@ -154,7 +231,8 @@ func (stat *StatController) GetData(orm *xorm.Engine, cacher cache.AbstractCache
 	s.PineVersion = pine.Version
 	s.PineCmsVersion = version.Version
 	s.XormVersion = xorm.Version
-
+	s.LocalIp, _ = stat.GetLocalIP()
+	s.OutIp, _ = stat.GetOutIp()
 	versions, err := orm.QueryString("SELECT VERSION() AS version")
 	if err == nil {
 		s.MysqlVersion = versions[0]["version"]

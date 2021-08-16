@@ -1,5 +1,7 @@
 package tables
 
+import "strings"
+
 type DocumentModelDsl struct {
 	Id             int64      `json:"id" xorm:"id pk autoincr"`
 	Mid            int64      `json:"mid" xorm:"comment('模型ID') int(5)"`
@@ -31,6 +33,20 @@ type DocumentModelDsl struct {
 	DeletedAt      *LocalTime `xorm:"deleted" json:"deleted_at"`
 }
 
+// Datasource is_dict
+// json
+// url
+//
+
+func (c *DocumentModelDsl) getDataSource() interface{} {
+	// 查看分类情况
+	if len(strings.TrimSpace(c.Datasource)) == 0 { // 没有设置数据字典
+
+	}
+
+	return nil
+}
+
 type ModelDslFields []DocumentModelDsl
 
 //GetListFields 允许表单显示的列 固定字段不可隐藏
@@ -45,13 +61,59 @@ func (m ModelDslFields) GetListFields() []string {
 }
 
 // GetSearchableFields 构建搜索字段key
-func (m ModelDslFields) GetSearchableFields() {
+func (m ModelDslFields) GetSearchableFields() []interface{} {
+	var searchFields []interface{}
 	for _, field := range m {
-		if field.Searchable {
-			switch field.FieldType {
-
+		if field.Searchable && field.SearchType > 0 {
+			searchField := map[string]interface{}{
+				"prop":  "params." + field.TableField,
+				"label": field.FormName,
 			}
+			switch field.FieldType {
+			case FieldTypeInput, FieldTypeMulInput, FieldTypeEditorQuill, FieldTypeCodeEditor, FieldTypeMarkdown, FieldTypeUeditor: // 输入框展示
+				if field.SearchType == 3 || field.SearchType == 4 { // 仅支持精确和模糊搜索
+					continue
+				}
+				searchField["component"] = map[string]interface{}{"name": "el-input", "attrs": map[string]interface{}{"size": "mini"}}
+			case FieldTypeSelect, FieldTypeRadio, FieldTypeCheckbox, FieldTypeCascader, FieldTypeTags, FieldTypeFlag, FieldTypeSwitch: // 下拉展示
+				if field.SearchType == 2 || field.SearchType == 4 { // 仅支持 精确或多值
+					continue
+				}
+				attrs := map[string]interface{}{
+					"placeholder": "请选择",
+					"size":        "mini",
+				}
+				if field.SearchType == 3 {
+					attrs["multiple"] = true
+					attrs["collapse-tags"] = true
+				}
+				searchField["component"] = map[string]interface{}{"name": "el-select", "attrs": attrs}
+			case FieldTypeDate:
+				if field.SearchType == 2 || field.SearchType == 3 { // 仅支持 精确或范围
+					continue
+				}
+				searchField["component"] = map[string]interface{}{"name": "el-date-picker"}
+				if field.SearchType == 4 {
+					attrs := map[string]interface{}{
+						"type":              "datetimerange",
+						"start-placeholder": "开始",
+						"end-placeholder":   "结束日期",
+						"size":              "mini",
+					}
+					searchField["component"] = map[string]interface{}{
+						"attrs": attrs,
+					}
+				}
+			case FieldTypeInputNumberInt, FieldTypeInputNumberFloat: // 数字 数字范围
+				attrs := map[string]interface{}{
+					"size": "mini",
+				}
+				searchField["component"] = map[string]interface{}{"name": "el-input-number", "attrs": attrs}
+			default: // 其他字段跳过, 不允许展示为搜索
+				continue
+			}
+			searchFields = append(searchFields, searchField)
 		}
 	}
-
+	return searchFields
 }

@@ -144,6 +144,9 @@ func registerV2BackendRoutes() {
 		"/v2",
 		middleware.VerifyJwtToken(),
 	)
+
+	router.InitModuleRouter(g, app)
+
 	g.Handle(new(backend.UserController), "/user").
 		Handle(new(backend.AdminRoleController), "/role").
 		Handle(new(backend.MenuController), "/menu").
