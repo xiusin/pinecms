@@ -66,9 +66,13 @@ export default defineComponent({
 
 		const form = reactive<any>({relevance: 1});
 
-		const upsert = reactive<Upsert>({items: []});
+		const upsert = reactive<Upsert>({
+			items: [formDSL]
+		});
 
-		const table = reactive<Table>({columns: []});
+		const table = reactive<Table>({
+			columns: [tableDSL]
+		});
 
 		function onLoad({ ctx, app }: CrudLoad) {
 			ctx.service(service.[table]).done();

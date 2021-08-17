@@ -15,4 +15,5 @@ func InitModuleRouter(backendRouter *pine.Router, app *pine.Application) {
 	backendRouter.Handle(new(backend.TodoController), "/todo")
 	backendRouter.Handle(new(backend.TodoController), "/todo")
 	backendRouter.Handle(new(backend.TodoController), "/todo")
+	backendRouter.Handle(new(backend.TodoController), "/todo")
 }

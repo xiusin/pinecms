@@ -16,7 +16,7 @@ func (c *TodoController) Construct() {
 		"introduce":{Op: "="},
 		"listorder":{Op: "="},
 		"passed":{Op: "="},
-		"addtime":{Op: "range"},
+		"addtime":{Op: "="},
 
 	}
 	c.Group = "Todo管理"

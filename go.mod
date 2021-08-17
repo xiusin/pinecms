@@ -43,6 +43,7 @@ require (
 	github.com/shirou/gopsutil v3.21.6+incompatible
 	github.com/sonyarouje/simdb v0.1.0
 	github.com/spf13/cobra v1.2.1
+	github.com/takama/daemon v1.0.0 // indirect
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/apigateway v1.0.221
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.221
 	github.com/tklauser/go-sysconf v0.3.7 // indirect

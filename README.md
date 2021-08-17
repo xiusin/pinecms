@@ -103,6 +103,7 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - github.com/traefik/yaegi `作为脚本处理`
 - Bleve 全文检索
 - 微信插件
+- daemon 守护进程
 - 插件公共页面配置 (尽可能不让二次开发)
 - hook方式支持插件钩子注入信息
 - http://8.140.114.57:7000/opsli-boot/doc.html#/opsli%202.X/%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8-%E6%97%A5%E5%BF%97/createUsingGET

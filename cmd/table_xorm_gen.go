@@ -25,8 +25,7 @@ type SQLColumn struct {
 	Default       string
 }
 
-func (t *SQLTable) toXorm(print bool, tableName string) string {
-
+func (t *SQLTable) toXorm(print bool, tableName string, frontendPath string) string {
 	var str strings.Builder
 	str.WriteString(fmt.Sprintf("type %s struct {\n", camelString(tableName)))
 
@@ -81,7 +80,11 @@ func (t *SQLTable) toXorm(print bool, tableName string) string {
 			str.WriteString(" not null")
 		}
 		if len(col.Default) > 0 {
-			str.WriteString(" default '" + col.Default + "'")
+			if strings.Contains(goType, "int") || strings.Contains(goType, "float") || col.Default == "null" {
+				str.WriteString(" default " + col.Default)
+			} else {
+				str.WriteString(" default '" + col.Default + "'")
+			}
 		}
 		if col.IsPrimaryKey {
 			str.WriteString(" pk")
@@ -91,6 +94,15 @@ func (t *SQLTable) toXorm(print bool, tableName string) string {
 		}
 		str.WriteString(" '" + col.Name + "'")
 
+		labelName, xormCol := col.Name, cols[col.Name]
+		if len(xormCol.Comment) > 0 {
+			c := strings.Split(xormCol.Comment, ":") // 如果填写了备注, 则拆分取第一个
+			labelName = c[0]
+			clearComment := strings.ReplaceAll(strings.ReplaceAll(xormCol.Comment, "\r\n", " "), "'", "")
+			clearComment = strings.ReplaceAll(clearComment, "\"", "")
+			str.WriteString(" comment('" + clearComment + "')")
+		}
+
 		str.WriteString("\"")
 		// 添加Json和schematag
 		str.WriteString(" json:\"" + snakeString(col.Name) + "\"")
@@ -98,100 +110,96 @@ func (t *SQLTable) toXorm(print bool, tableName string) string {
 		if !col.IsPrimaryKey {
 			str.WriteString(" validate:\"required\"")
 		}
-		amisType := getFieldType(col.Name, col.Type)
+		// ↑↑↑↑↑↑↑↑ 解析struct
 
-		labelName, xormCol := col.Name, cols[col.Name]
-		if xormCol.Comment != "" {
-			c := strings.Split(xormCol.Comment, ":")
-			labelName = c[0]
-		}
-		tableItem := map[string]interface{}{
-			"name":  snakeString(col.Name),
-			"label": labelName,
-		}
 
+		elFieldType, elProps := getFieldTypeAndProps(col.Name, col.Type)
+
+		// 列表字段
+		tableItem := map[string]interface{}{"prop": snakeString(col.Name), "label": labelName}
+
+		// 表单渲染组件
+		comp := map[string]interface{}{
+			"name":  elFieldType,
+			"props": elProps,
+		}
+		// 表单字段
 		item := map[string]interface{}{
-			"name":  snakeString(col.Name),
+			"prop":  snakeString(col.Name),
 			"label": labelName,
-			"type":  amisType,
 		}
-		getFieldFormExtra(amisType, item)
-		if !col.IsPrimaryKey {
-			formDsl = append(formDsl, item)
-		}
-		tableFieldType := "text"
-		// 过滤大字段或不可确定字段
-		if amisType != "rich-text" && amisType != "textarea" && amisType != "file" {
-			filterAmisType := amisType
-			switch amisType {
-			case "checkboxes", "radios", "select":
-				filterAmisType = "select"
-			}
-			if amisType == "image" {
-				tableFieldType = "images"
-				tableItem["enlargeAble"] = true
-			} else {
-				filterItem := map[string]interface{}{
-					"name":  snakeString(col.Name),
-					"label": "　　" + labelName + ":",
-					"type":  filterAmisType,
-				}
-				if item["options"] != nil {
-					filterItem["options"] = item["options"]
-					filterItem["clearable"] = true
-				}
-				switch col.Type {
-				case "datetime", "timestamp", "date":
-					filterAmisType += "-range"
-					if col.Type == "date" {
-						filterItem["format"] = "YYYY-MM-DD"
-					} else {
-						filterItem["format"] = "YYYY-MM-DD HH:mm:ss"
-					}
-					filterItem["type"] = filterAmisType
-				case "tinyint": // 如果仅仅为tinyint但是备注有可以解析的配置信息
-					vmap := parseCommentInfo(xormCol.Comment)
-					if len(vmap) > 0 {
-						var opts []map[string]interface{}
-						for k, v := range vmap {
-							opts = append(opts, map[string]interface{}{"label": v, "value": k})
-						}
-						filterItem["type"] = "select"
-						filterItem["options"] = opts
-						FormatEnum(col.Name, opts, tableItem)
-					}
-				}
-				if strings.HasSuffix(filterItem["type"].(string), "-range") {
-					searchFieldDsl += `		"` + filterItem["name"].(string) + `":{Op: "range"},`
-				} else if xormCol.SQLType.Name == "set" {
-					searchFieldDsl += `		"` + filterItem["name"].(string) + `":{Op: "set"},` // findInSet
-				} else {
-					searchFieldDsl += `		"` + filterItem["name"].(string) + `":{Op: "="},`
-				}
-				searchFieldDsl += "\r\n"
-				filterDsl = append(filterDsl, filterItem)
-			}
-			tableItem["type"] = tableFieldType
 
-			var opts interface{}
-			var ok bool
-			opts, ok = item["options"] // 查看是否存在options
-			if !ok {
-				opts = []map[string]interface{}{}
+		// 设置字段默认值
+		colM := cols[item["prop"].(string)]
+		if !colM.DefaultIsEmpty {
+			item["value"] = colM.Default
+		}
+
+		// 绑定组件
+		item["component"] = comp
+
+		// 过滤大字段或不可确定字段
+		if elFieldType != "cl-upload-space" && elFieldType != "cl-editor-quill" && elFieldType != "el-switch" {
+			filterType := elFieldType
+			switch elFieldType {
+			case "el-checkbox", "el-switch", "el-select":
+				filterType = "el-select"
 			}
-			if col.Type == "enum" {
-				FormatEnum(col.Name, opts.([]map[string]interface{}), tableItem)
-			} else if col.Type == "set" {
-				FormatSet(col.Name, opts.([]map[string]interface{}), tableItem)
+			props := map[string]interface{}{}
+			filterItem := map[string]interface{}{
+				"name":  snakeString(col.Name),
+				"label": labelName,
+				"type":  filterType,
 			}
+			if item["options"] != nil {
+				filterItem["options"] = item["options"]
+				tableItem["dict"] = item["options"]
+			}
+			switch col.Type {
+			case "datetime":
+				props["type"] = "datetimerange"
+			case "date":
+				props["type"] = "date"
+			case "tinyint":
+				vmap := parseCommentInfo(xormCol.Comment)
+				if len(vmap) > 0 {
+					var opts []map[string]interface{}
+					for k, v := range vmap {
+						opts = append(opts, map[string]interface{}{"label": v, "key": k})
+					}
+					filterItem["type"] = "el-select"
+					filterItem["options"] = opts
+					tableItem["dict"] = filterItem["options"]
+
+					elProps = map[string]interface{}{}
+					elProps["name"] = "el-checkbox"
+					elProps["options"] = filterItem["options"]
+					comp["props"] = elProps
+					item["component"] = elProps
+				}
+			}
+			if strings.HasSuffix(filterItem["type"].(string), "-range") {
+				searchFieldDsl += `		"` + filterItem["name"].(string) + `":{Op: "range"},`
+			} else if xormCol.SQLType.Name == "set" {
+				searchFieldDsl += `		"` + filterItem["name"].(string) + `":{Op: "set"},` // findInSet
+			} else {
+				searchFieldDsl += `		"` + filterItem["name"].(string) + `":{Op: "="},`
+			}
+			searchFieldDsl += "\r\n"
+			filterDsl = append(filterDsl, filterItem)
+			//tableItem["type"] = tableFieldType
 			tableDsl = append(tableDsl, tableItem)
 		}
 
 		str.WriteString("`\n")
+
+		if !col.IsPrimaryKey {
+			formDsl = append(formDsl, item)
+		}
 	}
 	str.WriteString("}")
 
-	//genFrontendFile(print, tableName, tableDsl, formDsl, filterDsl)
+	genFrontendFile(tableName, frontendPath, tableDsl, formDsl, filterDsl)
 
 	return str.String()
 }

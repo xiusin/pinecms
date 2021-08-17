@@ -69,6 +69,7 @@ func devCommand(cmd *cobra.Command, args []string) error {
 	go serve()
 	<-closeCh
 	if globalCancel != nil {
+		logger.Print("Cancel...")
 		globalCancel()
 	}
 	return nil
