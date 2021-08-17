@@ -9,3 +9,27 @@ type DocumentModelField struct {
 	FormComp string `json:"form_comp" xorm:"comment('对应vue组件') varchar(30)"`
 	Props    string `json:"props" xorm:"comment('属性配置') text"`
 }
+
+const (
+	FieldTypeNull = iota
+	FieldTypeInput
+	FieldTypeMulInput
+	FieldTypeEditorQuill
+	FieldTypeAttachment
+	FieldTypeSelect
+	FieldTypeCascader
+	FieldTypeRadio
+	FieldTypeCheckbox
+	FieldTypeInputNumberInt
+	FieldTypeInputNumberFloat
+	FieldTypeImageUpload
+	FieldTypeImageMulUpload
+	FieldTypeSwitch
+	FieldTypeDate
+	FieldTypeTags
+	FieldTypeFlag
+	FieldTypeMarkdown
+	FieldTypeCodeEditor
+	FieldTypeRate
+	FieldTypeUeditor
+)

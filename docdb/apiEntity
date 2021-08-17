@@ -2048,9 +2048,9 @@
 			}
 		],
 		"query_data_method": "application/json; charset=utf-8",
-		"raw_param": "{\"page\":1,\"size\":20,\"params\":{\"group\":\"OSS存储配置\"}}",
+		"raw_param": "{\"page\":1,\"size\":20,\"sort\":\"desc\",\"order\":\"listorder\",\"params\":{\"group\":\"OSS存储配置\"}}",
 		"raw_query": "",
-		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":21,\"key\":\"OSS_HOST\",\"form_name\":\"HOST\",\"value\":\"http://iriscms-test.oss-cn-beijing.aliyuncs.com\",\"group\":\"OSS存储配置\",\"default\":\"\",\"listorder\":19,\"remark\":\"\",\"editor\":\"input\",\"extra\":\"\",\"options\":null},{\"id\":22,\"key\":\"OSS_ENDPOINT\",\"form_name\":\"ENDPOINT\",\"value\":\"oss-cn-beijing.aliyuncs.com\",\"group\":\"OSS存储配置\",\"default\":\"\",\"listorder\":17,\"remark\":\"\",\"editor\":\"input\",\"extra\":\"\",\"options\":null},{\"id\":23,\"key\":\"OSS_KEYID\",\"form_name\":\"KEYID\",\"value\":\"\",\"group\":\"OSS存储配置\",\"default\":\"\",\"listorder\":15,\"remark\":\"你还是不懂\",\"editor\":\"input\",\"extra\":\"\",\"options\":null},{\"id\":24,\"key\":\"OSS_BUCKETNAME\",\"form_name\":\"BUCKETNAME\",\"value\":\"iriscms-test\",\"group\":\"OSS存储配置\",\"default\":\"\",\"listorder\":18,\"remark\":\"\",\"editor\":\"input\",\"extra\":\"\",\"options\":null},{\"id\":25,\"key\":\"OSS_KEYSECRET\",\"form_name\":\"SECRET\",\"value\":\"\",\"group\":\"OSS存储配置\",\"default\":\"\",\"listorder\":16,\"remark\":\"\",\"editor\":\"input\",\"extra\":\"\",\"options\":null}],\"pagination\":{\"page\":1,\"size\":20,\"total\":5}}}",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":21,\"key\":\"OSS_HOST\",\"form_name\":\"HOST\",\"value\":\"http://iriscms-test.oss-cn-beijing.aliyuncs.com\",\"group\":\"OSS存储配置\",\"default\":\"\",\"listorder\":19,\"remark\":\"\",\"editor\":\"input\",\"extra\":\"\",\"options\":null},{\"id\":24,\"key\":\"OSS_BUCKETNAME\",\"form_name\":\"BUCKETNAME\",\"value\":\"iriscms-test\",\"group\":\"OSS存储配置\",\"default\":\"\",\"listorder\":18,\"remark\":\"\",\"editor\":\"input\",\"extra\":\"\",\"options\":null},{\"id\":22,\"key\":\"OSS_ENDPOINT\",\"form_name\":\"ENDPOINT\",\"value\":\"oss-cn-beijing.aliyuncs.com\",\"group\":\"OSS存储配置\",\"default\":\"\",\"listorder\":17,\"remark\":\"\",\"editor\":\"input\",\"extra\":\"\",\"options\":null},{\"id\":25,\"key\":\"OSS_KEYSECRET\",\"form_name\":\"SECRET\",\"value\":\"\",\"group\":\"OSS存储配置\",\"default\":\"\",\"listorder\":16,\"remark\":\"\",\"editor\":\"input\",\"extra\":\"\",\"options\":null},{\"id\":23,\"key\":\"OSS_KEYID\",\"form_name\":\"KEYID\",\"value\":\"\",\"group\":\"OSS存储配置\",\"default\":\"\",\"listorder\":15,\"remark\":\"你还是不懂\",\"editor\":\"input\",\"extra\":\"\",\"options\":null}],\"pagination\":{\"page\":1,\"size\":20,\"total\":5}}}",
 		"return": [
 			{
 				"default": "",
@@ -2161,7 +2161,7 @@
 		"query_data_method": "application/json; charset=utf-8",
 		"raw_param": "{}",
 		"raw_query": "",
-		"raw_return": "{\"code\":1000,\"data\":[{\"id\":3,\"name\":\"内容管理\",\"parentId\":0,\"c\":\"content\",\"a\":\"top\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":3,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-content\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":9,\"name\":\"系统设置\",\"parentId\":0,\"c\":\"setting\",\"a\":\"left\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":1,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-system\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":10,\"name\":\"站点设置\",\"parentId\":9,\"c\":\"setting\",\"a\":\"site\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":1,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-system\",\"viewPath\":\"cool/modules/base/views/setting.vue\",\"keepAlive\":false,\"router\":\"/sys/setting\"},{\"id\":11,\"name\":\"权限管理\",\"parentId\":0,\"c\":\"admin\",\"a\":\"left\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":2,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-dept\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":12,\"name\":\"管理员管理\",\"parentId\":11,\"c\":\"admin\",\"a\":\"memberlist\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":1,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-admin\",\"viewPath\":\"cool/modules/base/views/user.vue\",\"keepAlive\":false,\"router\":\"/sys/user\"},{\"id\":13,\"name\":\"角色管理\",\"parentId\":11,\"c\":\"role\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":2,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-role\",\"viewPath\":\"cool/modules/base/views/role.vue\",\"keepAlive\":false,\"router\":\"/sys/role\"},{\"id\":14,\"name\":\"日志监控\",\"parentId\":0,\"c\":\"system\",\"a\":\"index\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":9,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-log\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":15,\"name\":\"操作日志\",\"parentId\":14,\"c\":\"system\",\"a\":\"loglist\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":1,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-log-new\",\"viewPath\":\"cool/modules/base/views/log.vue\",\"keepAlive\":false,\"router\":\"/sys/log\"},{\"id\":16,\"name\":\"菜单管理\",\"parentId\":9,\"c\":\"system\",\"a\":\"menulist\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":2,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-menu\",\"viewPath\":\"cool/modules/base/views/menu.vue\",\"keepAlive\":false,\"router\":\"/sys/menu\"},{\"id\":17,\"name\":\"查看菜单\",\"parentId\":16,\"c\":\"system\",\"a\":\"menuview\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":18,\"name\":\"添加菜单\",\"parentId\":16,\"c\":\"system\",\"a\":\"menuadd\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":19,\"name\":\"修改菜单\",\"parentId\":16,\"c\":\"system\",\"a\":\"menuedit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":20,\"name\":\"删除菜单\",\"parentId\":16,\"c\":\"system\",\"a\":\"menudelete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":21,\"name\":\"菜单排序\",\"parentId\":16,\"c\":\"system\",\"a\":\"menuorder\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":22,\"name\":\"查看日志\",\"parentId\":15,\"c\":\"system\",\"a\":\"logview\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":23,\"name\":\"删除日志\",\"parentId\":15,\"c\":\"system\",\"a\":\"log-delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":24,\"name\":\"查看管理员\",\"parentId\":12,\"c\":\"admin\",\"a\":\"member-view\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":25,\"name\":\"添加管理员\",\"parentId\":12,\"c\":\"admin\",\"a\":\"member-add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":26,\"name\":\"编辑管理员\",\"parentId\":12,\"c\":\"admin\",\"a\":\"member-edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":27,\"name\":\"删除管理员\",\"parentId\":12,\"c\":\"admin\",\"a\":\"member-delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":28,\"name\":\"查看角色\",\"parentId\":13,\"c\":\"role\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":29,\"name\":\"添加角色\",\"parentId\":13,\"c\":\"role\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":30,\"name\":\"编辑角色\",\"parentId\":13,\"c\":\"role\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":31,\"name\":\"删除角色\",\"parentId\":13,\"c\":\"role\",\"a\":\"delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":34,\"name\":\"发布管理\",\"parentId\":3,\"c\":\"content\",\"a\":\"right\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-content\",\"viewPath\":\"cool/modules/base/views/content.vue\",\"keepAlive\":false,\"router\":\"/sys/content\"},{\"id\":35,\"name\":\"内容管理\",\"parentId\":3,\"c\":\"content\",\"a\":\"index\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":false,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"cool/modules/base/views/content.vue\",\"keepAlive\":false,\"router\":\"/sys/content\"},{\"id\":36,\"name\":\"栏目管理\",\"parentId\":3,\"c\":\"category\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-menu\",\"viewPath\":\"cool/modules/base/views/category.vue\",\"keepAlive\":false,\"router\":\"/sys/category\"},{\"id\":37,\"name\":\"查看栏目\",\"parentId\":36,\"c\":\"category\",\"a\":\"view\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":38,\"name\":\"添加栏目\",\"parentId\":36,\"c\":\"category\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":39,\"name\":\"编辑栏目\",\"parentId\":36,\"c\":\"category\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":40,\"name\":\"删除栏目\",\"parentId\":36,\"c\":\"category\",\"a\":\"delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":41,\"name\":\"栏目排序\",\"parentId\":36,\"c\":\"category\",\"a\":\"order\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":53,\"name\":\"新闻列表\",\"parentId\":35,\"c\":\"content\",\"a\":\"news-list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":54,\"name\":\"分类单页\",\"parentId\":35,\"c\":\"content\",\"a\":\"page\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":55,\"name\":\"会员管理\",\"parentId\":0,\"c\":\"user\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":5,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-user\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":56,\"name\":\"会员管理\",\"parentId\":55,\"c\":\"member\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-user\",\"viewPath\":\"cool/modules/base/views/member.vue\",\"keepAlive\":false,\"router\":\"/sys/member\"},{\"id\":57,\"name\":\"会员信息\",\"parentId\":56,\"c\":\"member\",\"a\":\"info\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":58,\"name\":\"微信管理\",\"parentId\":0,\"c\":\"wechat\",\"a\":\"userlist\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":7,\"isShow\":false,\"type\":0,\"children\":null,\"icon\":\"icon-auth\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":59,\"name\":\"微信会员信息\",\"parentId\":58,\"c\":\"wechat\",\"a\":\"userinfo\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":false,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":60,\"name\":\"编辑会员\",\"parentId\":55,\"c\":\"user\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":false,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":62,\"name\":\"模型管理\",\"parentId\":3,\"c\":\"model\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":1,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-pic\",\"viewPath\":\"cool/modules/base/views/model.vue\",\"keepAlive\":false,\"router\":\"/sys/model\"},{\"id\":64,\"name\":\"添加模型\",\"parentId\":62,\"c\":\"model\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":65,\"name\":\"微信会员列表\",\"parentId\":58,\"c\":\"wechat\",\"a\":\"userlist\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":67,\"name\":\"友链管理\",\"parentId\":0,\"c\":\"link\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":88,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-link\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":68,\"name\":\"友链管理\",\"parentId\":67,\"c\":\"link\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":88,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-link\",\"viewPath\":\"cool/modules/base/views/link.vue\",\"keepAlive\":false,\"router\":\"/sys/link\"},{\"id\":69,\"name\":\"友链添加\",\"parentId\":68,\"c\":\"link\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":70,\"name\":\"友链编辑\",\"parentId\":68,\"c\":\"link\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":71,\"name\":\"友链删除\",\"parentId\":68,\"c\":\"link\",\"a\":\"delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":72,\"name\":\"友链排序\",\"parentId\":68,\"c\":\"link\",\"a\":\"order\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":73,\"name\":\"数据库管理\",\"parentId\":0,\"c\":\"database\",\"a\":\"manager\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":16,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-monitor\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":74,\"name\":\"数据库管理\",\"parentId\":73,\"c\":\"database\",\"a\":\"manager\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-database\",\"viewPath\":\"cool/modules/base/views/database_list.vue\",\"keepAlive\":false,\"router\":\"/sys/database/list\"},{\"id\":75,\"name\":\"数据库备份\",\"parentId\":74,\"c\":\"database\",\"a\":\"backup\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":76,\"name\":\"数据库优化\",\"parentId\":74,\"c\":\"database\",\"a\":\"optimize\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":77,\"name\":\"数据库修复\",\"parentId\":74,\"c\":\"database\",\"a\":\"repair\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":78,\"name\":\"备份列表\",\"parentId\":73,\"c\":\"database\",\"a\":\"backup-list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-list\",\"viewPath\":\"cool/modules/base/views/databse_backup_list.vue\",\"keepAlive\":false,\"router\":\"/sys/database/backup-list\"},{\"id\":79,\"name\":\"资源管理\",\"parentId\":0,\"c\":\"assets-manager\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":17,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-pic\",\"viewPath\":\"cool/modules/base/views/assets_manager.vue\",\"keepAlive\":false,\"router\":\"/sys/assets-manager\"},{\"id\":80,\"name\":\"模板列表\",\"parentId\":79,\"c\":\"assets-manager\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-template\",\"viewPath\":\"cool/modules/base/views/assets_manager.vue\",\"keepAlive\":false,\"router\":\"/sys/assets-manager\"},{\"id\":81,\"name\":\"添加资源\",\"parentId\":80,\"c\":\"assets-manager\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":82,\"name\":\"修改资源\",\"parentId\":80,\"c\":\"assets-manager\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":84,\"name\":\"附件列表\",\"parentId\":79,\"c\":\"attachments\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-pic\",\"viewPath\":\"cool/modules/base/views/attachment.vue\",\"keepAlive\":false,\"router\":\"/sys/attachments\"},{\"id\":85,\"name\":\"系统监控\",\"parentId\":14,\"c\":\"system\",\"a\":\"tail\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-workbench\",\"viewPath\":\"cool/modules/base/views/statsviz.vue\",\"keepAlive\":false,\"router\":\"/statsviz\"},{\"id\":86,\"name\":\"修改模型\",\"parentId\":62,\"c\":\"model\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":87,\"name\":\"主题列表\",\"parentId\":79,\"c\":\"assets-manager\",\"a\":\"theme\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-theme\",\"viewPath\":\"cool/modules/base/views/theme.vue\",\"keepAlive\":false,\"router\":\"/sys/theme\"},{\"id\":89,\"name\":\"广告管理\",\"parentId\":9,\"c\":\"ad\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-ad\",\"viewPath\":\"cool/modules/base/views/ad.vue\",\"keepAlive\":false,\"router\":\"/ad/list\"},{\"id\":91,\"name\":\"添加广告\",\"parentId\":89,\"c\":\"ad\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":92,\"name\":\"修改广告\",\"parentId\":89,\"c\":\"ad\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":93,\"name\":\"删除广告\",\"parentId\":89,\"c\":\"ad\",\"a\":\"delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":94,\"name\":\"添加广告位\",\"parentId\":89,\"c\":\"ad-space\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":95,\"name\":\"删除广告位\",\"parentId\":89,\"c\":\"ad-space\",\"a\":\"delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":96,\"name\":\"编辑广告位\",\"parentId\":89,\"c\":\"ad-space\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":97,\"name\":\"TODO\",\"parentId\":9,\"c\":\"public\",\"a\":\"todos\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":10,\"isShow\":false,\"type\":1,\"children\":null,\"icon\":\"icon-emoji\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":98,\"name\":\"缓存管理\",\"parentId\":9,\"c\":\"setting\",\"a\":\"cache\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":false,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":99,\"name\":\"发布内容\",\"parentId\":35,\"c\":\"content\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":100,\"name\":\"修改内容\",\"parentId\":35,\"c\":\"content\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":101,\"name\":\"字典管理\",\"parentId\":9,\"c\":\"dict\",\"a\":\"list\",\"plugin_id\":0,\"data\":\" \",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-dict\",\"viewPath\":\"cool/modules/base/views/dict.vue\",\"keepAlive\":false,\"router\":\"/sys/dict\"},{\"id\":103,\"name\":\"部门管理\",\"parentId\":11,\"c\":\"department\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-dept\",\"viewPath\":\"cool/modules/base/views/department.vue\",\"keepAlive\":false,\"router\":\"/sys/department\"},{\"id\":104,\"name\":\"岗位管理\",\"parentId\":11,\"c\":\"position\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-position\",\"viewPath\":\"cool/modules/base/views/position.vue\",\"keepAlive\":false,\"router\":\"/sys/position\"},{\"id\":105,\"name\":\"服务器状态\",\"parentId\":14,\"c\":\"stat\",\"a\":\"data\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-status\",\"viewPath\":\"cool/modules/base/views/stat.vue\",\"keepAlive\":false,\"router\":\"/sys/stat\"},{\"id\":107,\"name\":\"任务管理\",\"parentId\":108,\"c\":\"task\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-task\",\"viewPath\":\"cool/modules/task/views/task.vue\",\"keepAlive\":false,\"router\":\"/sys/task\"},{\"id\":108,\"name\":\"插件管理\",\"parentId\":0,\"c\":\"plugin\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":99,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-plugin\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":109,\"name\":\"标签管理\",\"parentId\":3,\"c\":\"tags\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-tag\",\"viewPath\":\"cool/modules/base/views/tags.vue\",\"keepAlive\":false,\"router\":\"/sys/tags\"},{\"id\":110,\"name\":\"插件列表\",\"parentId\":108,\"c\":\"plugin\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-plugin\",\"viewPath\":\"cool/modules/base/views/plugin.vue\",\"keepAlive\":false,\"router\":\"/sys/plugin\"},{\"id\":111,\"name\":\"分组管理\",\"parentId\":55,\"c\":\"member_group\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-group\",\"viewPath\":\"cool/modules/base/views/member_group.vue\",\"keepAlive\":false,\"router\":\"/sys/member/group\"},{\"id\":112,\"name\":\"字段管理\",\"parentId\":3,\"c\":\"table_field\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":false,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"cool/modules/base/views/table.vue\",\"keepAlive\":false,\"router\":\"/sys/table/fields\"},{\"id\":113,\"name\":\"日志管理\",\"parentId\":14,\"c\":\"system\",\"a\":\"errorLogList\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-log\",\"viewPath\":\"cool/modules/base/views/errlog.vue\",\"keepAlive\":true,\"router\":\"/sys/errlog/list\"},{\"id\":114,\"name\":\"区域管理\",\"parentId\":9,\"c\":\"district\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-district\",\"viewPath\":\"cool/modules/base/views/district.vue\",\"keepAlive\":false,\"router\":\"/sys/district/list\"}]}",
+		"raw_return": "{\"code\":1000,\"data\":[{\"id\":3,\"name\":\"内容管理\",\"parentId\":0,\"c\":\"content\",\"a\":\"top\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":3,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-content\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":9,\"name\":\"系统设置\",\"parentId\":0,\"c\":\"setting\",\"a\":\"left\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":1,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-system\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":10,\"name\":\"站点设置\",\"parentId\":9,\"c\":\"setting\",\"a\":\"site\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":1,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-system\",\"viewPath\":\"cool/modules/base/views/setting.vue\",\"keepAlive\":false,\"router\":\"/sys/setting\"},{\"id\":11,\"name\":\"权限管理\",\"parentId\":0,\"c\":\"admin\",\"a\":\"left\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":2,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-dept\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":12,\"name\":\"管理员管理\",\"parentId\":11,\"c\":\"admin\",\"a\":\"memberlist\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":1,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-admin\",\"viewPath\":\"cool/modules/base/views/user.vue\",\"keepAlive\":false,\"router\":\"/sys/user\"},{\"id\":13,\"name\":\"角色管理\",\"parentId\":11,\"c\":\"role\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":2,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-role\",\"viewPath\":\"cool/modules/base/views/role.vue\",\"keepAlive\":false,\"router\":\"/sys/role\"},{\"id\":14,\"name\":\"日志监控\",\"parentId\":0,\"c\":\"system\",\"a\":\"index\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":9,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-log\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":15,\"name\":\"操作日志\",\"parentId\":14,\"c\":\"system\",\"a\":\"loglist\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":1,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-log-new\",\"viewPath\":\"cool/modules/base/views/log.vue\",\"keepAlive\":false,\"router\":\"/sys/log\"},{\"id\":16,\"name\":\"菜单管理\",\"parentId\":9,\"c\":\"system\",\"a\":\"menulist\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":2,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-menu\",\"viewPath\":\"cool/modules/base/views/menu.vue\",\"keepAlive\":false,\"router\":\"/sys/menu\"},{\"id\":17,\"name\":\"查看菜单\",\"parentId\":16,\"c\":\"system\",\"a\":\"menuview\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":18,\"name\":\"添加菜单\",\"parentId\":16,\"c\":\"system\",\"a\":\"menuadd\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":19,\"name\":\"修改菜单\",\"parentId\":16,\"c\":\"system\",\"a\":\"menuedit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":20,\"name\":\"删除菜单\",\"parentId\":16,\"c\":\"system\",\"a\":\"menudelete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":21,\"name\":\"菜单排序\",\"parentId\":16,\"c\":\"system\",\"a\":\"menuorder\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":22,\"name\":\"查看日志\",\"parentId\":15,\"c\":\"system\",\"a\":\"logview\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":23,\"name\":\"删除日志\",\"parentId\":15,\"c\":\"system\",\"a\":\"log-delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":24,\"name\":\"查看管理员\",\"parentId\":12,\"c\":\"admin\",\"a\":\"member-view\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":25,\"name\":\"添加管理员\",\"parentId\":12,\"c\":\"admin\",\"a\":\"member-add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":26,\"name\":\"编辑管理员\",\"parentId\":12,\"c\":\"admin\",\"a\":\"member-edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":27,\"name\":\"删除管理员\",\"parentId\":12,\"c\":\"admin\",\"a\":\"member-delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":28,\"name\":\"查看角色\",\"parentId\":13,\"c\":\"role\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":29,\"name\":\"添加角色\",\"parentId\":13,\"c\":\"role\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":30,\"name\":\"编辑角色\",\"parentId\":13,\"c\":\"role\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":31,\"name\":\"删除角色\",\"parentId\":13,\"c\":\"role\",\"a\":\"delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":34,\"name\":\"发布管理\",\"parentId\":3,\"c\":\"content\",\"a\":\"right\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-content\",\"viewPath\":\"cool/modules/base/views/content.vue\",\"keepAlive\":false,\"router\":\"/sys/content\"},{\"id\":35,\"name\":\"内容管理\",\"parentId\":3,\"c\":\"content\",\"a\":\"index\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":false,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"cool/modules/base/views/content.vue\",\"keepAlive\":false,\"router\":\"/sys/content\"},{\"id\":36,\"name\":\"栏目管理\",\"parentId\":3,\"c\":\"category\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-menu\",\"viewPath\":\"cool/modules/base/views/category.vue\",\"keepAlive\":false,\"router\":\"/sys/category\"},{\"id\":37,\"name\":\"查看栏目\",\"parentId\":36,\"c\":\"category\",\"a\":\"view\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":38,\"name\":\"添加栏目\",\"parentId\":36,\"c\":\"category\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":39,\"name\":\"编辑栏目\",\"parentId\":36,\"c\":\"category\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":40,\"name\":\"删除栏目\",\"parentId\":36,\"c\":\"category\",\"a\":\"delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":41,\"name\":\"栏目排序\",\"parentId\":36,\"c\":\"category\",\"a\":\"order\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":53,\"name\":\"新闻列表\",\"parentId\":35,\"c\":\"content\",\"a\":\"news-list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":54,\"name\":\"分类单页\",\"parentId\":35,\"c\":\"content\",\"a\":\"page\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":55,\"name\":\"会员管理\",\"parentId\":0,\"c\":\"user\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":5,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-user\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":56,\"name\":\"会员管理\",\"parentId\":55,\"c\":\"member\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-user\",\"viewPath\":\"cool/modules/base/views/member.vue\",\"keepAlive\":false,\"router\":\"/sys/member\"},{\"id\":57,\"name\":\"会员信息\",\"parentId\":56,\"c\":\"member\",\"a\":\"info\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":58,\"name\":\"微信管理\",\"parentId\":0,\"c\":\"wechat\",\"a\":\"userlist\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":7,\"isShow\":false,\"type\":0,\"children\":null,\"icon\":\"icon-auth\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":59,\"name\":\"微信会员信息\",\"parentId\":58,\"c\":\"wechat\",\"a\":\"userinfo\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":false,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":60,\"name\":\"编辑会员\",\"parentId\":55,\"c\":\"user\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":false,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":62,\"name\":\"模型管理\",\"parentId\":3,\"c\":\"model\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":1,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-pic\",\"viewPath\":\"cool/modules/base/views/model.vue\",\"keepAlive\":false,\"router\":\"/sys/model\"},{\"id\":64,\"name\":\"添加模型\",\"parentId\":62,\"c\":\"model\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":65,\"name\":\"微信会员列表\",\"parentId\":58,\"c\":\"wechat\",\"a\":\"userlist\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":67,\"name\":\"友链管理\",\"parentId\":0,\"c\":\"link\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":88,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-link\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":68,\"name\":\"友链管理\",\"parentId\":67,\"c\":\"link\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":88,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-link\",\"viewPath\":\"cool/modules/base/views/link.vue\",\"keepAlive\":false,\"router\":\"/sys/link\"},{\"id\":69,\"name\":\"友链添加\",\"parentId\":68,\"c\":\"link\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":70,\"name\":\"友链编辑\",\"parentId\":68,\"c\":\"link\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":71,\"name\":\"友链删除\",\"parentId\":68,\"c\":\"link\",\"a\":\"delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":72,\"name\":\"友链排序\",\"parentId\":68,\"c\":\"link\",\"a\":\"order\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":73,\"name\":\"数据库管理\",\"parentId\":0,\"c\":\"database\",\"a\":\"manager\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":16,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-monitor\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":74,\"name\":\"数据库管理\",\"parentId\":73,\"c\":\"database\",\"a\":\"manager\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-database\",\"viewPath\":\"cool/modules/base/views/database_list.vue\",\"keepAlive\":false,\"router\":\"/sys/database/list\"},{\"id\":75,\"name\":\"数据库备份\",\"parentId\":74,\"c\":\"database\",\"a\":\"backup\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":76,\"name\":\"数据库优化\",\"parentId\":74,\"c\":\"database\",\"a\":\"optimize\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":77,\"name\":\"数据库修复\",\"parentId\":74,\"c\":\"database\",\"a\":\"repair\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":78,\"name\":\"备份列表\",\"parentId\":73,\"c\":\"database\",\"a\":\"backup-list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-list\",\"viewPath\":\"cool/modules/base/views/database_backup_list.vue\",\"keepAlive\":false,\"router\":\"/sys/database/backup/list\"},{\"id\":79,\"name\":\"资源管理\",\"parentId\":0,\"c\":\"assets-manager\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":17,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-pic\",\"viewPath\":\"cool/modules/base/views/assets_manager.vue\",\"keepAlive\":false,\"router\":\"/sys/assets-manager\"},{\"id\":80,\"name\":\"模板列表\",\"parentId\":79,\"c\":\"assets-manager\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-template\",\"viewPath\":\"cool/modules/base/views/assets_manager.vue\",\"keepAlive\":false,\"router\":\"/sys/assets-manager\"},{\"id\":81,\"name\":\"添加资源\",\"parentId\":80,\"c\":\"assets-manager\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":82,\"name\":\"修改资源\",\"parentId\":80,\"c\":\"assets-manager\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":84,\"name\":\"附件列表\",\"parentId\":79,\"c\":\"attachments\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-pic\",\"viewPath\":\"cool/modules/base/views/attachment.vue\",\"keepAlive\":false,\"router\":\"/sys/attachments\"},{\"id\":85,\"name\":\"系统监控\",\"parentId\":14,\"c\":\"system\",\"a\":\"tail\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-workbench\",\"viewPath\":\"cool/modules/base/views/statsviz.vue\",\"keepAlive\":false,\"router\":\"/statsviz\"},{\"id\":86,\"name\":\"修改模型\",\"parentId\":62,\"c\":\"model\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":87,\"name\":\"主题列表\",\"parentId\":79,\"c\":\"assets-manager\",\"a\":\"theme\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-theme\",\"viewPath\":\"cool/modules/base/views/theme.vue\",\"keepAlive\":false,\"router\":\"/sys/theme\"},{\"id\":89,\"name\":\"广告管理\",\"parentId\":9,\"c\":\"ad\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-ad\",\"viewPath\":\"cool/modules/base/views/ad.vue\",\"keepAlive\":false,\"router\":\"/ad/list\"},{\"id\":91,\"name\":\"添加广告\",\"parentId\":89,\"c\":\"ad\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":92,\"name\":\"修改广告\",\"parentId\":89,\"c\":\"ad\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":93,\"name\":\"删除广告\",\"parentId\":89,\"c\":\"ad\",\"a\":\"delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":94,\"name\":\"添加广告位\",\"parentId\":89,\"c\":\"ad-space\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":95,\"name\":\"删除广告位\",\"parentId\":89,\"c\":\"ad-space\",\"a\":\"delete\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":96,\"name\":\"编辑广告位\",\"parentId\":89,\"c\":\"ad-space\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":97,\"name\":\"TODO\",\"parentId\":9,\"c\":\"public\",\"a\":\"todos\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":10,\"isShow\":false,\"type\":1,\"children\":null,\"icon\":\"icon-emoji\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":98,\"name\":\"缓存管理\",\"parentId\":9,\"c\":\"setting\",\"a\":\"cache\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":false,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":99,\"name\":\"发布内容\",\"parentId\":35,\"c\":\"content\",\"a\":\"add\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":100,\"name\":\"修改内容\",\"parentId\":35,\"c\":\"content\",\"a\":\"edit\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":101,\"name\":\"字典管理\",\"parentId\":9,\"c\":\"dict\",\"a\":\"list\",\"plugin_id\":0,\"data\":\" \",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-dict\",\"viewPath\":\"cool/modules/base/views/dict.vue\",\"keepAlive\":false,\"router\":\"/sys/dict\"},{\"id\":103,\"name\":\"部门管理\",\"parentId\":11,\"c\":\"department\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-dept\",\"viewPath\":\"cool/modules/base/views/department.vue\",\"keepAlive\":false,\"router\":\"/sys/department\"},{\"id\":104,\"name\":\"岗位管理\",\"parentId\":11,\"c\":\"position\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-position\",\"viewPath\":\"cool/modules/base/views/position.vue\",\"keepAlive\":false,\"router\":\"/sys/position\"},{\"id\":105,\"name\":\"服务器状态\",\"parentId\":14,\"c\":\"stat\",\"a\":\"data\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-status\",\"viewPath\":\"cool/modules/base/views/stat.vue\",\"keepAlive\":false,\"router\":\"/sys/stat\"},{\"id\":107,\"name\":\"任务管理\",\"parentId\":108,\"c\":\"task\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-task\",\"viewPath\":\"cool/modules/task/views/task.vue\",\"keepAlive\":false,\"router\":\"/sys/task\"},{\"id\":108,\"name\":\"插件管理\",\"parentId\":0,\"c\":\"plugin\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":99,\"isShow\":true,\"type\":0,\"children\":null,\"icon\":\"icon-plugin\",\"viewPath\":\"\",\"keepAlive\":false,\"router\":\"\"},{\"id\":109,\"name\":\"标签管理\",\"parentId\":3,\"c\":\"tags\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-tag\",\"viewPath\":\"cool/modules/base/views/tags.vue\",\"keepAlive\":false,\"router\":\"/sys/tags\"},{\"id\":110,\"name\":\"插件列表\",\"parentId\":108,\"c\":\"plugin\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-plugin\",\"viewPath\":\"cool/modules/base/views/plugin.vue\",\"keepAlive\":false,\"router\":\"/sys/plugin\"},{\"id\":111,\"name\":\"分组管理\",\"parentId\":55,\"c\":\"member_group\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-group\",\"viewPath\":\"cool/modules/base/views/member_group.vue\",\"keepAlive\":false,\"router\":\"/sys/member/group\"},{\"id\":112,\"name\":\"字段管理\",\"parentId\":3,\"c\":\"table_field\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":false,\"type\":1,\"children\":null,\"icon\":\"\",\"viewPath\":\"cool/modules/base/views/table.vue\",\"keepAlive\":false,\"router\":\"/sys/table/fields\"},{\"id\":113,\"name\":\"日志管理\",\"parentId\":14,\"c\":\"system\",\"a\":\"errorLogList\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-log\",\"viewPath\":\"cool/modules/base/views/errlog.vue\",\"keepAlive\":true,\"router\":\"/sys/errlog/list\"},{\"id\":114,\"name\":\"区域管理\",\"parentId\":9,\"c\":\"district\",\"a\":\"list\",\"plugin_id\":0,\"data\":\"\",\"is_system\":0,\"orderNum\":0,\"isShow\":true,\"type\":1,\"children\":null,\"icon\":\"icon-district\",\"viewPath\":\"cool/modules/base/views/district.vue\",\"keepAlive\":false,\"router\":\"/sys/district/list\"}]}",
 		"return": [
 			{
 				"default": "",
@@ -2188,115 +2188,115 @@
 		"url": "/v2/menu/list"
 	},
 	{
-		"ExcludeParams": null,
-		"NoParams": false,
-		"OnlyParams": null,
-		"app_id": "admin",
-		"author": "xiusin",
-		"desc": "获取系统未删除的内容列表",
-		"enable": false,
-		"group": {
-			"name": "内容管理",
-			"title": "内容管理"
-		},
-		"header": [
-			{
-				"desc": "登录票据",
-				"name": "Authorization",
-				"require": true,
-				"type": "string"
-			}
-		],
 		"immutable": false,
-		"menu_key": "post__v2_content_list",
+		"app_id": "admin",
+		"group": {
+			"title": "内容管理",
+			"name": "内容管理"
+		},
+		"sub_group": "内容管理",
+		"title": "内容列表",
+		"desc": "获取系统未删除的内容列表",
+		"tag": "",
+		"author": "xiusin",
+		"url": "/v2/content/list",
 		"method": "POST",
-		"name": "list",
 		"param": [
 			{
-				"childrenType": "",
-				"default": "1",
-				"desc": "分页数",
 				"name": "page",
+				"type": "number",
+				"desc": "分页数",
+				"default": "1",
 				"require": true,
-				"type": "number"
+				"childrenType": ""
 			},
 			{
-				"childrenType": "",
-				"default": "10",
-				"desc": "分页条数",
 				"name": "size",
+				"type": "number",
+				"desc": "分页条数",
+				"default": "10",
 				"require": true,
-				"type": "number"
+				"childrenType": ""
 			},
 			{
-				"childrenType": "",
-				"default": null,
-				"desc": "排序字段",
 				"name": "order",
+				"type": "string",
+				"desc": "排序字段",
+				"default": null,
 				"require": false,
-				"type": "string"
+				"childrenType": ""
 			},
 			{
-				"childrenType": "",
-				"default": null,
-				"desc": "排序方法desc=逆序,asc=正序",
 				"name": "sort",
+				"type": "string",
+				"desc": "排序方法desc=逆序,asc=正序",
+				"default": null,
 				"require": false,
-				"type": "string"
+				"childrenType": ""
 			},
 			{
-				"childrenType": "",
-				"default": null,
-				"desc": "查询关键字",
 				"name": "keyWord",
+				"type": "string",
+				"desc": "查询关键字",
+				"default": null,
 				"require": false,
-				"type": "string"
+				"childrenType": ""
 			},
 			{
-				"childrenType": "",
-				"default": null,
-				"desc": "是否导出",
 				"name": "_isExport",
+				"type": "bool",
+				"desc": "是否导出",
+				"default": null,
 				"require": false,
-				"type": "bool"
+				"childrenType": ""
 			},
 			{
-				"childrenType": "",
-				"default": null,
-				"desc": "额外参数用于非配置字段导出",
 				"name": "params",
+				"type": "any",
+				"desc": "额外参数用于非配置字段导出",
+				"default": null,
 				"require": false,
-				"type": "any"
+				"childrenType": ""
 			}
 		],
-		"query_data_method": "application/json; charset=utf-8",
-		"raw_param": "{\"page\":1,\"size\":20,\"cid\":1}",
-		"raw_query": "",
-		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"author\":\"admin\",\"catid\":1,\"description\":\"DeviantArt的用户p0isonParadise便发布了一款Win9 RTM概念设计，该设计包括了具有透明度的开始菜单、桌面小工具、可在Modern UI运行Modern应用和多桌面。天气应用被直接融合到开始菜单\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":489,\"keywords\":\"Win9,概念设计,开始,菜单,桌面,侧边,消息,Win9,\",\"listorder\":1391052160,\"pubtime\":\"2014-01-30 11:22:40\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140130/33.jpg\",\"title\":\"Win9新概念设计：开始菜单+多桌面+侧边栏\",\"visit_count\":62},{\"author\":\"admin\",\"catid\":1,\"description\":\"许多人认为Win8不过是一个败笔，但联想认为这样的想法实在是打错特错，因为联想认为Windows8仍有很长的时间可以走向成功。联想仍希望在不远的将来更多的教育机构可以转而使用Win8新系统\\\\n\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":484,\"keywords\":\"联想,力挺,Win8,Windows,已死,说法,夸张,许多\",\"listorder\":1391052157,\"pubtime\":\"2014-01-30 11:22:37\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140130/22.jpg\",\"title\":\"联想力挺Win8，Windows已死说法太夸张\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":1,\"description\":\"Windows 8.1 2014 Update会是一个新系统吗？不是；是一个SP服务包？也不是，Win8.1 2014 Update更像是微软周二补丁日推送的功能更新补丁，但这次是一枚神奇的功能补丁\\\\n\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":479,\"keywords\":\"Win8.1,2014,Update,汇总,关机,按钮,归来\",\"listorder\":1391052155,\"pubtime\":\"2014-01-30 11:22:35\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140130/15.jpg\",\"title\":\"Win8.1 2014 Update汇总：关机按钮归来\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":1,\"description\":\"早在去年7月，英国法院裁定微软SkyDrive品牌侵犯了英国Sky广播（BSkyB）的商标权，因此微软不得不在全球范围内为SkyDrive云存储服务更名。日前微软正式宣布将旗下云存储服务SkyDrive更名为OneDrive\\\\n\\\\n\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":474,\"keywords\":\"微软,正式,宣布,SkyDrive,名为,OneDrive,\",\"listorder\":1391052153,\"pubtime\":\"2014-01-30 11:22:33\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140130/9.jpg\",\"title\":\"微软正式宣布SkyDrive更名为OneDrive\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":1,\"description\":\"按照微软此前预计，Win8和Win8.1正式推出之后，本身应该带动并提高全新PC的销量，但现在无论是PC还是Windows两者均没有任何提升。针对此现象，实际上微软最新“现代”的操作系统造成弊远大于PC所能产生的利\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":470,\"keywords\":\"微软,Windows,份额,下降,市场,不给,前几天,微软,\",\"listorder\":1391052152,\"pubtime\":\"2014-01-30 11:22:32\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140130/4.jpg\",\"title\":\"微软：Windows份额下降是PC市场不给力\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":1,\"description\":\"很快，你就会发现自己要在1080P、2K甚至4K分辨率中做出选择，那么是选择观望、还是马上投入到4K显示器的怀抱中？4K电脑及周边产品很吸引人，但我们更期待它们在明年降低价格、拥有更好的软件优化\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":469,\"keywords\":\"电脑,好的,Win8.1,也没,优化,模式,人们,美好,事物\",\"listorder\":1391052149,\"pubtime\":\"2014-01-30 11:22:29\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140130/2.jpg\",\"title\":\"4K电脑是极好的？Win8.1也没优化模式\",\"visit_count\":59}],\"pagination\":{\"page\":1,\"size\":20,\"total\":6}}}",
 		"return": [
 			{
-				"default": "",
-				"desc": "",
 				"name": "code",
-				"type": "number"
+				"desc": "",
+				"type": "number",
+				"default": ""
 			},
 			{
-				"default": "",
-				"desc": "",
 				"name": "message",
-				"type": "string"
+				"desc": "",
+				"type": "string",
+				"default": ""
 			},
 			{
-				"default": "",
-				"desc": "",
 				"name": "data",
-				"type": "any"
+				"desc": "",
+				"type": "any",
+				"default": ""
 			}
 		],
-		"sub_group": "内容管理",
-		"tag": "",
-		"title": "内容列表",
-		"url": "/v2/content/list"
+		"header": [
+			{
+				"name": "Authorization",
+				"type": "string",
+				"require": true,
+				"desc": "登录票据"
+			}
+		],
+		"name": "list",
+		"menu_key": "post__v2_content_list",
+		"raw_param": "{\"page\":1,\"size\":20,\"cid\":1}",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"author\":\"admin\",\"catid\":1,\"description\":\"DeviantArt的用户p0isonParadise便发布了一款Win9 RTM概念设计，该设计包括了具有透明度的开始菜单、桌面小工具、可在Modern UI运行Modern应用和多桌面。天气应用被直接融合到开始菜单\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":489,\"keywords\":\"Win9,概念设计,开始,菜单,桌面,侧边,消息,Win9,\",\"listorder\":1391052160,\"pubtime\":\"2014-01-30 11:22:40\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140130/33.jpg\",\"title\":\"Win9新概念设计：开始菜单+多桌面+侧边栏\",\"visit_count\":62},{\"author\":\"admin\",\"catid\":1,\"description\":\"许多人认为Win8不过是一个败笔，但联想认为这样的想法实在是打错特错，因为联想认为Windows8仍有很长的时间可以走向成功。联想仍希望在不远的将来更多的教育机构可以转而使用Win8新系统\\\\n\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":484,\"keywords\":\"联想,力挺,Win8,Windows,已死,说法,夸张,许多\",\"listorder\":1391052157,\"pubtime\":\"2014-01-30 11:22:37\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140130/22.jpg\",\"title\":\"联想力挺Win8，Windows已死说法太夸张\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":1,\"description\":\"Windows 8.1 2014 Update会是一个新系统吗？不是；是一个SP服务包？也不是，Win8.1 2014 Update更像是微软周二补丁日推送的功能更新补丁，但这次是一枚神奇的功能补丁\\\\n\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":479,\"keywords\":\"Win8.1,2014,Update,汇总,关机,按钮,归来\",\"listorder\":1391052155,\"pubtime\":\"2014-01-30 11:22:35\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140130/15.jpg\",\"title\":\"Win8.1 2014 Update汇总：关机按钮归来\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":1,\"description\":\"早在去年7月，英国法院裁定微软SkyDrive品牌侵犯了英国Sky广播（BSkyB）的商标权，因此微软不得不在全球范围内为SkyDrive云存储服务更名。日前微软正式宣布将旗下云存储服务SkyDrive更名为OneDrive\\\\n\\\\n\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":474,\"keywords\":\"微软,正式,宣布,SkyDrive,名为,OneDrive,\",\"listorder\":1391052153,\"pubtime\":\"2014-01-30 11:22:33\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140130/9.jpg\",\"title\":\"微软正式宣布SkyDrive更名为OneDrive\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":1,\"description\":\"按照微软此前预计，Win8和Win8.1正式推出之后，本身应该带动并提高全新PC的销量，但现在无论是PC还是Windows两者均没有任何提升。针对此现象，实际上微软最新“现代”的操作系统造成弊远大于PC所能产生的利\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":470,\"keywords\":\"微软,Windows,份额,下降,市场,不给,前几天,微软,\",\"listorder\":1391052152,\"pubtime\":\"2014-01-30 11:22:32\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140130/4.jpg\",\"title\":\"微软：Windows份额下降是PC市场不给力\",\"visit_count\":59},{\"author\":\"admin\",\"catid\":1,\"description\":\"很快，你就会发现自己要在1080P、2K甚至4K分辨率中做出选择，那么是选择观望、还是马上投入到4K显示器的怀抱中？4K电脑及周边产品很吸引人，但我们更期待它们在明年降低价格、拥有更好的软件优化\",\"flag\":\"p\",\"from_url\":\"未知\",\"id\":469,\"keywords\":\"电脑,好的,Win8.1,也没,优化,模式,人们,美好,事物\",\"listorder\":1391052149,\"pubtime\":\"2014-01-30 11:22:29\",\"status\":1,\"tags\":null,\"thumb\":\"/uploads/allimg/140130/2.jpg\",\"title\":\"4K电脑是极好的？Win8.1也没优化模式\",\"visit_count\":59}],\"pagination\":{\"page\":1,\"size\":20,\"total\":6}}}",
+		"raw_query": "",
+		"query_data_method": "application/json; charset=utf-8",
+		"enable": false,
+		"OnlyParams": null,
+		"ExcludeParams": null,
+		"NoParams": false
 	},
 	{
 		"ExcludeParams": null,
@@ -2381,9 +2381,9 @@
 			}
 		],
 		"query_data_method": "application/json; charset=utf-8",
-		"raw_param": "{\"page\":1,\"size\":20,\"sort\":\"asc\",\"order\":\"listorder\",\"mid\":12}",
+		"raw_param": "{\"page\":1,\"size\":20,\"sort\":\"asc\",\"order\":\"listorder\",\"mid\":1}",
 		"raw_query": "",
-		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":463,\"mid\":12,\"field_type\":1,\"form_name\":\"标题\",\"table_field\":\"title\",\"listorder\":1,\"required\":true,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":false,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":true,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":4,\"center\":false,\"created_at\":\"2021-08-10 16:33:55\",\"updated_at\":\"2021-08-10 16:33:55\",\"deleted_at\":null},{\"id\":468,\"mid\":12,\"field_type\":16,\"form_name\":\"文档属性\",\"table_field\":\"flag\",\"listorder\":2,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":false,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":0,\"center\":false,\"created_at\":\"2021-08-10 16:33:56\",\"updated_at\":\"2021-08-10 16:33:56\",\"deleted_at\":null},{\"id\":464,\"mid\":12,\"field_type\":1,\"form_name\":\"关键字\",\"table_field\":\"keywords\",\"listorder\":3,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":false,\"main_table_field\":false,\"component\":\"\",\"searchable\":true,\"span\":4,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":0,\"center\":false,\"created_at\":\"2021-08-10 16:33:55\",\"updated_at\":\"2021-08-10 16:33:55\",\"deleted_at\":null},{\"id\":465,\"mid\":12,\"field_type\":2,\"form_name\":\"摘要\",\"table_field\":\"description\",\"listorder\":4,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":false,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":0,\"center\":false,\"created_at\":\"2021-08-10 16:33:56\",\"updated_at\":\"2021-08-10 16:33:56\",\"deleted_at\":null},{\"id\":471,\"mid\":12,\"field_type\":15,\"form_name\":\"TAG标签\",\"table_field\":\"tags\",\"listorder\":5,\"required\":true,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"标签必须填写\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":true,\"span\":4,\"sortable\":true,\"visible\":true,\"list_visible\":true,\"field_len\":0,\"list_width\":0,\"center\":false,\"created_at\":\"2021-08-10 16:33:56\",\"updated_at\":\"2021-08-10 16:33:56\",\"deleted_at\":null},{\"id\":469,\"mid\":12,\"field_type\":9,\"form_name\":\"排序\",\"table_field\":\"listorder\",\"listorder\":50,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":false,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":4,\"center\":false,\"created_at\":\"2021-08-10 16:33:56\",\"updated_at\":\"2021-08-10 16:33:56\",\"deleted_at\":null},{\"id\":470,\"mid\":12,\"field_type\":14,\"form_name\":\"发布时间\",\"table_field\":\"pubtime\",\"listorder\":51,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":false,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":0,\"sortable\":false,\"visible\":false,\"list_visible\":false,\"field_len\":0,\"list_width\":0,\"center\":false,\"created_at\":\"2021-08-10 16:33:56\",\"updated_at\":\"2021-08-10 16:33:56\",\"deleted_at\":null},{\"id\":466,\"mid\":12,\"field_type\":9,\"form_name\":\"访问次数\",\"table_field\":\"visit_count\",\"listorder\":99,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":false,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":true,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":4,\"center\":false,\"created_at\":\"2021-08-10 16:33:56\",\"updated_at\":\"2021-08-10 16:33:56\",\"deleted_at\":null},{\"id\":467,\"mid\":12,\"field_type\":13,\"form_name\":\"状态\",\"table_field\":\"status\",\"listorder\":100,\"required\":true,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"50\",\"status\":false,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"span\":4,\"sortable\":true,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":4,\"center\":false,\"created_at\":\"2021-08-10 16:33:56\",\"updated_at\":\"2021-08-10 16:33:56\",\"deleted_at\":null}],\"pagination\":{\"page\":1,\"size\":20,\"total\":9}}}",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":412,\"mid\":1,\"field_type\":1,\"form_name\":\"文章标题\",\"table_field\":\"title\",\"listorder\":1,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"search_type\":2,\"span\":24,\"sortable\":true,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":150,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-15 13:47:33\",\"deleted_at\":null},{\"id\":413,\"mid\":1,\"field_type\":11,\"form_name\":\"缩略图\",\"table_field\":\"thumb\",\"listorder\":2,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"search_type\":0,\"span\":24,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":80,\"center\":true,\"created_at\":null,\"updated_at\":\"2021-08-14 16:24:06\",\"deleted_at\":null},{\"id\":414,\"mid\":1,\"field_type\":1,\"form_name\":\"关键字\",\"table_field\":\"keywords\",\"listorder\":2,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"search_type\":0,\"span\":20,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":80,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-14 16:24:12\",\"deleted_at\":null},{\"id\":415,\"mid\":1,\"field_type\":16,\"form_name\":\"文档属性\",\"table_field\":\"flag\",\"listorder\":2,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"search_type\":0,\"span\":24,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":80,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-14 16:24:24\",\"deleted_at\":null},{\"id\":416,\"mid\":1,\"field_type\":2,\"form_name\":\"内容摘要\",\"table_field\":\"description\",\"listorder\":3,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"search_type\":0,\"span\":24,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":80,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-14 16:28:02\",\"deleted_at\":null},{\"id\":417,\"mid\":1,\"field_type\":15,\"form_name\":\"TAG标签\",\"table_field\":\"tags\",\"listorder\":4,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"search_type\":0,\"span\":24,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":80,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-14 16:28:10\",\"deleted_at\":null},{\"id\":418,\"mid\":1,\"field_type\":1,\"form_name\":\"文章来源\",\"table_field\":\"from_url\",\"listorder\":5,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"pinecms.git\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"search_type\":0,\"span\":16,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":80,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-14 16:28:20\",\"deleted_at\":null},{\"id\":419,\"mid\":1,\"field_type\":1,\"form_name\":\"作者\",\"table_field\":\"author\",\"listorder\":6,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"pinecms\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"search_type\":0,\"span\":20,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":80,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-14 16:28:26\",\"deleted_at\":null},{\"id\":420,\"mid\":1,\"field_type\":20,\"form_name\":\"文章内容\",\"table_field\":\"content\",\"listorder\":7,\"required\":true,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":true,\"search_type\":0,\"span\":24,\"sortable\":true,\"visible\":true,\"list_visible\":false,\"field_len\":0,\"list_width\":140,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-13 17:18:50\",\"deleted_at\":null},{\"id\":421,\"mid\":1,\"field_type\":14,\"form_name\":\"发布时间\",\"table_field\":\"pubtime\",\"listorder\":8,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"search_type\":0,\"span\":16,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":80,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-14 16:28:44\",\"deleted_at\":null},{\"id\":422,\"mid\":1,\"field_type\":13,\"form_name\":\"状态\",\"table_field\":\"status\",\"listorder\":10,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"1\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"search_type\":0,\"span\":8,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":80,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-14 16:28:54\",\"deleted_at\":null},{\"id\":423,\"mid\":1,\"field_type\":9,\"form_name\":\"访问次数\",\"table_field\":\"visit_count\",\"listorder\":11,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"search_type\":0,\"span\":4,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":80,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-14 16:29:18\",\"deleted_at\":null},{\"id\":424,\"mid\":1,\"field_type\":9,\"form_name\":\"排序\",\"table_field\":\"listorder\",\"listorder\":12,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"30\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"search_type\":0,\"span\":4,\"sortable\":true,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":80,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-14 16:14:17\",\"deleted_at\":null},{\"id\":425,\"mid\":1,\"field_type\":11,\"form_name\":\"幻灯片\",\"table_field\":\"flash\",\"listorder\":888,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"search_type\":0,\"span\":24,\"sortable\":false,\"visible\":false,\"list_visible\":false,\"field_len\":0,\"list_width\":80,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-14 16:29:28\",\"deleted_at\":null}],\"pagination\":{\"page\":1,\"size\":20,\"total\":14}}}",
 		"return": [
 			{
 				"default": "",
@@ -2436,8 +2436,8 @@
 		"param": null,
 		"query_data_method": "application/json; charset=utf-8",
 		"raw_param": "",
-		"raw_query": "id=420",
-		"raw_return": "{\"code\":1000,\"data\":{\"id\":420,\"mid\":1,\"field_type\":20,\"form_name\":\"文章内容\",\"table_field\":\"content\",\"listorder\":7,\"required\":true,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":true,\"span\":24,\"sortable\":true,\"visible\":true,\"list_visible\":false,\"field_len\":0,\"list_width\":140,\"center\":false,\"created_at\":null,\"updated_at\":\"2021-08-08 20:48:48\",\"deleted_at\":null}}",
+		"raw_query": "id=413",
+		"raw_return": "{\"code\":1000,\"data\":{\"id\":413,\"mid\":1,\"field_type\":11,\"form_name\":\"缩略图\",\"table_field\":\"thumb\",\"listorder\":2,\"required\":false,\"is_dict\":false,\"dict_key\":\"\",\"datasource\":\"\",\"required_tips\":\"\",\"validator\":\"\",\"default\":\"\",\"status\":true,\"main_table_field\":false,\"component\":\"\",\"searchable\":false,\"search_type\":0,\"span\":24,\"sortable\":false,\"visible\":false,\"list_visible\":true,\"field_len\":0,\"list_width\":80,\"center\":true,\"created_at\":null,\"updated_at\":\"2021-08-14 16:24:06\",\"deleted_at\":null}}",
 		"return": [
 			{
 				"default": "",
@@ -2489,7 +2489,7 @@
 		"name": "edit",
 		"param": null,
 		"query_data_method": "application/json; charset=utf-8",
-		"raw_param": "{\"main_table_field\":false,\"required\":true,\"span\":24,\"list_width\":140,\"center\":false,\"sortable\":true,\"searchable\":true,\"list_visible\":false,\"visible\":true,\"status\":true,\"form_name\":\"文章内容\",\"field_type\":3,\"table_field\":\"content\",\"required_tips\":\"\",\"default\":\"\",\"validator\":\"\",\"id\":420,\"mid\":1,\"listorder\":7,\"field_len\":0,\"created_at\":null,\"updated_at\":\"2021-08-08 20:48:48\",\"deleted_at\":null}",
+		"raw_param": "{\"form_name\":\"文章内容\",\"field_type\":20,\"table_field\":\"content\",\"main_table_field\":false,\"required\":true,\"required_tips\":\"\",\"default\":\"\",\"span\":24,\"list_width\":140,\"center\":false,\"sortable\":true,\"searchable\":true,\"list_visible\":false,\"visible\":true,\"validator\":\"\",\"status\":true,\"id\":420,\"mid\":1,\"listorder\":7,\"field_len\":0,\"created_at\":null,\"updated_at\":\"2021-08-10 15:41:52\",\"deleted_at\":null}",
 		"raw_query": "",
 		"raw_return": "{\"code\":1000,\"data\":\"修改数据成功\",\"message\":\"修改数据成功\"}",
 		"return": [
@@ -4533,7 +4533,7 @@
 		"query_data_method": "application/json; charset=utf-8",
 		"raw_param": "{\"page\":1,\"size\":20,\"sort\":\"desc\",\"order\":\"id\"}",
 		"raw_query": "",
-		"raw_return": "{\"code\":1000,\"data\":{\"list\":[],\"pagination\":{\"page\":1,\"size\":20,\"total\":0}}}",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":21,\"level\":3,\"message\":\"[2021/08/13 17:25] [ERRO] district_controller.go:39: 请求报错 \\n goroutine 1174 [running]:\\nruntime/debug.Stack(0x474bbc9, 0x5881e60, 0x0)\\n\\t/usr/local/Cellar/go/1.16.5/libexec/src/runtime/debug/stack.go:24 +0x9f\\ngithub.com/xiusin/logger.(*Logger).Error(0xc0008a6280, 0xc00092e5a0, 0x1, 0x1)\\n\\t/Users/xiusin/projects/pkg/mod/github.com/xiusin/logger@v0.0.5/logger.go:158 +0x26\\ngithub.com/xiusin/pinecms/src/application/controllers/backend.(*DistrictController).PostList(0xc0005ae4e0)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pinecms/src/application/controllers/backend/district_controller.go:39 +0x129\\nreflect.Value.call(0x4d17600, 0xc0005ae4e0, 0x2a13, 0x4d5e8bf, 0x4, 0x0, 0x0, 0x0, 0x50b7098, 0xc0004ef2c0, ...)\\n\\t/usr/local/Cellar/go/1.16.5/libexec/src/reflect/value.go:476 +0x8e7\\nreflect.Value.Call(0x4d17600, 0xc0005ae4e0, 0x2a13, 0x0, 0x0, 0x0, 0xc0005ae4e0, 0x2a13, 0x0)\\n\\t/usr/local/Cellar/go/1.16.5/libexec/src/reflect/value.go:337 +0xb9\\ngithub.com/xiusin/pine.(*routerWrapper).result(0xc000253d20, 0x4d17600, 0xc0005ae4e0, 0x16, 0x4bb2778, 0x12, 0x4b7f4bc, 0x8)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pine/wrapper.go:90 +0x645\\ngithub.com/xiusin/pine.(*routerWrapper).warpHandler.func1(0xc0008aa000)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pine/wrapper.go:47 +0x1e5\\ngithub.com/xiusin/pine.(*Context).Handle(...)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pine/context.go:182\\ngithub.com/xiusin/pine.(*Context).Next(0xc0008aa000)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pine/context.go:175 +0xf3\\ngithub.com/xiusin/pine/middlewares/request-log.RequestRecorder.func1(0xc0008aa000)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pine/middlewares/request-log/request-log.go:14 +0x76\\ngithub.com/xiusin/pine.(*Context).Next(0xc0008aa000)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pine/context.go:177 +0xd8\\ngithub.com/xiusin/pinecms/src/application/controllers/middleware.StatesViz.func2(0xc0008aa000)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pinecms/src/application/controllers/middleware/statsviz.go:47 +0x2b\\ngithub.com/xiusin/pine.(*Context).Next(0xc0008aa000)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pine/context.go:177 +0xd8\\ngithub.com/xiusin/pinecms/src/application/controllers/middleware/apidoc.New.func2(0xc0008aa000)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc/apidoc.go:59 +0x537\\ngithub.com/xiusin/pine.(*Context).Next(0xc0008aa000)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pine/context.go:177 +0xd8\\ngithub.com/xiusin/pinecms/src/application/controllers/middleware.SetGlobalConfigData.func1(0xc0008aa000)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pinecms/src/application/controllers/middleware/data.go:29 +0x305\\ngithub.com/xiusin/pine.(*Context).Next(0xc0008aa000)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pine/context.go:177 +0xd8\\ngithub.com/xiusin/pinecms/src/application/controllers/middleware.Cors.func1(0xc0008aa000)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pinecms/src/application/controllers/middleware/cors.go:15 +0x1f8\\ngithub.com/xiusin/pine.(*Context).Next(0xc0008aa000)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pine/context.go:177 +0xd8\\ngithub.com/xiusin/pinecms/src/server.diConfig.func4(0xc0008aa000)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pinecms/src/server/server.go:258 +0x106\\ngithub.com/xiusin/pine.(*Context).Next(0xc0008aa000)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pine/context.go:177 +0xd8\\ngithub.com/xiusin/pine.(*Application).handle(0xc00072e5a0, 0xc0008aa000)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pine/application.go:223 +0x65\\ngithub.com/xiusin/pine.Addr.func1.1(0xc0000b9b80)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pine/server.go:53 +0x125\\ngithub.com/valyala/fasthttp.(*Server).serveConn(0xc0001d78c0, 0x50b0d18, 0xc00074e568, 0x0, 0x0)\\n\\t/Users/xiusin/projects/pkg/mod/github.com/valyala/fasthttp@v1.28.0/server.go:2239 +0x14a2\\ngithub.com/valyala/fasthttp.(*workerPool).workerFunc(0xc0003e9360, 0xc0009c5da0)\\n\\t/Users/xiusin/projects/pkg/mod/github.com/valyala/fasthttp@v1.28.0/workerpool.go:223 +0xba\\ngithub.com/valyala/fasthttp.(*workerPool).getCh.func1(0xc0003e9360, 0xc0009c5da0, 0x4bd9ce0, 0xc0009c5da0)\\n\\t/Users/xiusin/projects/pkg/mod/github.com/valyala/fasthttp@v1.28.0/workerpool.go:195 +0x35\\ncreated by github.com/valyala/fasthttp.(*workerPool).getCh\\n\\t/Users/xiusin/projects/pkg/mod/github.com/valyala/fasthttp@v1.28.0/workerpool.go:194 +0x11f\\n \\n\",\"time\":\"2021-08-13 17:25:33\"},{\"id\":20,\"level\":3,\"message\":\"[2021/08/13 14:53] [ERRO] default.go:56: 构建错误 exit status 2 \\n goroutine 77 [running]:\\nruntime/debug.Stack(0xc000182160, 0xc000600900, 0x0)\\n\\t/usr/local/Cellar/go/1.16.5/libexec/src/runtime/debug/stack.go:24 +0x9f\\ngithub.com/xiusin/logger.(*Logger).Error(0xc0003fa400, 0xc000238020, 0x2, 0x2)\\n\\t/Users/xiusin/projects/pkg/mod/github.com/xiusin/logger@v0.0.5/logger.go:158 +0x26\\ngithub.com/xiusin/logger.Error(...)\\n\\t/Users/xiusin/projects/pkg/mod/github.com/xiusin/logger@v0.0.5/default.go:56\\ngithub.com/xiusin/pinecms/cmd/server.eventNotify.func1(0xc0003fe010)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pinecms/cmd/server/dev.go:169 +0xc2\\ncreated by github.com/xiusin/pinecms/cmd/server.eventNotify\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pinecms/cmd/server/dev.go:167 +0x5aa\\n \\n\",\"time\":\"2021-08-13 14:53:27\"},{\"id\":19,\"level\":3,\"message\":\"[2021/08/13 14:50] [ERRO] default.go:56: 构建错误 exit status 2 \\n goroutine 54 [running]:\\nruntime/debug.Stack(0xc0006b2160, 0xc000065680, 0x0)\\n\\t/usr/local/Cellar/go/1.16.5/libexec/src/runtime/debug/stack.go:24 +0x9f\\ngithub.com/xiusin/logger.(*Logger).Error(0xc0003fa400, 0xc0003881c0, 0x2, 0x2)\\n\\t/Users/xiusin/projects/pkg/mod/github.com/xiusin/logger@v0.0.5/logger.go:158 +0x26\\ngithub.com/xiusin/logger.Error(...)\\n\\t/Users/xiusin/projects/pkg/mod/github.com/xiusin/logger@v0.0.5/default.go:56\\ngithub.com/xiusin/pinecms/cmd/server.eventNotify.func1(0xc0003fe010)\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pinecms/cmd/server/dev.go:169 +0xc2\\ncreated by github.com/xiusin/pinecms/cmd/server.eventNotify\\n\\t/Users/xiusin/projects/src/github.com/xiusin/pinecms/cmd/server/dev.go:167 +0x5aa\\n \\n\",\"time\":\"2021-08-13 14:50:27\"}],\"pagination\":{\"page\":1,\"size\":20,\"total\":3}}}",
 		"return": [
 			{
 				"default": "",
@@ -4614,115 +4614,115 @@
 		"url": "/v2/errlog/clear"
 	},
 	{
-		"immutable": false,
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
 		"app_id": "admin",
-		"group": {
-			"title": "",
-			"name": ""
-		},
-		"sub_group": "",
-		"title": "%s列表",
-		"desc": "获取系统未删除的%s列表",
-		"tag": "",
 		"author": "xiusin",
-		"url": "/v2/backup/list",
-		"method": "POST",
-		"param": [
-			{
-				"name": "page",
-				"type": "number",
-				"desc": "分页数",
-				"default": "1",
-				"require": true,
-				"childrenType": ""
-			},
-			{
-				"name": "size",
-				"type": "number",
-				"desc": "分页条数",
-				"default": "10",
-				"require": true,
-				"childrenType": ""
-			},
-			{
-				"name": "order",
-				"type": "string",
-				"desc": "排序字段",
-				"default": null,
-				"require": false,
-				"childrenType": ""
-			},
-			{
-				"name": "sort",
-				"type": "string",
-				"desc": "排序方法desc=逆序,asc=正序",
-				"default": null,
-				"require": false,
-				"childrenType": ""
-			},
-			{
-				"name": "keyWord",
-				"type": "string",
-				"desc": "查询关键字",
-				"default": null,
-				"require": false,
-				"childrenType": ""
-			},
-			{
-				"name": "_isExport",
-				"type": "bool",
-				"desc": "是否导出",
-				"default": null,
-				"require": false,
-				"childrenType": ""
-			},
-			{
-				"name": "params",
-				"type": "any",
-				"desc": "额外参数用于非配置字段导出",
-				"default": null,
-				"require": false,
-				"childrenType": ""
-			}
-		],
-		"return": [
-			{
-				"name": "code",
-				"desc": "",
-				"type": "number",
-				"default": ""
-			},
-			{
-				"name": "message",
-				"desc": "",
-				"type": "string",
-				"default": ""
-			},
-			{
-				"name": "data",
-				"desc": "",
-				"type": "any",
-				"default": ""
-			}
-		],
+		"desc": "获取系统未删除的%s列表",
+		"enable": false,
+		"group": {
+			"name": "",
+			"title": ""
+		},
 		"header": [
 			{
+				"desc": "登录票据",
 				"name": "Authorization",
-				"type": "string",
 				"require": true,
-				"desc": "登录票据"
+				"type": "string"
 			}
 		],
-		"name": "list",
+		"immutable": false,
 		"menu_key": "post__v2_backup_list",
-		"raw_param": "{\"page\":1,\"size\":20}",
-		"raw_return": "{\"code\":1000,\"data\":[{\"ctime\":\"2021-08-13T15:04:37.870109194+08:00\",\"id\":\"2021-08-13-150431.zip\",\"name\":\"2021-08-13-150431.zip\",\"size\":609680}]}",
-		"raw_query": "",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
 		"query_data_method": "application/json; charset=utf-8",
-		"enable": false,
-		"OnlyParams": null,
-		"ExcludeParams": null,
-		"NoParams": false
+		"raw_param": "{\"page\":1,\"size\":20}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":[{\"ctime\":\"2021-08-13T15:04:37.870109194+08:00\",\"id\":\"2021-08-13-150431.zip\",\"name\":\"2021-08-13-150431.zip\",\"size\":609680}]}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "",
+		"tag": "",
+		"title": "%s列表",
+		"url": "/v2/backup/list"
 	},
 	{
 		"ExcludeParams": null,
@@ -4794,5 +4794,113 @@
 		"tag": "",
 		"title": "删除%s",
 		"url": "/v2/backup/delete"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取指定配置详情信息",
+		"enable": false,
+		"group": {
+			"name": "系统配置",
+			"title": "系统配置"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "get__v2_setting_info",
+		"method": "GET",
+		"name": "info",
+		"param": null,
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "",
+		"raw_query": "id=21",
+		"raw_return": "{\"code\":1000,\"data\":{\"id\":21,\"key\":\"OSS_HOST\",\"form_name\":\"HOST\",\"value\":\"http://iriscms-test.oss-cn-beijing.aliyuncs.com\",\"group\":\"OSS存储配置\",\"default\":\"\",\"listorder\":19,\"remark\":\"\",\"editor\":\"input\",\"extra\":\"\",\"options\":null}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "配置模块",
+		"tag": "",
+		"title": "配置详情",
+		"url": "/v2/setting/info"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取指定角色的详情信息",
+		"enable": false,
+		"group": {
+			"name": "角色管理",
+			"title": "角色管理"
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "get__v2_role_info",
+		"method": "GET",
+		"name": "info",
+		"param": null,
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "",
+		"raw_query": "id=1",
+		"raw_return": "{\"code\":1000,\"data\":{\"id\":1,\"rolename\":\"超级管理员\",\"description\":\"拥有系统最高权限\",\"listorder\":1,\"disabled\":0,\"menuIdList\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,98,101,10,62,64,86,16,17,18,19,20,21,97,3,34,36,35,53,54,99,100,37,38,39,40,41,79,80,81,82,84,87,11,12,24,25,26,27,13,28,29,30,31]}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "角色管理",
+		"tag": "",
+		"title": "角色详情",
+		"url": "/v2/role/info"
 	}
 ]

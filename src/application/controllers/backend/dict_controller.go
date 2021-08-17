@@ -81,22 +81,9 @@ func (c *DictController) GetSelect(cacher cache.AbstractCache) {
 	}
 	var dicts []tables.KV
 	_ = c.Orm.Where("status = 1").Where("cid = ?", cid).Find(c.Entries)
-	m := c.Entries.(*[]*tables.Dict)
+	m := c.Entries.(*[]tables.Dict)
 	for _, model := range *m {
 		dicts = append(dicts, tables.KV{Label: model.Name, Value: model.Value})
 	}
-	//var kv []tables.KV
-	//if err := cacher.Remember(fmt.Sprintf(controllers.CacheDictPrefix, cid), &kv, func() (interface{}, error) {
-	//	var dicts []tables.KV
-	//	_ = c.Orm.Where("status = 1").Where("cid = ?", cid).Find(c.Entries)
-	//	m := c.Entries.(*[]*tables.Dict)
-	//	for _, model := range *m {
-	//		dicts = append(dicts, tables.KV{Label: model.Name, Value: model.Value})
-	//	}
-	//	return &dicts, nil
-	//}); err != nil {
-	//	helper.Ajax(err, 1, c.Ctx())
-	//	return
-	//}
 	helper.Ajax(dicts, 0, c.Ctx())
 }

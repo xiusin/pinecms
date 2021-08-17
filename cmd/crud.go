@@ -1,9 +1,14 @@
 package cmd
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
+	"fmt"
+	"github.com/xiusin/pine"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -47,23 +52,33 @@ var matchSuffix = struct {
 var crudCmd = &cobra.Command{
 	Use:   "crud",
 	Short: "生成模块的crud功能",
+	Long: `
+字段设定格式: 字段注释(:字典备注:组件名称)
+如: 
+状态 -  仅解析名称, 组件根据类型或字段后缀推导
+状态:-1=禁用,0=待审核,1=正常 - 解析名称并设置下拉
+状态:-1=禁用,0=待审核,1=正常:el-checkbox 
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		config.InitDB()
 		if !config.Ac().Debug {
 			logger.SetReportCaller(false)
-			logger.Print("非Debug模式，不支持 CRUD 命令")
+			logger.Print("非Debug模式，不支持 crud 命令")
 			return
 		}
 		table, _ := cmd.Flags().GetString("table")
-		force, _ := cmd.Flags().GetBool("force")
+		force, _ := cmd.Flags().GetBool("force") // 强制创建
 		onlyInfo, _ := cmd.Flags().GetBool("info")
+		frontendPath, _ := cmd.Flags().GetString("fepath")
 		if len(table) == 0 {
+			logger.Print(color.Red.Sprint("请输入表名"))
 			_ = cmd.Help()
 			return
 		}
 		metas, err := config.XOrmEngine.DBMetas()
 		if err != nil {
-			panic(err)
+			pine.Logger().Error(err)
+			return
 		}
 		var tableMata *core.Table
 		for _, meta := range metas {
@@ -73,32 +88,41 @@ var crudCmd = &cobra.Command{
 			}
 		}
 		if tableMata == nil {
-			logger.Errorf("无法获取数据表[%s]元信息", getTableName(table))
+			logger.Errorf("无法获取数据表[%s]元信息", color.Red.Sprint(getTableName(table)))
 			return
 		}
 		for _, v := range tableMata.Columns() {
 			cols[v.Name] = v
 		}
 		controllerName, controllerPath := getControllerName(table)
-		tablePath := tableDir + table + ".go"
-		if !force && !onlyInfo {
-			f, err := os.Stat(controllerPath)
-			if !os.IsNotExist(err) && !f.IsDir() {
-				logger.Print("已有存在的文件: " + controllerPath)
-			}
-			f, err = os.Stat(tablePath)
-			if !os.IsNotExist(err) && !f.IsDir() {
-				logger.Print("已有存在的文件: " + tablePath)
+		tablePath := tableDir + table + goExt
+		if !force { // 非强制创建则检测文件是否存在
+			for _, s := range []string{frontendPath + "/" + feModuleDir + table, controllerPath, tablePath} {
+				if _, err := os.Stat(s); !os.IsNotExist(err) {
+					logger.Print("已有存在: " + color.Red.Sprint(s))
+					return
+				}
 			}
 		}
-		if err = genTableFile(onlyInfo, table, tableDir+table+".go"); err != nil {
+		if err = genTableFileAndFrontendFile(onlyInfo, table, tableDir+table+goExt, frontendPath); err != nil {
 			panic(err)
 		}
-
 		if err = genControllerFile(onlyInfo, controllerName, table, controllerPath); err != nil {
 			panic(err)
 		}
-		logger.Print("创建模块文件成功, 请将控制器注册到路由: registerV2BackendRoutes方法内")
+		byts, err := ioutil.ReadFile(routerFile)
+		if err != nil {
+			panic(err)
+		}
+		controllerNamespace := `"github.com/xiusin/pinecms/src/application/controllers/backend"`
+		pineNamespace := `"github.com/xiusin/pine"`
+		holder := "// holder"
+		if !bytes.Contains(byts, []byte(controllerNamespace)) {
+			byts = bytes.Replace(byts, []byte(pineNamespace), []byte(pineNamespace+"\r\n\t"+controllerNamespace), 1)
+		}
+		byts = bytes.Replace(byts, []byte(holder), []byte(holder+"\r\n\t"+`backendRouter.Handle(new(backend.`+controllerName+`), "/`+snakeString(table)+`")`), 1)
+		ioutil.WriteFile(routerFile, byts, os.ModePerm)
+		logger.Print("创建模块文件成功, 已注册路由信息至: " + color.Green.Sprint(routerFile))
 	},
 }
 
@@ -106,13 +130,13 @@ func init() {
 	crudCmd.Flags().String("table", "", "数据库表名")
 	crudCmd.Flags().Bool("force", false, "是否强制覆盖（可能导致已有代码丢失）")
 	crudCmd.Flags().Bool("info", false, "是否只打印生成文件以及操作步骤")
-	crudCmd.Flags().String("frontendPath", "admin", "前端开发根目录")
+	crudCmd.Flags().String("fepath", "admin", "前端开发根目录")
 	rootCmd.AddCommand(crudCmd)
 }
 
 func getControllerName(tableName string) (controller string, filename string) {
 	controller = camelString(tableName) + "Controller"
-	filename = controllerDir + snakeString(tableName) + "_controller.go"
+	filename = controllerDir + snakeString(tableName) + "_controller" + goExt
 	return
 }
 
@@ -126,7 +150,15 @@ func getTableName(table string) string {
 
 func genControllerFile(print bool, controllerName, tableName, controllerPath string) error {
 	var err error
-	content := strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(controllerTpl, "[ctrl]", controllerName), "[table]", camelString(tableName)), "[searchFieldDsl]", searchFieldDsl)
+	content := strings.ReplaceAll(
+		strings.ReplaceAll(
+			strings.ReplaceAll(controllerTpl, "[ctrl]", controllerName),
+			"[table]",
+			camelString(tableName),
+		),
+		"[searchFieldDsl]",
+		searchFieldDsl,
+	)
 	if !print {
 		err = ioutil.WriteFile(controllerPath, []byte(content), os.ModePerm)
 	}
@@ -139,7 +171,7 @@ func genControllerFile(print bool, controllerName, tableName, controllerPath str
 	return err
 }
 
-func genTableFile(print bool, tableName, tablePath string) error {
+func genTableFileAndFrontendFile(print bool, tableName, tablePath, frontendPath string) error {
 	realTableName := config.Dc().Db.DbPrefix + strings.ToLower(tableName)
 	res, err := config.XOrmEngine.QueryString(`SHOW CREATE TABLE ` + realTableName)
 	if err != nil {
@@ -207,7 +239,7 @@ func genTableFile(print bool, tableName, tablePath string) error {
 			table.Cols = append(table.Cols, scol)
 		}
 
-		tableStruct = table.toXorm(print, tableName)
+		tableStruct = table.toXorm(print, tableName, frontendPath)
 	}
 
 	if len(tableStruct) == 0 {
@@ -227,84 +259,116 @@ func genTableFile(print bool, tableName, tablePath string) error {
 	return err
 }
 
-// genFrontendFile 生成前端模块 （需满足开发环境）
-func genFrontendFile(print bool, table string, tableDsl, formDsl, filterDSL []map[string]interface{}) {
-	// 根据路由创建目录文件
-	//moduleFeDir := feDir + table + "/list"
-	//indexFile := strFirstToUpper(moduleFeDir + "/index.ts")
-	//presetFile := strFirstToUpper(moduleFeDir + "/preset.ts")
-	//
-	//data, _ := JSONMarshal(tableDsl)
-	//content := bytes.ReplaceAll([]byte(indexTsTpl), []byte("[tableDSL]"), append(bytes.Trim(data, "[]\n"), ','))
-	//
-	//content = bytes.ReplaceAll(content, []byte("[registerDataVar]"), []byte(strings.Join(topCode, "\r\n")))
-	//
-	//data, _ = json.MarshalIndent(filterDSL, "", "\t")
-	//content = bytes.ReplaceAll(content, []byte("[filterDSL]"), append(bytes.Trim(data, "[]"), ','))
-	//
-	//data, _ = json.MarshalIndent(formDsl, "", "\t")
-	//content = bytes.ReplaceAll(content, []byte("[formDSL]"), data)
-	//
-	//presetContent := bytes.ReplaceAll([]byte(presetTsTpl), []byte("[table]"), []byte(table))
-	//if !print {
-	//	_ = os.RemoveAll(moduleFeDir) // 强制创建
-	//	_ = os.MkdirAll(moduleFeDir, os.ModePerm)
-	//	err := ioutil.WriteFile(indexFile, content, os.ModePerm)
-	//	if err == nil {
-	//		logger.Print("创建文件: " + indexFile)
-	//	}
-	//	err = ioutil.WriteFile(presetFile, presetContent, os.ModePerm)
-	//	if err == nil {
-	//		logger.Print("创建文件: " + presetFile)
-	//	}
-	//} else {
-	//	logger.Print("创建文件: " + indexFile)
-	//	quick.Highlight(logger.DefaultWriter(), string(content), "typescript", "terminal256", theme)
-	//	logger.Print("创建文件: " + presetFile)
-	//	quick.Highlight(logger.DefaultWriter(), string(presetContent), "typescript", "terminal256", theme)
-	//}
+// genFrontendFile 生成前端模块
+func genFrontendFile(table, frontendPath string, tableDsl, formDsl, filterDsl []map[string]interface{}) {
+	//fmt.Println(tableDsl)
+	data, _ := json.Marshal(tableDsl)
+	fmt.Println(string(data))
+	//fmt.Println(filterDsl)
+
+	moduleBaseDir := filepath.Join(frontendPath, feModuleDir+table)
+	files := map[string]string{
+		filepath.Join(moduleBaseDir, "service", "index.ts"):  serviceTsTpl,
+		filepath.Join(moduleBaseDir, "service", "router.ts"): serviceRouterTpl,
+		filepath.Join(moduleBaseDir, "views", table+".vue"):  indexVueTpl,
+		filepath.Join(moduleBaseDir, "index.ts"):             serviceIndexTsTpl,
+	}
+	for filename, content := range files {
+		os.MkdirAll(filepath.Dir(filename), os.ModePerm)
+		if strings.Contains(filename, ".vue") {
+			data, _ := json.MarshalIndent(formDsl, "\t\t\t", "\t")
+			content = string(bytes.ReplaceAll([]byte(content), []byte("[formDSL]"), data))
+
+			data, _ = json.MarshalIndent(tableDsl, "\t\t\t", "\t")
+			content = string(bytes.ReplaceAll([]byte(content), []byte("[tableDSL]"), data))
+		}
+		if err := os.WriteFile(filename, bytes.ReplaceAll([]byte(content), []byte("[table]"), []byte(snakeString(table))), os.ModePerm); err == nil {
+			logger.Print("创建文件： " + color.Green.Sprint(filename))
+		} else {
+			logger.Print("创建文件", color.Red.Sprint(filename)+"失败")
+		}
+	}
 }
 
 // getFieldType 生成表单和列表字段类型
-func getFieldType(fieldName, fieldType string) string {
-	inputType := "text"
-	switch fieldType {
-	case "bigint", "int", "mediumint", "smallint", "tinyint":
-		inputType = "number"
-	case "set":
-		inputType = "checkboxes"
-	case "enum":
-		inputType = "radios"
-	case "decimal", "double", "float":
-		inputType = "number"
-	case "longtext", "text", "mediumtext", "smalltext", "tinytext":
-		inputType = "textarea"
-	case "datetime", "timestamp":
-		inputType = "datetime"
-	case "date":
-		inputType = "date"
-	}
+func getFieldTypeAndProps(fieldName, fieldType string) (inputType string, props map[string]interface{}) {
+	inputType = "el-input"
+	props = map[string]interface{}{"size": "mini"}
 
 	if matchSuffix.match(matchSuffix.imageSuffix, fieldName) {
-		inputType = "image"
+		fieldType = "image"
 	} else if matchSuffix.match(matchSuffix.fileSuffix, fieldName) {
-		inputType = "file"
+		fieldType = "file"
 	} else {
 		if fieldType == "enum" && matchSuffix.match(matchSuffix.enumRadioSuffix, fieldName) {
-			inputType = "radios"
+			fieldType = "radios"
 		}
 		if fieldType == "set" && matchSuffix.match(matchSuffix.setCheckboxSuffix, fieldName) {
-			inputType = "checkboxes"
+			fieldType = "checkboxes"
+		}
+		if strings.Contains(fieldType, "int") && strings.Contains(fieldName, "switch") {
+			fieldType = "switch"
 		}
 		if strings.Contains(fieldType, "int") && strings.Contains(fieldName, "city") {
-			inputType = "city"
+			fieldType = "city"
 		}
 		if strings.HasSuffix(fieldType, "text") && matchSuffix.match(matchSuffix.editorSuffix, fieldName) {
-			inputType = "rich-text"
+			fieldType = "rich-text"
 		}
 	}
 
-	return inputType
+	switch fieldType {
+	case "bigint", "int", "mediumint", "smallint", "tinyint":
+		inputType = "el-input-number"
+		props["controls-position"] = "right"
+		props["step-strictly"] = true
+		props["step"] = 1
+	case "set", "checkboxes":
+		inputType = "el-checkbox"
+	case "switch":
+		inputType = "el-switch"
+		props["active-value"] = 1
+		props["inactive-value"] = 0
+	case "enum", "radios":
+		inputType = "el-checkbox"
+	case "decimal", "double", "float":
+		inputType = "el-input-number"
+		props["controls-position"] = "right"
+		props["step-strictly"] = true
+		props["precision"] = 2
+		props["step"] = 0.01
+	case "longtext", "text", "mediumtext", "smalltext", "tinytext", "rich-text":
+		inputType = "cl-editor-quill"
+		props["height"] = 350
+		props["width"] = "100%"
+	case "datetime", "timestamp":
+		inputType = "el-date-picker"
+		props["type"] = "datetime"
+	case "date":
+		inputType = "el-date-picker"
+		props["type"] = "date"
+	case "image":
+		inputType = "cl-upload-space"
+		props["text"] = "请选择图片"
+		if fieldName[len(fieldName)-1:] == "s" {
+			props["multiple"] = true
+		}
+		props["accept"] = ".jpg,.png,.jpeg,.bmp,.gif"
+		props["listType"] = "picture-card"
+		props["icon"] = "el-icon-picture"
+		props["size"] = [2]int{45, 45}
+		props["drag"] = true
+	case "file":
+		inputType = "cl-upload-space"
+		props["text"] = "请选择附件"
+		props["accept"] = "*"
+		props["list-type"] = "text"
+		props["drag"] = true
+		if fieldName[len(fieldName)-1:] == "s" {
+			props["multiple"] = true
+		}
+	}
+	return
 }
 
 func parseCommentInfo(comment string) map[string]string {
@@ -315,45 +379,10 @@ func parseCommentInfo(comment string) map[string]string {
 		for _, v := range dict {
 			kv := strings.SplitN(v, "=", 2)
 			if len(kv) == 2 && kv[1] != "" {
-				vmap[kv[0]] = kv[1]
+				vmap[strings.TrimSpace(kv[0])] = kv[1]
 			}
 		}
 	}
 	return vmap
 }
 
-// 生成表单字段额外扩展字段
-func getFieldFormExtra(amisType string, item map[string]interface{}) {
-	col := cols[item["name"].(string)]
-	if !col.DefaultIsEmpty {
-		item["value"] = col.Default // 设置字段默认值
-	}
-	switch amisType {
-	case "radios", "checkboxes":
-		// 解析备注内容
-		vmap := parseCommentInfo(col.Comment)
-
-		var options []map[string]interface{}
-		optionSets := col.SetOptions
-		if amisType == "radios" {
-			optionSets = col.EnumOptions
-		}
-		if len(optionSets) > 0 { // 设置字段选项
-			for setVal := range optionSets {
-				label, ok := vmap[setVal]
-				if !ok {
-					label = setVal
-				}
-				options = append(options, map[string]interface{}{
-					"label": label,
-					"value": setVal,
-				})
-			}
-			item["options"] = options
-		}
-	case "image", "file":
-		if strings.HasSuffix(item["name"].(string), "s") {
-			item["multiple"] = true
-		}
-	}
-}

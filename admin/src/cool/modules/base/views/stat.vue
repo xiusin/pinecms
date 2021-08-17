@@ -42,6 +42,12 @@
 								<td>启动时间</td>
 								<td>{{ state.start_time }}</td>
 							</tr>
+							<tr>
+								<td>本机IP</td>
+								<td>{{ state.local_ip }}</td>
+								<td>外网IP</td>
+								<td>{{ state.out_ip.IP }} ({{state.out_ip.Address.Province}}{{state.out_ip.Address.City}}{{state.out_ip.ISP}})</td>
+							</tr>
 						</table>
 					</div>
 				</el-card>
@@ -124,7 +130,7 @@
 							使用率:{{ parseFloat(state.cpu.cpu_percent).toFixed(2) + "%" }}
 						</el-tag>
 					</div>
-					<div>
+					<div style="padding-top: 3px">
 						<el-row :gutter="10">
 							<el-col :span="24">
 								<v-chart
@@ -144,7 +150,7 @@
 					<div slot="header" class="clearfix">
 						<span>网络IO</span>
 						<el-tag type="success" size="mini" style="float: right; border-radius: 2px">
-							上传:0 下载:0
+							上传:{{parseFloat(state.nets[0].send / 1024 / 1024).toFixed(2)}}K 下载:{{parseFloat(state.nets[0].recv / 1024 / 1024).toFixed(2)}}K
 						</el-tag>
 					</div>
 					<div>
@@ -206,6 +212,9 @@ export default defineComponent({
 				} else {
 					data.cpu.cpus.map((item, idx) => {
 						CpuSeries.value[idx].data.push(item);
+						if (CpuSeries.value[idx].data > 30) {
+							CpuSeries.value[idx].data = CpuSeries.value[idx].data.slice(-30);
+						}
 					});
 				}
 
@@ -344,9 +353,6 @@ export default defineComponent({
 		});
 
 		const netIoOption = reactive({
-			title: {
-				text: "Step Line"
-			},
 			tooltip: {
 				trigger: "axis"
 			},

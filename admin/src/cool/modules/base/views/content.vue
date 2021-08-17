@@ -20,82 +20,82 @@
 				<div class="container">
 					<cl-crud :ref="setRefs('crud')" @load="onLoad" :on-delete="onDelete" v-if="!catType">
 						<el-row>
-							<cl-add-btn/>
-
-							<cl-filter label="单选">
-								<el-select size="mini">
-									<el-option value="" label="全部"/>
-									<el-option :value="0" label="禁用"/>
-									<el-option :value="1" label="启用"/>
-								</el-select>
-							</cl-filter>
-
-							<cl-filter label="通用渲染">
-								<component
-									:is="'cms-select'"
-									v-bind="{
-										size: 'mini',
-										options: [{ label: '第一', value: 'No.1' }]
-									}"
-								/>
-							</cl-filter>
-
-							<cl-filter label="输入">
-								<el-input placeholder="请输入姓名" clearable size="mini"/>
-							</cl-filter>
-							<div></div>
-							<cl-filter label="级联">
-								<el-cascader
-									size="mini"
-									:options="[]"
-									:props="{ expandTrigger: 'hover' }"
-								/>
-							</cl-filter>
-							<cl-filter label="日期时间">
-								<el-date-picker
-									size="mini"
-									type="datetimerange"
-									range-separator="至"
-									start-placeholder="开始日期"
-									end-placeholder="结束日期"
-								/>
-							</cl-filter>
-
-							<div></div>
-							<cl-filter label="日期范围">
-								<el-date-picker
-									type="daterange"
-									size="mini"
-									align="right"
-									unlink-panels
-									range-separator="至"
-									start-placeholder="开始日期"
-									end-placeholder="结束日期"
-								/>
-							</cl-filter>
-
-							<cl-filter label="日期">
-								<el-select
-									multiple
-									size="mini"
-									collapse-tags
-									style="margin-left: 20px"
-									placeholder="请选择"
-								>
-									<el-option
-										v-for="item in [
-											{ label: '参数1', value: '1' },
-											{ label: '参数2', value: '2' }
-										]"
-										:key="item.value"
-										:label="item.label"
-										:value="item.value"
-									/>
-								</el-select>
-							</cl-filter>
-							<cl-flex1/>
-							<cl-search-key/>
 							<cl-refresh-btn/>
+							<cl-add-btn />
+							<cl-flex1/>
+							<cl-adv-btn />
+							<cl-search-key/>
+							<cl-adv-search :items="advItemList" :props="{size: '50%'}" :op-list="opAdvList" />
+<!--								<cl-filter label="单选">-->
+<!--									<el-select size="mini">-->
+<!--										<el-option value="" label="全部"/>-->
+<!--										<el-option :value="0" label="禁用"/>-->
+<!--										<el-option :value="1" label="启用"/>-->
+<!--									</el-select>-->
+<!--								</cl-filter>-->
+
+<!--								<cl-filter label="通用渲染">-->
+<!--									<component-->
+<!--										:is="'cms-select'"-->
+<!--										v-bind="{-->
+<!--										size: 'mini',-->
+<!--										options: [{ label: '第一', value: 'No.1' }]-->
+<!--									}"-->
+<!--									/>-->
+<!--								</cl-filter>-->
+
+<!--								<cl-filter label="输入">-->
+<!--									<el-input placeholder="请输入姓名" clearable size="mini"/>-->
+<!--								</cl-filter>-->
+<!--								<div></div>-->
+<!--								<cl-filter label="级联">-->
+<!--									<el-cascader-->
+<!--										size="mini"-->
+<!--										:options="[]"-->
+<!--										:props="{ expandTrigger: 'hover' }"-->
+<!--									/>-->
+<!--								</cl-filter>-->
+<!--								<cl-filter label="日期时间">-->
+<!--									<el-date-picker-->
+<!--										size="mini"-->
+<!--										type="datetimerange"-->
+<!--										range-separator="至"-->
+<!--										start-placeholder="开始日期"-->
+<!--										end-placeholder="结束日期"-->
+<!--									/>-->
+<!--								</cl-filter>-->
+
+<!--								<cl-filter label="日期范围">-->
+<!--									<el-date-picker-->
+<!--										type="daterange"-->
+<!--										size="mini"-->
+<!--										align="right"-->
+<!--										unlink-panels-->
+<!--										range-separator="至"-->
+<!--										start-placeholder="开始日期"-->
+<!--										end-placeholder="结束日期"-->
+<!--									/>-->
+<!--								</cl-filter>-->
+
+<!--								<cl-filter label="日期">-->
+<!--									<el-select-->
+<!--										multiple-->
+<!--										size="mini"-->
+<!--										collapse-tags-->
+<!--										style="margin-left: 20px"-->
+<!--										placeholder="请选择"-->
+<!--									>-->
+<!--										<el-option-->
+<!--											v-for="item in [-->
+<!--											{ label: '参数1', value: '1' },-->
+<!--											{ label: '参数2', value: '2' }-->
+<!--										]"-->
+<!--											:key="item.value"-->
+<!--											:label="item.label"-->
+<!--											:value="item.value"-->
+<!--										/>-->
+<!--									</el-select>-->
+<!--								</cl-filter>-->
 						</el-row>
 
 						<el-row>
@@ -149,9 +149,6 @@
 				</div>
 			</div>
 		</div>
-<!--		<el-drawer title="我嵌套了 Form !" v-model="drawerRef" direction="rtl" size="80%">-->
-<!--			<div class="demo-drawer__content">asdasdsadasdasd</div>-->
-<!--		</el-drawer>-->
 	</div>
 </template>
 
@@ -211,7 +208,7 @@ export default defineComponent({
 		const table = ref<Table>();
 		// 树形列表
 		const treeList = computed(() => deepTree(menuList.value));
-
+		const advItemList = ref([])
 		const catId = ref<any>(0);
 		const catType = ref<any>(0);
 		const midRef = ref<any>(0);
@@ -296,7 +293,8 @@ export default defineComponent({
 					}
 					return item;
 				});
-
+				advItemList.value = data.search_fields || [];
+				console.log(advItemList.value)
 				upsert.items = data.upset_comps;
 				table.value = data;
 				table.value?.columns.push({
@@ -307,7 +305,12 @@ export default defineComponent({
 			});
 		});
 
+
+		const opAdvList = ref<string[]>(["search", "reset", "clear", "close"]);
+
 		return {
+			opAdvList,
+			advItemList,
 			service,
 			data,
 			refs,

@@ -31,6 +31,7 @@ var (
 	delay, limit      int32
 	watcher           *fsnotify.Watcher
 	counter           int32
+	globalCancel      func()
 )
 
 func init() {
@@ -67,6 +68,10 @@ func devCommand(cmd *cobra.Command, args []string) error {
 	go eventNotify()
 	go serve()
 	<-closeCh
+	if globalCancel != nil {
+		logger.Print("Cancel...")
+		globalCancel()
+	}
 	return nil
 }
 
@@ -74,6 +79,7 @@ func serve() {
 	var nextEventCh = make(chan struct{})
 	for {
 		ctx, cancel := context.WithCancel(context.Background())
+		globalCancel = cancel
 		process := exec.CommandContext(ctx, fmt.Sprintf("./%s", buildName), "serve", "start", "--banner=false")
 		process.Stdout = os.Stdout
 		process.Stderr = os.Stdout

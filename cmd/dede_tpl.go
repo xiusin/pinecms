@@ -18,8 +18,7 @@ import (
 var dedeTplCmd = &cobra.Command{
 	Use:   "dedeTpl",
 	Short: "dede模板转换为pinecms模板",
-	Long: `
-1. 快速转换织梦模板为pinecms模板
+	Long: `1. 快速转换织梦模板为pinecms模板
 2. 只支持标签级转换, 其他的转换完成根据错误提醒自行修复
 `,
 	Run: func(cmd *cobra.Command, args []string) {
