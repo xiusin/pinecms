@@ -14,18 +14,13 @@ func SetGlobalConfigData() pine.Handler {
 			pine.Logger().Error("无法读取到配置内容:" + err.Error())
 			return
 		}
-
 		settingData["site_url"] = string(ctx.Host())
-
 		ctx.Set(controllers.CacheSetting, settingData)
-
 		lower := map[string]string{}
 		for k, v := range settingData {
 			lower[strings.ToLower(k)] = v
 		}
-
 		ctx.Render().ViewData("global", lower)
-
 		ctx.Next()
 	}
 }

@@ -1,6 +1,7 @@
 <template>
 	<el-checkbox-group v-model="checkList" size="mini" @change="changeVal">
-		<el-checkbox v-for="item in flags" :key="item.key + item.label" :label="item.key">{{item.label}}</el-checkbox>
+		<el-checkbox v-for="item in props.options" :key="item.key + item.label" :label="item.key">{{ item.label }}
+		</el-checkbox>
 	</el-checkbox-group>
 </template>
 
@@ -22,17 +23,18 @@ export default defineComponent({
 	},
 
 	setup(props, {emit}) {
-		const checkList = ref(props.modelValue.split(','))
-		const flags = ref(props.options);
+		const checkList = ref([])
+		try {
+			checkList.value = props.modelValue.split(',')
+		} catch (e) {
+			checkList.value = []
+		}
+
 		function changeVal(val) {
 			emit('update:modelValue', val.join(','))
 		}
-		return {
-			checkList,
-			props,
-			flags,
-			changeVal
-		};
+
+		return {checkList, props, changeVal};
 	}
 });
 </script>

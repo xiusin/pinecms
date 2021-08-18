@@ -4,6 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/config"
 	"io"
 	"path/filepath"
 	"strings"
@@ -81,6 +84,26 @@ func (s *OssUploader) List(dir string) ([]string, string, error) {
 	}
 	return files, s.host, nil
 }
+
+func (s *OssUploader) GetEngineName() string {
+	return "oss存储"
+}
+
 func init() {
-	//register("阿里云存储", NewOssUploader())
+	di.Set(fmt.Sprintf(controllers.ServiceUploaderEngine, (&OssUploader{}).GetEngineName()), func(builder di.AbstractBuilder) (interface{}, error) {
+		var engine Uploader
+		var err error
+		defer func() {
+			if errPanic := recover(); errPanic != nil {
+				engine = nil
+				err = errPanic.(error)
+			}
+		}()
+		cfg, err := config.SiteConfig()
+		if err != nil {
+			return nil, err
+		}
+		engine = NewOssUploader(cfg)
+		return engine, nil
+	}, false)
 }

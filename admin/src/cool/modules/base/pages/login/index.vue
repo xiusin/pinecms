@@ -91,9 +91,9 @@ export default defineComponent({
 				return ElMessage.warning("密码不能为空");
 			}
 
-			// if (!form.verifyCode) {
-			// 	return ElMessage.warning("图片验证码不能为空");
-			// }
+			if (!form.verifyCode) {
+				return ElMessage.warning("图片验证码不能为空");
+			}
 
 			saving.value = true;
 

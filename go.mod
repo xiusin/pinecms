@@ -6,6 +6,7 @@ require (
 	github.com/360EntSecGroup-Skylar/excelize/v2 v2.4.0
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
 	github.com/StackExchange/wmi v1.2.0 // indirect
+	github.com/afocus/captcha v0.0.0-20191010092841-4bd1f21c8868
 	github.com/alecthomas/chroma v0.9.2
 	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0
 	github.com/aliyun/aliyun-oss-go-sdk v2.1.9+incompatible
@@ -23,6 +24,7 @@ require (
 	github.com/go-playground/validator/v10 v10.7.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/go-xorm/xorm v0.7.9
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/gookit/color v1.4.2
 	github.com/gorilla/securecookie v1.1.1
 	github.com/kataras/go-mailer v0.1.0

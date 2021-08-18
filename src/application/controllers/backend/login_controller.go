@@ -1,7 +1,6 @@
 package backend
 
 import (
-	"fmt"
 	"github.com/gbrlsnchs/jwt/v3"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
@@ -22,11 +21,6 @@ func (c *LoginController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *LoginController) Login(orm *xorm.Engine) {
-	defer func() {
-		if err := recover(); err != nil {
-			fmt.Println(err)
-		}
-	}()
 	var p loginUserParam
 	apidoc.SetApiEntity(c.Ctx(), &apidoc.Entity{
 		ApiParam: &p,
@@ -41,6 +35,14 @@ func (c *LoginController) Login(orm *xorm.Engine) {
 		helper.Ajax("参数不能为空", 1, c.Ctx())
 		return
 	}
+
+	sessVerifyCode := c.Session().Get(controllers.CacheVerifyCode)
+
+	if sessVerifyCode != p.CaptchaId {
+		helper.Ajax("验证码错误", 1, c.Ctx())
+		return
+	}
+
 	// 读取登录人信息
 	admin, err := models.NewAdminModel().Login(p.Username, p.Password, c.Ctx().ClientIP())
 	if err != nil {

@@ -1,6 +1,10 @@
 package storage
 
 import (
+	"fmt"
+	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/config"
 	"io"
 	"io/ioutil"
 	"os"
@@ -8,8 +12,8 @@ import (
 )
 
 type FileUploader struct {
-	fixDir  string // 修复目录
-	baseDir string // 本地目录
+	fixDir  string
+	baseDir string
 }
 
 func NewFileUploader(fixDir, uploadDir string) *FileUploader {
@@ -17,6 +21,10 @@ func NewFileUploader(fixDir, uploadDir string) *FileUploader {
 		fixDir:  fixDir,
 		baseDir: uploadDir,
 	}
+}
+
+func (s *FileUploader) GetEngineName() string {
+	return "本地存储"
 }
 
 func (s *FileUploader) Upload(storageName string, LocalFile io.Reader) (string, error) {
@@ -65,4 +73,16 @@ func (s *FileUploader) GetFullUrl(name string) string {
 
 func (s *FileUploader) Remove(name string) error {
 	return os.Remove(filepath.Join(s.baseDir, name))
+}
+
+func init()  {
+	di.Set(fmt.Sprintf(controllers.ServiceUploaderEngine, (&FileUploader{}).GetEngineName()), func(builder di.AbstractBuilder) (interface{}, error) {
+		cfg, err := config.SiteConfig()
+		if err != nil {
+			return nil, err
+		}
+		uploadDir := cfg["UPLOAD_DIR"]
+		urlPrefixDir := cfg["UPLOAD_URL_PREFIX"]
+		return NewFileUploader(urlPrefixDir, uploadDir), nil
+	}, false)
 }

@@ -64,7 +64,7 @@ export default defineComponent({
 	setup() {
 		const service = inject<any>("service");
 
-		const form = reactive<any>({relevance: 1});
+		const form = reactive<any>({});
 
 		const upsert = reactive<Upsert>({
 			items: [formDSL]

@@ -23,23 +23,6 @@ class Open extends BaseService {
 	}
 
 	/**
-	 * 图片验证码 svg
-	 *
-	 * @param {*} { height, width }
-	 * @returns
-	 * @memberof CommonService
-	 */
-	captcha({ height, width }: any) {
-		return this.request({
-			url: "/captcha",
-			params: {
-				height,
-				width
-			}
-		});
-	}
-
-	/**
 	 * 刷新 token
 	 * @param {string} token
 	 */

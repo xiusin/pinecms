@@ -15,7 +15,10 @@ import "./mock";
 // element-plus
 import ElementPlus from "element-plus";
 import "./assets/css/element-variables.scss";
+import "dayjs/locale/zh-cn";
 import locale from "element-plus/lib/locale/lang/zh-cn";
+// import locale from "element-plus/lib/locale";
+// locale.use(lang)
 
 // mitt
 import mitt from "mitt";

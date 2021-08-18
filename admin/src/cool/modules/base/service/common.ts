@@ -1,6 +1,6 @@
 import { BaseService, Service } from "/@/core";
 
-@Service("")
+@Service("public")
 class Common extends BaseService {
 	/**
 	 * 文件上传模式
@@ -12,6 +12,23 @@ class Common extends BaseService {
 	}
 
 	/**
+	 * 图片验证码 svg
+	 *
+	 * @param {*} { height, width }
+	 * @returns
+	 * @memberof CommonService
+	 */
+	captcha({ height, width }: any) {
+		return this.request({
+			url: "/captcha",
+			params: {
+				height,
+				width
+			}
+		});
+	}
+
+	/**
 	 * 文件上传，如果模式是 cloud，返回对应参数
 	 *
 	 * @returns
@@ -19,7 +36,7 @@ class Common extends BaseService {
 	 */
 	upload(params: any) {
 		return this.request({
-			url: "/public/upload",
+			url: "/upload",
 			method: "POST",
 			params
 		});

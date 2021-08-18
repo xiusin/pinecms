@@ -42,13 +42,13 @@
 			>
 				<slot>
 					<!-- 多图上传 -->
-					<template v-if="listType == 'picture-card'">
+					<template v-if="listType === 'picture-card'">
 						<i :class="['cl-upload__icon', _icon]"></i>
 						<span v-if="_text" class="cl-upload__text">{{ _text }}</span>
 					</template>
 
 					<!-- 文件上传 -->
-					<template v-else-if="listType == 'text'">
+					<template v-else-if="listType === 'text'">
 						<el-button size="mini" type="primary" :loading="loading"
 							>点击上传</el-button
 						>
@@ -59,7 +59,7 @@
 						<template v-if="_file">
 							<div class="cl-upload__cover">
 								<!-- 图片 -->
-								<img v-if="_file.type == 'image'" :src="_file.url" />
+								<img v-if="_file.type === 'image'" :src="_file.url" />
 
 								<!-- 文件名 -->
 								<span v-else>{{ _file.name }}</span>
@@ -383,6 +383,7 @@ export default {
 				}
 			}
 			if (this.beforeUpload) {
+				debugger
 				return this.beforeUpload(file, {
 					done: this.done
 				});
@@ -404,12 +405,14 @@ export default {
 		},
 		// 重设上传请求
 		async httpRequest(req) {
-			const mode = await this.uploadMode();
+			// const mode = await this.uploadMode();
+			const mode = ""
 			// 多种上传请求
 			const upload = (file) => {
 				return new Promise((resolve, reject) => {
-					debugger;
 					const next = (res) => {
+
+						debugger
 						let data = new FormData();
 						for (const i in res) {
 							if (i != "host") {
@@ -423,8 +426,10 @@ export default {
 						}
 						data.append("key", `app/${fileName}`);
 						data.append("file", file);
+						debugger
+						console.log(data)
 						// 上传
-						this.service.base.common
+						this.service.common
 							.request({
 								url: res.host,
 								method: "POST",
@@ -440,28 +445,24 @@ export default {
 								}
 							})
 							.then((url) => {
-								if (mode === "local") {
-									resolve(url);
-								} else {
-									resolve(`${res.host}/app/${fileName}`);
-								}
+								resolve(url);
+								// if (mode === "local") {
+								//
+								// } else {
+								// 	resolve(`${res.host}/app/${fileName}`);
+								// }
 							})
 							.catch((err) => {
 								reject(err);
 							});
 					};
-					if (mode == "local") {
-						next({
-							host: "/upload"
-						});
-					} else {
-						this.service.base.common
-							.upload()
-							.then((res) => {
-								next(res);
-							})
-							.catch(reject);
-					}
+
+					this.service.common
+						.upload()
+						.then((res) => {
+							next(res);
+						})
+						.catch(reject);
 				});
 			};
 			this.loading = true;
@@ -478,10 +479,6 @@ export default {
 					}
 				});
 			this.loading = false;
-		},
-		// 上传模式
-		uploadMode() {
-			return this.service.base.common.uploadMode().then((res) => res.mode);
 		}
 	}
 };

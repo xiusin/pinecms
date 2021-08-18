@@ -38,6 +38,8 @@ export default {
 		// 示例页
 		"demo",
 		// 主题切换
-		"theme"
+		"theme",
+		// todo演示模块
+		"todo"
 	]
 };

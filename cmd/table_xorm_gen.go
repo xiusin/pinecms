@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -34,115 +35,115 @@ func (t *SQLTable) toXorm(print bool, tableName string, frontendPath string) str
 	var filterDsl []map[string]interface{}
 
 	for _, col := range t.Cols {
-		str.WriteRune('\t')
-		str.WriteString(camelString(col.Name))
-		var goType string
-		switch col.Type {
-		case "varchar", "text", "char", "longtext", "mediumtext", "smalltext", "tinytext", "set":
-			goType = "string"
-		case "enum", "tinyint":
-			goType = "int"
-		case "int", "bigint":
-			goType = "int64"
-		case "double", "float", "decimal":
-			goType = "float64"
-		case "year", "date", "datetime", "time", "timestamp":
-			goType = "LocalTime"
-		case "blob":
-			goType = "[]byte"
-		default:
-			panic(col.Name + " 是一个未知类型")
-		}
-		str.WriteString(" " + goType)
-		str.WriteString(" `xorm:\"")
+		tableField := snakeString(col.Name)
+		coreCol := cols[tableField]
 
-		// Type
-		str.WriteString(col.Type)
+		// ↓↓↓↓↓↓↓↓ 解析生成table结构 开始
+		{
+			str.WriteRune('\t')
+			str.WriteString(camelString(col.Name))
 
-		// Bracketed type metadata
-		if len(col.EnumValues) > 0 {
-			str.WriteRune('(')
-			for i, en := range col.EnumValues {
-				str.WriteString(en)
-				if i != len(col.EnumValues)-1 {
-					str.WriteRune(',')
+			var goType string
+			switch col.Type {
+			case "varchar", "text", "char", "longtext", "mediumtext", "smalltext", "tinytext", "set":
+				goType = "string"
+			case "enum", "tinyint":
+				goType = "int"
+			case "int", "bigint":
+				goType = "int64"
+			case "double", "float", "decimal":
+				goType = "float64"
+			case "year", "date", "datetime", "time", "timestamp":
+				goType = "LocalTime"
+			case "blob":
+				goType = "[]byte"
+			default:
+				panic(col.Name + " 是一个未知类型")
+			}
+			str.WriteString(" " + goType)
+			str.WriteString(" `xorm:\"")
+
+			str.WriteString(col.Type)
+
+			if len(col.EnumValues) > 0 {
+				str.WriteRune('(')
+				for i, en := range col.EnumValues {
+					str.WriteString(en)
+					if i != len(col.EnumValues)-1 {
+						str.WriteRune(',')
+					}
+				}
+				str.WriteRune(')')
+			} else if len(col.Length) > 0 {
+				str.WriteString("(" + col.Length + ")")
+			}
+
+			if col.AutoIncrement {
+				str.WriteString(" autoincr")
+			}
+
+			if col.NotNull {
+				str.WriteString(" not null")
+			}
+
+			if len(col.Default) > 0 {
+				if strings.Contains(goType, "int") || strings.Contains(goType, "float") || col.Default == "null" {
+					str.WriteString(" default " + col.Default)
+				} else {
+					str.WriteString(" default '" + col.Default + "'")
 				}
 			}
-			str.WriteRune(')')
-		} else if len(col.Length) > 0 {
-			str.WriteString("(" + col.Length + ")")
-		}
+			if col.IsPrimaryKey {
+				str.WriteString(" pk")
+			}
+			if col.IsUnique {
+				str.WriteString(" unique")
+			}
+			str.WriteString(" '" + col.Name + "'")
 
-		if col.AutoIncrement {
-			str.WriteString(" autoincr")
-		}
-		if col.NotNull {
-			str.WriteString(" not null")
-		}
-		if len(col.Default) > 0 {
-			if strings.Contains(goType, "int") || strings.Contains(goType, "float") || col.Default == "null" {
-				str.WriteString(" default " + col.Default)
-			} else {
-				str.WriteString(" default '" + col.Default + "'")
+			if len(cols[col.Name].Comment) > 0 {
+				clearComment := strings.ReplaceAll(strings.ReplaceAll(cols[col.Name].Comment, "\r\n", " "), "'", "")
+				clearComment = strings.ReplaceAll(clearComment, "\"", "")
+				str.WriteString(" comment('" + clearComment + "')")
+			}
+
+			str.WriteString("\"")
+
+			// 设置JsonTag
+			str.WriteString(" json:\"" + tableField + "\"")
+
+			// 添加验证规则选项
+			if !col.IsPrimaryKey {
+				str.WriteString(" validate:\"required\"")
 			}
 		}
-		if col.IsPrimaryKey {
-			str.WriteString(" pk")
-		}
-		if col.IsUnique {
-			str.WriteString(" unique")
-		}
-		str.WriteString(" '" + col.Name + "'")
+		// ↑↑↑↑↑↑↑↑ 解析生成table结构 结束
 
-		labelName, xormCol := col.Name, cols[col.Name]
-		if len(xormCol.Comment) > 0 {
-			c := strings.Split(xormCol.Comment, ":") // 如果填写了备注, 则拆分取第一个
-			labelName = c[0]
-			clearComment := strings.ReplaceAll(strings.ReplaceAll(xormCol.Comment, "\r\n", " "), "'", "")
-			clearComment = strings.ReplaceAll(clearComment, "\"", "")
-			str.WriteString(" comment('" + clearComment + "')")
-		}
+		labelName, elFieldType, elProps := getLabelAndFieldTypeAndProps(col, coreCol)
 
-		str.WriteString("\"")
-		// 添加Json和schematag
-		str.WriteString(" json:\"" + snakeString(col.Name) + "\"")
-		// 添加验证规则选项
-		if !col.IsPrimaryKey {
-			str.WriteString(" validate:\"required\"")
-		}
-		// ↑↑↑↑↑↑↑↑ 解析struct
+		tableItem := map[string]interface{}{"prop": tableField, "label": labelName} // 列表字段
 
-
-		elFieldType, elProps := getFieldTypeAndProps(col.Name, col.Type)
-
-		// 列表字段
-		tableItem := map[string]interface{}{"prop": snakeString(col.Name), "label": labelName}
-
-		// 表单渲染组件
-		comp := map[string]interface{}{
-			"name":  elFieldType,
-			"props": elProps,
-		}
-		// 表单字段
-		item := map[string]interface{}{
-			"prop":  snakeString(col.Name),
-			"label": labelName,
-		}
+		comp := map[string]interface{}{"name": elFieldType, "props": elProps}                     // 渲染组件
+		item := map[string]interface{}{"prop": tableField, "label": labelName, "component": comp} // upsert 组件
 
 		// 设置字段默认值
-		colM := cols[item["prop"].(string)]
-		if !colM.DefaultIsEmpty {
-			item["value"] = colM.Default
+		if !coreCol.DefaultIsEmpty {
+			if elProps["is_number"].(bool) || elProps["is_float"].(bool) {
+				if elProps["is_float"].(bool) {
+					item["value"], _ = strconv.ParseFloat(coreCol.Default, 64)
+				} else {
+					item["value"], _ = strconv.Atoi(coreCol.Default)
+				}
+			} else {
+				item["value"] = coreCol.Default
+			}
 		}
-
-		// 绑定组件
-		item["component"] = comp
 
 		// 过滤大字段或不可确定字段
 		if elFieldType != "cl-upload-space" && elFieldType != "cl-editor-quill" && elFieldType != "el-switch" {
-			filterType := elFieldType
+			filterType := elFieldType // 头部筛选字段
 			switch elFieldType {
-			case "el-checkbox", "el-switch", "el-select":
+			case "el-checkbox", "el-switch", "el-select", "cms-checkbox", "cms-radio":
 				filterType = "el-select"
 			}
 			props := map[string]interface{}{}
@@ -160,27 +161,32 @@ func (t *SQLTable) toXorm(print bool, tableName string, frontendPath string) str
 				props["type"] = "datetimerange"
 			case "date":
 				props["type"] = "date"
-			case "tinyint":
-				vmap := parseCommentInfo(xormCol.Comment)
-				if len(vmap) > 0 {
-					var opts []map[string]interface{}
-					for k, v := range vmap {
-						opts = append(opts, map[string]interface{}{"label": v, "key": k})
-					}
+			default:
+				if elFieldType == "tinyint" && elProps["options"] != nil && comp["name"] == "el-input-number" {
 					filterItem["type"] = "el-select"
-					filterItem["options"] = opts
+					filterItem["options"] = elProps["options"]
 					tableItem["dict"] = filterItem["options"]
-
+					comp["name"] = "cms-radio" // 单选
 					elProps = map[string]interface{}{}
-					elProps["name"] = "el-checkbox"
 					elProps["options"] = filterItem["options"]
+					elProps["size"] = "mini"
 					comp["props"] = elProps
-					item["component"] = elProps
+				}
+
+				if (elFieldType == "varchar" || elFieldType == "char") && elProps["options"] != nil {
+					filterItem["type"] = "el-select"
+					filterItem["options"] = elProps["options"]
+					tableItem["dict"] = filterItem["options"]
+					comp["name"] = "cms-select" // 多选
+					elProps = map[string]interface{}{}
+					elProps["options"] = filterItem["options"]
+					elProps["size"] = "mini"
+					comp["props"] = elProps
 				}
 			}
 			if strings.HasSuffix(filterItem["type"].(string), "-range") {
 				searchFieldDsl += `		"` + filterItem["name"].(string) + `":{Op: "range"},`
-			} else if xormCol.SQLType.Name == "set" {
+			} else if coreCol.SQLType.Name == "set" {
 				searchFieldDsl += `		"` + filterItem["name"].(string) + `":{Op: "set"},` // findInSet
 			} else {
 				searchFieldDsl += `		"` + filterItem["name"].(string) + `":{Op: "="},`
@@ -192,7 +198,8 @@ func (t *SQLTable) toXorm(print bool, tableName string, frontendPath string) str
 		}
 
 		str.WriteString("`\n")
-
+		delete(elProps, "is_number")
+		delete(elProps, "is_float")
 		if !col.IsPrimaryKey {
 			formDsl = append(formDsl, item)
 		}

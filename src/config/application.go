@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/go-xorm/xorm"
@@ -71,10 +72,6 @@ func AppConfig() *Config {
 	return config
 }
 
-func PluginLoader() {
-
-}
-
 func parseConfig(path string, out interface{}) {
 	absPath, err := filepath.Abs(path)
 	if err != nil {
@@ -103,7 +100,7 @@ func SiteConfig() (map[string]string, error) {
 		}
 		if len(settings) != 0 {
 			for _, v := range settings {
-				settingData[v.Key] = v.Value
+				settingData[strings.ToUpper(v.Key)] = v.Value
 			}
 		}
 		if err = cache.SetWithMarshal(controllers.CacheSetting, &settingData); err != nil {

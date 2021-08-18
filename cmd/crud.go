@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/xiusin/pine"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/xwb1989/sqlparser"
@@ -262,8 +262,8 @@ func genTableFileAndFrontendFile(print bool, tableName, tablePath, frontendPath 
 // genFrontendFile 生成前端模块
 func genFrontendFile(table, frontendPath string, tableDsl, formDsl, filterDsl []map[string]interface{}) {
 	//fmt.Println(tableDsl)
-	data, _ := json.Marshal(tableDsl)
-	fmt.Println(string(data))
+	//data, _ := json.Marshal(tableDsl)
+	//fmt.Println(string(data))
 	//fmt.Println(filterDsl)
 
 	moduleBaseDir := filepath.Join(frontendPath, feModuleDir+table)
@@ -290,10 +290,9 @@ func genFrontendFile(table, frontendPath string, tableDsl, formDsl, filterDsl []
 	}
 }
 
-// getFieldType 生成表单和列表字段类型
-func getFieldTypeAndProps(fieldName, fieldType string) (inputType string, props map[string]interface{}) {
-	inputType = "el-input"
-	props = map[string]interface{}{"size": "mini"}
+// getLabelAndFieldTypeAndProps 解析生成基础结构
+func getLabelAndFieldTypeAndProps(col SQLColumn, xormCol *core.Column) (labelName, inputType string, props map[string]interface{}) {
+	inputType, fieldType, fieldName, props := "el-input", col.Type, col.Name, map[string]interface{}{"size": "mini", "is_number": false, "is_float": false}
 
 	if matchSuffix.match(matchSuffix.imageSuffix, fieldName) {
 		fieldType = "image"
@@ -323,20 +322,24 @@ func getFieldTypeAndProps(fieldName, fieldType string) (inputType string, props 
 		props["controls-position"] = "right"
 		props["step-strictly"] = true
 		props["step"] = 1
+		props["is_number"] = true
 	case "set", "checkboxes":
-		inputType = "el-checkbox"
+		inputType = "cms-checkbox"
 	case "switch":
 		inputType = "el-switch"
 		props["active-value"] = 1
 		props["inactive-value"] = 0
+		props["is_number"] = true
 	case "enum", "radios":
-		inputType = "el-checkbox"
+		inputType = "cms-radio"
 	case "decimal", "double", "float":
 		inputType = "el-input-number"
 		props["controls-position"] = "right"
 		props["step-strictly"] = true
 		props["precision"] = 2
 		props["step"] = 0.01
+		props["is_number"] = true
+		props["is_float"] = true
 	case "longtext", "text", "mediumtext", "smalltext", "tinytext", "rich-text":
 		inputType = "cl-editor-quill"
 		props["height"] = 350
@@ -368,21 +371,52 @@ func getFieldTypeAndProps(fieldName, fieldType string) (inputType string, props 
 			props["multiple"] = true
 		}
 	}
+
+	prop, options, comp := parseCommentInfo(col.Name, xormCol.Comment, props["is_number"].(bool))
+	labelName = prop
+
+	if len(comp) > 0 {
+		inputType = comp // 指定组件
+	}
+
+	if len(options) > 0 {
+		props["options"] = options
+	}
+
+	if inputType == "el-date-picker" { // 检测是否展示为区间
+		props["type"] = "daterange"
+	}
+
 	return
 }
 
-func parseCommentInfo(comment string) map[string]string {
-	vmap := map[string]string{}
+// 返回默认值
+func parseCommentInfo(colName, comment string, isNumber bool) (name string, options []map[string]interface{}, customComponent string) {
+	if len(comment) == 0 {
+		name = colName
+		return
+	}
+	options = []map[string]interface{}{}
 	commentInfo := strings.Split(comment, ":") // "状态:0=关闭,1=开启"
+	name = commentInfo[0]
 	if len(commentInfo) > 1 {
 		dict := strings.Split(commentInfo[1], ",")
 		for _, v := range dict {
 			kv := strings.SplitN(v, "=", 2)
 			if len(kv) == 2 && kv[1] != "" {
-				vmap[strings.TrimSpace(kv[0])] = kv[1]
+				opt := map[string]interface{}{
+					"key":   strings.TrimSpace(kv[0]),
+					"label": kv[1],
+				}
+				if isNumber {
+					opt["key"], _ = strconv.Atoi(opt["key"].(string))
+				}
+				options = append(options, opt)
 			}
 		}
 	}
-	return vmap
+	if len(commentInfo) > 2 {
+		customComponent = commentInfo[2]
+	}
+	return
 }
-

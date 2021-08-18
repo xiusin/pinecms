@@ -12,6 +12,7 @@ type Uploader interface {
 	Exists(name string) (bool, error)
 	GetFullUrl(name string) string
 	Remove(name string) error
+	GetEngineName() string
 }
 
 func getAvailableUrl(path string) string {
@@ -19,18 +20,4 @@ func getAvailableUrl(path string) string {
 		path = strings.ReplaceAll(path, "\\", "/")
 	}
 	return path
-}
-
-type UploadRegister struct {
-	Name string
-	Inst Uploader
-}
-
-var storages []UploadRegister
-
-func register(name string, ins Uploader) {
-	storages = append(storages, UploadRegister{
-		Name: name,
-		Inst: ins,
-	})
 }

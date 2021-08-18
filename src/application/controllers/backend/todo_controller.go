@@ -10,13 +10,15 @@ type TodoController struct {
 func (c *TodoController) Construct() {
     c.SearchFields = map[string]searchFieldDsl{
 		"id":{Op: "="},
-		"linktype":{Op: "="},
+		"type":{Op: "="},
 		"name":{Op: "="},
-		"url":{Op: "="},
 		"introduce":{Op: "="},
 		"listorder":{Op: "="},
-		"passed":{Op: "="},
-		"addtime":{Op: "="},
+		"status":{Op: "="},
+		"put_date":{Op: "="},
+		"put_datetime":{Op: "="},
+		"start_time":{Op: "="},
+		"end_time":{Op: "="},
 
 	}
 	c.Group = "Todo管理"

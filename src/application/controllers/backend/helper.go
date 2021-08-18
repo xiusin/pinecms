@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/common/storage"
 	"reflect"
 	"strings"
@@ -31,14 +32,15 @@ func getStorageEngine(settingData map[string]string) storage.Uploader {
 	uploadDir := settingData["UPLOAD_DIR"]
 	urlPrefixDir := settingData["UPLOAD_URL_PREFIX"]
 	engine := settingData["UPLOAD_ENGINE"]
-	var uploader storage.Uploader
-	switch engine {
-	case "OSS存储":
-		uploader = storage.NewOssUploader(settingData)
-	default:
-		uploader = storage.NewFileUploader(urlPrefixDir, uploadDir)
+	var uploadEngine storage.Uploader
+	uploader, err := di.Get(fmt.Sprintf(controllers.ServiceUploaderEngine, engine))
+	if err != nil {
+		pine.Logger().Error("缺少存储驱动, 自动转换为本地存储", err)
+		uploadEngine = storage.NewFileUploader(urlPrefixDir, uploadDir)
+	} else {
+		uploadEngine = uploader.(storage.Uploader)
 	}
-	return uploader
+	return uploadEngine
 }
 
 func strFirstToUpper(str string) string {

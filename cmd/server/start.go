@@ -44,10 +44,14 @@ var startCmd = &cobra.Command{
 		}
 
 		config.Server()
+
+
+
 	},
 }
 
 func init() {
 	ServeCmd.AddCommand(startCmd)
 	startCmd.Flags().Bool("banner", true, "显示或隐藏banner信息, false为隐藏")
+	startCmd.Flags().Bool("daemon", true, "后台进程运行")
 }

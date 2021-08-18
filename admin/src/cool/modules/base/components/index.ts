@@ -20,7 +20,8 @@ import EditorQuill from "./editor-quill/index.vue";
 import Codemirror from "./codemirror/index.vue";
 import CmsSelect from "./select/cms_select.vue";
 import InputTags from "./input-tags/input_tags.vue";
-import CmsCheckbox from "./flag/cms_checkbox.vue";
+import CmsCheckbox from "./components/cms_checkbox.vue";
+import CmsRadio from "./components/cms_radio.vue";
 
 export default {
 	Avatar,
@@ -45,5 +46,6 @@ export default {
 	DepartmentTree,
 	CmsSelect,
 	InputTags,
-	CmsCheckbox
+	CmsCheckbox,
+	CmsRadio
 };
