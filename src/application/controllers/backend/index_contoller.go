@@ -23,15 +23,7 @@ type IndexController struct {
 }
 
 func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
-	b.ANY("/index/menu", "Menu")
 	b.ANY("/index/main", "Main")
-}
-
-func (c *IndexController) Menu() {
-	menus := models.NewMenuModel().GetAll() //获取menuid内容
-	helper.Ajax(pine.H{
-		"menus": menus,
-	}, 0, c.Ctx())
 }
 
 func (c *IndexController) Main(orm *xorm.Engine, iCache cache.AbstractCache) {

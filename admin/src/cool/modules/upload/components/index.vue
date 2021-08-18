@@ -383,7 +383,6 @@ export default {
 				}
 			}
 			if (this.beforeUpload) {
-				debugger
 				return this.beforeUpload(file, {
 					done: this.done
 				});
@@ -406,17 +405,14 @@ export default {
 		// 重设上传请求
 		async httpRequest(req) {
 			// const mode = await this.uploadMode();
-			const mode = ""
 			// 多种上传请求
 			const upload = (file) => {
 				return new Promise((resolve, reject) => {
 					const next = (res) => {
-
-						debugger
-						let data = new FormData();
+						let form = new FormData();
 						for (const i in res) {
 							if (i != "host") {
-								data.append(i, res[i]);
+								form.append(i, res[i]);
 							}
 						}
 						let fileName = file.name;
@@ -424,10 +420,9 @@ export default {
 						if (this._rename) {
 							fileName = uuidv4() + "." + last((file.name || "").split("."));
 						}
-						data.append("key", `app/${fileName}`);
-						data.append("file", file);
-						debugger
-						console.log(data)
+						form.append("key", `app/${fileName}`);
+						form.append("file", file);
+						console.log(form.keys());
 						// 上传
 						this.service.common
 							.request({
@@ -436,7 +431,7 @@ export default {
 								headers: {
 									"Content-Type": "multipart/form-data"
 								},
-								data,
+								data: form,
 								onUploadProgress: (e) => {
 									if (this.onProgress) {
 										e.percent = parseInt((e.loaded / e.total) * 100);

@@ -17,7 +17,7 @@ func NewAdminModel() *AdminModel {
 	return &AdminModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
 }
 
-//登录用户
+// Login 登录用户
 func (a *AdminModel) Login(username, password, ip string) (tables.Admin, error) {
 	admin := tables.Admin{Username: username}
 	exist, _ := a.orm.Get(&admin)

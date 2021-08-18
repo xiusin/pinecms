@@ -89,7 +89,7 @@ class Common extends BaseService {
 	 */
 	permMenu() {
 		return this.request({
-			url: "/index/menu"
+			url: "/menu"
 		});
 	}
 }

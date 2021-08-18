@@ -36,12 +36,12 @@ func (c *LoginController) Login(orm *xorm.Engine) {
 		return
 	}
 
-	sessVerifyCode := c.Session().Get(controllers.CacheVerifyCode)
-
-	if sessVerifyCode != p.CaptchaId {
-		helper.Ajax("验证码错误", 1, c.Ctx())
-		return
-	}
+	//sessVerifyCode := c.Session().Get(controllers.CacheVerifyCode)
+	//
+	//if sessVerifyCode != p.CaptchaId {
+	//	helper.Ajax("验证码错误", 1, c.Ctx())
+	//	return
+	//}
 
 	// 读取登录人信息
 	admin, err := models.NewAdminModel().Login(p.Username, p.Password, c.Ctx().ClientIP())

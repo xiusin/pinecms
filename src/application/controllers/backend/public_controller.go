@@ -2,8 +2,10 @@ package backend
 
 import (
 	"github.com/afocus/captcha"
+	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"image/png"
 	"path"
@@ -11,6 +13,11 @@ import (
 
 type PublicController struct {
 	BaseController
+}
+
+func (c *PublicController) GetMenu() {
+	menus := models.NewMenuModel().GetAll() //获取menuid内容
+	helper.Ajax(pine.H{"menus": menus}, 0, c.Ctx())
 }
 
 func (c *PublicController) PostUpload() {
