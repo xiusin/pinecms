@@ -1,7 +1,6 @@
 package server
 
 import (
-	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/cmd/version"
 	"os"
 	"runtime"
@@ -22,12 +21,6 @@ var startCmd = &cobra.Command{
 	Short: "启动pinecms服务",
 	Run: func(cmd *cobra.Command, args []string) {
 		banner, _ := cmd.Flags().GetBool("banner")
-
-		// 标识非serve模式
-		di.Set("pinecms.serve.mode", func(builder di.AbstractBuilder) (interface{}, error) {
-			return true, nil
-		}, false)
-
 		if banner {
 			p := tableprinter.New(os.Stdout)
 			p.BorderTop, p.BorderBottom, p.BorderLeft, p.BorderRight = true, true, true, true
@@ -42,11 +35,8 @@ var startCmd = &cobra.Command{
 				{"GoVersion", runtime.Version()},
 			})
 		}
-
+		config.InitDB()
 		config.Server()
-
-
-
 	},
 }
 

@@ -107,10 +107,6 @@ func Center(width, height int, p tview.Primitive) tview.Primitive {
 		AddItem(nil, 0, 1, false)
 }
 
-func init() {
-	rootCmd.AddCommand(initCmd)
-}
-
 func alert(pages *tview.Pages, message string) *tview.Pages {
 	id := "dialog"
 	return pages.AddPage(id, tview.NewModal().SetText(message).AddButtons([]string{"确定"}).

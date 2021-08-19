@@ -112,5 +112,4 @@ func init() {
 	menuCmd.Flags().String("table", "", "数据库表名")
 	menuCmd.Flags().String("menu", "", "顶级菜单名称")
 	menuCmd.Flags().Bool("force", false, "是否强制生成")
-	rootCmd.AddCommand(menuCmd)
 }

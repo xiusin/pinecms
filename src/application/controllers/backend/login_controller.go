@@ -2,7 +2,6 @@ package backend
 
 import (
 	"github.com/gbrlsnchs/jwt/v3"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
@@ -20,7 +19,7 @@ func (c *LoginController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/login", "Login")
 }
 
-func (c *LoginController) Login(orm *xorm.Engine) {
+func (c *LoginController) Login() {
 	var p loginUserParam
 	apidoc.SetApiEntity(c.Ctx(), &apidoc.Entity{
 		ApiParam: &p,
@@ -31,17 +30,14 @@ func (c *LoginController) Login(orm *xorm.Engine) {
 		Desc:     "账号密码登录系统， 并且返回JWT凭证",
 	})
 
-	if err := parseParam(c.Ctx(), &p); err != nil || helper.IsFalse(p.Username, p.Password) {
+	if err := parseParam(c.Ctx(), &p); err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
+	}
+	if p.Password == "" || p.Username == "" {
 		helper.Ajax("参数不能为空", 1, c.Ctx())
 		return
 	}
-
-	//sessVerifyCode := c.Session().Get(controllers.CacheVerifyCode)
-	//
-	//if sessVerifyCode != p.CaptchaId {
-	//	helper.Ajax("验证码错误", 1, c.Ctx())
-	//	return
-	//}
 
 	// 读取登录人信息
 	admin, err := models.NewAdminModel().Login(p.Username, p.Password, c.Ctx().ClientIP())

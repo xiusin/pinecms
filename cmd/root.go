@@ -2,7 +2,8 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/cmd/crud"
+	"github.com/xiusin/pinecms/cmd/dede"
 	"github.com/xiusin/pinecms/cmd/plugin"
 	"github.com/xiusin/pinecms/cmd/server"
 	"github.com/xiusin/pinecms/cmd/version"
@@ -28,15 +29,13 @@ func Execute() {
 }
 
 func init() {
-	di.Set("pinecms.cmd.root", func(builder di.AbstractBuilder) (interface{}, error) {
-		return rootCmd, nil
-	}, true)
-
-	rootCmd.AddCommand(plugin.PluginCmd)
-	rootCmd.AddCommand(version.VersionCmd)
+	rootCmd.AddCommand(initCmd)
+	rootCmd.AddCommand(plugin.Cmd)
+	rootCmd.AddCommand(version.Cmd)
 	rootCmd.AddCommand(server.ServeCmd)
-
-	// new cmd
-
+	rootCmd.AddCommand(crud.Cmd)
+	rootCmd.AddCommand(menuCmd)
+	rootCmd.AddCommand(dede.Cmd)
+	rootCmd.AddCommand(mateCmd)
 	config.InitApp()
 }

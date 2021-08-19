@@ -1,7 +1,8 @@
-package cmd
+package crud
 
 import (
 	"fmt"
+	"github.com/xiusin/pinecms/cmd/util"
 	"strconv"
 	"strings"
 )
@@ -28,20 +29,20 @@ type SQLColumn struct {
 
 func (t *SQLTable) toXorm(print bool, tableName string, frontendPath string) string {
 	var str strings.Builder
-	str.WriteString(fmt.Sprintf("type %s struct {\n", camelString(tableName)))
+	str.WriteString(fmt.Sprintf("type %s struct {\n", util.CamelString(tableName)))
 
 	var tableDsl []map[string]interface{}
 	var formDsl []map[string]interface{}
 	var filterDsl []map[string]interface{}
 
 	for _, col := range t.Cols {
-		tableField := snakeString(col.Name)
+		tableField := util.SnakeString(col.Name)
 		coreCol := cols[tableField]
 
 		// ↓↓↓↓↓↓↓↓ 解析生成table结构 开始
 		{
 			str.WriteRune('\t')
-			str.WriteString(camelString(col.Name))
+			str.WriteString(util.CamelString(col.Name))
 
 			var goType string
 			switch col.Type {
@@ -148,7 +149,7 @@ func (t *SQLTable) toXorm(print bool, tableName string, frontendPath string) str
 			}
 			props := map[string]interface{}{}
 			filterItem := map[string]interface{}{
-				"name":  snakeString(col.Name),
+				"name":  util.SnakeString(col.Name),
 				"label": labelName,
 				"type":  filterType,
 			}

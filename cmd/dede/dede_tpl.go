@@ -1,4 +1,4 @@
-package cmd
+package dede
 
 import (
 	"bytes"
@@ -16,7 +16,7 @@ import (
 )
 
 var dedeTplCmd = &cobra.Command{
-	Use:   "dedeTpl",
+	Use:   "tpl",
 	Short: "dede模板转换为pinecms模板",
 	Long: `1. 快速转换织梦模板为pinecms模板
 2. 只支持标签级转换, 其他的转换完成根据错误提醒自行修复
@@ -102,7 +102,7 @@ SUCCESS!
 }
 
 func init() {
-	importCmd.AddCommand(dedeTplCmd)
+	Cmd.AddCommand(dedeTplCmd)
 	dedeTplCmd.Flags().String("dedepath", "", "织梦模板路径(填入具体主题地址)")
 	dedeTplCmd.Flags().String("pinepath", helper.GetRootPath()+"/resources/themes/", "pine的主题路径")
 	dedeTplCmd.Flags().Bool("force", false, "是否强制删除pinecms同名主题目录")

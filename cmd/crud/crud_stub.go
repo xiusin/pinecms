@@ -1,4 +1,4 @@
-package cmd
+package crud
 
 const (
 	controllerDir = "src/application/controllers/backend/"

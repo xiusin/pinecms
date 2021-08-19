@@ -4,39 +4,24 @@ import (
 	"errors"
 	"fmt"
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/common/storage"
 	"reflect"
 	"strings"
 
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pinecms/src/application/controllers"
-	"github.com/xiusin/pinecms/src/application/models/tables"
 )
 
-func clearMenuCache(cache cache.AbstractCache, xorm *xorm.Engine) {
-	var roles []*tables.AdminRole
-	var menus []*tables.Menu
-	xorm.Where("parentid = ?", 0).Find(&menus)
-	xorm.Find(&roles)
-	for _, role := range roles {
-		for _, menu := range menus {
-			cacheKey := fmt.Sprintf(controllers.CacheAdminMenuByRoleIdAndMenuId, role.Id, menu.Id)
-			cache.Delete(cacheKey)
-		}
-	}
-}
-
 func getStorageEngine(settingData map[string]string) storage.Uploader {
+	prefixDir := settingData["UPLOAD_URL_PREFIX"]
 	uploadDir := settingData["UPLOAD_DIR"]
-	urlPrefixDir := settingData["UPLOAD_URL_PREFIX"]
+	siteUrl := settingData["SITE_URL"]
 	engine := settingData["UPLOAD_ENGINE"]
 	var uploadEngine storage.Uploader
 	uploader, err := di.Get(fmt.Sprintf(controllers.ServiceUploaderEngine, engine))
 	if err != nil {
 		pine.Logger().Error("缺少存储驱动, 自动转换为本地存储", err)
-		uploadEngine = storage.NewFileUploader(urlPrefixDir, uploadDir)
+		uploadEngine = storage.NewFileUploader(siteUrl, prefixDir, uploadDir)
 	} else {
 		uploadEngine = uploader.(storage.Uploader)
 	}
@@ -62,17 +47,6 @@ func strFirstToUpper(str string) string {
 	return temp[0] + upperStr
 }
 
-func ucwords(str string) string {
-	str = strings.ToLower(str)
-	vv := []rune(str)
-	for i := 0; i < len(str); i++ {
-		if i == 0 {
-			vv[i] -= 32
-		}
-	}
-	return string(vv)
-}
-
 func parseParam(ctx *pine.Context, param interface{}) error {
 	return ctx.BindJSON(param)
 }
@@ -83,7 +57,7 @@ func ArrayCol(arr interface{}, col string) []interface{} {
 		panic(errors.New("ArrayCol第一个参数必须为切片类型"))
 	}
 	var cols []interface{}
-	for  i := 0; i < val.Len(); i++ {
+	for i := 0; i < val.Len(); i++ {
 		cols = append(cols, val.Index(i).FieldByName(col).Interface())
 	}
 	return cols

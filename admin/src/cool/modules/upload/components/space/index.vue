@@ -264,7 +264,7 @@ export default defineComponent({
 		// 上传成功
 		function onSuccess(res: any, file: ElFile) {
 			const item = list.value.find((e: any) => file.uid == e.uid);
-
+			console.log("onSuccess", res)
 			if (item) {
 				item.url = res.data;
 

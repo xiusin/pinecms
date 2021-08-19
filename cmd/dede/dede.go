@@ -1,4 +1,4 @@
-package cmd
+package dede
 
 import (
 	"encoding/json"
@@ -18,10 +18,6 @@ import (
 	"xorm.io/core"
 )
 
-/**
-注意: 这个代码隔一天再看已经看不懂了!
-*/
-
 var (
 	dc             = config.DBConfig()
 	bar            = progressbar.New(100)
@@ -38,7 +34,7 @@ var (
 	}
 )
 var dedeCmd = &cobra.Command{
-	Use:   "dede",
+	Use:   "import",
 	Short: "导入DEDECMS文章数据",
 	Long: `
 1. 导出广告位以及广告
@@ -60,7 +56,7 @@ var dedeCmd = &cobra.Command{
 }
 
 func init() {
-	importCmd.AddCommand(dedeCmd)
+	Cmd.AddCommand(dedeCmd)
 	dedeCmd.Flags().String("dsn", "root:@tcp(127.0.0.1:3306)/dedecms?charset=utf8", "输入要导入数据的数据库连接DSN信息(只支持MYSQL)")
 
 }
@@ -97,7 +93,7 @@ type DedeXMLField struct {
 	Maxlength int    `xml:"maxlength,attr"`
 }
 
-var dedePineFieldMaps = map[string]int64{"text": 1, "textchar": 1, "multitext": 2, "htmltext": 3, "textdata": 3, "int": 9, "float": 10, "datetime": 14, "img": 11, "imgfile": 11, "media": 4, "addon": 4, "select": 5, "radio": 7, "checkbox": 8, "stepselect": 6,}
+var dedePineFieldMaps = map[string]int64{"text": 1, "textchar": 1, "multitext": 2, "htmltext": 3, "textdata": 3, "int": 9, "float": 10, "datetime": 14, "img": 11, "imgfile": 11, "media": 4, "addon": 4, "select": 5, "radio": 7, "checkbox": 8, "stepselect": 6}
 
 func clearDocumentModelTable(table, dslTable string) error {
 
@@ -177,7 +173,7 @@ func importChannelType() {
 				if _, ok := modelFields[f.Field]; ok { //默认字段忽略
 					continue
 				}
-				dmField := &tables.DocumentModelField{Id: dedePineFieldMaps[f.Type],}
+				dmField := &tables.DocumentModelField{Id: dedePineFieldMaps[f.Type]}
 				pineOrm.Get(dmField)
 				fieldDsl := &tables.DocumentModelDsl{
 					Mid:        data.Id,
@@ -312,7 +308,7 @@ func importArcType() {
 			arctype["id"], arctype["ispart"],
 			arctype["reid"], arctype["topid"], arctype["channeltype"], arctype["typename"],
 			arctype["keywords"], arctype["description"], url, arctype["sortrank"],
-			pineDir, "", ismenu, arctype["templist"], arctype["temparticle"], )
+			pineDir, "", ismenu, arctype["templist"], arctype["temparticle"])
 		if err != nil {
 			panic(err)
 		}
@@ -323,7 +319,7 @@ func importArcType() {
 		if arctype["ispart"] == "1" || len(arctype["content"]) > 0 {
 			tid, _ := strconv.Atoi(arctype["id"])
 			pineOrm.InsertOne(&tables.Page{
-				Id:       int64(tid),
+				Id:          int64(tid),
 				Title:       arctype["typename"],
 				Keywords:    arctype["keywords"],
 				Description: arctype["description"],
@@ -351,7 +347,7 @@ func importAd() {
 }
 
 // 检测时也需要把cms之间的映射字段辅助添加上
-var excludeDedeFields = []string{"id", "typeid", "typeid2", "flag", "ismake", "arcrank", "channel", "click", "title", "color", "litpic", "pubdate", "senddate", "mid", "keywords", "lastpost", "goodpost", "badpost", "voteid", "notpost", "description", "filename", "dutyadmin", "tackid", "mtype", "weight",}
+var excludeDedeFields = []string{"id", "typeid", "typeid2", "flag", "ismake", "arcrank", "channel", "click", "title", "color", "litpic", "pubdate", "senddate", "mid", "keywords", "lastpost", "goodpost", "badpost", "voteid", "notpost", "description", "filename", "dutyadmin", "tackid", "mtype", "weight"}
 
 func needSkip(field string) bool {
 	for _, v := range excludeDedeFields {

@@ -10,7 +10,6 @@ var TaskCmd = &cobra.Command{
 	Use:   "task",
 	Short: "任务管理模块",
 	Run: func(cmd *cobra.Command, args []string) {
-
 	},
 }
 

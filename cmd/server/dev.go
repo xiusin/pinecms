@@ -34,6 +34,8 @@ var (
 	globalCancel      func()
 )
 
+const winExt = ".exe"
+
 func init() {
 	ServeCmd.AddCommand(devCmd)
 	devCmd.Flags().StringSlice("ignoreDirs", []string{"vendor", ".git", ".idea", "node_modules", "admin", "apidoc-ui"}, "忽略变动监听的目录")
@@ -52,7 +54,7 @@ func devCommand(cmd *cobra.Command, args []string) error {
 	closeCh := make(chan os.Signal)
 	signal.Notify(closeCh, os.Interrupt, os.Kill)
 	if runtime.GOOS == "windows" {
-		buildName += ".exe"
+		buildName += winExt
 	}
 	_ = os.Remove(buildName)
 	defer func() { _ = watcher.Close() }()
@@ -69,8 +71,9 @@ func devCommand(cmd *cobra.Command, args []string) error {
 	go serve()
 	<-closeCh
 	if globalCancel != nil {
-		logger.Print("Cancel...")
+		logger.Print("Canceling")
 		globalCancel()
+		logger.Print("Canceled")
 	}
 	return nil
 }
@@ -105,6 +108,7 @@ func build() error {
 	cmd.Stderr = os.Stdout
 	cmd.Env = os.Environ()
 	cmd.Dir = util.AppPath()
+
 	if err := cmd.Run(); err != nil {
 		return err
 	}
@@ -144,7 +148,6 @@ func registerFileToWatcher() error {
 }
 
 func isIgnoreAction(event *fsnotify.Event) bool {
-	// 忽略jb的临时文件, 以及修改文件权限的动作
 	return strings.HasSuffix(event.Name, "__") || event.Op.String() == "CHMOD"
 }
 

@@ -1,10 +1,11 @@
-package cmd
+package crud
 
 import (
 	"bytes"
 	"encoding/json"
 	"errors"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/cmd/util"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -49,7 +50,7 @@ var matchSuffix = struct {
 	},
 }
 
-var crudCmd = &cobra.Command{
+var Cmd = &cobra.Command{
 	Use:   "crud",
 	Short: "生成模块的crud功能",
 	Long: `
@@ -120,23 +121,22 @@ var crudCmd = &cobra.Command{
 		if !bytes.Contains(byts, []byte(controllerNamespace)) {
 			byts = bytes.Replace(byts, []byte(pineNamespace), []byte(pineNamespace+"\r\n\t"+controllerNamespace), 1)
 		}
-		byts = bytes.Replace(byts, []byte(holder), []byte(holder+"\r\n\t"+`backendRouter.Handle(new(backend.`+controllerName+`), "/`+snakeString(table)+`")`), 1)
+		byts = bytes.Replace(byts, []byte(holder), []byte(holder+"\r\n\t"+`backendRouter.Handle(new(backend.`+controllerName+`), "/`+util.SnakeString(table)+`")`), 1)
 		ioutil.WriteFile(routerFile, byts, os.ModePerm)
 		logger.Print("创建模块文件成功, 已注册路由信息至: " + color.Green.Sprint(routerFile))
 	},
 }
 
 func init() {
-	crudCmd.Flags().String("table", "", "数据库表名")
-	crudCmd.Flags().Bool("force", false, "是否强制覆盖（可能导致已有代码丢失）")
-	crudCmd.Flags().Bool("info", false, "是否只打印生成文件以及操作步骤")
-	crudCmd.Flags().String("fepath", "admin", "前端开发根目录")
-	rootCmd.AddCommand(crudCmd)
+	Cmd.Flags().String("table", "", "数据库表名")
+	Cmd.Flags().Bool("force", false, "是否强制覆盖（可能导致已有代码丢失）")
+	Cmd.Flags().Bool("info", false, "是否只打印生成文件以及操作步骤")
+	Cmd.Flags().String("fepath", "admin", "前端开发根目录")
 }
 
 func getControllerName(tableName string) (controller string, filename string) {
-	controller = camelString(tableName) + "Controller"
-	filename = controllerDir + snakeString(tableName) + "_controller" + goExt
+	controller = util.CamelString(tableName) + "Controller"
+	filename = controllerDir + util.SnakeString(tableName) + "_controller" + goExt
 	return
 }
 
@@ -154,7 +154,7 @@ func genControllerFile(print bool, controllerName, tableName, controllerPath str
 		strings.ReplaceAll(
 			strings.ReplaceAll(controllerTpl, "[ctrl]", controllerName),
 			"[table]",
-			camelString(tableName),
+			util.SnakeString(tableName),
 		),
 		"[searchFieldDsl]",
 		searchFieldDsl,
@@ -282,7 +282,7 @@ func genFrontendFile(table, frontendPath string, tableDsl, formDsl, filterDsl []
 			data, _ = json.MarshalIndent(tableDsl, "\t\t\t", "\t")
 			content = string(bytes.ReplaceAll([]byte(content), []byte("[tableDSL]"), data))
 		}
-		if err := os.WriteFile(filename, bytes.ReplaceAll([]byte(content), []byte("[table]"), []byte(snakeString(table))), os.ModePerm); err == nil {
+		if err := os.WriteFile(filename, bytes.ReplaceAll([]byte(content), []byte("[table]"), []byte(util.SnakeString(table))), os.ModePerm); err == nil {
 			logger.Print("创建文件： " + color.Green.Sprint(filename))
 		} else {
 			logger.Print("创建文件", color.Red.Sprint(filename)+"失败")

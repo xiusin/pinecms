@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"fmt"
+	"github.com/xiusin/pinecms/cmd/util"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -21,7 +22,7 @@ var buildPluginCmd = &cobra.Command{
 		}
 		buildPluginDir := filepath.Join(outputPluginDir, name)
 		_ = os.MkdirAll(buildPluginDir, os.ModePerm)
-		//查找插件文件
+
 		scriptName := filepath.Join(sourcePluginDir, name, name+".go")
 		if _, err := os.Stat(scriptName); err != nil {
 			panic(err)
@@ -36,11 +37,14 @@ var buildPluginCmd = &cobra.Command{
 				panic(err)
 			}
 		}
+
 		outPluginName := filepath.Join(buildPluginDir, name+".so")
 		buildCmd := exec.Command("go", "build", "-buildmode=plugin", "-o", outPluginName, scriptName)
 		buildCmd.Stdout = os.Stdout
-		buildCmd.Stderr = os.Stderr
+		buildCmd.Stderr = os.Stdout
 		buildCmd.Env = os.Environ()
+		buildCmd.Dir = util.AppPath()
+
 		if err := buildCmd.Run(); err != nil {
 			panic(err)
 		}

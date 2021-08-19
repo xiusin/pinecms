@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-xorm/xorm"
-	"github.com/spf13/cobra"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	plugin2 "github.com/xiusin/pinecms/cmd/plugin"
@@ -39,10 +38,8 @@ const jsonName = "config.json"
 
 type PluginIntf interface {
 	Init(
-		bool,
 		*pine.Application,
 		*pine.Router,
-		*cobra.Command,
 	) // 初始化插件
 	Prefix(string)         // 路由前缀, 注册后修改需要重启程序
 	Sign() string          // 插件的唯一标识, 需要开发者搞一个独一无二如 uuid
@@ -61,7 +58,7 @@ type Plug struct {
 var pluginMgr = &pluginManager{
 	plugins:        map[string]*Plug{},
 	installPlugins: map[string]struct{}{},
-	scannedPlugins: map[string]*plugin2.PluginConfig{},
+	scannedPlugins: map[string]*plugin2.Config{},
 	remoteDomain:   "https://plugin.xiusin.cn",
 	fileGlob:       "*/**" + ext,
 }
@@ -72,8 +69,8 @@ var pluginMgr = &pluginManager{
 type pluginManager struct {
 	sync.Mutex
 	plugins        map[string]*Plug
-	installPlugins map[string]struct{}              // 已经通过安装配置的插件
-	scannedPlugins map[string]*plugin2.PluginConfig // 已经扫描到的插件(已安装 + 未安装)
+	installPlugins map[string]struct{}        // 已经通过安装配置的插件
+	scannedPlugins map[string]*plugin2.Config // 已经扫描到的插件(已安装 + 未安装)
 	path           string
 	fileGlob       string
 	remoteDomain   string
@@ -93,17 +90,17 @@ func (p *pluginManager) Iter(fn IterFn) error {
 	return nil
 }
 
-func (p *pluginManager) GetLocalPlugin() map[string]plugin2.PluginConfig {
+func (p *pluginManager) GetLocalPlugin() map[string]plugin2.Config {
 	p.Lock()
 	defer p.Unlock()
-	var scannedPlugins = map[string]plugin2.PluginConfig{}
+	var scannedPlugins = map[string]plugin2.Config{}
 	for s, s2 := range p.scannedPlugins { // 复制一份
 		scannedPlugins[s] = *s2
 	}
 	return scannedPlugins
 }
 
-func (p *pluginManager) GetPluginInfo(name string) (*plugin2.PluginConfig, error) {
+func (p *pluginManager) GetPluginInfo(name string) (*plugin2.Config, error) {
 	conf, exist := p.scannedPlugins[name]
 	if !exist {
 		return conf, errors.New("插件不存在")
@@ -161,12 +158,9 @@ func (p *pluginManager) Install(filename string) (PluginIntf, error) {
 		delete(pluginMgr.scannedPlugins, filename)
 		return nil, errors.New(filename + "没有实现PluginIntf接口")
 	}
-	serveMode, _ := di.Get("pinecms.serve.mode")
 	pluginEntity.Init(
-		serveMode.(bool),
 		di.MustGet("pine.application").(*pine.Application),
 		di.MustGet("pine.backend_router_group").(*pine.Router),
-		di.MustGet("pinecms.cmd.root").(*cobra.Command),
 	)
 	pluginMgr.plugins[filename] = &Plug{plug: plug, pi: pluginEntity}
 	pluginMgr.installPlugins[filename] = struct{}{} // 记录安装
@@ -228,6 +222,7 @@ func (p *pluginManager) Uninstall(name string) {
 
 func Init() {
 	if runtime.GOOS == "windows" {
+		pine.Logger().Warning("windows 系统不支持插件功能")
 		return
 	}
 	pluginPath := config.AppConfig().PluginPath
@@ -238,15 +233,14 @@ func Init() {
 		pine.Logger().Print("没有配置PluginPath, 禁用plugin功能")
 		return
 	}
-	scanPluginDir()        // 扫描目录
-	pluginMgr.loadPlugin() // 加载插件
-	//go tickScanDir()       // 定时扫描
+	scanPluginDir()
+	pluginMgr.loadPlugin()
 }
 
 func scanPluginDir() {
 	if plugins, _ := filepath.Glob(filepath.Join(pluginMgr.path, pluginMgr.fileGlob)); len(plugins) > 0 {
 		for _, f := range plugins {
-			conf := &plugin2.PluginConfig{}
+			conf := &plugin2.Config{}
 			confJsonPath := filepath.Join(filepath.Dir(f), jsonName)
 			confContent, err := ioutil.ReadFile(confJsonPath)
 			if err == nil {

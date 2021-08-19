@@ -30,4 +30,4 @@ plugin_path: "plugins"
 statics:
   - {route: "/assets", path: "./dist/assets"}
   - {route: "/themes", path: "./dist/themes"}
-  - {route: "/uploads", path: "./resources/uploads"}
+  - {route: "/uploads", path: "./resources/assets/uploads"}

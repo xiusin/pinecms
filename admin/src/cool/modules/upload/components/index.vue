@@ -393,7 +393,7 @@ export default {
 		_onSuccess(res, file) {
 			this.loading = false;
 			this.append({
-				url: res.data,
+				url: res.data.url,
 				name: file.raw.name,
 				uid: file.raw.uid
 			});
@@ -409,29 +409,23 @@ export default {
 			const upload = (file) => {
 				return new Promise((resolve, reject) => {
 					const next = (res) => {
-						let form = new FormData();
-						for (const i in res) {
-							if (i != "host") {
-								form.append(i, res[i]);
-							}
-						}
+						let data = new FormData();
 						let fileName = file.name;
 						// 是否以 uuid 重新命名
 						if (this._rename) {
 							fileName = uuidv4() + "." + last((file.name || "").split("."));
 						}
-						form.append("key", `app/${fileName}`);
-						form.append("file", file);
-						console.log(form.keys());
+						data.append("key", `${fileName}`);
+						data.append("file", file);
 						// 上传
 						this.service.common
 							.request({
-								url: res.host,
+								url: "/upload",
 								method: "POST",
 								headers: {
 									"Content-Type": "multipart/form-data"
 								},
-								data: form,
+								data,
 								onUploadProgress: (e) => {
 									if (this.onProgress) {
 										e.percent = parseInt((e.loaded / e.total) * 100);
@@ -441,23 +435,13 @@ export default {
 							})
 							.then((url) => {
 								resolve(url);
-								// if (mode === "local") {
-								//
-								// } else {
-								// 	resolve(`${res.host}/app/${fileName}`);
-								// }
 							})
 							.catch((err) => {
 								reject(err);
 							});
 					};
 
-					this.service.common
-						.upload()
-						.then((res) => {
-							next(res);
-						})
-						.catch(reject);
+					next({});
 				});
 			};
 			this.loading = true;
@@ -466,7 +450,6 @@ export default {
 					this._onSuccess({ data: url }, { raw: req.file });
 				})
 				.catch((err) => {
-					console.error("upload error", err);
 					this.$message.error(err);
 					// 	文件上传失败时的钩子
 					if (this.onError) {

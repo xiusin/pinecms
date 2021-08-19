@@ -1,6 +1,9 @@
 package models
 
 import (
+	"encoding/json"
+	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"log"
 
 	"github.com/xiusin/pine/di"
@@ -25,13 +28,18 @@ func (a *AdminRoleModel) List(page, rows int) ([]tables.AdminRole, int64) {
 }
 
 func (a *AdminRoleModel) All() map[int64]*tables.AdminRole {
-	var roles []*tables.AdminRole
-	a.orm.Find(&roles)
-	var data = map[int64]*tables.AdminRole{}
-	for _, role := range roles {
-		data[role.Id] = role
-	}
-	return data
+	c := di.MustGet(controllers.ServiceICache).(cache.AbstractCache)
+	var roles = map[int64]*tables.AdminRole{}
+	c.Remember(controllers.CacheAdminRoles, &roles, func() ([]byte, error) {
+		var roles []*tables.AdminRole
+		a.orm.Find(&roles)
+		var data = map[int64]*tables.AdminRole{}
+		for _, role := range roles {
+			data[role.Id] = role
+		}
+		return json.Marshal(data)
+	})
+	return roles
 }
 
 func (a *AdminRoleModel) CheckRoleName(id int64, rolename string) bool {

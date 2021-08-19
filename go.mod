@@ -35,7 +35,6 @@ require (
 	github.com/magefile/mage v1.11.0 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
-	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/rivo/tview v0.0.0-20210624165335-29d673af0ce2
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/russross/blackfriday v1.6.0
@@ -45,7 +44,6 @@ require (
 	github.com/shirou/gopsutil v3.21.6+incompatible
 	github.com/sonyarouje/simdb v0.1.0
 	github.com/spf13/cobra v1.2.1
-	github.com/takama/daemon v1.0.0 // indirect
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/apigateway v1.0.221
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.221
 	github.com/tklauser/go-sysconf v0.3.7 // indirect

@@ -1,21 +1,17 @@
 package helper
 
-//避免循环调用错误,公用非依赖变量以函数方式返回
 import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"image"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -29,93 +25,44 @@ import (
 	"golang.org/x/image/bmp"
 
 	"github.com/kataras/go-mailer"
-
-	"github.com/nfnt/resize"
-	"golang.org/x/image/draw"
 )
 
-type Node struct {
-	Id       string `json:"id"`
-	Name     string `json:"name"`
-	Children []Node `json:"children"`
-}
 
-//GetRootPath 获取IRIS项目根目录 (即 main.go的所在位置)
-func GetRootPath() string {
-	pwd, _ := os.Getwd()
-	return pwd
-}
+const TimeFormat = "2006-01-02 15:04:05"
 
 var location *time.Location
 
 func init() {
-	loc, err := time.LoadLocation("PRC")
-	if err != nil {
-		pine.Logger().Error(err)
-		loc, err = time.LoadLocation("UTC")
-	}
-	location = loc
+	location = time.FixedZone("CST", 8*3600)
+	rand.Seed(time.Now().UnixNano())
 }
-
-const TimeFormat = "2006-01-02 15:04:05"
 
 func GetLocation() *time.Location {
 	return location
 }
 
-func ScanDir(dir string) []Node {
-	cacher := pine.Make("cache.AbstractCache").(cache.AbstractCache)
-	var nodes []Node
-	err := cacher.GetWithUnmarshal(controllers.CacheFeTplList, &nodes)
-	if err != nil || len(nodes) == 0 {
-		fs, err := ioutil.ReadDir(dir)
-		if err != nil {
-			panic(fmt.Sprintf("打开%s:%s", dir, err.Error()))
-		}
-		for _, f := range fs {
-			if filepath.Ext(f.Name()) != ".jet" {
-				continue
-			}
-			name := f.Name()
-			id := FilePathToEasyUiID(name)
-			node := Node{
-				Id:       id,
-				Name:     name,
-				Children: nil,
-			}
-			nodes = append(nodes, node)
-		}
-		_ = cacher.SetWithMarshal(controllers.CacheFeTplList, &nodes)
+//GetRootPath 获取项目根目录 (即 main.go的所在位置)
+func GetRootPath(relPath ...string) string {
+	pwd, _ := os.Getwd()
+	if len(relPath) > 0 {
+		pwd = filepath.Join(pwd, relPath[0])
 	}
-
-	return nodes
+	return pwd
 }
 
-func FilePathToEasyUiID(path string) string {
-	return strings.Replace(strings.Replace(path, "/", "d__ds__fd", -1), ".", "f_dot_e", 1)
-}
-
-func EasyUiIDToFilePath(id string) string {
-	return strings.Replace(strings.Replace(id, "d__ds__fd", "/", -1), "f_dot_e", ".", 1)
-}
-
-// 获取当前执行函数名 只用于日志记录
+// GetCallerFuncName 获取当前执行函数名 只用于日志记录
 func GetCallerFuncName() string {
 	pc := make([]uintptr, 1)
 	runtime.Callers(2, pc)
-	f := runtime.FuncForPC(pc[0])
-	return f.Name() + ":"
+	return runtime.FuncForPC(pc[0]).Name() + ":"
 }
 
 //Krand 随机字符串
 func Krand(size int, kind int) []byte {
 	ikind, kinds, result := kind, [][]int{{10, 48}, {26, 97}, {26, 65}}, make([]byte, size)
 	isAll := kind > 2 || kind < 0
-	//随机种子 (如果不以时间戳作为时间种子, 可能每次生成的随机数每次都相同)
-	rand.Seed(time.Now().UnixNano())
 	for i := 0; i < size; i++ {
 		if isAll {
-			// random ikind
 			ikind = rand.Intn(3)
 		}
 		scope, base := kinds[ikind][0], kinds[ikind][1]
@@ -165,171 +112,7 @@ func GetTimeStamp() int {
 
 //NowDate 当前时间 Y m d H:i:s
 func NowDate(str string) string {
-	return time.Now().In(location).Format(format(str))
-}
-
-func format(str string) string {
-	str = strings.Replace(str, "Y", "2006", 1)
-	str = strings.Replace(str, "m", "01", 1)
-	str = strings.Replace(str, "d", "02", 1)
-	str = strings.Replace(str, "H", "13", 1)
-	str = strings.Replace(str, "i", "04", 1)
-	str = strings.Replace(str, "s", "05", 1)
-	return str
-}
-
-//FormatTime 时间戳格式化时间
-func FormatTime(timestamp int64) string {
-	if timestamp == 0 {
-		return ""
-	}
-	t := time.Unix(timestamp, 0).In(location)
-	str := TimeFormat
-	return t.Format(str)
-}
-
-//GetImg 根据图片路径生成图片,待优化函数
-func GetImg(path, waterPath string) {
-	f, err := os.Open(path) //打开文件
-	if err != nil {
-		fmt.Println("打开文件失败:", err.Error())
-		return
-	}
-	defer f.Close()
-	filename := strings.Split(f.Name(), ".")
-	if len(filename) != 2 || (filename[1] != "jpg" && filename[1] != "jpeg" && filename[1] != "gif" && filename[1] != "png") {
-		return
-	}
-	var imager image.Image
-	if filename[1] == "jpg" {
-		imager, err = jpeg.Decode(f)
-	} else if filename[1] == "jpeg" {
-		imager, err = jpeg.Decode(f)
-	} else if filename[1] == "gif" {
-		imager, err = gif.Decode(f)
-	} else if filename[1] == "png" {
-		imager, err = png.Decode(f)
-	}
-	if err != nil {
-		fmt.Println("打开文件失败:", err.Error())
-		return
-	}
-
-	//获取图片缩略图
-	thumbnail := resize.Thumbnail(120, 120, imager, resize.Lanczos3)
-	fileThumb, err := os.Create(filename[0] + strconv.Itoa(int(time.Now().Unix())) + "_thmub.jpg")
-	if err == nil {
-		jpeg.Encode(fileThumb, thumbnail, &jpeg.Options{
-			Quality: 80})
-		fileThumb.Close()
-	}
-	rectangler := imager.Bounds()
-	//创建画布
-	newWidth := 200
-	m := image.NewRGBA(image.Rect(0, 0, newWidth, newWidth*rectangler.Dy()/rectangler.Dx()))
-	//在画布上绘制图片 m画布 m.bounds画布参数, imager 要参照打开的图片信息 image.Point 图片绘制的其实地址 绘制资源
-	draw.Draw(m, m.Bounds(), imager, image.Point{100, 100}, draw.Src)
-	//绘制水印图
-	//必须是PNG图片
-	warter, wterr := os.Open(waterPath)
-	if wterr == nil {
-		//无错误的时候解码
-		watermark, dewaerr := png.Decode(warter)
-		if dewaerr == nil {
-			//无错误的时候添加水印
-			draw.Draw(m, watermark.Bounds().Add(image.Pt(30, 30)), watermark, image.ZP, draw.Over)
-		} else {
-			fmt.Println("水印图片解码失败")
-		}
-	} else {
-		fmt.Println("水印图片打开失败")
-	}
-	toimg, _ := os.Create(filename[0] + strconv.Itoa(GetTimeStamp()) + "-120-80.jpg") //创建文件系统
-	defer toimg.Close()
-	//toimg 保存的名称 要参照的画布，图片选项。默认透明图
-	jpeg.Encode(toimg, m, &jpeg.Options{Quality: jpeg.DefaultQuality}) //保存为jpeg图片
-}
-
-//MultiUpload 多图上传生成html内容
-func MultiUpload(field string, data []string, maxImgNum int, required bool, formName, defaultVal, RequiredTips string) string {
-	box := ""
-	rid := "MultiUploader_" + strconv.Itoa(rand.Int())
-	if RequiredTips == "" {
-		RequiredTips = formName + "最少上传一张图片"
-	}
-	var requiredFunc = ""
-	if required {
-		requiredFunc = `<script>MultiUploader.push(function(){ 
-var flag = false; $("[name='` + field + `']").each(function () { if($(this).val()) { flag = true; } });
-if (!flag) { $('#` + rid + `_tip').html("` + RequiredTips + `"); return false; } $('#` + rid + `_tip').html(''); return true; });</script>`
-	}
-	if len(data) > 0 {
-		for _, v := range data {
-			box += `<div class="imgbox">
-					<input class="imgbox_inputBtn" type="image" onclick="return fromUEImageUploader(this)" style='height: 95px; width:95px;' src="` + v + `" alt="点击上传" onerror='this.src="/assets/backend/static/images/nopic.jpg"' />
-					<input type="hidden" value="` + v + `" name="` + field + `" />
-					<span style='color:#fff;display:inline-block;width:15px;height:15px;font-size:15px;line-height:15px;text-align:center;background:rgba(0,0,0,0.5);font-weight:normal;cursor:pointer;    position: absolute;left: 72px;top: 10px;'   onclick=''>×</span>
-				</div>`
-		}
-	}
-
-	str := box + `
-		<div class="imgbox" onclick="return createHtml(this,'` + field + `', ` + strconv.Itoa(maxImgNum) + `)" style="width: 95px; height: 95px">
-			<img style="height: 93px;display: block;border: 1px dashed #888;padding: 30px;" src="/assets/backend/static/images/plus.png" />
-		</div>`
-	return str + `<div id='` + rid + `_tip' class='errtips'></div>` + requiredFunc
-}
-
-//SiginUpload 单图上传
-func SiginUpload(field, data string, required bool, formName, defaultVal, RequiredTips string) string {
-	rid := "siginUploader_" + strconv.Itoa(rand.Int())
-	if RequiredTips == "" {
-		RequiredTips = formName + "必须上传"
-	}
-	var requiredFunc = ""
-	if required {
-		requiredFunc = `<script>siginUploader.push(function(){ if ($('#` + rid + `').val() == '') {$('#` + rid + `_tip').html("` + RequiredTips + `"); return false; } $('#` + rid + `_tip').html(''); return true; });</script>`
-	}
-	html := `<input onclick="fromUEImageUploader(this)" class="image_upload_src" type="image" src="` + data + `" onerror='this.src="/assets/backend/static/images/nopic.jpg"' alt="点击上传" style="width:100px;height:100px;display:block;border:1px solid #ddd;padding:2px;float:left;" />
-			 <input id='` + rid + `' type="hidden" class="image_upload_val" value="` + data + `" name="` + field + `" />
-			 <span title="清空图片内容" class='delImg'  onclick="DelImg(this)">×</span>
-<div id='` + rid + `_tip' class='errtips'></div>` + requiredFunc
-	return html
-}
-
-func FileUpload(field, data string, required bool, formName, defaultVal, RequiredTips string) string {
-	rid := "fileUploader_" + strconv.Itoa(rand.Int())
-	if RequiredTips == "" {
-		RequiredTips = formName + "必须上传"
-	}
-	jsJSON := "{}"
-	if len(data) > 0 {
-		jsJSON = data
-	}
-	var requiredFunc = `<script>buildFileLists(document.getElementById('` + rid + `_button'), ` + jsJSON + `);</script>`
-
-	if required {
-		requiredFunc = `<script> fileUploader.push(function(){ if ($('#` + rid + `').val() == '') {$('#` + rid + `_tip').html("` + RequiredTips + `"); return false; } $('#` + rid + `_tip').html(''); return true; });
-</script>`
-	}
-	html := `<input name="` + field + `" id="` + rid + `" type="hidden" value='` + data +
-		`'/><button class="btn btn-default" type="button" id="` + rid + `_button" onclick="fromUEFileUploader(this, 0)" title="会自动过滤重复文件">上传或选择文件</button><div class='easy-uploader'><ul class="list"></ul></div><div id='` + rid + `_tip' class='errtips'></div>
-` + requiredFunc
-	return html
-}
-
-//Tags 标签
-func Tags(field, data string, required bool, formName, defaultVal, RequiredTips string) string {
-	rid := "tags_" + strconv.Itoa(rand.Int())
-	if RequiredTips == "" {
-		RequiredTips = formName + "必须上传"
-	}
-	var requiredFunc = `<script>$('#` + rid + `').tagsInput({ 'height': '100px',  'width': '446px','interactive': true, 'defaultText': '添加标签', onChange: function (tag) {console.log(arguments);},'placeholderColor': '#666666'});`
-	if required {
-		requiredFunc += `tagger.push(function(){ if ($('#` + rid + `').val() == '') {$('#` + rid + `_tip').html("` + RequiredTips + `"); return false; } $('#` + rid + `_tip').html(''); return true; });`
-	}
-	html := `<input type="text" id="` + rid + `" name="` + field + `" value="` + data + `" /><div id='` + rid + `_tip' class='errtips'></div>` + requiredFunc + "</script>"
-	return html
+	return time.Now().In(location).Format(str)
 }
 
 //Password 生成密码
@@ -360,15 +143,6 @@ func IsFalse(args ...interface{}) bool {
 	return true
 }
 
-//IsError 检测是否有Error
-func IsError(args ...error) bool {
-	for _, v := range args {
-		if v != nil {
-			return true
-		}
-	}
-	return false
-}
 
 type EmailOpt struct {
 	Title        string
@@ -376,9 +150,6 @@ type EmailOpt struct {
 	Address      []string
 }
 
-/**
-1. 配置多个邮箱发送
-*/
 func SendEmail(opt *EmailOpt, conf map[string]string) error {
 	port, err := strconv.Atoi(conf["EMAIL_PORT"])
 	if err != nil {
@@ -427,11 +198,6 @@ func SendEmail(opt *EmailOpt, conf map[string]string) error {
 </html>
 `
 	return mailService.Send(opt.Title, content, opt.Address...)
-}
-
-func todayFilename(path string) string {
-	today := time.Now().Format("2006-01-02")
-	return path + "/" + today + ".log"
 }
 
 func NewOrmLogFile(path string) *os.File {

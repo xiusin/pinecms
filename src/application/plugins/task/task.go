@@ -1,12 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"github.com/go-xorm/xorm"
-	"github.com/spf13/cobra"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
-	"github.com/xiusin/pinecms/src/application/plugins/task/cmd"
 	"github.com/xiusin/pinecms/src/application/plugins/task/controller"
 	"github.com/xiusin/pinecms/src/application/plugins/task/manager"
 	"github.com/xiusin/pinecms/src/application/plugins/task/table"
@@ -15,7 +12,6 @@ import (
 
 type Task struct {
 	sync.Once
-	isCliMode bool
 	orm       *xorm.Engine
 	app       *pine.Application
 	prefix    string
@@ -150,12 +146,9 @@ func (p *Task) Install() {
 		if err := p.orm.Sync2(&table.TaskInfo{}, &table.TaskLog{}); err != nil {
 			pine.Logger().Error("安装task插件数据库失败", err)
 		}
-		if !p.isCliMode {
-			fmt.Println("启动定时任务")
-			// 查询菜单状况
-			_, _ = p.orm.Cols("entity_id", "error").Update(&table.TaskInfo{})
-			manager.TaskManager().Cron()
-		}
+		pine.Logger().Print("[plugin:task] 启动定时任务")
+		_, _ = p.orm.Cols("entity_id", "error").Update(&table.TaskInfo{})
+		manager.TaskManager().Cron()
 	}
 	p.isInstall = true
 }
@@ -168,14 +161,11 @@ func (p *Task) Upgrade() {
 }
 
 func (p *Task) Init(
-	isCliMode bool,
 	app *pine.Application,
 	backend *pine.Router,
-	rootCmd *cobra.Command,
 ) {
 	p.Do(func() {
-		p.isCliMode = isCliMode
-		rootCmd.AddCommand(cmd.TaskCmd)
+		//rootCmd.AddCommand(cmd.TaskCmd)
 		p.app = app
 		p.orm = di.MustGet(&xorm.Engine{}).(*xorm.Engine)
 		p.Install()

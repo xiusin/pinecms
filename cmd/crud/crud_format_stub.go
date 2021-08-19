@@ -1,4 +1,4 @@
-package cmd
+package crud
 
 // public/assets/js/require-table.js:403
 import (

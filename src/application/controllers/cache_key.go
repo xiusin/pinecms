@@ -17,6 +17,7 @@ const CacheCategoryContentPrefix = "pinecms.content.%d_%d"
 const CacheModelTablePrefix = "pinecms.model.table.%d"
 const CacheMysqlVersion = "pinecms.mysql.version"
 const CacheVerifyCode = "pinecms.verify.code"
+const CacheAdminRoles = "pinecms.admin.roles"
 
 // CacheKeyAll 缓存管理迭代
 var CacheKeyAll = []map[string]interface{}{

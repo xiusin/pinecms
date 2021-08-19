@@ -6,6 +6,7 @@ import (
 	"github.com/xiusin/pine/sessions"
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
+	"github.com/xiusin/pinecms/src/application/plugins"
 	logger2 "github.com/xiusin/pinecms/src/common/logger"
 	"io"
 	"io/ioutil"
@@ -15,9 +16,6 @@ import (
 	"time"
 
 	"github.com/gorilla/securecookie"
-	"github.com/xiusin/pinecms/src/application/models/tables"
-	"github.com/xiusin/pinecms/src/application/plugins"
-
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
@@ -27,6 +25,7 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/taglibs"
 	"github.com/xiusin/pinecms/src/application/controllers/tplfun"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 
 	"github.com/xiusin/pinecms/src/config"
 	"github.com/xiusin/pinecms/src/router"
@@ -71,8 +70,6 @@ func initApp() {
 
 func InitApp() {
 	initApp()
-	InitDB()
-	plugins.Init()
 }
 
 func InitDB() {
@@ -195,6 +192,7 @@ func runServe() {
 			ctx.Abort(http.StatusInternalServerError, ctx.Msg)
 		}
 	})
+	go plugins.Init()
 	//app.DumpRouteTable()
 	app.Run(
 		pine.Addr(fmt.Sprintf(":%d", conf.Port)),

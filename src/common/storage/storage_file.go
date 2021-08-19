@@ -9,15 +9,18 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type FileUploader struct {
+	host    string
 	fixDir  string
 	baseDir string
 }
 
-func NewFileUploader(fixDir, uploadDir string) *FileUploader {
+func NewFileUploader(host, fixDir, uploadDir string) *FileUploader {
 	return &FileUploader{
+		host:    host,
 		fixDir:  fixDir,
 		baseDir: uploadDir,
 	}
@@ -39,7 +42,7 @@ func (s *FileUploader) Upload(storageName string, LocalFile io.Reader) (string, 
 	if err != nil {
 		return "", err
 	}
-	return getAvailableUrl(filepath.Join(s.fixDir, storageName)), nil
+	return s.GetFullUrl(storageName), nil
 }
 
 func (s *FileUploader) List(dir string) ([]string, string, error) {
@@ -68,21 +71,22 @@ func (s *FileUploader) Exists(name string) (bool, error) {
 }
 
 func (s *FileUploader) GetFullUrl(name string) string {
-	return getAvailableUrl(filepath.Join(s.fixDir, name))
+	return strings.TrimRight(s.host, "/") + getAvailableUrl(filepath.Join(s.fixDir, name))
 }
 
 func (s *FileUploader) Remove(name string) error {
 	return os.Remove(filepath.Join(s.baseDir, name))
 }
 
-func init()  {
+func init() {
 	di.Set(fmt.Sprintf(controllers.ServiceUploaderEngine, (&FileUploader{}).GetEngineName()), func(builder di.AbstractBuilder) (interface{}, error) {
 		cfg, err := config.SiteConfig()
 		if err != nil {
 			return nil, err
 		}
-		uploadDir := cfg["UPLOAD_DIR"]
-		urlPrefixDir := cfg["UPLOAD_URL_PREFIX"]
-		return NewFileUploader(urlPrefixDir, uploadDir), nil
+		uploadDir, _ := cfg["UPLOAD_DIR"]
+		urlPrefixDir, _ := cfg["UPLOAD_URL_PREFIX"]
+		siteUrl, _ := cfg["SITE_URL"]
+		return NewFileUploader(siteUrl, urlPrefixDir, uploadDir), nil
 	}, false)
 }

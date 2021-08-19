@@ -83,7 +83,7 @@ func (p *[$s]) Init(app *pine.Application, backend *pine.Router) {
 // [$s]Plugin 导出插件可执行变量 不可删除
 var [$s]Plugin = [$s]{}`
 
-type PluginConfig struct {
+type Config struct {
 	Name        string `json:"name"`
 	Author      string `json:"author"`
 	Contact     string `json:"contact"`
@@ -102,7 +102,7 @@ var makePluginCmd = &cobra.Command{
 			_ = cmd.Usage()
 			return
 		}
-		var config = &PluginConfig{
+		var config = &Config{
 			Name: name + " plugin",
 			Page: "页面简介,可以是html和markdown",
 		}

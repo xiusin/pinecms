@@ -12,7 +12,6 @@ import (
 
 type UserController struct {
 	BaseController
-	model *models.AdminModel
 }
 
 func (c *UserController) Construct() {
@@ -29,7 +28,6 @@ func (c *UserController) Construct() {
 
 	c.OpBefore = c.before
 	c.OpAfter = c.after
-	c.model = models.NewAdminModel()
 }
 
 func (c *UserController) before(opType int, param interface{}) error {
