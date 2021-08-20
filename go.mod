@@ -3,7 +3,6 @@ module github.com/xiusin/pinecms
 go 1.16
 
 require (
-	github.com/360EntSecGroup-Skylar/excelize/v2 v2.4.0
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
 	github.com/StackExchange/wmi v1.2.0 // indirect
 	github.com/afocus/captcha v0.0.0-20191010092841-4bd1f21c8868
@@ -29,7 +28,6 @@ require (
 	github.com/gorilla/securecookie v1.1.1
 	github.com/kataras/go-mailer v0.1.0
 	github.com/klauspost/compress v1.13.3 // indirect
-	github.com/landoop/tableprinter v0.0.0-20201125135848-89e81fc956e7
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.7.0 // indirect
 	github.com/magefile/mage v1.11.0 // indirect
@@ -44,8 +42,9 @@ require (
 	github.com/shirou/gopsutil v3.21.6+incompatible
 	github.com/sonyarouje/simdb v0.1.0
 	github.com/spf13/cobra v1.2.1
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/apigateway v1.0.221
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.221
+	github.com/takama/daemon v1.0.0
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/apigateway v1.0.232
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.232
 	github.com/tklauser/go-sysconf v0.3.7 // indirect
 	github.com/traefik/yaegi v0.9.19
 	github.com/valyala/fasthttp v1.28.0
@@ -55,7 +54,6 @@ require (
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/exp v0.0.0-20210712160552-8235cf48b5f6 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
-	golang.org/x/net v0.0.0-20210614182718-04defd469f4e // indirect
 	golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e // indirect
 	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b // indirect
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6 // indirect

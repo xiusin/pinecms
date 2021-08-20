@@ -40,6 +40,8 @@ export default {
 		// 主题切换
 		"theme",
 		// todo演示模块
-		"todo"
+		"todo",
+		// wechat
+		"wechat",
 	]
 };

@@ -3,8 +3,10 @@ package config
 import (
 	"fmt"
 	"github.com/xiusin/pine/cache/providers/bitcask"
+	request_log "github.com/xiusin/pine/middlewares/request-log"
 	"github.com/xiusin/pine/sessions"
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
+	"github.com/xiusin/pinecms/src/application/controllers/backend/wechat"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/application/plugins"
 	logger2 "github.com/xiusin/pinecms/src/common/logger"
@@ -74,10 +76,11 @@ func InitApp() {
 
 func InitDB() {
 	XOrmEngine = config.InitDB(nil)
-	di.Set(XOrmEngine, func(builder di.AbstractBuilder) (i interface{}, err error) {
+
+	di.Set(controllers.ServiceXorm, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return XOrmEngine, nil
 	}, true)
-
+	fmt.Println("我我我我我擦擦擦擦")
 	if config.AppConfig().Debug {
 		go func() {
 			err := XOrmEngine.Sync2(
@@ -132,6 +135,8 @@ func registerV2BackendRoutes() {
 	}
 
 	app.Use(
+		middleware.Pprof(),
+		request_log.RequestRecorder(),
 		middleware.SetGlobalConfigData(),
 		apidoc.New(app, nil),
 		middleware.StatesViz(app),
@@ -175,6 +180,8 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.IndexController)).
 		Handle(new(backend.DatabaseController)).
 		Handle(new(backend.DatabaseBackupController))
+
+	wechat.InitRouter(g)
 
 	app.Group("/v2/public").Handle(new(backend.PublicController))
 	app.Group("/v2/api").Handle(new(backend.PublicController))

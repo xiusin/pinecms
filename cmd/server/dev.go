@@ -37,7 +37,6 @@ var (
 const winExt = ".exe"
 
 func init() {
-	ServeCmd.AddCommand(devCmd)
 	devCmd.Flags().StringSlice("ignoreDirs", []string{"vendor", ".git", ".idea", "node_modules", "admin", "apidoc-ui"}, "忽略变动监听的目录")
 	devCmd.Flags().StringSlice("types", []string{".go", ".yml"}, "需要监听的文件类型, .*为监听任意文件")
 	devCmd.Flags().String("root", util.AppPath(), "监听的根目录")
@@ -83,7 +82,7 @@ func serve() {
 	for {
 		ctx, cancel := context.WithCancel(context.Background())
 		globalCancel = cancel
-		process := exec.CommandContext(ctx, fmt.Sprintf("./%s", buildName), "serve", "start", "--banner=false")
+		process := exec.CommandContext(ctx, fmt.Sprintf("./%s", buildName), "serve", "run")
 		process.Stdout = os.Stdout
 		process.Stderr = os.Stdout
 		go func() {

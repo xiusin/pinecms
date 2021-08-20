@@ -3,7 +3,6 @@ package backend
 import (
 	"errors"
 	"fmt"
-	"github.com/360EntSecGroup-Skylar/excelize/v2"
 	"github.com/go-playground/locales/en"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
@@ -45,7 +44,7 @@ type searchFieldDsl struct {
 type exportHeader struct {
 	Field      string
 	HeaderName string
-	Method     excelize.Cell
+	//Method     excelize.Cell
 }
 
 type BaseController struct {
