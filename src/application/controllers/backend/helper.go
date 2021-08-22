@@ -62,3 +62,17 @@ func ArrayCol(arr interface{}, col string) []interface{} {
 	}
 	return cols
 }
+
+func ArrayColMap(arr interface{}, col string) map[interface{}]interface{} {
+	var maps = map[interface{}]interface{}{}
+	val := reflect.ValueOf(arr)
+	if val.Kind() != reflect.Slice {
+		panic(errors.New("ArrayCol第一个参数必须为切片类型"))
+	}
+	var cols []interface{}
+	for i := 0; i < val.Len(); i++ {
+		cols = append(cols, )
+		maps[val.Index(i).FieldByName(col).Interface()] = val.Index(i).Interface()
+	}
+	return maps
+}

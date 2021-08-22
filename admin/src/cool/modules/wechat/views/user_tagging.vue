@@ -4,19 +4,13 @@
 			<cl-refresh-btn />
 			<cl-add-btn />
 			<el-button size="mini" icon="el-icon-price-tag" type="success">标签管理</el-button>
-			<el-button size="mini" icon="el-icon-sort" type="warning" @click="syncFans"
-				>同步粉丝</el-button
-			>
+			<el-button size="mini" icon="el-icon-sort" type="warning">同步粉丝</el-button>
 			<cl-flex1 />
 			<cl-search-key />
 		</el-row>
 
 		<el-row>
-			<cl-table v-bind="table">
-				<template #column-headimgurl="{ scope }">
-					<el-image :src="scope.row.headimgurl" />
-				</template>
-			</cl-table>
+			<cl-table v-bind="table" />
 		</el-row>
 
 		<el-row type="flex">
@@ -24,7 +18,7 @@
 			<cl-pagination />
 		</el-row>
 
-		<cl-upsert v-bind="upsert">
+		<cl-upsert v-model="form" v-bind="upsert">
 			<template #slot-btns="{ scope }">
 				<el-button>查询</el-button>
 				<el-button type="primary" size="mini">绑定标签</el-button>
@@ -39,7 +33,6 @@
 import { defineComponent, inject, reactive } from "vue";
 import { useRefs } from "/@/core";
 import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
-import { ElMessage } from "element-plus";
 
 export default defineComponent({
 	name: "wechat-user",
@@ -65,22 +58,11 @@ export default defineComponent({
 				{
 					prop: "nickname",
 					label: "昵称",
-					span: 12,
+					span: 24,
 					component: {
 						name: "el-input",
 						props: {
 							placeholder: "昵称"
-						}
-					}
-				},
-				{
-					prop: "phone",
-					label: "手机号",
-					span: 12,
-					component: {
-						name: "el-input",
-						props: {
-							placeholder: "请输入手机号"
 						}
 					}
 				},
@@ -131,27 +113,22 @@ export default defineComponent({
 				{
 					type: "index",
 					label: "#",
-					width: 40
+					width: 60
 				},
 				{
 					prop: "openid",
 					label: "OpenId",
-					width: 230
+					width: 300
 				},
 				{
 					prop: "nickname",
-					label: "昵称",
-					align: "left"
-				},
-				{
-					prop: "phone",
-					label: "手机号",
-					width: 150
+					label: "昵称"
 				},
 				{
 					prop: "sex",
 					label: "性别",
-					width: 80,
+					width: 140,
+					align: "left",
 					dict: [
 						{
 							label: "未知",
@@ -171,19 +148,19 @@ export default defineComponent({
 					]
 				},
 				{
-					prop: "province",
-					label: "省份",
-					width: 100
-				},
-				{
 					prop: "city",
 					label: "城市",
-					width: 100
+					width: 140
+				},
+				{
+					prop: "province",
+					label: "省份",
+					width: 140
 				},
 				{
 					prop: "headimgurl",
 					label: "头像",
-					width: 80
+					width: 140
 				},
 				{
 					prop: "subscribe_time",
@@ -193,7 +170,7 @@ export default defineComponent({
 				{
 					prop: "subscribe",
 					label: "是否关注",
-					width: 90,
+					width: 140,
 					dict: [
 						{
 							label: "否",
@@ -208,14 +185,8 @@ export default defineComponent({
 					]
 				},
 				{
-					prop: "subscribe_scene",
-					label: "订阅场景",
-					width: 200
-				},
-				{
 					type: "op",
-					width: 140,
-					buttons: ["edit", "delete"]
+					buttons: ["delete"]
 				}
 			]
 		});
@@ -225,18 +196,7 @@ export default defineComponent({
 			app.refresh();
 		}
 
-		function syncFans() {
-			service.wechat.user
-				.sync({ appid: "wxe43df03110f5981b" })
-				.then(() => {
-					refs.value.crud.refresh();
-				})
-				.catch((e: any) => {
-					ElMessage.error(e);
-				});
-		}
 		return {
-			syncFans,
 			service,
 			refs,
 			table,

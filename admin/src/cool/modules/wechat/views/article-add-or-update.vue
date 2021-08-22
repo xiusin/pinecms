@@ -55,7 +55,7 @@ import { mapState } from 'vuex'
 export default {
     name:'article-add-or-update',
     components: {
-        TinymceEditor: () => import("../components/tinymce-editor.vue"),
+        // TinymceEditor: () => import("../components/tinymce-editor.vue"),
         tagsEditor: () => import("../components/tags-editor.vue"),
         // OssUploader: () => import('../oss/oss-uploader.vue')
     },

@@ -1,7 +1,7 @@
 <template>
     <div>
         <div id="app-menu">
-            <!-- 预览窗 -->
+            <!-- 预览窗aa -->
             <div class="weixin-preview">
                 <div class="weixin-bd">
                     <div class="weixin-header">公众号菜单</div>

@@ -1,11 +1,18 @@
 package tables
 
 type WechatMsgReplyRule struct {
-	Id         int64     `json:"id"`
-	AppId      string    `json:"appid" xorm:"char(20)"`
-	RuleName   string    `json:"rule_name"`
-	MatchValue string    `json:"match_value"`
-	ExactMatch bool      `json:"exact_match" xorm:"comment('是否精确匹配')"`
-	// todo 未结束
-	CreatedAt  LocalTime `json:"created_at" xorm:"created"`
+	Id              int64     `json:"id"`
+	AppId           string    `json:"appid" xorm:"char(20)"`
+	RuleName        string    `json:"ruleName"`
+	MatchValue      string    `json:"matchValue"`
+	ExactMatch      bool      `json:"exactMatch" xorm:"comment('是否精确匹配')"`
+	ReplyType       string    `json:"replyType"`
+	ReplyContent    string    `json:"replyContent"`
+	Status          bool      `json:"status"`
+	Desc            string    `json:"desc"`
+	EffectTimeStart string    `json:"effectTimeStart" xorm:"time"`
+	EffectTimeEnd   string    `json:"effectTimeEnd" xorm:"time"`
+	Priority        uint      `json:"priority"`
+	CreatedAt       LocalTime `json:"created_at" xorm:"created"`
+	UpdatedAt       LocalTime `json:"updated_at" xorm:"updated"`
 }

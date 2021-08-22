@@ -1,7 +1,8 @@
 package tables
 
+// WechatMember 微信粉丝
 type WechatMember struct {
-	Id             int64   `xorm:"pk autointr"`
+	Id             int64   `xorm:"pk autoincr"`
 	Appid          string  `json:"appid"`
 	Openid         string  `json:"openid"`
 	Phone          string  `json:"phone"`

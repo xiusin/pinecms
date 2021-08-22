@@ -11,6 +11,7 @@ require (
 	github.com/aliyun/aliyun-oss-go-sdk v2.1.9+incompatible
 	github.com/arl/statsviz v0.4.0
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
+	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc // indirect
 	github.com/fasthttp/websocket v1.4.3
 	github.com/fatih/structs v1.1.0
@@ -40,7 +41,10 @@ require (
 	github.com/savsgio/gotils v0.0.0-20210617111740-97865ed5a873 // indirect
 	github.com/schollz/progressbar v1.0.0
 	github.com/shirou/gopsutil v3.21.6+incompatible
+	github.com/silenceper/wechat v2.0.1+incompatible
+	github.com/silenceper/wechat/v2 v2.0.6 // indirect
 	github.com/sonyarouje/simdb v0.1.0
+	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/cobra v1.2.1
 	github.com/takama/daemon v1.0.0
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/apigateway v1.0.232
@@ -51,17 +55,19 @@ require (
 	github.com/xiusin/logger v0.0.5
 	github.com/xiusin/pine v0.0.0-20210812021327-eca886f9f150
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
-	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
+	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
 	golang.org/x/exp v0.0.0-20210712160552-8235cf48b5f6 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
 	golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e // indirect
 	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b // indirect
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6 // indirect
+	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+	gopkg.in/go-playground/validator.v8 v8.18.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 	xorm.io/builder v0.3.9
 	xorm.io/core v0.7.3
 )
 
-//replace github.com/xiusin/pine => ../pine
+replace github.com/xiusin/pine => ../pine
 
 //replace github.com/xiusin/logger => ../logger

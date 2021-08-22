@@ -73,7 +73,7 @@ const articleTemplate={
 }
 export default {
     components: {
-        TinymceEditor: () => import('../../components/tinymce-editor.vue'),
+        // TinymceEditor: () => import('../../components/tinymce-editor.vue'),
         AssetsSelector:()=>import('./assets-selector.vue')
     },
     props:{

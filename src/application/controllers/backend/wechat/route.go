@@ -1,24 +1,14 @@
 package wechat
 
 import (
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/di"
-	"github.com/xiusin/pinecms/src/application/models/tables"
 )
 
-func InitRouter(router *pine.Router) {
-
-	go func() {
-		err := di.MustGet(&xorm.Engine{}).(*xorm.Engine).Sync2(
-			&tables.WechatAccount{},
-			&tables.WechatMember{},
-		)
-		if err != nil {
-			pine.Logger().Error("同步表结构失败", err)
-		}
-	}()
-
+func InitRouter(app *pine.Application, router *pine.Router) {
+	app.ANY("/api/wechat/msg/:appid", msgHandler)
 	router.Handle(new(WechatAccountController), "/wechat/account")
 	router.Handle(new(WechatUserController), "/wechat/user")
+	router.Handle(new(WechatMagController), "/wechat/msg")
+	router.Handle(new(WechatQrcodeController), "/wechat/qrcode")
+	router.Handle(new(WechatRuleController), "/wechat/rule")
 }

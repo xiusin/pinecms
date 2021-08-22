@@ -1,166 +1,324 @@
 <template>
-    <div class="mod-config">
-        <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
-            <el-form-item>
-                <el-input v-model="dataForm.matchValue" placeholder="匹配关键词" clearable></el-input>
-            </el-form-item>
-            <el-form-item>
-                <el-button @click="getDataList()">查询</el-button>
-                <el-button v-if="isAuth('wx:msgreplyrule:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-                <el-button v-if="isAuth('wx:msgreplyrule:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
-            </el-form-item>
-        </el-form>
-        <el-table :data="dataList" border type="expand" v-loading="dataListLoading" @selection-change="selectionChangeHandle" style="width: 100%;">
-            <el-table-column type="expand">
-                <template slot-scope="props">
-                    <el-form label-position="left" inline class="demo-table-expand">
-                        <el-form-item label="作用范围">
-                            <span>{{ props.row.appid?'当前公众号':'全部公众号' }}</span>
-                        </el-form-item>
-                        <el-form-item label="精确匹配">
-                            <span>{{ props.row.exactMatch?'是':'否' }}</span>
-                        </el-form-item>
-                        <el-form-item label="是否有效">
-                            <span>{{ props.row.status?'是':'否' }}</span>
-                        </el-form-item>
-                        <el-form-item label="备注说明">
-                            <span>{{ props.row.desc }}</span>
-                        </el-form-item>
-                        <el-form-item label="生效时间">
-                            <span>{{ props.row.effectTimeStart }}</span>
-                        </el-form-item>
-                        <el-form-item label="失效时间">
-                            <span>{{ props.row.effectTimeEnd }}</span>
-                        </el-form-item>
-                    </el-form>
-                </template>
-            </el-table-column>
-            <el-table-column type="selection" header-align="center" align="center" width="50">
-            </el-table-column>
-            <el-table-column prop="ruleName" header-align="center" align="center" show-overflow-tooltip label="规则名称">
-            </el-table-column>
-            <el-table-column prop="matchValue" header-align="center" align="center" show-overflow-tooltip label="匹配关键词">
-            </el-table-column>
-            <el-table-column prop="replyType" header-align="center" align="center" :formatter="replyTypeFormat" label="消息类型">
-            </el-table-column>
-            <el-table-column prop="replyContent" header-align="center" align="center" show-overflow-tooltip label="回复内容">
-            </el-table-column>
-            <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
-                <template slot-scope="scope">
-                    <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.ruleId)">修改</el-button>
-                    <el-button type="text" size="small" @click="deleteHandle(scope.row.ruleId)">删除</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <el-pagination @size-change="sizeChangeHandle" @current-change="currentChangeHandle" :current-page="pageIndex" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" :total="totalCount" layout="total, sizes, prev, pager, next, jumper">
-        </el-pagination>
-        <!-- 弹窗, 新增 / 修改 -->
-        <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
-    </div>
+	<cl-crud :ref="setRefs('crud')" @load="onLoad">
+		<el-row type="flex">
+			<cl-add-btn />
+			<cl-refresh-btn />
+			<cl-flex1 />
+			<cl-search-key />
+		</el-row>
+
+		<el-row>
+			<cl-table v-bind="table">
+				<template #column-appid="{ scope }">
+					{{ scope.row.appid ? "当前公众号" : "全部公众号" }}
+				</template>
+			</cl-table>
+		</el-row>
+
+		<el-row type="flex">
+			<cl-flex1 />
+			<cl-pagination />
+		</el-row>
+
+		<cl-upsert v-model="form" v-bind="upsert">
+			<template #slot-content="{ scope }">
+				<el-input
+					v-model="scope.replyContent"
+					size="mini"
+					type="textarea"
+					:rows="5"
+					placeholder="文本、图文ID、media_id、json配置"
+				/>
+				<el-button
+					type="text"
+					size="mini"
+					@click="
+						() => {
+							if (scope.replyContent) {
+								scope.replyContent += '<a href=\'链接地址\'>链接文字</a>';
+							} else {
+								scope.replyContent = '<a href=\'链接地址\'>链接文字</a>';
+							}
+						}
+					"
+					>插入链接</el-button
+				>
+				<el-button type="text" size="mini"> 从素材库中选择<span>缩略图</span> </el-button>
+			</template>
+		</cl-upsert>
+	</cl-crud>
+
+	<el-dialog
+		title="选择素材"
+		v-model="accessModalRef"
+		:modal="true"
+		append-to-body
+		@close="onClose"
+	>
+		<material-news @selected="onSelect" selectMode />
+		<!--		<material-file :fileType="selectType" @selected="onSelect" selectMode></material-file>-->
+	</el-dialog>
 </template>
 
-<script>
-import AddOrUpdate from './msg-reply-rule-add-or-update.vue'
-import { mapState } from 'vuex'
-export default {
-    components: {
-        AddOrUpdate
-    },
-    data() {
-        return {
-            dataForm: {
-                matchValue: ''
-            },
-            dataList: [],
-            pageIndex: 1,
-            pageSize: 10,
-            totalCount: 0,
-            dataListLoading: false,
-            dataListSelections: [],
-            addOrUpdateVisible: false
-        }
-    },
-    computed: mapState({
-        KefuMsgType: state=>state.message.KefuMsgType
-    }),
+<script lang="ts">
+import { defineComponent, inject, reactive, ref } from "vue";
+import { useRefs } from "/@/core";
+import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
 
-    activated() {
-        this.getDataList()
-    },
-    methods: {
-        // 获取数据列表
-        getDataList() {
-            this.dataListLoading = true
-            this.$http({
-                url: this.$http.adornUrl('/manage/msgReplyRule/list'),
-                method: 'get',
-                params: this.$http.adornParams({
-                    'page': this.pageIndex,
-                    'limit': this.pageSize,
-                    'matchValue': this.dataForm.matchValue
-                })
-            }).then(({ data }) => {
-                if (data && data.code === 200) {
-                    this.dataList = data.page.list
-                    this.totalCount = data.page.totalCount
-                } else {
-                    this.dataList = []
-                    this.totalCount = 0
-                }
-                this.dataListLoading = false
-            })
-        },
-        // 每页数
-        sizeChangeHandle(val) {
-            this.pageSize = val
-            this.pageIndex = 1
-            this.getDataList()
-        },
-        // 当前页
-        currentChangeHandle(val) {
-            this.pageIndex = val
-            this.getDataList()
-        },
-        // 多选
-        selectionChangeHandle(val) {
-            this.dataListSelections = val
-        },
-        // 新增 / 修改
-        addOrUpdateHandle(id) {
-            this.addOrUpdateVisible = true
-            this.$nextTick(() => {
-                this.$refs.addOrUpdate.init(id)
-            })
-        },
-        // 删除
-        deleteHandle(id) {
-            var ids = id ? [id] : this.dataListSelections.map(item => item.ruleId)
-            this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                this.$http({
-                    url: this.$http.adornUrl('/manage/msgReplyRule/delete'),
-                    method: 'post',
-                    data: this.$http.adornData(ids, false)
-                }).then(({ data }) => {
-                    if (data && data.code === 200) {
-                        this.$message({
-                            message: '操作成功',
-                            type: 'success',
-                            duration: 1500,
-                            onClose: () => this.getDataList()
-                        })
-                    } else {
-                        this.$message.error(data.msg)
-                    }
-                })
-            })
-        },
-        replyTypeFormat(row, column, cellValue) {
-            return this.KefuMsgType[cellValue];
-        }
-    }
-}
+export default defineComponent({
+	name: "wechat-account",
+	components: {
+		MaterialFile: () => import("./assets/material-file.vue"),
+		MaterialNews: () => import("./assets/material-news.vue")
+	},
+	setup() {
+		const service = inject<any>("service");
+
+		const { refs, setRefs }: any = useRefs();
+
+		const accessModalRef = ref(true);
+
+		const KefuMsgType: any = {
+			text: "文本消息",
+			image: "图片消息",
+			voice: "语音消息",
+			video: "视频消息",
+			music: "音乐消息",
+			news: "文章链接",
+			mpnews: "公众号图文消息",
+			wxcard: "卡券消息",
+			miniprogrampage: "小程序消息",
+			msgmenu: "菜单消息"
+		};
+
+		let msgTypeOptions = [];
+
+		for (const kefuMsgTypeKey in KefuMsgType) {
+			msgTypeOptions.push({
+				label: KefuMsgType[kefuMsgTypeKey],
+				value: kefuMsgTypeKey
+			});
+		}
+
+		const upsert = reactive<Upsert>({
+			items: [
+				{
+					prop: "ruleName",
+					label: "规则名称",
+					component: {
+						name: "el-input",
+						props: {
+							placeholder: "请输入规则名称"
+						}
+					},
+					rules: {
+						required: true,
+						message: "生效起始时间不能为空"
+					}
+				},
+				{
+					prop: "matchValue",
+					label: "匹配关键词",
+					component: {
+						name: "el-input",
+						props: {
+							placeholder: "请输入规则名称"
+						}
+					},
+					rules: {
+						required: true,
+						message: "生效起始时间不能为空"
+					}
+				},
+				{
+					prop: "appid",
+					label: "作用范围",
+					component: {
+						name: "el-select",
+						options: [
+							{
+								label: "全部公众号",
+								value: ""
+							},
+							{
+								label: "当前公众号",
+								value: "1"
+							}
+						]
+					}
+				},
+				{
+					prop: "exactMatch",
+					label: "精确匹配",
+					value: true,
+					component: {
+						name: "el-switch",
+						props: {
+							"active-value": true,
+							"inactive-value": false
+						}
+					}
+				},
+				{
+					prop: "replyType",
+					label: "消息类型",
+					component: {
+						name: "el-select",
+						options: msgTypeOptions
+					}
+				},
+				{
+					prop: "replyContent",
+					label: "回复内容",
+					component: {
+						name: "slot-content"
+					}
+				},
+				{
+					prop: "status",
+					label: "是否启用",
+					value: true,
+					component: {
+						name: "el-switch",
+						props: {
+							"active-value": true,
+							"inactive-value": false
+						}
+					}
+				},
+				{
+					prop: "effectTimeStart",
+					label: "生效时间",
+					span: 12,
+					component: {
+						name: "el-time-picker",
+						props: {
+							format: "HH:mm:ss",
+							valueFormat: "HH:mm:ss"
+						}
+					}
+				},
+				{
+					prop: "effectTimeEnd",
+					label: "失效时间",
+					span: 12,
+					component: {
+						name: "el-time-picker",
+						props: {
+							format: "HH:mm:ss",
+							valueFormat: "HH:mm:ss"
+						}
+					}
+				}
+			]
+		});
+
+		const table = reactive<Table>({
+			columns: [
+				{
+					type: "index",
+					label: "#",
+					width: 60
+				},
+				{
+					prop: "ruleName",
+					label: "规则名称",
+					width: 100
+				},
+				{
+					prop: "matchValue",
+					label: "匹配关键词",
+					width: 100
+				},
+				{
+					prop: "replyType",
+					label: "消息类型",
+					width: 100,
+					formatter: replyTypeFormat
+				},
+				{
+					prop: "replyContent",
+					label: "回复内容",
+					width: 100
+				},
+				{
+					prop: "appid",
+					label: "作用范围",
+					width: 100
+				},
+				{
+					prop: "name",
+					label: "公众号名称"
+				},
+				{
+					prop: "exactMatch",
+					label: "精确匹配",
+					width: 140,
+					align: "left",
+					dict: [
+						{
+							label: "是",
+							value: true,
+							type: "success"
+						},
+						{
+							label: "否",
+							value: false,
+							type: "warning"
+						}
+					]
+				},
+				{
+					prop: "status",
+					label: "是否有效",
+					width: 140,
+					align: "left",
+					dict: [
+						{
+							label: "是",
+							value: true,
+							type: "success"
+						},
+						{
+							label: "否",
+							value: false,
+							type: "warning"
+						}
+					]
+				},
+				{
+					prop: "effectTimeStart",
+					label: "生效时间"
+				},
+				{
+					prop: "effectTimeEnd",
+					label: "失效时间"
+				},
+				{
+					type: "op",
+					buttons: ["edit", "delete"]
+				}
+			]
+		});
+
+		function replyTypeFormat(row: string, column: string, cellValue: string) {
+			return KefuMsgType[cellValue];
+		}
+
+		function onLoad({ ctx, app }: CrudLoad) {
+			ctx.service(service.wechat.rule).done();
+			app.refresh();
+		}
+
+		return {
+			service,
+			accessModalRef,
+			refs,
+			table,
+			setRefs,
+			onLoad,
+			upsert
+		};
+	}
+});
 </script>

@@ -76,11 +76,9 @@ func InitApp() {
 
 func InitDB() {
 	XOrmEngine = config.InitDB(nil)
-
 	di.Set(controllers.ServiceXorm, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return XOrmEngine, nil
 	}, true)
-	fmt.Println("我我我我我擦擦擦擦")
 	if config.AppConfig().Debug {
 		go func() {
 			err := XOrmEngine.Sync2(
@@ -99,7 +97,12 @@ func InitDB() {
 				&tables.Log{},
 				&tables.RequestLog{},
 				&tables.Plugin{},
-				&tables.Tags{})
+				&tables.Tags{},
+				&tables.WechatMember{},
+				&tables.WechatAccount{},
+				&tables.WechatLog{},
+				&tables.WechatMsgReplyRule{},
+				&tables.WechatQrcode{})
 			if err != nil {
 				pine.Logger().Error("同步表结构失败", err)
 			}
@@ -181,7 +184,7 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.DatabaseController)).
 		Handle(new(backend.DatabaseBackupController))
 
-	wechat.InitRouter(g)
+	wechat.InitRouter(app, g)
 
 	app.Group("/v2/public").Handle(new(backend.PublicController))
 	app.Group("/v2/api").Handle(new(backend.PublicController))

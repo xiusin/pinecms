@@ -9,7 +9,7 @@
 
 		<el-row>
 			<cl-table v-bind="table">
-				<template #slot-access="{ scope }">
+				<template #slot-access>
 					<el-button size="mini" type="text" @click="accessInfo">接入</el-button>
 				</template>
 			</cl-table>
@@ -23,7 +23,6 @@
 		<cl-upsert v-model="form" v-bind="upsert" />
 	</cl-crud>
 
-
 	<cl-dialog title="开发接入信息" :close-on-click-modal="false" v-model="accessModalRef">
 		<div>
 			<div class="list-item"><span class="label">公众号:</span>1</div>
@@ -33,17 +32,14 @@
 				<span class="label">接入链接:</span>
 				<span v-html="accessUrl"></span>
 			</div>
-
 		</div>
 	</cl-dialog>
-
-
 </template>
 
 <script lang="ts">
 import { defineComponent, inject, reactive, ref } from "vue";
 import { useRefs } from "/@/core";
-import {CrudLoad, Table, Upsert} from "cl-admin-crud-vue3/types";
+import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
 
 export default defineComponent({
 	name: "wechat-account",
@@ -53,7 +49,7 @@ export default defineComponent({
 
 		const { refs, setRefs }: any = useRefs();
 
-		const accessModalRef = ref(false)
+		const accessModalRef = ref(false);
 
 		const upsert = reactive<Upsert>({
 			items: [
@@ -157,7 +153,7 @@ export default defineComponent({
 					component: {
 						name: "el-input"
 					}
-				},
+				}
 			]
 		});
 
@@ -175,14 +171,12 @@ export default defineComponent({
 				},
 				{
 					prop: "name",
-					label: "公众号名称",
-
+					label: "公众号名称"
 				},
 				{
 					prop: "type",
 					label: "类型",
 					width: 140,
-					align: "left",
 					dict: [
 						{
 							label: "公众号",
@@ -200,7 +194,6 @@ export default defineComponent({
 					prop: "verified",
 					label: "是否认证",
 					width: 140,
-					align: "left",
 					dict: [
 						{
 							label: "是",
@@ -215,7 +208,7 @@ export default defineComponent({
 					]
 				},
 				{
-					type:"op",
+					type: "op",
 					buttons: ["slot-access", "edit", "delete"]
 				}
 			]
@@ -227,7 +220,7 @@ export default defineComponent({
 		}
 
 		function accessInfo() {
-			accessModalRef.value = true
+			accessModalRef.value = true;
 		}
 
 		return {
@@ -238,7 +231,7 @@ export default defineComponent({
 			table,
 			setRefs,
 			onLoad,
-			upsert,
+			upsert
 		};
 	}
 });
