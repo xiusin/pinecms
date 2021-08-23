@@ -8,6 +8,14 @@ class WechatMaterial extends BaseService {
 			method: "POST"
 		});
 	}
+	upload(data: any) {
+		return this.request({
+			url: "/upload",
+			method: "POST",
+			data,
+			headers: { "Content-Type": "multipart/form-data" }
+		});
+	}
 	clear() {
 		return this.request({
 			url: "/clear",

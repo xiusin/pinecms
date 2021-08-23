@@ -102,6 +102,7 @@ func InitDB() {
 				&tables.WechatAccount{},
 				&tables.WechatLog{},
 				&tables.WechatMsgReplyRule{},
+				&tables.WechatMaterial{},
 				&tables.WechatQrcode{})
 			if err != nil {
 				pine.Logger().Error("同步表结构失败", err)
