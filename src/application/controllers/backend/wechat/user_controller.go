@@ -82,3 +82,8 @@ func (c *WechatUserController) PostSync() {
 	}
 	helper.Ajax("同步完成", 0, c.Ctx())
 }
+
+// PostSavePoster 保存海报 vue-canvas-poster
+func (c *WechatUserController) PostSavePoster()  {
+
+}

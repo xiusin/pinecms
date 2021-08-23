@@ -11,4 +11,5 @@ func InitRouter(app *pine.Application, router *pine.Router) {
 	router.Handle(new(WechatMagController), "/wechat/msg")
 	router.Handle(new(WechatQrcodeController), "/wechat/qrcode")
 	router.Handle(new(WechatRuleController), "/wechat/rule")
+	router.Handle(new(WechatMaterialController), "/wechat/material")
 }

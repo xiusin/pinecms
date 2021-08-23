@@ -18,4 +18,5 @@ type WechatMember struct {
 	TagidList      []int64 `json:"tagid_list" xorm:"json"`
 	SubscribeScene string  `json:"subscribe_scene"`
 	QrSceneStr     string  `json:"qr_scene_str"`
+	Poster         string  `json:"poster"`
 }

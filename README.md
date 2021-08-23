@@ -113,3 +113,4 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - github.com/mojocn/base64Captcha 验证
 - https://github.com/lljj-x/vue-json-schema-form
 - pine记录函数参数反射缓存
+- https://github.com/dgraph-io/ristretto

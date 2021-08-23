@@ -31,6 +31,7 @@
 		"store": "^2.0.12",
 		"uuid": "^8.3.2",
 		"vue": "^3.2.2",
+		"vue-canvas-poster": "^1.2.1",
 		"vue-echarts": "^6.0.0-rc.3",
 		"vue-router": "^4.0.5",
 		"vue-ueditor-wrap": "3.0.6",

@@ -9,8 +9,10 @@
 
 		<el-row>
 			<cl-table v-bind="table">
-				<template #slot-access>
-					<el-button size="mini" type="text" @click="accessInfo">接入</el-button>
+				<template #column-copy="{ scope }">
+						<el-button v-copy="buildURL(scope.row.appid)" size="mini">
+							{{ buildURL(scope.row.appid) }}
+						</el-button>
 				</template>
 			</cl-table>
 		</el-row>
@@ -22,18 +24,6 @@
 
 		<cl-upsert v-model="form" v-bind="upsert" />
 	</cl-crud>
-
-	<cl-dialog title="开发接入信息" :close-on-click-modal="false" v-model="accessModalRef">
-		<div>
-			<div class="list-item"><span class="label">公众号:</span>1</div>
-			<div class="list-item"><span class="label">token:</span>2</div>
-			<div class="list-item"><span class="label">aesKey:</span>3</div>
-			<div class="list-item">
-				<span class="label">接入链接:</span>
-				<span v-html="accessUrl"></span>
-			</div>
-		</div>
-	</cl-dialog>
 </template>
 
 <script lang="ts">
@@ -48,8 +38,6 @@ export default defineComponent({
 		const service = inject<any>("service");
 
 		const { refs, setRefs }: any = useRefs();
-
-		const accessModalRef = ref(false);
 
 		const upsert = reactive<Upsert>({
 			items: [
@@ -165,13 +153,15 @@ export default defineComponent({
 					width: 60
 				},
 				{
+					prop: "name",
+					label: "公众号名称",
+					width: 250,
+					align: "left"
+				},
+				{
 					prop: "appid",
 					label: "APPID",
 					width: 300
-				},
-				{
-					prop: "name",
-					label: "公众号名称"
 				},
 				{
 					prop: "type",
@@ -208,8 +198,12 @@ export default defineComponent({
 					]
 				},
 				{
+					prop: "copy",
+					label: "通知地址"
+				},
+				{
 					type: "op",
-					buttons: ["slot-access", "edit", "delete"]
+					buttons: ["edit", "delete"]
 				}
 			]
 		});
@@ -219,14 +213,13 @@ export default defineComponent({
 			app.refresh();
 		}
 
-		function accessInfo() {
-			accessModalRef.value = true;
+		function buildURL(appid: string) {
+			return window.location.protocol + "//" + window.location.host + `/api/wechat/msg/${appid}`
 		}
 
 		return {
 			service,
-			accessModalRef,
-			accessInfo,
+			buildURL,
 			refs,
 			table,
 			setRefs,
