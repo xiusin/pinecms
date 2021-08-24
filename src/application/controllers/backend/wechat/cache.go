@@ -5,6 +5,16 @@ import (
 	"time"
 )
 
+const CacheKeyWechatMaterialCount = "pinecms.wechat.material.count.%s"
+
+const CacheKeyWechatMaterialList = "pinecms.wechat.material.list.%s.t.%s.p.%d"
+
+const CacheKeyWechatMaterialListKeys = "pinecms.wechat.material.list.key"
+
+const CacheKeyWechatUserTags = "pinecms.wechat.user.tags.%s"
+
+const CacheTimeSecs = 30 * 24 * 3600
+
 type WechatTokenCacher struct {
 	cache2.AbstractCache
 }
@@ -28,5 +38,3 @@ func (w WechatTokenCacher) IsExist(key string) bool {
 func (w WechatTokenCacher) Delete(key string) error {
 	return w.AbstractCache.Delete(key)
 }
-
-

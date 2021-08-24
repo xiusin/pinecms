@@ -118,9 +118,21 @@ export default defineComponent({
 				},
 				{
 					prop: "qrSceneStr",
-					label: "关注场景值",
+					label: "功能",
 					component: {
 						name: "slot-btns"
+					}
+				},
+				{
+					prop: "remark",
+					label: "备注",
+					component: {
+						name: "el-input",
+						props: {
+							type: "textarea",
+							rows: 4,
+							placeholder: "请输入关注场景值"
+						}
 					}
 				}
 			]

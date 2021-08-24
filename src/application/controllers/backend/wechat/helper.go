@@ -12,14 +12,6 @@ import (
 	"github.com/xiusin/pinecms/src/application/models/tables"
 )
 
-const CacheKeyWechatMaterialCount = "pinecms.wechat.material.count.%s"
-
-const CacheKeyWechatMaterialList = "pinecms.wechat.material.list.%s.t.%s.p.%d"
-
-const CacheKeyWechatMaterialListKeys = "pinecms.wechat.material.list.key"
-
-const CacheTimeSecs = 30 * 24 * 3600
-
 func GetOfficialAccount(appid string) (*officialaccount.OfficialAccount, *tables.WechatAccount, error) {
 	accountData := &tables.WechatAccount{}
 	orm := di.MustGet(controllers.ServiceXorm).(*xorm.Engine)
@@ -39,7 +31,7 @@ func GetOfficialAccount(appid string) (*officialaccount.OfficialAccount, *tables
 	return account, accountData, nil
 }
 
-func SaveCacheMaterialListKey(key string, cacher cache.AbstractCache)  {
+func SaveCacheMaterialListKey(key string, cacher cache.AbstractCache) {
 	var cacheKeys []string
 	cacher.GetWithUnmarshal(CacheKeyWechatMaterialListKeys, &cacheKeys)
 	for _, cacheKey := range cacheKeys {

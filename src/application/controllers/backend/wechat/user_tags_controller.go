@@ -1,11 +1,12 @@
 package wechat
 
 import (
-	"github.com/xiusin/pine"
+	"fmt"
+	"github.com/silenceper/wechat/v2/officialaccount/user"
+	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"time"
 )
 
 type WechatUserTagsController struct {
@@ -18,64 +19,111 @@ func (c *WechatUserTagsController) Construct() {
 	c.BaseController.Construct()
 }
 
-// PostSync 同步标签
-func (c *WechatUserTagsController) PostSync() {
-	var q = &tables.WechatAccount{}
-	if err := c.Ctx().BindJSON(q); err != nil {
+func (c *WechatUserTagsController) PostList(cacher cache.AbstractCache) {
+	appid := "wxe43df03110f5981b"
+	cacheKey := fmt.Sprintf(CacheKeyWechatUserTags, appid)
+	var tags []*user.TagInfo
+	if err := cacher.Remember(cacheKey, &tags, func() (interface{}, error) {
+		account, _, err := GetOfficialAccount(appid)
+		if err != nil {
+			return nil, err
+		}
+		return account.GetUser().GetTag()
+	}, CacheTimeSecs); err != nil {
 		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
+	helper.Ajax(tags, 0, c.Ctx())
+}
 
-	account, _, err := GetOfficialAccount(q.AppId)
+func (c *WechatUserTagsController) PostDelete(cacher cache.AbstractCache) {
+	appid := "wxe43df03110f5981b"
+	id, _ := c.Input().Get("id").Int64()
+	cacheKey := fmt.Sprintf(CacheKeyWechatUserTags, appid)
+	var tags []*user.TagInfo
+	err := cacher.GetWithUnmarshal(cacheKey, &tags)
 	if err != nil {
 		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
-	//if !data.Verified {
-	//	helper.Ajax("公众号没有接入无法同步", 1, c.Ctx())
-	//	return
-	//}
-	nextOpenId, exit := "", false
-	//var ch = make(chan struct{}, 10) todo 并发携程控制
-	for !exit {
-		users, err := account.GetUser().ListUserOpenIDs(nextOpenId)
+	var idx = -1
+	for i, tag := range tags {
+		if tag.ID == int32(id) {
+			idx = i
+			break
+		}
+	}
+	if idx > -1 {
+		account, _, err := GetOfficialAccount(appid)
 		if err != nil {
 			helper.Ajax(err, 1, c.Ctx())
 			return
 		}
-		if users.Count < 1000 {
-			exit = true
+		err = account.GetUser().DeleteTag(int32(id))
+		if err != nil {
+			helper.Ajax(err, 1, c.Ctx())
+		} else {
+			tags = append(tags[:idx], tags[idx+1:]...)
+			cacher.SetWithMarshal(cacheKey, &tags, CacheTimeSecs)
+			helper.Ajax("删除标签成功", 0, c.Ctx())
 		}
-		nextOpenId = users.NextOpenID
-
-		for _, openid := range users.Data.OpenIDs {
-			exist, _ := c.Orm.Where("openid = ?", openid).Exist(&tables.WechatMember{})
-			if exist {
-				continue
-			}
-			u, err := account.GetUser().GetUserInfo(openid)
-			if err != nil {
-				pine.Logger().Error("获取微信会员信息失败", err)
-				continue
-			}
-			c.Orm.InsertOne(&tables.WechatMember{
-				Appid:          q.AppId,
-				Openid:         u.OpenID,
-				Nickname:       u.Nickname,
-				Sex:            int(u.Sex),
-				City:           u.City,
-				Province:       u.Province,
-				Headimgurl:     u.Headimgurl,
-				SubscribeTime:  time.Unix(int64(u.SubscribeTime), 0).Format(helper.TimeFormat),
-				Subscribe:      u.Subscribe > 0,
-				Unionid:        u.UnionID,
-				Remark:         u.Remark,
-				TagidList:      nil,
-				SubscribeScene: u.SubscribeScene,
-				QrSceneStr:     u.QrSceneStr,
-			})
-		}
-
+	} else {
+		helper.Ajax("标签不存在或已被删除", 1, c.Ctx())
 	}
-	helper.Ajax("同步完成", 0, c.Ctx())
+}
+
+func (c *WechatUserTagsController) PostEdit(cacher cache.AbstractCache) {
+	appid := "wxe43df03110f5981b"
+	id, _ := c.Input().Get("id").Int64()
+	name := c.Input().Get("name").String()
+	cacheKey := fmt.Sprintf(CacheKeyWechatUserTags, appid)
+	var tags []*user.TagInfo
+	if err := cacher.GetWithUnmarshal(cacheKey, &tags); err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
+	}
+	for i, tag := range tags {
+		if tag.ID == int32(id) {
+			tag.Name = name
+			tags[i] = tag
+			account, _, err := GetOfficialAccount(appid)
+			if err != nil {
+				helper.Ajax(err, 1, c.Ctx())
+				return
+			}
+			if err = account.GetUser().UpdateTag(int32(id), name); err != nil {
+				helper.Ajax(err, 1, c.Ctx())
+				return
+			} else {
+				cacher.SetWithMarshal(cacheKey, &tags, CacheTimeSecs)
+				helper.Ajax("修改标签成功", 0, c.Ctx())
+				return
+			}
+		}
+	}
+	helper.Ajax("没有找到标签", 1, c.Ctx())
+}
+
+// PostTagging 批量打标签
+func (c *WechatUserTagsController) PostTagging() {
+	appid := "wxe43df03110f5981b"
+	account, _, err := GetOfficialAccount(appid)
+	if err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
+	}
+
+	account.GetUser().BatchTag([]string{}, 0)
+}
+
+// PostUntagging 批量解除标签
+func (c *WechatUserTagsController) PostUntagging() {
+	appid := "wxe43df03110f5981b"
+	account, _, err := GetOfficialAccount(appid)
+	if err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
+	}
+
+	account.GetUser().BatchUntag([]string{}, 0)
 }

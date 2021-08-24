@@ -1,7 +1,6 @@
 package wechat
 
 import (
-	"fmt"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -17,6 +16,19 @@ func (c *WechatUserController) Construct() {
 	c.Table = &tables.WechatMember{}
 	c.Entries = &[]tables.WechatMember{}
 	c.BaseController.Construct()
+	c.OpAfter = c.After
+}
+
+func (c *WechatUserController) After(act int, params interface{}) error {
+	if act == backend.OpEdit {
+		account, _, err := GetOfficialAccount(c.Table.(*tables.WechatMember).Appid)
+		if err != nil {
+			return err
+		}
+		// 同步 更新备注 忽略结果输出
+		return account.GetUser().UpdateRemark(c.Table.(*tables.WechatMember).Openid, c.Table.(*tables.WechatMember).Remark)
+	}
+	return nil
 }
 
 // PostSync 同步粉丝
@@ -27,17 +39,15 @@ func (c *WechatUserController) PostSync() {
 		return
 	}
 
-	fmt.Println()
-
-	account, _, err := GetOfficialAccount(q.AppId)
+	account, data, err := GetOfficialAccount(q.AppId)
 	if err != nil {
 		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
-	//if !data.Verified {
-	//	helper.Ajax("公众号没有接入无法同步", 1, c.Ctx())
-	//	return
-	//}
+	if !data.Verified {
+		helper.Ajax("公众号没有接入无法同步", 1, c.Ctx())
+		return
+	}
 	nextOpenId, exit := "", false
 	//var ch = make(chan struct{}, 10) todo 并发携程控制
 	for !exit {
@@ -84,6 +94,6 @@ func (c *WechatUserController) PostSync() {
 }
 
 // PostSavePoster 保存海报 vue-canvas-poster
-func (c *WechatUserController) PostSavePoster()  {
+func (c *WechatUserController) PostSavePoster() {
 
 }
