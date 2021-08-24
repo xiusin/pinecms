@@ -1,7 +1,7 @@
 import { BaseService, Service } from "/@/core";
 
-@Service("wechat/material")
-class WechatMaterial extends BaseService {
+@Service("wechat/template")
+class WechatTemplate extends BaseService {
 	total() {
 		return this.request({
 			url: "/total",
@@ -14,20 +14,18 @@ class WechatMaterial extends BaseService {
 			method: "POST"
 		});
 	}
-	upload(data: any) {
-		return this.request({
-			url: "/upload",
-			method: "POST",
-			data,
-			headers: { "Content-Type": "multipart/form-data" }
-		});
-	}
 	clear() {
 		return this.request({
 			url: "/clear",
 			method: "POST"
 		});
 	}
+	send() {
+		return this.request({
+			url: "/send",
+			method: "POST"
+		});
+	}
 }
 
-export default WechatMaterial;
+export default WechatTemplate;

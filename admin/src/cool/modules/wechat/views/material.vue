@@ -1,5 +1,8 @@
 <template>
 	<div style="padding: 10px; background: #fff">
+		<div style="padding: 10px 0">
+			<el-button size="mini" type="warning" @click="sync()">同步素材数据</el-button>
+		</div>
 		<el-tabs v-model="activeTab" @tab-click="handleTabClick">
 			<el-tab-pane :label="'图片素材（' + assetsCount.imageCount + ')'" name="image">
 				<material-file fileType="image" ref="imagePanel" @change="materialCount" />
@@ -35,6 +38,13 @@ export default {
 		this.materialCount();
 	},
 	methods: {
+		sync() {
+			this.service.wechat.material.sync().then(() => {
+				this.$message.success("同步完成");
+			}).catch((e) => {
+				this.$message.error(e);
+			})
+		},
 		handleTabClick(tab) {
 			this.$nextTick(() => {
 				this.$refs[tab.paneName + "Panel"].init();

@@ -1,75 +1,104 @@
 <template>
 	<div class="page-login">
 		<div class="box">
-			<img class="logo" src="//doc.xiusin.cn/logo.png" alt="" />
-			<p class="desc">PineCMS 内容管理系统</p>
+			<div class="login-wrapper">
+				<div class="login-screen">
+					<div class="well">
+						<div class="login-head">
+							<img src="login-head.png" style="width:100%;"/>
+						</div>
+						<div class="login-form">
+							<img id="profile-img" class="profile-img-card" src="avatar.png"/>
+							<p id="profile-name" class="profile-name-card"></p>
+							<el-form class="form" size="medium" :disabled="saving">
+								<el-form-item>
+									<el-input
+										v-model="form.username"
+										placeholder="请输入用户名"
+										maxlength="20"
+										size="small"
+										auto-complete="off"
+									>
+										<template #prepend>
+											<i class="el-icon-s-custom"></i>
+										</template>
+									</el-input>
+								</el-form-item>
 
-			<el-form class="form" size="medium" :disabled="saving">
-				<el-form-item label="用户名">
-					<el-input
-						v-model="form.username"
-						placeholder="请输入用户名"
-						maxlength="20"
-						auto-complete="off"
-					/>
-				</el-form-item>
+								<el-form-item>
+									<el-input
+										v-model="form.password"
+										type="password"
+										placeholder="请输入密码"
+										maxlength="20"
+										size="small"
+										auto-complete="off"
+									>
+										<template #prepend>
+											<i class="el-icon-key"></i>
+										</template>
+									</el-input>
+								</el-form-item>
 
-				<el-form-item label="密码">
-					<el-input
-						v-model="form.password"
-						type="password"
-						placeholder="请输入密码"
-						maxlength="20"
-						auto-complete="off"
-					/>
-				</el-form-item>
+								<el-form-item label="验证码" class="captcha" v-if="false">
+									<el-input
+										v-model="form.verifyCode"
+										placeholder="请输入图片验证码"
+										maxlength="4"
+										auto-complete="off"
+										@keyup.enter="toLogin"
+									/>
 
-				<el-form-item label="验证码" class="captcha" v-if="false">
-					<el-input
-						v-model="form.verifyCode"
-						placeholder="请输入图片验证码"
-						maxlength="4"
-						auto-complete="off"
-						@keyup.enter="toLogin"
-					/>
+									<captcha
+										:ref="setRefs('captcha')"
+										v-model="form.captchaId"
+										class="value"
+										@change="
+														() => {
+															form.verifyCode = '';
+														}
+													"
+									/>
+								</el-form-item>
+							</el-form>
 
-					<captcha
-						:ref="setRefs('captcha')"
-						v-model="form.captchaId"
-						class="value"
-						@change="
-							() => {
-								form.verifyCode = '';
-							}
-						"
-					/>
-				</el-form-item>
-			</el-form>
-
-			<el-button round size="mini" class="submit-btn" :loading="saving" @click="toLogin"
-				>登录</el-button
-			>
+							<el-button
+								style="width: 100%"
+								size="small"
+								type="danger"
+								class="submit-btn"
+								:loading="saving"
+								@click="toLogin"
+							>登录
+							</el-button>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
-import { ElMessage } from "element-plus";
-import { useRouter } from "vue-router";
-import { useStore } from "vuex";
+import {defineComponent, reactive, ref} from "vue";
+import {ElMessage, ElIcon} from "element-plus";
+import {useRouter} from "vue-router";
+import {useStore} from "vuex";
 import Captcha from "./components/captcha.vue";
-import { useRefs } from "/@/core";
+import {useRefs} from "/@/core";
+import IconSvg from "../../components/icon-svg/index.vue";
 
 export default defineComponent({
 	components: {
-		Captcha
+		IconSvg,
+		Captcha,
+		ElIcon
 	},
 
 	setup() {
 		const router = useRouter();
 		const store = useStore();
-		const { refs, setRefs }: any = useRefs();
+		const {refs, setRefs}: any = useRefs();
 
 		const saving = ref<boolean>(false);
 
@@ -131,89 +160,81 @@ export default defineComponent({
 });
 </script>
 
+<style scoped>
+form .el-input-group__prepend {
+	padding: 0 5px;
+}
+</style>
+
 <style lang="scss">
-.page-login {
-	height: 100vh;
-	width: 100vw;
-	position: relative;
-	background-color: #2f3447;
+body {
+	color: #999;
+	background-color: #f1f4fd;
+	background-size: cover;
+}
 
-	.box {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		height: 500px;
-		width: 500px;
-		position: absolute;
-		left: calc(50% - 250px);
-		top: calc(50% - 250px);
+a {
+	color: #444;
+}
 
-		.logo {
-			height: 50px;
-			margin-bottom: 20px;
-		}
+.login-screen {
+	max-width: 430px;
+	padding: 0;
+	margin: 100px auto 0 auto;
 
-		.desc {
-			color: #ccc;
-			font-size: 12px;
-			margin-bottom: 60px;
-			letter-spacing: 1px;
-		}
+}
 
-		.el-form {
-			width: 300px;
-			border-radius: 3px;
+.login-screen .well {
+	border-radius: 3px;
+	-webkit-box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+	background: rgba(255, 255, 255, 1);
+	border: none;
+	overflow: hidden;
+	padding: 0;
+}
 
-			.el-form-item {
-				margin-bottom: 20px;
-
-				&__label {
-					color: #ccc;
-				}
-			}
-
-			.el-input {
-				.el-input__inner {
-					border: 0;
-					border-bottom: 0.5px solid #999;
-					border-radius: 0;
-					padding: 0 5px;
-					background-color: transparent;
-					color: #ccc;
-					transition: border-color 0.3s;
-					position: relative;
-
-					&:focus {
-						border-color: #fff;
-						color: #fff;
-					}
-
-					&:-webkit-autofill {
-						-webkit-text-fill-color: #fff !important;
-						-webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
-						transition: background-color 50000s ease-in-out 0s;
-					}
-				}
-			}
-
-			.captcha {
-				position: relative;
-
-				.value {
-					position: absolute;
-					bottom: 1px;
-					right: 0;
-				}
-			}
-		}
-
-		.submit-btn {
-			margin-top: 40px;
-			border-radius: 30px;
-			padding: 10px 40px;
-			color: #000;
-		}
+@media (max-width: 767px) {
+	.login-screen {
+		padding: 0 20px;
 	}
 }
+
+.profile-img-card {
+	width: 100px;
+	height: 100px;
+	display: block;
+	-moz-border-radius: 50%;
+	-webkit-border-radius: 50%;
+	border-radius: 50%;
+	margin: -93px auto 30px;
+	border: 5px solid #fff;
+}
+
+.profile-name-card {
+	text-align: center;
+}
+
+.login-head {
+	background: #899fe1;
+}
+
+.login-form {
+	padding: 40px 30px;
+	position: relative;
+	z-index: 99;
+}
+
+#login-form {
+	margin-top: 20px;
+}
+
+#login-form .input-group {
+	margin-bottom: 15px;
+}
+
+#login-form .form-control {
+	font-size: 13px;
+}
+
 </style>

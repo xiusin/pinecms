@@ -1,11 +1,11 @@
 <template>
 	<div class="mod-menu">
-		<el-form :inline="true" :model="dataForm">
+		<el-form :inline="true" :model="dataForm" >
 			<el-form-item>
 				<el-button size="mini" type="primary" @click="addOrUpdateHandle()">新增</el-button>
 			</el-form-item>
 		</el-form>
-		<div v-loading="dataListLoading">
+		<div v-loading="dataListLoading"  style="min-height: 500px">
 			<div class="card" v-for="item in dataList" :key="item.media_id" @click="onSelect(item)">
 				<el-image
 					v-if="fileType === 'image'"
@@ -48,12 +48,13 @@
 			</div>
 		</div>
 		<el-pagination
+        style="float: right"
 			@current-change="currentChangeHandle"
 			:current-page="pageIndex"
 			:page-sizes="[20]"
 			:page-size="20"
 			:total="totalCount"
-			layout="total, prev,pager, next, jumper"
+			layout="total, prev,pager, next"
 		/>
 		<!-- 弹窗, 新增 / 修改 -->
 		<add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="onChange" />

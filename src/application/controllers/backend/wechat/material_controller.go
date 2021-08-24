@@ -23,36 +23,38 @@ func (c *WechatMaterialController) Construct() {
 }
 
 func (c *WechatMaterialController) PostList(cacher cache.AbstractCache) {
-	var q = struct {
+	var p = struct {
 		Appid string `json:"appid"`
 		Type  string `json:"type"`
-		Page  int64  `json:"page"`
-		Size  int64  `json:"size"`
+		Page  int    `json:"page"`
+		Size  int    `json:"size"`
 	}{}
-	if err := c.Ctx().BindJSON(&q); err != nil {
+	if err := c.Ctx().BindJSON(&p); err != nil {
 		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
-	account, _, err := GetOfficialAccount(q.Appid)
-	if err != nil {
-		helper.Ajax(err, 1, c.Ctx())
-		return
-	}
-	var list material.ArticleList
-	cacheKey := fmt.Sprintf(CacheKeyWechatMaterialList, q.Appid, q.Type, q.Page)
-	err = cacher.Remember(cacheKey, &list, func() (interface{}, error) {
-		data, err := account.GetMaterial().BatchGetMaterial(material.PermanentMaterialType(q.Type), (q.Page-1)*q.Size, q.Size)
-		if err == nil {
-			SaveCacheMaterialListKey(cacheKey, cacher)
-		}
-		return data, err
-	}, CacheTimeSecs)
+
+	p.Size = 20
+
+	count, err := c.Orm.Where("`type` = ?", p.Type).Where("appid = ?", p.Appid).Limit(p.Size, (p.Page-1)*p.Size).FindAndCount(c.Entries)
 
 	if err != nil {
 		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
-	helper.Ajax(list, 0, c.Ctx())
+
+	if count == 0 {
+		c.PostSync()
+	}
+
+	helper.Ajax(pine.H{
+		"list": c.Entries,
+		"pagination": pine.H{
+			"page":  p.Page,
+			"size":  p.Size,
+			"total": count,
+		},
+	}, 0, c.Ctx())
 }
 
 func (c *WechatMaterialController) PostSync() {
@@ -62,6 +64,7 @@ func (c *WechatMaterialController) PostSync() {
 		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
+
 	_, err = c.Orm.Transaction(func(session *xorm.Session) (interface{}, error) {
 		session.Where("id > 0").Delete(c.Table)
 		types := []material.MediaType{material.MediaTypeImage, material.MediaTypeThumb, material.MediaTypeVoice, material.MediaTypeVideo}
@@ -70,11 +73,11 @@ func (c *WechatMaterialController) PostSync() {
 			for !finished {
 				data, err := account.GetMaterial().BatchGetMaterial(material.PermanentMaterialType(mediaType), int64((page-1)*size), int64(size))
 				if err != nil {
-					pine.Logger().Error(err)
+					return nil, err
 				} else {
 					for _, item := range data.Item {
 						session.InsertOne(&tables.WechatMaterial{
-							AppId:      appid,
+							Appid:      appid,
 							Type:       string(mediaType),
 							MediaId:    item.MediaID,
 							Url:        item.URL,

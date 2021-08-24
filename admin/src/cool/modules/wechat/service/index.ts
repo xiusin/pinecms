@@ -4,6 +4,7 @@ import Msg from "./msg";
 import Qrcode from "./qrcode";
 import Material from "./material";
 import Rule from "./rule";
+import Template from "./template";
 
 export default {
 	wechat: {
@@ -12,6 +13,7 @@ export default {
 		msg: new Msg(),
 		qrcode: new Qrcode(),
 		rule: new Rule(),
-		material: new Material()
+		material: new Material(),
+		template: new Template()
 	}
 };

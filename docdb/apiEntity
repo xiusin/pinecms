@@ -4956,7 +4956,7 @@
 		"query_data_method": "application/json; charset=utf-8",
 		"raw_param": "{\"username\":\"admin\",\"password\":\"123456\",\"captchaId\":\"\",\"verifyCode\":\"\"}",
 		"raw_query": "",
-		"raw_return": "{\"code\":1000,\"data\":{\"admin_id\":1,\"admin_name\":\"admin\",\"id\":1,\"role_id\":0,\"role_name\":\"超级管理员\",\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJQaW5lQ01TIiwiZXhwIjoxNjYwMzk4MTg3LCJpZCI6MSwiYWRtaW5faWQiOjEsImFkbWluX25hbWUiOiJhZG1pbiIsInJvbGVfaWQiOjB9.c9j6pez-2wbYay-5YHjytAShO97_Cyx9P9-VvZO7T3Y\"}}",
+		"raw_return": "{\"code\":1000,\"data\":{\"admin_id\":1,\"admin_name\":\"admin\",\"id\":1,\"role_id\":0,\"role_name\":\"超级管理员\",\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJQaW5lQ01TIiwiZXhwIjoxNjYwODc4ODA0LCJpZCI6MSwiYWRtaW5faWQiOjEsImFkbWluX25hbWUiOiJhZG1pbiIsInJvbGVfaWQiOjB9.5u1xtyJx6Ot3fyREnd-1PBmeWm4bchlhF2iw8qs-mtI\"}}",
 		"return": [
 			{
 				"default": "",
@@ -6294,6 +6294,117 @@
 		"url": "/v2/wechat/rule/delete"
 	},
 	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取系统未删除的%s列表",
+		"enable": false,
+		"group": {
+			"name": "",
+			"title": ""
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_wechat_material_list",
+		"method": "POST",
+		"name": "list",
+		"param": [
+			{
+				"childrenType": "",
+				"default": "1",
+				"desc": "分页数",
+				"name": "page",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": "10",
+				"desc": "分页条数",
+				"name": "size",
+				"require": true,
+				"type": "number"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序字段",
+				"name": "order",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "排序方法desc=逆序,asc=正序",
+				"name": "sort",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "查询关键字",
+				"name": "keyWord",
+				"require": false,
+				"type": "string"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "是否导出",
+				"name": "_isExport",
+				"require": false,
+				"type": "bool"
+			},
+			{
+				"childrenType": "",
+				"default": null,
+				"desc": "额外参数用于非配置字段导出",
+				"name": "params",
+				"require": false,
+				"type": "any"
+			}
+		],
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"page\":1,\"type\":\"image\",\"size\":20,\"appid\":\"wxe43df03110f5981b\"}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1,\"message\":\"BatchGetMaterial Error , errcode=45009 , errmsg=reach max api daily quota limit rid: 6124651c-73634a76-1aa2a133\"}{\"code\":1000,\"data\":{\"list\":[],\"pagination\":{\"page\":1,\"size\":20,\"total\":0}}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "",
+		"tag": "",
+		"title": "%s列表",
+		"url": "/v2/wechat/material/list"
+	},
+	{
 		"immutable": false,
 		"app_id": "admin",
 		"group": {
@@ -6305,7 +6416,7 @@
 		"desc": "获取系统未删除的%s列表",
 		"tag": "",
 		"author": "xiusin",
-		"url": "/v2/wechat/material/list",
+		"url": "/v2/wechat/template/list",
 		"method": "POST",
 		"param": [
 			{
@@ -6394,14 +6505,122 @@
 			}
 		],
 		"name": "list",
-		"menu_key": "post__v2_wechat_material_list",
-		"raw_param": "{\"page\":1,\"type\":\"image\",\"size\":20,\"appid\":\"wxe43df03110f5981b\"}",
-		"raw_return": "{\"code\":1000,\"data\":{\"errcode\":0,\"errmsg\":\"\",\"total_count\":3,\"item_count\":3,\"item\":[{\"media_id\":\"X8twhHsiiGmDV0b6iuJn1Ca4zJSJg6Y1TVyjhLeAYlc\",\"content\":{\"news_item\":null,\"update_time\":0,\"create_time\":0},\"name\":\"resources/assets/uploads/20210819/4bJ1j940Q0.jpeg\",\"url\":\"http://mmbiz.qpic.cn/mmbiz_png/uicrGD717HA0TmJWH7Aiah5ZhTwyKJcKc9pib2lByeZ9Yug9iaDRak0GKxmEFybx1YnfYBibBymZynVTJmtcBoWYMdg/0?wx_fmt=png\",\"update_time\":1629702723},{\"media_id\":\"X8twhHsiiGmDV0b6iuJn1OELEj58TJxdOjlbuFwlxVI\",\"content\":{\"news_item\":null,\"update_time\":0,\"create_time\":0},\"name\":\"resources/assets/uploads/20210819/4bJ1j940Q0.jpeg\",\"url\":\"http://mmbiz.qpic.cn/mmbiz_png/uicrGD717HA0TmJWH7Aiah5ZhTwyKJcKc9pib2lByeZ9Yug9iaDRak0GKxmEFybx1YnfYBibBymZynVTJmtcBoWYMdg/0?wx_fmt=png\",\"update_time\":1629702706},{\"media_id\":\"X8twhHsiiGmDV0b6iuJn1MbCQySpTw1OgDtiYdAANpg\",\"content\":{\"news_item\":null,\"update_time\":0,\"create_time\":0},\"name\":\"resources/assets/uploads/20210819/4bJ1j940Q0.jpeg\",\"url\":\"http://mmbiz.qpic.cn/mmbiz_png/uicrGD717HA0TmJWH7Aiah5ZhTwyKJcKc9pib2lByeZ9Yug9iaDRak0GKxmEFybx1YnfYBibBymZynVTJmtcBoWYMdg/0?wx_fmt=png\",\"update_time\":1629702692}]}}",
+		"menu_key": "post__v2_wechat_template_list",
+		"raw_param": "{\"page\":1,\"size\":20}",
+		"raw_return": "{\"code\":1000,\"data\":{\"list\":[{\"id\":1,\"appid\":\"wxe43df03110f5981b\",\"template_id\":\"97_xBnPYcKDeGjUaq9BxDvUQneDAM4-mAEd8Jt0VRu4\",\"title\":\"成为会员通知\",\"name\":\"\",\"primary_industry\":\"\",\"deputy_industry\":\"\",\"content\":\"{{first.DATA}}\\n昵称：{{keyword1.DATA}}\\n手机：{{keyword2.DATA}}\\n成为会员赠送积分：{{keyword3.DATA}}\\n会员级别：{{keyword4.DATA}}\\n会员卡号：{{keyword5.DATA}}\\n{{remark.DATA}}\",\"data\":null,\"url\":\"\",\"mini_program\":null,\"status\":false,\"example\":\"\",\"created_at\":\"2021-08-24 18:09:01\",\"updated_at\":\"2021-08-24 18:09:01\"},{\"id\":2,\"appid\":\"wxe43df03110f5981b\",\"template_id\":\"97_xBnPYcKDeGjUaq9BxDvUQneDAM4-mAEd8Jt0VRu4\",\"title\":\"成为会员通知\",\"name\":\"_COPY\",\"primary_industry\":\"\",\"deputy_industry\":\"\",\"content\":\"{{first.DATA}}\\n昵称：{{keyword1.DATA}}\\n手机：{{keyword2.DATA}}\\n成为会员赠送积分：{{keyword3.DATA}}\\n会员级别：{{keyword4.DATA}}\\n会员卡号：{{keyword5.DATA}}\\n{{remark.DATA}}\",\"data\":null,\"url\":\"\",\"mini_program\":null,\"status\":false,\"example\":\"\",\"created_at\":\"2021-08-24 18:12:55\",\"updated_at\":\"2021-08-24 18:09:01\"},{\"id\":3,\"appid\":\"wxe43df03110f5981b\",\"template_id\":\"97_xBnPYcKDeGjUaq9BxDvUQneDAM4-mAEd8Jt0VRu4\",\"title\":\"成为会员通知\",\"name\":\"_COPY_COPY\",\"primary_industry\":\"\",\"deputy_industry\":\"\",\"content\":\"{{first.DATA}}\\n昵称：{{keyword1.DATA}}\\n手机：{{keyword2.DATA}}\\n成为会员赠送积分：{{keyword3.DATA}}\\n会员级别：{{keyword4.DATA}}\\n会员卡号：{{keyword5.DATA}}\\n{{remark.DATA}}\",\"data\":null,\"url\":\"\",\"mini_program\":null,\"status\":false,\"example\":\"\",\"created_at\":\"2021-08-24 18:13:18\",\"updated_at\":\"2021-08-24 18:09:01\"},{\"id\":4,\"appid\":\"wxe43df03110f5981b\",\"template_id\":\"97_xBnPYcKDeGjUaq9BxDvUQneDAM4-mAEd8Jt0VRu4\",\"title\":\"成为会员通知\",\"name\":\"_COPY_COPY_COPY\",\"primary_industry\":\"\",\"deputy_industry\":\"\",\"content\":\"{{first.DATA}}\\n昵称：{{keyword1.DATA}}\\n手机：{{keyword2.DATA}}\\n成为会员赠送积分：{{keyword3.DATA}}\\n会员级别：{{keyword4.DATA}}\\n会员卡号：{{keyword5.DATA}}\\n{{remark.DATA}}\",\"data\":null,\"url\":\"\",\"mini_program\":null,\"status\":false,\"example\":\"\",\"created_at\":\"2021-08-24 18:13:44\",\"updated_at\":\"2021-08-24 18:09:01\"}],\"pagination\":{\"page\":1,\"size\":20,\"total\":4}}}",
 		"raw_query": "",
 		"query_data_method": "application/json; charset=utf-8",
 		"enable": false,
 		"OnlyParams": null,
 		"ExcludeParams": null,
 		"NoParams": false
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "获取指定%s的详情信息",
+		"enable": false,
+		"group": {
+			"name": "",
+			"title": ""
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "get__v2_wechat_template_info",
+		"method": "GET",
+		"name": "info",
+		"param": null,
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "",
+		"raw_query": "id=3",
+		"raw_return": "{\"code\":1000,\"data\":{\"id\":3,\"appid\":\"wxe43df03110f5981b\",\"template_id\":\"97_xBnPYcKDeGjUaq9BxDvUQneDAM4-mAEd8Jt0VRu4\",\"title\":\"成为会员通知\",\"name\":\"_COPY_COPY\",\"primary_industry\":\"\",\"deputy_industry\":\"\",\"content\":\"{{first.DATA}}\\n昵称：{{keyword1.DATA}}\\n手机：{{keyword2.DATA}}\\n成为会员赠送积分：{{keyword3.DATA}}\\n会员级别：{{keyword4.DATA}}\\n会员卡号：{{keyword5.DATA}}\\n{{remark.DATA}}\",\"data\":null,\"url\":\"\",\"mini_program\":null,\"status\":false,\"example\":\"\",\"created_at\":\"2021-08-24 18:13:18\",\"updated_at\":\"2021-08-24 18:09:01\"}}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "",
+		"tag": "",
+		"title": "%s详情",
+		"url": "/v2/wechat/template/info"
+	},
+	{
+		"ExcludeParams": null,
+		"NoParams": false,
+		"OnlyParams": null,
+		"app_id": "admin",
+		"author": "xiusin",
+		"desc": "新增一个新的%s",
+		"enable": false,
+		"group": {
+			"name": "",
+			"title": ""
+		},
+		"header": [
+			{
+				"desc": "登录票据",
+				"name": "Authorization",
+				"require": true,
+				"type": "string"
+			}
+		],
+		"immutable": false,
+		"menu_key": "post__v2_wechat_template_add",
+		"method": "POST",
+		"name": "add",
+		"param": null,
+		"query_data_method": "application/json; charset=utf-8",
+		"raw_param": "{\"id\":0,\"appid\":\"wxe43df03110f5981b\",\"template_id\":\"97_xBnPYcKDeGjUaq9BxDvUQneDAM4-mAEd8Jt0VRu4\",\"title\":\"成为会员通知\",\"name\":\"_COPY_COPY_COPY\",\"primary_industry\":\"\",\"deputy_industry\":\"\",\"content\":\"{{first.DATA}}\\n昵称：{{keyword1.DATA}}\\n手机：{{keyword2.DATA}}\\n成为会员赠送积分：{{keyword3.DATA}}\\n会员级别：{{keyword4.DATA}}\\n会员卡号：{{keyword5.DATA}}\\n{{remark.DATA}}\",\"data\":null,\"url\":\"\",\"mini_program\":null,\"status\":false,\"example\":\"\",\"created_at\":\"2021-08-24 18:13:18\",\"updated_at\":\"2021-08-24 18:09:01\"}",
+		"raw_query": "",
+		"raw_return": "{\"code\":1000,\"data\":\"新增数据成功\",\"message\":\"新增数据成功\"}",
+		"return": [
+			{
+				"default": "",
+				"desc": "",
+				"name": "code",
+				"type": "number"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"default": "",
+				"desc": "",
+				"name": "data",
+				"type": "any"
+			}
+		],
+		"sub_group": "",
+		"tag": "",
+		"title": "新增%s",
+		"url": "/v2/wechat/template/add"
 	}
 ]
