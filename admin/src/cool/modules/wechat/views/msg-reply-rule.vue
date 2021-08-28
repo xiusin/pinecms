@@ -48,16 +48,16 @@
 		</cl-upsert>
 	</cl-crud>
 
-	<el-dialog
-		title="选择素材"
-		v-model="accessModalRef"
-		:modal="true"
-		append-to-body
-		@close="onClose"
-	>
-		<material-news @selected="onSelect" selectMode />
-		<!--		<material-file :fileType="selectType" @selected="onSelect" selectMode></material-file>-->
-	</el-dialog>
+<!--	<el-dialog-->
+<!--		title="选择素材"-->
+<!--		v-model="accessModalRef"-->
+<!--		:modal="true"-->
+<!--		append-to-body-->
+<!--		@close="onClose"-->
+<!--	>-->
+<!--		<material-news @selected="onSelect" selectMode />-->
+<!--		&lt;!&ndash;		<material-file :fileType="selectType" @selected="onSelect" selectMode></material-file>&ndash;&gt;-->
+<!--	</el-dialog>-->
 </template>
 
 <script lang="ts">
@@ -145,6 +145,9 @@ export default defineComponent({
 								value: "1"
 							}
 						]
+					},
+					rules: {
+						required: true
 					}
 				},
 				{
@@ -165,6 +168,9 @@ export default defineComponent({
 					component: {
 						name: "el-select",
 						options: msgTypeOptions
+					},
+					rules: {
+						required: true
 					}
 				},
 				{
@@ -215,11 +221,6 @@ export default defineComponent({
 
 		const table = reactive<Table>({
 			columns: [
-				{
-					type: "index",
-					label: "#",
-					width: 60
-				},
 				{
 					prop: "ruleName",
 					label: "规则名称",

@@ -10,8 +10,8 @@ type AttachmentTypeController struct {
 }
 
 func (c *AttachmentTypeController) Construct() {
-	c.SearchFields = map[string]searchFieldDsl{
-		"type": {Op: "="},
+	c.SearchFields = []SearchFieldDsl{
+		 {Op: "=", Field: "type"},
 	}
 	c.Table = &tables.AttachmentType{}
 	c.Entries = &[]tables.AttachmentType{}

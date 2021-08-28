@@ -19,5 +19,5 @@ type listParam struct {
 	Sort       string                 `json:"sort" api:"remark:排序方法desc=逆序,asc=正序"`           // 排序规则
 	Keywords   string                 `json:"keyWord" api:"remark:查询关键字"`                     // 搜索关键字
 	Export     bool                   `json:"_isExport" api:"remark:是否导出"`                    // 是否导出
-	Params     map[string]interface{} `json:"params" api:"remark:额外参数用于非配置字段导出"`              // 额外附加参数
+	Params     map[string]interface{} `json:"param" api:"remark:额外参数用于非配置字段导出"`              // 额外附加参数
 }

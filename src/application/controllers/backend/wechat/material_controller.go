@@ -59,13 +59,9 @@ func (c *WechatMaterialController) PostList(cacher cache.AbstractCache) {
 
 func (c *WechatMaterialController) PostSync() {
 	appid := "wxe43df03110f5981b"
-	account, _, err := GetOfficialAccount(appid)
-	if err != nil {
-		helper.Ajax(err, 1, c.Ctx())
-		return
-	}
+	account, _ := GetOfficialAccount(appid)
 
-	_, err = c.Orm.Transaction(func(session *xorm.Session) (interface{}, error) {
+	_, err := c.Orm.Transaction(func(session *xorm.Session) (interface{}, error) {
 		session.Where("id > 0").Delete(c.Table)
 		types := []material.MediaType{material.MediaTypeImage, material.MediaTypeThumb, material.MediaTypeVoice, material.MediaTypeVideo}
 		for _, mediaType := range types {
@@ -100,11 +96,8 @@ func (c *WechatMaterialController) PostSync() {
 
 func (c *WechatMaterialController) PostTotal(cacher cache.AbstractCache) {
 	appid := "wxe43df03110f5981b"
-	account, _, err := GetOfficialAccount(appid)
-	if err != nil {
-		helper.Ajax(err, 1, c.Ctx())
-		return
-	}
+	account, _ := GetOfficialAccount(appid)
+
 	var ret material.ResMaterialCount
 	cacheKey := fmt.Sprintf(CacheKeyWechatMaterialCount, appid)
 	cacher.Remember(cacheKey, &ret, func() (interface{}, error) {
@@ -138,11 +131,7 @@ func (c *WechatMaterialController) PostDelete() {
 
 	appid := "wxe43df03110f5981b"
 
-	account, _, err := GetOfficialAccount(appid)
-	if err != nil {
-		helper.Ajax(err, 1, c.Ctx())
-		return
-	}
+	account, _ := GetOfficialAccount(appid)
 
 	if err = account.GetMaterial().DeleteMaterial(c.Table.(*tables.WechatMaterial).MediaId); err != nil {
 		helper.Ajax(err, 1, c.Ctx())
@@ -154,11 +143,8 @@ func (c *WechatMaterialController) PostDelete() {
 
 func (c *WechatMaterialController) PostUpload() {
 	appid := "wxe43df03110f5981b"
-	account, _, err := GetOfficialAccount(appid)
-	if err != nil {
-		helper.Ajax(err, 1, c.Ctx())
-		return
-	}
+	account, _ := GetOfficialAccount(appid)
+	var err error
 	fileName := c.Ctx().FormValue("fileName")
 	mediaType := c.Ctx().FormValue("mediaType")
 	var mediaId, url string

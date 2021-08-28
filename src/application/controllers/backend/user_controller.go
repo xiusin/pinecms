@@ -15,7 +15,7 @@ type UserController struct {
 }
 
 func (c *UserController) Construct() {
-	c.KeywordsSearch = []KeywordWhere{
+	c.KeywordsSearch = []SearchFieldDsl{
 		{Field: "username", Op: "LIKE", DataExp: "%$?%"},
 		{Field: "email", Op: "LIKE", DataExp: "%$?%"},
 	}

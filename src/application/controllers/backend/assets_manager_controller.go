@@ -24,7 +24,7 @@ type AssetsManagerController struct {
 }
 
 func (c *AssetsManagerController) Construct() {
-	c.KeywordsSearch = []KeywordWhere{
+	c.KeywordsSearch = []SearchFieldDsl{
 		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
 	}
 	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)

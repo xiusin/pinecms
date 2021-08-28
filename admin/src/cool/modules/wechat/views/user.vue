@@ -1,49 +1,65 @@
 <template>
-	<cl-crud :ref="setRefs('crud')" @load="onLoad">
-		<el-row type="flex">
-			<cl-refresh-btn />
-			<cl-add-btn />
-			<el-button size="mini" icon="el-icon-price-tag" type="success">标签管理</el-button>
-			<el-button size="mini" icon="el-icon-sort" type="warning" @click="syncFans"
-				>同步粉丝</el-button
-			>
-			<cl-flex1 />
-			<cl-search-key />
-		</el-row>
+	<div>
+		<cl-crud :ref="setRefs('crud')" @load="onLoad">
+			<el-row type="flex">
+				<cl-refresh-btn />
+				<cl-add-btn />
+				<el-button size="mini" icon="el-icon-price-tag" type="success" @click="showTagManager">标签管理</el-button>
+				<el-button size="mini" icon="el-icon-sort" type="warning" @click="syncFans">同步粉丝</el-button>
+				<cl-flex1 />
 
-		<el-row>
-			<cl-table v-bind="table">
-				<template #column-headimgurl="{ scope }">
-					<el-image :src="scope.row.headimgurl" />
+				<cl-filter-group v-model="form">
+					<cl-filter label="公众号">
+						<account-select v-model="form.appid" />
+					</cl-filter>
+					<cl-search-key />
+				</cl-filter-group>
+			</el-row>
+
+			<el-row>
+				<cl-table v-bind="table">
+					<template #column-headimgurl="{ scope }">
+						<el-image :src="scope.row.headimgurl" />
+					</template>
+				</cl-table>
+			</el-row>
+
+			<el-row type="flex">
+				<cl-flex1 />
+				<cl-pagination />
+			</el-row>
+
+			<cl-upsert v-bind="upsert">
+				<template #slot-btns="{ scope }">
+					<el-button>查询</el-button>
+					<el-button type="primary" size="mini">绑定标签</el-button>
+					<el-button type="primary" size="mini">解绑标签</el-button>
+					<el-button type="danger" size="mini">批量删除</el-button>
 				</template>
-			</cl-table>
-		</el-row>
+			</cl-upsert>
+		</cl-crud>
 
-		<el-row type="flex">
-			<cl-flex1 />
-			<cl-pagination />
-		</el-row>
-
-		<cl-upsert v-bind="upsert">
-			<template #slot-btns="{ scope }">
-				<el-button>查询</el-button>
-				<el-button type="primary" size="mini">绑定标签</el-button>
-				<el-button type="primary" size="mini">解绑标签</el-button>
-				<el-button type="danger" size="mini">批量删除</el-button>
-			</template>
-		</cl-upsert>
-	</cl-crud>
+		<wx-user-tags-manager :ref="setRefs('wxUserTagsEditor')" :visible="showWxUserTagsEditor" @close="showWxUserTagsEditor=false"></wx-user-tags-manager>
+		<wx-user-tagging :ref="setRefs('wxUserTagging')" :wxUsers="dataListSelections"></wx-user-tagging>
+	</div>
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, reactive } from "vue";
+import { defineComponent, inject, reactive, ref } from "vue";
 import { useRefs } from "/@/core";
 import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
 import { ElMessage } from "element-plus";
+import WxUserTagsManager from '../components/wx-user-tags-manager.vue'
+import WxUserTagging from './wx-user-tagging.vue'
+import AccountSelect from '../components/account-select.vue'
 
 export default defineComponent({
 	name: "wechat-user",
-
+	components: {
+		WxUserTagsManager,
+		WxUserTagging,
+		AccountSelect
+	},
 	setup() {
 		const service = inject<any>("service");
 
@@ -131,7 +147,7 @@ export default defineComponent({
 						props: {
 							type: "textarea",
 							rows: 4,
-							placeholder: "请输入关注场景值"
+							placeholder: "请输入备注"
 						}
 					}
 				}
@@ -237,6 +253,12 @@ export default defineComponent({
 			app.refresh();
 		}
 
+		const showWxUserTagsEditor = ref(false)
+
+		function showTagManager() {
+			showWxUserTagsEditor.value = true
+		}
+
 		function syncFans() {
 			service.wechat.user
 				.sync({ appid: "wxe43df03110f5981b" })
@@ -247,7 +269,14 @@ export default defineComponent({
 					ElMessage.error(e);
 				});
 		}
+
+
+		const form = ref({"appid": ""})
+
 		return {
+			form,
+			showWxUserTagsEditor,
+			showTagManager,
 			syncFans,
 			service,
 			refs,

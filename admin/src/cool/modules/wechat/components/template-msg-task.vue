@@ -1,25 +1,25 @@
 <template>
-    <el-dialog title="筛选模板消息目标用户" :close-on-click-modal="false" :visible.sync="visible">
-        <el-form :inline="true" :model="dataForm" ref="dataForm" clearable @keyup.enter.native="getWxUsers()">
+    <cl-dialog title="筛选模板消息目标用户" :close-on-click-modal="false" v-model="inVisible">
+        <el-form :inline="true" :model="dataForm" ref="dataForm" clearable @keyup.enter.native="getWxUsers()" style="text-align: center">
             <el-form-item>
-                <el-select v-model="dataForm.tagid" filterable placeholder="用户标签" @change="getWxUsers()">
+                <el-select v-model="dataForm.tagid" filterable placeholder="用户标签" @change="getWxUsers()" size="mini">
                     <el-option v-for="item in wxUserTags" :key="item.id" :label="item.name" :value="item.id+''"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-input v-model="dataForm.nickname" placeholder="昵称" @change="getWxUsers()" clearable></el-input>
+                <el-input v-model="dataForm.nickname" placeholder="昵称" @change="getWxUsers()" size="mini" clearable></el-input>
             </el-form-item>
             <el-form-item>
-                <el-input v-model="dataForm.province" placeholder="省份" @change="getWxUsers()" clearable></el-input>
+                <el-input v-model="dataForm.province" placeholder="省份" @change="getWxUsers()" size="mini" clearable></el-input>
             </el-form-item>
             <el-form-item>
-                <el-input v-model="dataForm.city" placeholder="城市" @change="getWxUsers()" clearable></el-input>
+                <el-input v-model="dataForm.city" placeholder="城市" @change="getWxUsers()" size="mini" clearable></el-input>
             </el-form-item>
             <el-form-item>
-                <el-input v-model="dataForm.remark" placeholder="备注" @change="getWxUsers()" clearable></el-input>
+                <el-input v-model="dataForm.remark" placeholder="备注" @change="getWxUsers()" size="mini" clearable></el-input>
             </el-form-item>
             <el-form-item>
-                <el-input v-model="dataForm.qrScene" placeholder="扫码场景值" @change="getWxUsers()" clearable></el-input>
+                <el-input v-model="dataForm.qrScene" placeholder="扫码场景值" @change="getWxUsers()" size="mini" clearable></el-input>
             </el-form-item>
         </el-form>
         <div class="text-bold">本消息将发送给：</div>
@@ -34,14 +34,15 @@
             </div>
         </div>
         <div class="margin-top text-bold">消息预览：</div>
-        <div class="margin-top-xs">
-            <el-input type="textarea" disabled autosize v-model="msgReview" placeholder="模版"></el-input>
+        <div class="margin-top-xs margin-bottom-20">
+            <el-input type="textarea" disabled autosize v-model="msgReview" placeholder="模版"  size="mini"></el-input>
         </div>
+		<div style="height: 10px;"></div>
         <span slot="footer" class="dialog-footer">
-            <el-button @click="send" type="success" :disabled="totalCount<=0 || sending">{{sending?'发送中...':'发送'}}</el-button>
-            <el-button @click="visible=false">关闭</el-button>
+            <el-button @click="send" type="success" size="mini" :disabled="totalCount<=0 || sending">{{sending?'发送中...':'发送'}}</el-button>
+            <el-button @click="inVisible=false" size="mini">关闭</el-button>
         </span>
-    </el-dialog>
+    </cl-dialog>
 </template>
 <script>
 import { mapState } from 'vuex'
@@ -51,11 +52,11 @@ export default {
         wxUserTagName:{
             type:String,
             required:false
-        }
+        },
     },
     data(){
         return{
-            visible:false,
+            inVisible:false,
             wxUsersLoading:false,
             sending:false,
             msgTemplate:{},
@@ -75,7 +76,7 @@ export default {
         }
     },
     computed: mapState({
-        wxUserTags:state=>state.wxUserTags.tags,
+        // wxUserTags:state=>state.wxUserTags.tags,
         msgReview(){
             if(!this.msgTemplate.data) return ""
             let content = this.msgTemplate.content
@@ -99,7 +100,7 @@ export default {
     },
     methods:{
         init(msgTemplate){
-            if(!msgTemplate || !msgTemplate.templateId){
+            if(!msgTemplate || !msgTemplate.template_id){
                 this.$message.error('消息模板无效')
                 return
             }
@@ -108,7 +109,7 @@ export default {
                 return
             }
             this.msgTemplate=msgTemplate
-            this.visible=true;
+            this.inVisible=true;
         },
         getWxUserTags() {
             return new Promise((resolve,reject)=>{
@@ -128,42 +129,37 @@ export default {
         },
         getWxUsers() {
             this.wxUsersLoading = true
-            this.$http({
-                url: this.$http.adornUrl('/manage/wxUser/list'),
-                method: 'get',
-                params: this.$http.adornParams(this.dataForm)
-            }).then(({ data }) => {
-                if (data && data.code === 200) {
-                    this.wxUserList = data.page.list
-                    this.totalCount = data.page.totalCount
-                } else {
-                    this.$message.error(data.msg)
-                }
-                this.wxUsersLoading = false
-            })
+			this.service.wechat.user.page({
+				param: this.dataForm,
+				order: this.dataForm.sidx,
+				sort: "desc",
+				page: this.page,
+				size: 10,
+			}).then((data) => {
+				this.wxUsersLoading = false
+				this.wxUserList = data.list
+				this.totalCount = data.pagination.total
+			}).catch((e) => {
+				this.wxUsersLoading = false
+				this.$message.error(e)
+			})
         },
         send(){
             if(this.sending)return
             this.sending=true
-            this.$http({
-                url: this.$http.adornUrl('/manage/msgTemplate/sendMsgBatch'),
-                method: 'post',
-                data:this.$http.adornData({
-                    wxUserFilterParams : this.dataForm,
-                    templateId : this.msgTemplate.templateId,
-                    url : this.msgTemplate.url,
-                    miniprogram : this.msgTemplate.miniprogram,
-                    data : this.msgTemplate.data,
-                })
-            }).then(({ data }) => {
-                this.sending = false
-                if (data && data.code === 200) {
-                    this.$message.success("消息将在后台发送")
-                    this.visible=false
-                } else {
-                    this.$message.error(data.msg)
-                }
-            })
+			this.service.wechat.template.send({
+				wxUserFilterParams : this.dataForm,
+				templateId : this.msgTemplate.templateId,
+				url : this.msgTemplate.url,
+				miniprogram : this.msgTemplate.miniprogram,
+				data : this.msgTemplate.data,
+			}).then((data) => {
+				this.sending = false
+				this.$message.success("消息将在后台发送")
+				this.visible=false
+			}).catch((e) => {
+				this.$message.error(e)
+			})
         }
     }
 }

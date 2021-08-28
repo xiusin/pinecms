@@ -15,7 +15,7 @@ func (c *PositionController) Construct() {
 	c.SubGroup = "岗位管理"
 	c.ApiEntityName = "岗位"
 	c.BaseController.Construct()
-	c.KeywordsSearch = []KeywordWhere{
+	c.KeywordsSearch = []SearchFieldDsl{
 		{Field: "name", Op: "="},
 		{Field: "code", Op: "="},
 	}

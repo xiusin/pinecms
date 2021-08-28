@@ -14,12 +14,12 @@ type DictController struct {
 func (c *DictController) Construct() {
 	c.Group = "字典管理"
 	c.SubGroup = "字典列表管理"
-	c.KeywordsSearch = []KeywordWhere{
+	c.KeywordsSearch = []SearchFieldDsl{
 		{Field: "value", Op: "LIKE", DataExp: "%$?%"},
 		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
 	}
-	c.SearchFields = map[string]searchFieldDsl{
-		"status": {Op: "="},
+	c.SearchFields = []SearchFieldDsl{
+		{Field: "status"},
 	}
 	c.Table = &tables.Dict{}
 	c.Entries = &[]*tables.Dict{}

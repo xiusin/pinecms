@@ -7,7 +7,7 @@ type TagsController struct {
 }
 
 func (c *TagsController) Construct() {
-	c.KeywordsSearch = []KeywordWhere{
+	c.KeywordsSearch = []SearchFieldDsl{
 		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
 	}
 	c.Table = &tables.Tags{}

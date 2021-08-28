@@ -7,8 +7,6 @@ import (
 
 const CacheKeyWechatMaterialCount = "pinecms.wechat.material.count.%s"
 
-const CacheKeyWechatMaterialList = "pinecms.wechat.material.list.%s.t.%s.p.%d"
-
 const CacheKeyWechatMaterialListKeys = "pinecms.wechat.material.list.key"
 
 const CacheKeyWechatUserTags = "pinecms.wechat.user.tags.%s"

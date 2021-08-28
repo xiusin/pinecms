@@ -12,7 +12,7 @@ type ErrorLogController struct {
 
 func (c *ErrorLogController) Construct() {
 	c.Group = "系统日志"
-	c.KeywordsSearch = []KeywordWhere{
+	c.KeywordsSearch = []SearchFieldDsl{
 		{Field: "message", Op: "LIKE", DataExp: "%$?%"},
 	}
 	c.Table = &tables.Log{}

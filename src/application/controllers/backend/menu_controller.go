@@ -11,7 +11,7 @@ type MenuController struct {
 }
 
 func (c *MenuController) Construct() {
-	c.KeywordsSearch = []KeywordWhere{
+	c.KeywordsSearch = []SearchFieldDsl{
 		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
 	}
 	c.Table = &tables.Menu{}

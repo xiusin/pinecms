@@ -14,6 +14,18 @@
 							{{ buildURL(scope.row.appid) }}
 						</el-button>
 				</template>
+				<template #column-important="{ scope }">
+					<el-dropdown size="mini" type="success" trigger="click">
+					  <span class="el-dropdown-link"  style="font-size: 12px">
+						操作<i class="el-icon-arrow-down el-icon--right"></i>
+					  </span>
+						<template #dropdown>
+							<el-dropdown-menu>
+								<el-dropdown-item icon="el-icon-tip" @click="clearQuota">重置调用频次限制</el-dropdown-item>
+							</el-dropdown-menu>
+						</template>
+					</el-dropdown>
+				</template>
 			</cl-table>
 		</el-row>
 
@@ -30,6 +42,7 @@
 import { defineComponent, inject, reactive, ref } from "vue";
 import { useRefs } from "/@/core";
 import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
+import {ElMessage, ElMessageBox} from "element-plus";
 
 export default defineComponent({
 	name: "wechat-account",
@@ -202,6 +215,11 @@ export default defineComponent({
 					label: "通知地址"
 				},
 				{
+					prop: "important",
+					label: "重要操作",
+					width: 180,
+				},
+				{
 					type: "op",
 					buttons: ["edit", "delete"]
 				}
@@ -217,6 +235,16 @@ export default defineComponent({
 			return window.location.protocol + "//" + window.location.host + `/api/wechat/msg/${appid}`
 		}
 
+		function clearQuota() {
+			ElMessageBox.confirm("该操作每月只可执行10次, 确定要操作吗? 详细查看: <a>https://developers.weixin.qq.com/doc/offiaccount/Message_Management/API_Call_Limits.html</a>", "重要提示", {
+				type:"warning"
+			}).then(() => {
+				service.wechat.account.clearQuota().then((data: any) => {
+					ElMessage.success(data)
+				}).catch((e: any) => ElMessage.error(e))
+			})
+		}
+
 		return {
 			service,
 			buildURL,
@@ -224,7 +252,8 @@ export default defineComponent({
 			table,
 			setRefs,
 			onLoad,
-			upsert
+			upsert,
+			clearQuota
 		};
 	}
 });

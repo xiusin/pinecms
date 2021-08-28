@@ -30,42 +30,32 @@ const (
 	OpInfo
 )
 
-type KeywordWhere struct {
+type SearchFieldDsl struct {
 	Field    string                      // 字段
 	Op       string                      // 操作字符	默认为 =
 	DataExp  string                      // 数据匹配格式 匹配值=$? 如 LIKE %$?% 默认=$?
 	CallBack func(*xorm.Session, string) // 替换callback 如果设置, 将绝对忽略Field Op DataExp的设置 匹配值=$?
 }
 
-type searchFieldDsl struct {
-	Op string
-}
-
-type exportHeader struct {
-	Field      string
-	HeaderName string
-	//Method     excelize.Cell
-}
-
 type BaseController struct {
-	SearchFields   map[string]searchFieldDsl // 设置可以搜索的字段 接收或匹配params的字段
-	BindType       string                    // 表单绑定类型
-	KeywordsSearch []KeywordWhere            // 关键字搜索字段 用于关键字匹配字段
-	Table          interface{}               // 传入Table结构体引用
-	Entries        interface{}               // 传入Table结构体的切片
+	SearchFields   []SearchFieldDsl // 设置可以搜索的字段 接收或匹配params的字段
+	BindType       string           // 表单绑定类型
+	KeywordsSearch []SearchFieldDsl // 关键字搜索字段 用于关键字匹配字段
+	Table          interface{}      // 传入Table结构体引用
+	Entries        interface{}      // 传入Table结构体的切片
 	Orm            *xorm.Engine
 	p              listParam
 	apiEntities    map[string]apidoc.Entity
 
-	TableKey       string         // 表主键
-	TableStructKey string         // 表结构体主键字段 主要用于更新逻辑反射数据
-	ExportHeaders  []exportHeader // 导出数据头信息
+	TableKey       string // 表主键
+	TableStructKey string // 表结构体主键字段 主要用于更新逻辑反射数据
 
 	OpBefore func(int, interface{}) error // 操作前置
 	OpAfter  func(int, interface{}) error // 操作后置
 
 	apidoc.Entity
 	ApiEntityName string
+
 	pine.Controller
 }
 
@@ -130,6 +120,7 @@ func (c *BaseController) PostList() {
 		} else {
 			count, err = query.Limit(p.Size, (p.Page-1)*p.Size).FindAndCount(c.Entries)
 		}
+		pine.Logger().Print(query.LastSQL())
 		if err != nil {
 			logger.Error(err)
 			helper.Ajax("获取列表异常: "+err.Error(), 1, c.Ctx())
@@ -140,13 +131,7 @@ func (c *BaseController) PostList() {
 				helper.Ajax("获取列表异常: "+err.Error(), 1, c.Ctx())
 			}
 		}
-		//if p.Size == 0 {
-		//	//if p.Export {
-		//	//	c.export()
-		//	//} else {
-		//	//	helper.Ajax(c.Entries, 0, c.Ctx())
-		//	//}
-		//} else {
+
 		helper.Ajax(pine.H{
 			"list": c.Entries,
 			"pagination": pine.H{
@@ -155,7 +140,6 @@ func (c *BaseController) PostList() {
 				"total": count,
 			},
 		}, 0, c.Ctx())
-		//}
 	}
 }
 
@@ -189,18 +173,55 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 		}
 	}
 	if c.SearchFields != nil {
-		for field, dsl := range c.SearchFields { // 其他字段搜索
-			val, exists := c.p.Params[strings.ReplaceAll(field, "`", "")]
+		for _, v := range c.SearchFields { // 其他字段搜索
+			if v.Field == "" && v.CallBack == nil {
+				continue
+			}
+			val, exists := c.p.Params[strings.ReplaceAll(v.Field, "`", "")]
 			if exists {
-				if dsl.Op == "range" { // 范围查询， 组件between and
-					ranges := strings.SplitN(val.(string), ",", 2)
-					if len(ranges) == 2 {
-						query.Where(fmt.Sprintf("%s >= ?", field), ranges[0]).Where(fmt.Sprintf("%s <= ?", field), ranges[1])
+				switch val.(type) {
+				case string:
+					if len(val.(string)) == 0 {
+						continue
 					}
+				case bool:
+					if !val.(bool) {
+						continue
+					}
+				}
+				if v.CallBack == nil {
+					if v.Op == "" {
+						v.Op = "="
+					}
+					if v.DataExp == "" {
+						v.DataExp = "$?"
+					}
+					query.Where(fmt.Sprintf("%s %s ?", v.Field, v.Op), strings.ReplaceAll(v.DataExp, "$?", val.(string)))
 				} else {
-					query.Where(fmt.Sprintf("%s %s ?", field, dsl.Op), val)
+					v.CallBack(query, c.p.Keywords)
 				}
 			}
+
+			//if exists {
+			//	if dsl.Op == "range" { // 范围查询， 组件between and
+			//		ranges := strings.SplitN(val.(string), ",", 2)
+			//		if len(ranges) == 2 {
+			//			query.Where(fmt.Sprintf("%s >= ?", field), ranges[0]).Where(fmt.Sprintf("%s <= ?", field), ranges[1])
+			//		}
+			//	} else {
+			//		switch val.(type) {
+			//		case string:
+			//			if len(val.(string)) == 0 {
+			//				continue
+			//			}
+			//		case bool:
+			//			if !val.(bool) {
+			//				continue
+			//			}
+			//		}
+			//		query.Where(fmt.Sprintf("%s %s ?", field, dsl.Op), val)
+			//	}
+			//}
 		}
 	}
 	if len(c.p.OrderField) > 0 {
@@ -210,7 +231,6 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 			query.Asc(c.p.OrderField)
 		}
 	}
-
 	return &c.p, nil
 }
 

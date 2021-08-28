@@ -22,10 +22,8 @@ func (c *WechatQrcodeController) Construct() {
 func (c *WechatQrcodeController) after(act int, params interface{}) error {
 	if act == backend.OpAdd {
 		appid := "wxe43df03110f5981b"
-		account, _, err := GetOfficialAccount(appid)
-		if err != nil {
-			return err
-		}
+		account, _ := GetOfficialAccount(appid)
+
 		data := c.Table.(*tables.WechatQrcode)
 		var req *basic.Request
 		if data.IsTemp {

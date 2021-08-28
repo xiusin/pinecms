@@ -13,14 +13,14 @@ type LogController struct {
 func (c *LogController) Construct() {
 	c.Group = "操作日志"
 
-	c.KeywordsSearch = []KeywordWhere{
+	c.KeywordsSearch = []SearchFieldDsl{
 		{Field: "username", Op: "LIKE", DataExp: "%$?%"},
 		{Field: "ip", Op: "LIKE", DataExp: "%$?%"},
 		{Field: "uri", Op: "LIKE", DataExp: "%$?%"},
 		{Field: "params", Op: "LIKE", DataExp: "%$?%"},
 	}
-	c.SearchFields = map[string]searchFieldDsl{
-		"method": {Op: "="},
+	c.SearchFields = []SearchFieldDsl{
+		 {Field: "method"},
 	}
 	c.Table = &tables.RequestLog{}
 	c.Entries = &[]tables.RequestLog{}

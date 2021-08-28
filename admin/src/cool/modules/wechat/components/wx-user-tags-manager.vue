@@ -1,20 +1,19 @@
 <template>
-    <el-dialog title="公众号用户标签管理" :close-on-click-modal="false" :visible.sync="dialogVisible">
-        <div class="panel  flex flex-wrap" v-loading="submitting">
-            <el-tag v-for="tag in wxUserTags" closable @click="editTag(tag.id,tag.name)" @close="deleteTag(tag.id)" :disable-transitions="false" :key="tag.id">
+    <cl-dialog title="公众号用户标签管理" :close-on-click-modal="false" v-model="visible">
+        <div class="panel  flex flex-wrap" v-loading="submitting" style="min-height: 165px;">
+            <el-tag size="mini" v-for="tag in wxUserTags" closable @click="editTag(tag.id,tag.name)" @close="deleteTag(tag.id)" :disable-transitions="false" :key="tag.id">
                 {{tag.id}} {{tag.name}}
             </el-tag>
-            <el-input class="input-new-tag" v-if="inputVisible" placeholder="回车确认" v-model="inputValue" ref="saveTagInput" size="small" @keyup.enter.native="addTag">
+            <el-input class="input-new-tag" v-if="inputVisible" placeholder="回车确认" v-model="inputValue" ref="saveTagInput" size="mini" @keyup.enter.native="addTag">
             </el-input>
-            <el-button v-else class="button-new-tag" size="small" @click="showInput">+ 添加</el-button>
+            <el-button v-else class="button-new-tag" size="mini" @click="showInput">+ 添加</el-button>
         </div>
-        <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible=false">关闭</el-button>
+        <span class="dialog-footer" style="position: absolute; bottom: 5px;">
+            <el-button @click="visible=false" style="float: right" size="mini">关闭</el-button>
         </span>
-    </el-dialog>
+    </cl-dialog>
 </template>
 <script>
-import { mapState } from 'vuex'
 export default {
     name: 'wx-user-tags-manager',
     props: {
@@ -31,27 +30,24 @@ export default {
             submitting:false,
         }
     },
-    computed: mapState({
-        wxUserTags:state=>state.wxUserTags.tags
-    }),
+    // computed: mapState({
+    //     wxUserTags:state=>state.wxUserTags.tags
+    // }),
     mounted() {
         this.getWxUserTags();
     },
     methods: {
-        show(){
-            this.dialogVisible=true;
-        },
         getWxUserTags() {
-            this.$http({
-                url: this.$http.adornUrl('/manage/wxUserTags/list'),
-                method: 'get',
-            }).then(({ data }) => {
-                if (data && data.code === 200) {
-                    this.$store.commit('wxUserTags/updateTags', data.list)
-                } else {
-                    this.$message.error(data.msg)
-                }
-            })
+            // this.$http({
+            //     url: this.$http.adornUrl('/manage/wxUserTags/list'),
+            //     method: 'get',
+            // }).then(({ data }) => {
+            //     if (data && data.code === 200) {
+            //         this.$store.commit('wxUserTags/updateTags', data.list)
+            //     } else {
+            //         this.$message.error(data.msg)
+            //     }
+            // })
         },
         deleteTag(tagid) {
             if(this.submitting){

@@ -36,11 +36,7 @@ func (c *WechatMagController) PostReply() {
 		return
 	}
 
-	account, _, err := GetOfficialAccount(inputs.AppId)
-	if err != nil {
-		helper.Ajax(err, 1, c.Ctx())
-		return
-	}
+	account, _ := GetOfficialAccount(inputs.AppId)
 
 	msg := &message.CustomerMessage{
 		ToUser:  inputs.OpenId,

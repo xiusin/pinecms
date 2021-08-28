@@ -12,12 +12,12 @@ import (
 	"github.com/xiusin/pinecms/src/application/models/tables"
 )
 
-func GetOfficialAccount(appid string) (*officialaccount.OfficialAccount, *tables.WechatAccount, error) {
+func GetOfficialAccount(appid string) (*officialaccount.OfficialAccount, *tables.WechatAccount) {
 	accountData := &tables.WechatAccount{}
 	orm := di.MustGet(controllers.ServiceXorm).(*xorm.Engine)
 	orm.Where("app_id = ?", appid).Get(accountData)
 	if accountData.Id == 0 {
-		return nil, nil, errors.New("公众号" + appid + "不存在")
+		panic(errors.New("公众号" + appid + "不存在"))
 	}
 	wc, memory := wechat.NewWechat(), &WechatTokenCacher{AbstractCache: di.MustGet(controllers.ServiceICache).(cache.AbstractCache)}
 	cfg := &offConfig.Config{
@@ -28,7 +28,7 @@ func GetOfficialAccount(appid string) (*officialaccount.OfficialAccount, *tables
 		Cache:          memory,
 	}
 	account := wc.GetOfficialAccount(cfg)
-	return account, accountData, nil
+	return account, accountData
 }
 
 func SaveCacheMaterialListKey(key string, cacher cache.AbstractCache) {

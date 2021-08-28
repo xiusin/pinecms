@@ -50,12 +50,12 @@ type dictItem struct {
 func (c *DocumentController) Construct() {
 	c.Group = "系统管理"
 	c.SubGroup = "模型管理"
-	c.KeywordsSearch = []KeywordWhere{
+	c.KeywordsSearch = []SearchFieldDsl{
 		{Field: "value", Op: "LIKE", DataExp: "%$?%"},
 		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
 	}
-	c.SearchFields = map[string]searchFieldDsl{
-		"status": {Op: "="},
+	c.SearchFields = []SearchFieldDsl{
+		{Field: "status"},
 	}
 	c.Table = &tables.DocumentModel{}
 	c.Entries = &[]*tables.DocumentModel{}

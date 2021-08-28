@@ -22,11 +22,7 @@ func msgHandler(ctx *pine.Context) {
 		ctx.Abort(404)
 		return
 	}
-	account, _, err := GetOfficialAccount(appid)
-	if err != nil {
-		ctx.Abort(404)
-		return
-	}
+	account, _ := GetOfficialAccount(appid)
 	req := &http.Request{}
 	if err := fasthttpadaptor.ConvertRequest(ctx.RequestCtx, req, true); err != nil {
 		pine.Logger().Error("转换请求失败", err)
@@ -47,7 +43,7 @@ func msgHandler(ctx *pine.Context) {
 	})
 
 	//处理消息接收以及回复
-	if err = srv.Serve(); err != nil {
+	if err := srv.Serve(); err != nil {
 		pine.Logger().Error("处理消息异常", err)
 		return
 	}

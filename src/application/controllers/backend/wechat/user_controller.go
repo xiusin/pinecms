@@ -15,18 +15,29 @@ type WechatUserController struct {
 func (c *WechatUserController) Construct() {
 	c.Table = &tables.WechatMember{}
 	c.Entries = &[]tables.WechatMember{}
+
+	c.SearchFields = []backend.SearchFieldDsl{
+		{Field: "province", Op: "LIKE", DataExp: "%$?%"},
+		{Field: "tagid_list"},
+		{Field: "city", Op: "LIKE", DataExp: "%$?%"},
+		{Field: "nickname", Op: "LIKE", DataExp: "%$?%"},
+		{Field: "remark", Op: "LIKE", DataExp: "%$?%"},
+		{Field: "qr_scene_str", Op: "LIKE", DataExp: "%$?%"},
+	}
+
 	c.BaseController.Construct()
 	c.OpAfter = c.After
 }
 
 func (c *WechatUserController) After(act int, params interface{}) error {
 	if act == backend.OpEdit {
-		account, _, err := GetOfficialAccount(c.Table.(*tables.WechatMember).Appid)
-		if err != nil {
-			return err
-		}
+		account, _ := GetOfficialAccount(c.Table.(*tables.WechatMember).Appid)
+
 		// 同步 更新备注 忽略结果输出
-		return account.GetUser().UpdateRemark(c.Table.(*tables.WechatMember).Openid, c.Table.(*tables.WechatMember).Remark)
+		return account.GetUser().UpdateRemark(
+			c.Table.(*tables.WechatMember).Openid,
+			c.Table.(*tables.WechatMember).Remark,
+		)
 	}
 	return nil
 }
@@ -39,11 +50,8 @@ func (c *WechatUserController) PostSync() {
 		return
 	}
 
-	account, data, err := GetOfficialAccount(q.AppId)
-	if err != nil {
-		helper.Ajax(err, 1, c.Ctx())
-		return
-	}
+	account, data := GetOfficialAccount(q.AppId)
+
 	if !data.Verified {
 		helper.Ajax("公众号没有接入无法同步", 1, c.Ctx())
 		return

@@ -16,12 +16,12 @@ type ContentController struct {
 
 func (c *ContentController) Construct() {
 	c.Group = "内容管理"
-	c.KeywordsSearch = []KeywordWhere{
+	c.KeywordsSearch = []SearchFieldDsl{
 		{Field: "value", Op: "LIKE", DataExp: "%$?%"},
 		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
 	}
-	c.SearchFields = map[string]searchFieldDsl{
-		"status": {Op: "="},
+	c.SearchFields = []SearchFieldDsl{
+		{Op: "=", Field: "status"},
 	}
 	c.Entries = &[]*tables.DocumentModel{}
 	c.ApiEntityName = "内容"

@@ -20,11 +20,11 @@ type TableController struct {
 
 func (c *TableController) Construct() {
 	c.Group = "字段管理"
-	c.KeywordsSearch = []KeywordWhere{
+	c.KeywordsSearch = []SearchFieldDsl{
 		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
 	}
-	c.SearchFields = map[string]searchFieldDsl{
-		"status": {Op: "="},
+	c.SearchFields = []SearchFieldDsl{
+		{Field: "status"},
 	}
 	c.Table = &tables.DocumentModelDsl{}
 	c.Entries = &[]tables.DocumentModelDsl{}

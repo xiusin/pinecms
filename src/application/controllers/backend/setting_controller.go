@@ -29,10 +29,10 @@ func (c *SettingController) Construct() {
 	}
 	c.setApiEntity()
 
-	c.SearchFields = map[string]searchFieldDsl{
-		"`group`": {Op: "="},
+	c.SearchFields = []SearchFieldDsl{
+		{Field: "`group`"},
 	}
-	c.KeywordsSearch = []KeywordWhere{
+	c.KeywordsSearch = []SearchFieldDsl{
 		{Field: "form_name", Op: "LIKE", DataExp: "%$?%"},
 		{Field: "`key`", Op: "LIKE", DataExp: "%$?%"},
 	}

@@ -2,7 +2,6 @@
 	<div>
 		<cl-crud :ref="setRefs('crud')" @load="onLoad">
 			<el-row type="flex">
-				<el-button type="danger" size="mini" @click="send()" icon="el-icon-sort">测试消息</el-button>
 				<el-button type="warning" size="mini" @click="sync()" icon="el-icon-sort">同步消息模板</el-button>
 				<cl-refresh-btn />
 				<el-button size="mini">
@@ -15,6 +14,7 @@
 			<el-row>
 				<cl-table v-bind="table">
 					<template #slot-config="{ scope }">
+						<el-button type="text" @click="templateMsgTaskHandle(scope.row)" size="mini">推送</el-button>
 						<el-button size="mini" @click="addOrUpdateHandle(scope.row.id)" type="text">配置</el-button>
 					</template>
 					<template #slot-copy="{ scope }">
@@ -30,8 +30,8 @@
 
 		</cl-crud>
 
-		<add-or-update v-if="addOrUpdateVisible" :ref="setRefs('addOrUpdate')" @refreshDataList="getDataList"></add-or-update>
-		<template-msg-task v-if="templateMsgTaskVisible" ref="templateMsgTask"></template-msg-task>
+		<add-or-update :visible="addOrUpdateVisible" :ref="setRefs('addOrUpdate')"></add-or-update>
+		<template-msg-task :visible="templateMsgTaskVisible" :ref="setRefs('templateMsgTask')"></template-msg-task>
 	</div>
 </template>
 
@@ -56,10 +56,6 @@ export default defineComponent({
 
 		const table = reactive<Table>({
 			columns: [
-				{
-					type: "selection",
-					width: 60
-				},
 				{
 					prop: "name",
 					label: "模版名称",
@@ -111,7 +107,7 @@ export default defineComponent({
 				},
 				{
 					type: "op",
-					width: 140,
+					width: 200,
 					buttons: ["slot-config","slot-copy", "delete"]
 				}
 			]
@@ -127,12 +123,12 @@ export default defineComponent({
 
 		function addOrUpdateHandle(id: any) {
 			addOrUpdateVisible.value = true
-			refs.addOrUpdate.init(id)
+			refs.value.addOrUpdate.init(id)
 		}
 
-		function templateMsgTaskHandle(){
+		function templateMsgTaskHandle(row: any){
 			templateMsgTaskVisible.value = true
-			refs.templateMsgTask.init()
+			refs.value.templateMsgTask.init(row)
 		}
 
 		function sync() {
@@ -166,8 +162,8 @@ export default defineComponent({
 			sync,
 			send,
 			copyHandle,
-			templateMsgTaskHandle,
 			addOrUpdateHandle,
+			templateMsgTaskHandle,
 			templateMsgTaskVisible,
 			addOrUpdateVisible,
 			service,

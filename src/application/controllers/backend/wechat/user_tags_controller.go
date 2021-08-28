@@ -24,10 +24,7 @@ func (c *WechatUserTagsController) PostList(cacher cache.AbstractCache) {
 	cacheKey := fmt.Sprintf(CacheKeyWechatUserTags, appid)
 	var tags []*user.TagInfo
 	if err := cacher.Remember(cacheKey, &tags, func() (interface{}, error) {
-		account, _, err := GetOfficialAccount(appid)
-		if err != nil {
-			return nil, err
-		}
+		account, _ := GetOfficialAccount(appid)
 		return account.GetUser().GetTag()
 	}, CacheTimeSecs); err != nil {
 		helper.Ajax(err, 1, c.Ctx())
@@ -54,11 +51,7 @@ func (c *WechatUserTagsController) PostDelete(cacher cache.AbstractCache) {
 		}
 	}
 	if idx > -1 {
-		account, _, err := GetOfficialAccount(appid)
-		if err != nil {
-			helper.Ajax(err, 1, c.Ctx())
-			return
-		}
+		account, _ := GetOfficialAccount(appid)
 		err = account.GetUser().DeleteTag(int32(id))
 		if err != nil {
 			helper.Ajax(err, 1, c.Ctx())
@@ -86,12 +79,8 @@ func (c *WechatUserTagsController) PostEdit(cacher cache.AbstractCache) {
 		if tag.ID == int32(id) {
 			tag.Name = name
 			tags[i] = tag
-			account, _, err := GetOfficialAccount(appid)
-			if err != nil {
-				helper.Ajax(err, 1, c.Ctx())
-				return
-			}
-			if err = account.GetUser().UpdateTag(int32(id), name); err != nil {
+			account, _ := GetOfficialAccount(appid)
+			if err := account.GetUser().UpdateTag(int32(id), name); err != nil {
 				helper.Ajax(err, 1, c.Ctx())
 				return
 			} else {
@@ -107,11 +96,7 @@ func (c *WechatUserTagsController) PostEdit(cacher cache.AbstractCache) {
 // PostTagging 批量打标签
 func (c *WechatUserTagsController) PostTagging() {
 	appid := "wxe43df03110f5981b"
-	account, _, err := GetOfficialAccount(appid)
-	if err != nil {
-		helper.Ajax(err, 1, c.Ctx())
-		return
-	}
+	account, _ := GetOfficialAccount(appid)
 
 	account.GetUser().BatchTag([]string{}, 0)
 }
@@ -119,11 +104,7 @@ func (c *WechatUserTagsController) PostTagging() {
 // PostUntagging 批量解除标签
 func (c *WechatUserTagsController) PostUntagging() {
 	appid := "wxe43df03110f5981b"
-	account, _, err := GetOfficialAccount(appid)
-	if err != nil {
-		helper.Ajax(err, 1, c.Ctx())
-		return
-	}
+	account, _ := GetOfficialAccount(appid)
 
 	account.GetUser().BatchUntag([]string{}, 0)
 }

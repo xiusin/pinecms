@@ -113,14 +113,9 @@ export default defineComponent({
 					width: 60
 				},
 				{
-					prop: "id",
-					label: "ID",
-					width: 100
-				},
-				{
 					prop: "is_temp",
 					label: "类型",
-					width: 140,
+					width: 80,
 					dict: [
 						{
 							label: "临时",
@@ -137,7 +132,9 @@ export default defineComponent({
 				{
 					prop: "scene_str",
 					label: "场景值",
-					align: "left"
+					align: "left",
+					showOverflowTooltip: true,
+					minWidth: 130,
 				},
 				{
 					prop: "ticket",
