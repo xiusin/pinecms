@@ -12,5 +12,8 @@ type WechatRuleController struct {
 func (c *WechatRuleController) Construct() {
 	c.Table = &tables.WechatMsgReplyRule{}
 	c.Entries = &[]tables.WechatMsgReplyRule{}
+	c.SearchFields = []backend.SearchFieldDsl{
+		{Field: "appid"},
+	}
 	c.BaseController.Construct()
 }

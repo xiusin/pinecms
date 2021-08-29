@@ -4,7 +4,9 @@
 			<cl-add-btn />
 			<cl-refresh-btn />
 			<cl-flex1 />
-			<cl-search-key />
+			<cl-filter-group v-model="form">
+				<account-select v-model="form.appid" />
+			</cl-filter-group>
 		</el-row>
 
 		<el-row>
@@ -35,25 +37,48 @@
 			</div>
 		</cl-dialog>
 
-		<cl-upsert v-model="form" v-bind="upsert" />
+		<cl-upsert v-model="form" v-bind="upsert">
+			<template #slot-appid="{ scope }">
+				<account-select v-model="scope.appid" />
+			</template>
+		</cl-upsert>
 	</cl-crud>
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, reactive, ref } from "vue";
+import { defineComponent, inject, onMounted, reactive, ref } from "vue";
 import { useRefs } from "/@/core";
 import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
+import AccountSelect from "../components/account-select.vue";
 
 export default defineComponent({
 	name: "wechat-qrcode",
+
+	components: {
+		AccountSelect
+	},
 
 	setup() {
 		const service = inject<any>("service");
 
 		const { refs, setRefs }: any = useRefs();
 
+		const form = ref({ appid: "" });
+
+		const accounts = ref([]);
+
 		const upsert = reactive<Upsert>({
 			items: [
+				{
+					prop: "appid",
+					label: "选择公众号",
+					component: {
+						name: "slot-appid"
+					},
+					rules: {
+						required: true
+					}
+				},
 				{
 					prop: "is_temp",
 					label: "二维码类型",
@@ -113,6 +138,11 @@ export default defineComponent({
 					width: 60
 				},
 				{
+					prop: "appid",
+					label: "所属公众号",
+					dict: accounts
+				},
+				{
 					prop: "is_temp",
 					label: "类型",
 					width: 80,
@@ -134,7 +164,7 @@ export default defineComponent({
 					label: "场景值",
 					align: "left",
 					showOverflowTooltip: true,
-					minWidth: 130,
+					minWidth: 130
 				},
 				{
 					prop: "ticket",
@@ -173,7 +203,14 @@ export default defineComponent({
 			qrcodeUrl.value = url;
 		}
 
+		onMounted(() => {
+			service.wechat.account.select().then((data: any) => {
+				data.unshift({ label: "全部公众号", value: "" });
+				accounts.value = data;
+			});
+		});
 		return {
+			accounts,
 			qrcodeUrl,
 			showQrcode,
 			visible,
@@ -181,6 +218,7 @@ export default defineComponent({
 			refs,
 			table,
 			setRefs,
+			form,
 			onLoad,
 			upsert
 		};

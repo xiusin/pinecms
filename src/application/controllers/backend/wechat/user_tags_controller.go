@@ -5,36 +5,43 @@ import (
 	"github.com/silenceper/wechat/v2/officialaccount/user"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
-	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"strings"
 )
 
 type WechatUserTagsController struct {
 	backend.BaseController
+	p UserTags
+}
+
+type UserTags struct {
+	Appid string `json:"appid"`
+	Id    int64  `json:"id"`
+	Name  string `json:"name"`
 }
 
 func (c *WechatUserTagsController) Construct() {
-	c.Table = &tables.WechatMember{}
-	c.Entries = &[]tables.WechatMember{}
 	c.BaseController.Construct()
 }
 
 func (c *WechatUserTagsController) PostList(cacher cache.AbstractCache) {
-	appid := "wxe43df03110f5981b"
-	cacheKey := fmt.Sprintf(CacheKeyWechatUserTags, appid)
+	appid := strings.Trim(c.Input().Get("appid").String(), `"`)
 	var tags []*user.TagInfo
-	if err := cacher.Remember(cacheKey, &tags, func() (interface{}, error) {
-		account, _ := GetOfficialAccount(appid)
-		return account.GetUser().GetTag()
-	}, CacheTimeSecs); err != nil {
-		helper.Ajax(err, 1, c.Ctx())
+	if appid == "" {
+		helper.Ajax("请输入公众号ID", 1, c.Ctx())
 		return
 	}
+	cacheKey := fmt.Sprintf(CacheKeyWechatUserTags, appid)
+	cacher.Remember(cacheKey, &tags, func() (interface{}, error) {
+		account, _ := GetOfficialAccount(appid)
+		return account.GetUser().GetTag()
+	}, CacheTimeSecs)
+
 	helper.Ajax(tags, 0, c.Ctx())
 }
 
 func (c *WechatUserTagsController) PostDelete(cacher cache.AbstractCache) {
-	appid := "wxe43df03110f5981b"
+	appid := strings.Trim(c.Input().Get("appid").String(), `"`)
 	id, _ := c.Input().Get("id").Int64()
 	cacheKey := fmt.Sprintf(CacheKeyWechatUserTags, appid)
 	var tags []*user.TagInfo
@@ -65,22 +72,45 @@ func (c *WechatUserTagsController) PostDelete(cacher cache.AbstractCache) {
 	}
 }
 
+func (c *WechatUserTagsController) PostAdd(cacher cache.AbstractCache) {
+	c.Ctx().BindJSON(&c.p)
+	if c.p.Appid == "" || c.p.Name == "" {
+		helper.Ajax("必要参数为空", 1, c.Ctx())
+		return
+	}
+	cacheKey := fmt.Sprintf(CacheKeyWechatUserTags, c.p.Appid)
+	account, _ := GetOfficialAccount(c.p.Appid)
+	if tagInfo, err := account.GetUser().CreateTag(c.p.Name); err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
+	} else {
+		var tags []*user.TagInfo
+		cacher.GetWithUnmarshal(cacheKey, &tags)
+		tags = append(tags, tagInfo)
+		cacher.SetWithMarshal(cacheKey, &tags, CacheTimeSecs)
+		helper.Ajax("新增标签成功", 0, c.Ctx())
+		return
+	}
+}
+
 func (c *WechatUserTagsController) PostEdit(cacher cache.AbstractCache) {
-	appid := "wxe43df03110f5981b"
-	id, _ := c.Input().Get("id").Int64()
-	name := c.Input().Get("name").String()
-	cacheKey := fmt.Sprintf(CacheKeyWechatUserTags, appid)
+	c.Ctx().BindJSON(&c.p)
+	if c.p.Appid == "" || c.p.Name == "" || c.p.Id == 0 {
+		helper.Ajax("必要参数为空", 1, c.Ctx())
+		return
+	}
+	cacheKey := fmt.Sprintf(CacheKeyWechatUserTags, c.p.Appid)
 	var tags []*user.TagInfo
 	if err := cacher.GetWithUnmarshal(cacheKey, &tags); err != nil {
 		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
 	for i, tag := range tags {
-		if tag.ID == int32(id) {
-			tag.Name = name
+		if tag.ID == int32(c.p.Id) {
+			tag.Name = c.p.Name
 			tags[i] = tag
-			account, _ := GetOfficialAccount(appid)
-			if err := account.GetUser().UpdateTag(int32(id), name); err != nil {
+			account, _ := GetOfficialAccount(c.p.Appid)
+			if err := account.GetUser().UpdateTag(int32(c.p.Id), c.p.Name); err != nil {
 				helper.Ajax(err, 1, c.Ctx())
 				return
 			} else {

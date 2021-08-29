@@ -22,6 +22,7 @@ import CmsSelect from "./select/cms_select.vue";
 import InputTags from "./input-tags/input_tags.vue";
 import CmsCheckbox from "./components/cms_checkbox.vue";
 import CmsRadio from "./components/cms_radio.vue";
+import FilterGroup from "./filter-group/filter-group.vue";
 
 export default {
 	Avatar,
@@ -47,5 +48,6 @@ export default {
 	CmsSelect,
 	InputTags,
 	CmsCheckbox,
-	CmsRadio
+	CmsRadio,
+	FilterGroup
 };

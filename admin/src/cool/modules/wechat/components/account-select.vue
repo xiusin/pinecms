@@ -2,8 +2,9 @@
 	<el-select
 		filterable
 		placeholder="选择公众号"
-		size="mini"
+		size="small"
 		v-model="value"
+		clearable
 		@change="onCurrentChange"
 	>
 		<el-option
@@ -16,8 +17,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject,onMounted, reactive, ref } from "vue";
-import {ElMessage} from "element-plus";
+import { defineComponent, inject, onMounted, reactive, ref } from "vue";
+import { ElMessage } from "element-plus";
 
 export default defineComponent({
 	name: "account-select",
@@ -31,29 +32,32 @@ export default defineComponent({
 	setup(props, { emit }) {
 		const service = inject<any>("service");
 
-		const options = ref([])
+		const options = ref([]);
 
-		const value = ref("")
+		const value = ref(props.modelValue);
 
 		onMounted(() => {
-			service.wechat.account.select().then((data: any) => {
-				options.value = data
-			}).catch((e: any) => {
-				ElMessage.error(e);
-			})
-		})
+			service.wechat.account
+				.select()
+				.then((data: any) => {
+					// data.unshift({ label: "请选择公众号", value: "" });
+					options.value = data;
+				})
+				.catch((e: any) => {
+					ElMessage.error(e);
+				});
+		});
 
 		// 绑定值回调
-		function onCurrentChange( value: any) {
+		function onCurrentChange(value: any) {
 			emit("update:modelValue", value);
 		}
-
 
 		return {
 			value,
 			options,
-			onCurrentChange,
-		}
+			onCurrentChange
+		};
 	}
 });
 </script>

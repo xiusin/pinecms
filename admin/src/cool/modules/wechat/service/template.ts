@@ -20,10 +20,11 @@ class WechatTemplate extends BaseService {
 			method: "POST"
 		});
 	}
-	send() {
+	send(data: any) {
 		return this.request({
 			url: "/send",
-			method: "POST"
+			method: "POST",
+			data
 		});
 	}
 }

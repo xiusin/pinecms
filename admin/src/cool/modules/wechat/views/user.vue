@@ -4,15 +4,19 @@
 			<el-row type="flex">
 				<cl-refresh-btn />
 				<cl-add-btn />
-				<el-button size="mini" icon="el-icon-price-tag" type="success" @click="showTagManager">标签管理</el-button>
-				<el-button size="mini" icon="el-icon-sort" type="warning" @click="syncFans">同步粉丝</el-button>
+				<el-button
+					size="mini"
+					icon="el-icon-price-tag"
+					type="success"
+					@click="showTagManager"
+					>标签管理</el-button
+				>
+				<el-button size="mini" icon="el-icon-sort" type="warning" @click="syncFans"
+					>同步粉丝</el-button
+				>
 				<cl-flex1 />
-
-				<cl-filter-group v-model="form">
-					<cl-filter label="公众号">
-						<account-select v-model="form.appid" />
-					</cl-filter>
-					<cl-search-key />
+				<cl-filter-group v-model="form" @change="change">
+					<account-select v-model="form.appid" />
 				</cl-filter-group>
 			</el-row>
 
@@ -39,8 +43,13 @@
 			</cl-upsert>
 		</cl-crud>
 
-		<wx-user-tags-manager :ref="setRefs('wxUserTagsEditor')" :visible="showWxUserTagsEditor" @close="showWxUserTagsEditor=false"></wx-user-tags-manager>
-		<wx-user-tagging :ref="setRefs('wxUserTagging')" :wxUsers="dataListSelections"></wx-user-tagging>
+		<wx-user-tags-manager
+			:ref="setRefs('wxUserTagsEditor')"
+			:visible="showWxUserTagsEditor"
+			:appid="appid"
+			@close="showWxUserTagsEditor = false"
+		/>
+		<wx-user-tagging :ref="setRefs('wxUserTagging')" :wxUsers="dataListSelections" />
 	</div>
 </template>
 
@@ -49,9 +58,9 @@ import { defineComponent, inject, reactive, ref } from "vue";
 import { useRefs } from "/@/core";
 import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
 import { ElMessage } from "element-plus";
-import WxUserTagsManager from '../components/wx-user-tags-manager.vue'
-import WxUserTagging from './wx-user-tagging.vue'
-import AccountSelect from '../components/account-select.vue'
+import WxUserTagsManager from "../components/wx-user-tags-manager.vue";
+import WxUserTagging from "./wx-user-tagging.vue";
+import AccountSelect from "../components/account-select.vue";
 
 export default defineComponent({
 	name: "wechat-user",
@@ -253,15 +262,33 @@ export default defineComponent({
 			app.refresh();
 		}
 
-		const showWxUserTagsEditor = ref(false)
+		const showWxUserTagsEditor = ref(false);
+		const appid = ref("");
 
 		function showTagManager() {
-			showWxUserTagsEditor.value = true
+			if (!form.value.appid) {
+				ElMessage.error("请先选择一个公众号");
+				return;
+			}
+			appid.value = form.value.appid;
+			showWxUserTagsEditor.value = true;
+			refs.value.wxUserTagsEditor.init(appid);
+		}
+
+		const form = ref({ appid: "" });
+
+		function change(formData: any) {
+			console.log(formData);
+			form.value = formData;
 		}
 
 		function syncFans() {
+			if (!form.value.appid) {
+				ElMessage.error("请先选择一个公众号");
+				return;
+			}
 			service.wechat.user
-				.sync({ appid: "wxe43df03110f5981b" })
+				.sync({ appid: form.value.appid })
 				.then(() => {
 					refs.value.crud.refresh();
 				})
@@ -270,11 +297,10 @@ export default defineComponent({
 				});
 		}
 
-
-		const form = ref({"appid": ""})
-
 		return {
 			form,
+			change,
+			appid,
 			showWxUserTagsEditor,
 			showTagManager,
 			syncFans,

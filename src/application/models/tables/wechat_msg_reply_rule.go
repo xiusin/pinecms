@@ -2,7 +2,7 @@ package tables
 
 type WechatMsgReplyRule struct {
 	Id              int64     `json:"id"`
-	AppId           string    `json:"appid" xorm:"char(20)"`
+	AppId           string    `json:"appid" xorm:"char(20) appid"`
 	RuleName        string    `json:"ruleName"`
 	MatchValue      string    `json:"matchValue"`
 	ExactMatch      bool      `json:"exactMatch" xorm:"comment('是否精确匹配')"`

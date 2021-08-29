@@ -16,14 +16,15 @@ func (c *WechatQrcodeController) Construct() {
 	c.Table = &tables.WechatQrcode{}
 	c.Entries = &[]tables.WechatQrcode{}
 	c.BaseController.Construct()
+	c.SearchFields = []backend.SearchFieldDsl{
+		{Field: "appid"},
+	}
 	c.OpAfter = c.after
 }
 
 func (c *WechatQrcodeController) after(act int, params interface{}) error {
 	if act == backend.OpAdd {
-		appid := "wxe43df03110f5981b"
-		account, _ := GetOfficialAccount(appid)
-
+		account, _ := GetOfficialAccount(params.(*tables.WechatQrcode).AppId)
 		data := c.Table.(*tables.WechatQrcode)
 		var req *basic.Request
 		if data.IsTemp {

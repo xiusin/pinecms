@@ -3,6 +3,7 @@ package wechat
 import (
 	"fmt"
 	"github.com/silenceper/wechat/v2/officialaccount/message"
+	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -81,22 +82,75 @@ func (c *WechatMsgTemplateController) PostSync() {
 	helper.Ajax("同步成功", 0, c.Ctx())
 }
 
-func (c *WechatMsgTemplateController) PostSend()  {
-	appid := "wxe43df03110f5981b"
-	account, _ := GetOfficialAccount(appid)
+func (c *WechatMsgTemplateController) PostSend() {
+	p := struct {
+		AppId      string `json:"appid"`
+		TemplateId string `json:"template_id"`
+		Data       []struct {
+			Color string `json:"color"`
+			Name  string `json:"name"`
+			Value string `json:"value"`
+		}
+		Miniprogram struct {
+			Appid    string `json:"appid"`
+			PagePath string `json:"pagePath"`
+		}
+		Url                string `json:"url"`
+		WxUserFilterParams map[string]interface{}
+	}{}
 
+	if err := c.Ctx().BindJSON(&p); err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
+	}
 
-	fmt.Println(account.GetTemplate().Send(&message.TemplateMessage{
-		ToUser:     "op-oIuJztLwLOoNBX6hNoOzHFEws",
-		TemplateID: "97_xBnPYcKDeGjUaq9BxDvUQneDAM4-mAEd8Jt0VRu4",
-		Data: map[string]*message.TemplateDataItem{
-			"first": {"欢迎注册成为新会员", ""},
-			"keyword1": {"陈xiusin", ""},
-			"keyword2": {"16601313660", ""},
-			"keyword3": {"10", ""},
-			"keyword4": {"VIP.1", ""},
-			"keyword5": {"1110000011000001", ""},
-			"remark": {"会员享有系统内所有特权!", ""},
-		},
-	}))
+	if p.TemplateId == "" || p.AppId == "" || len(p.Data) == 0 || len(p.WxUserFilterParams) == 0 {
+		helper.Ajax("参数错误", 1, c.Ctx())
+		return
+	}
+	account, _ := GetOfficialAccount(p.AppId)
+	sess := c.Orm.Where("appid = ?", p.AppId)
+	if nickname := p.WxUserFilterParams["nickname"].(string); len(nickname) > 0 {
+		sess.Where("nickname like ?", "%"+nickname+"%")
+	}
+	if city := p.WxUserFilterParams["city"].(string); len(city) > 0 {
+		sess.Where("city like ?", "%"+city+"%")
+	}
+	if province := p.WxUserFilterParams["province"].(string); len(province) > 0 {
+		sess.Where("province like ?", "%"+province+"%")
+	}
+	if remark := p.WxUserFilterParams["remark"].(string); len(remark) > 0 {
+		sess.Where("remark like ?", "%"+remark+"%")
+	}
+	if qrScene := p.WxUserFilterParams["qrScene"].(string); len(qrScene) > 0 {
+		sess.Where("qr_scene_str like ?", "%"+qrScene+"%")
+	}
+
+	var users []tables.WechatMember
+	sess.Cols("openid").Get(&users)
+
+	pine.Logger().Print(sess.LastSQL())
+
+	if len(users) == 0 {
+		helper.Ajax("无法查找到相关推送用户", 1, c.Ctx())
+		return
+	}
+
+	failed, msgInfo := 0, map[string]*message.TemplateDataItem{}
+	for _, datum := range p.Data {
+		msgInfo[datum.Name] = &message.TemplateDataItem{Value: datum.Value, Color: datum.Color}
+	}
+
+	for _, user := range users {
+		_, err := account.GetTemplate().Send(&message.TemplateMessage{
+			ToUser:     user.Openid,
+			TemplateID: p.TemplateId,
+			Data:       msgInfo,
+		})
+		if err != nil {
+			failed++
+			pine.Logger().Error(fmt.Sprintf("发送消息给%s失败", user.Openid), err)
+		}
+	}
+	helper.Ajax(fmt.Sprintf("发送信息%d成功, %d失败", failed, len(users)-failed), 0, c.Ctx())
 }

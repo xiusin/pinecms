@@ -17,6 +17,7 @@ func (c *WechatUserController) Construct() {
 	c.Entries = &[]tables.WechatMember{}
 
 	c.SearchFields = []backend.SearchFieldDsl{
+		{Field: "appid"},
 		{Field: "province", Op: "LIKE", DataExp: "%$?%"},
 		{Field: "tagid_list"},
 		{Field: "city", Op: "LIKE", DataExp: "%$?%"},
@@ -49,15 +50,16 @@ func (c *WechatUserController) PostSync() {
 		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
-
+	if len(q.AppId) == 0 {
+		helper.Ajax("请先选择一个公众号", 1, c.Ctx())
+		return
+	}
 	account, data := GetOfficialAccount(q.AppId)
-
 	if !data.Verified {
 		helper.Ajax("公众号没有接入无法同步", 1, c.Ctx())
 		return
 	}
 	nextOpenId, exit := "", false
-	//var ch = make(chan struct{}, 10) todo 并发携程控制
 	for !exit {
 		users, err := account.GetUser().ListUserOpenIDs(nextOpenId)
 		if err != nil {

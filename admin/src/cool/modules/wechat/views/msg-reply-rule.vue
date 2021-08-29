@@ -4,12 +4,14 @@
 			<cl-add-btn />
 			<cl-refresh-btn />
 			<cl-flex1 />
-			<cl-search-key />
+			<cl-filter-group v-model="form">
+				<account-select v-model="form.appid" />
+			</cl-filter-group>
 		</el-row>
 
 		<el-row>
 			<cl-table v-bind="table">
-				<template #column-appid="{ scope }">
+				<template #column-scope="{ scope }">
 					{{ scope.row.appid ? "当前公众号" : "全部公众号" }}
 				</template>
 			</cl-table>
@@ -21,6 +23,17 @@
 		</el-row>
 
 		<cl-upsert v-model="form" v-bind="upsert">
+			<template #slot-appid="{ scope }">
+				<account-select
+					v-model="scope.appid"
+					@change="
+						(val) => {
+							console.log(val);
+						}
+					"
+				/>
+			</template>
+
 			<template #slot-content="{ scope }">
 				<el-input
 					v-model="scope.replyContent"
@@ -48,28 +61,31 @@
 		</cl-upsert>
 	</cl-crud>
 
-<!--	<el-dialog-->
-<!--		title="选择素材"-->
-<!--		v-model="accessModalRef"-->
-<!--		:modal="true"-->
-<!--		append-to-body-->
-<!--		@close="onClose"-->
-<!--	>-->
-<!--		<material-news @selected="onSelect" selectMode />-->
-<!--		&lt;!&ndash;		<material-file :fileType="selectType" @selected="onSelect" selectMode></material-file>&ndash;&gt;-->
-<!--	</el-dialog>-->
+	<!--	<el-dialog-->
+	<!--		title="选择素材"-->
+	<!--		v-model="accessModalRef"-->
+	<!--		:modal="true"-->
+	<!--		append-to-body-->
+	<!--		@close="onClose"-->
+	<!--	>-->
+	<!--		<material-news @selected="onSelect" selectMode />-->
+	<!--		&lt;!&ndash;		<material-file :fileType="selectType" @selected="onSelect" selectMode></material-file>&ndash;&gt;-->
+	<!--	</el-dialog>-->
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, reactive, ref } from "vue";
+import { defineComponent, inject, onMounted, reactive, ref } from "vue";
 import { useRefs } from "/@/core";
 import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
-
+import AccountSelect from "../components/account-select.vue";
+import MaterialFile from "./assets/material-file.vue";
+import MaterialNews from "./assets/material-news.vue";
 export default defineComponent({
 	name: "wechat-account",
 	components: {
-		MaterialFile: () => import("./assets/material-file.vue"),
-		MaterialNews: () => import("./assets/material-news.vue")
+		MaterialFile,
+		MaterialNews,
+		AccountSelect
 	},
 	setup() {
 		const service = inject<any>("service");
@@ -77,6 +93,10 @@ export default defineComponent({
 		const { refs, setRefs }: any = useRefs();
 
 		const accessModalRef = ref(true);
+
+		const form = ref({ appid: "" });
+
+		const accounts = ref([]);
 
 		const KefuMsgType: any = {
 			text: "文本消息",
@@ -134,20 +154,7 @@ export default defineComponent({
 					prop: "appid",
 					label: "作用范围",
 					component: {
-						name: "el-select",
-						options: [
-							{
-								label: "全部公众号",
-								value: ""
-							},
-							{
-								label: "当前公众号",
-								value: "1"
-							}
-						]
-					},
-					rules: {
-						required: true
+						name: "slot-appid"
 					}
 				},
 				{
@@ -240,21 +247,24 @@ export default defineComponent({
 				{
 					prop: "replyContent",
 					label: "回复内容",
-					width: 100
+					showOverflowTooltip: true,
+					align: "left"
 				},
 				{
 					prop: "appid",
+					label: "公众号名称",
+					dict: accounts,
+					align: "left"
+				},
+				{
+					prop: "scope",
 					label: "作用范围",
 					width: 100
 				},
 				{
-					prop: "name",
-					label: "公众号名称"
-				},
-				{
 					prop: "exactMatch",
 					label: "精确匹配",
-					width: 140,
+					width: 80,
 					align: "left",
 					dict: [
 						{
@@ -271,8 +281,8 @@ export default defineComponent({
 				},
 				{
 					prop: "status",
-					label: "是否有效",
-					width: 140,
+					label: "有效",
+					width: 70,
 					align: "left",
 					dict: [
 						{
@@ -289,11 +299,13 @@ export default defineComponent({
 				},
 				{
 					prop: "effectTimeStart",
-					label: "生效时间"
+					label: "生效时间",
+					width: 100
 				},
 				{
 					prop: "effectTimeEnd",
-					label: "失效时间"
+					label: "失效时间",
+					width: 100
 				},
 				{
 					type: "op",
@@ -311,8 +323,16 @@ export default defineComponent({
 			app.refresh();
 		}
 
+		onMounted(() => {
+			service.wechat.account.select().then((data: any) => {
+				data.unshift({ label: "全部公众号", value: "" });
+				accounts.value = data;
+			});
+		});
+
 		return {
 			service,
+			form,
 			accessModalRef,
 			refs,
 			table,

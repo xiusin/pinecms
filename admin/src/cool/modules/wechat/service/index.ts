@@ -5,6 +5,7 @@ import Qrcode from "./qrcode";
 import Material from "./material";
 import Rule from "./rule";
 import Template from "./template";
+import Tags from "./tags";
 
 export default {
 	wechat: {
@@ -14,6 +15,7 @@ export default {
 		qrcode: new Qrcode(),
 		rule: new Rule(),
 		material: new Material(),
-		template: new Template()
+		template: new Template(),
+		tags: new Tags()
 	}
 };

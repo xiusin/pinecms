@@ -47,6 +47,8 @@ type BaseController struct {
 	p              listParam
 	apiEntities    map[string]apidoc.Entity
 
+	Cols []string
+
 	TableKey       string // 表主键
 	TableStructKey string // 表结构体主键字段 主要用于更新逻辑反射数据
 
@@ -120,7 +122,6 @@ func (c *BaseController) PostList() {
 		} else {
 			count, err = query.Limit(p.Size, (p.Page-1)*p.Size).FindAndCount(c.Entries)
 		}
-		pine.Logger().Print(query.LastSQL())
 		if err != nil {
 			logger.Error(err)
 			helper.Ajax("获取列表异常: "+err.Error(), 1, c.Ctx())

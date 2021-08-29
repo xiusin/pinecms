@@ -1024,14 +1024,14 @@ change-case@^4.1.2:
   optionalDependencies:
     fsevents "~2.3.1"
 
-cl-admin-crud-vue3@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/cl-admin-crud-vue3/-/cl-admin-crud-vue3-0.7.0.tgz#e30401cd80b96ed971eec14e4340c58114a42acc"
-  integrity sha512-H2NgiuKiuUoOq7tCFunnBJoas6ej/OrgVgBJb9/wV1Rl6XGjORW0saimlbNkHvfUp7roOcsbA3JL1toIGSxfig==
+cl-admin-crud-vue3@^0.7.2:
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/cl-admin-crud-vue3/-/cl-admin-crud-vue3-0.7.2.tgz#9cc6b59673d54297ebd21ae750b36725076afebe"
+  integrity sha512-SoIrov/R+Hjp1QOp3cp/OYejZ0xxPqI8NSfUlncP8X6X9Lnkaf6V6I10fs0w0kJV/gx/iFMNDq2hP/UHQzYscw==
   dependencies:
     array.prototype.flat "^1.2.4"
     core-js "^3.6.5"
-    element-plus "^1.0.2-beta.65"
+    element-plus "^1.1.0-beta.1"
     merge "^2.1.1"
     mitt "^2.1.0"
     vue "^3.2.1"
@@ -1453,11 +1453,12 @@ electron-to-chromium@^1.3.793:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.805.tgz#a0873393a3b027ec60bdaf22a19c4946688cf941"
   integrity sha512-uUJF59M6pNSRHQaXwdkaNB4BhSQ9lldRdG1qCjlrAFkynPGDc5wPoUcYEQQeQGmKyAWJPvGkYAWmtVrxWmDAkg==
 
-element-plus@^1.0.2-beta.65:
-  version "1.0.2-beta.65"
-  resolved "https://registry.yarnpkg.com/element-plus/-/element-plus-1.0.2-beta.65.tgz#e1ff997fe395dd2e31a16517970058bc4d45fb3c"
-  integrity sha512-qQLubUvseYlz5xIatDh4M1wd9mQ3ceEjE/cDtzJ4Y8/63fip96H/JCl39za7wEXiwhqglnu3Ag48MmMbqwgBdw==
+element-plus@^1.0.2-beta.70:
+  version "1.0.2-beta.70"
+  resolved "https://registry.yarnpkg.com/element-plus/-/element-plus-1.0.2-beta.70.tgz#13058f4e78c5e73b19a915404d71076a13a2616e"
+  integrity sha512-q9nqxELedLTFMCff5M5CsFbjWQYa6FvcLr1p7QZI64stZ7oEx1EcFnLEeP7dTg0g6iZf1fnaL5df1fVKWY0Dcg==
   dependencies:
+    "@element-plus/icons" "^0.0.11"
     "@popperjs/core" "^2.4.4"
     async-validator "^3.4.0"
     dayjs "1.x"
@@ -1466,10 +1467,10 @@ element-plus@^1.0.2-beta.65:
     normalize-wheel "^1.0.1"
     resize-observer-polyfill "^1.5.1"
 
-element-plus@^1.0.2-beta.70:
-  version "1.0.2-beta.70"
-  resolved "https://registry.yarnpkg.com/element-plus/-/element-plus-1.0.2-beta.70.tgz#13058f4e78c5e73b19a915404d71076a13a2616e"
-  integrity sha512-q9nqxELedLTFMCff5M5CsFbjWQYa6FvcLr1p7QZI64stZ7oEx1EcFnLEeP7dTg0g6iZf1fnaL5df1fVKWY0Dcg==
+element-plus@^1.1.0-beta.1:
+  version "1.1.0-beta.7"
+  resolved "https://registry.yarnpkg.com/element-plus/-/element-plus-1.1.0-beta.7.tgz#9a877bc2d72f5c3ab6f78a3c45fa6f458ea87fb0"
+  integrity sha512-+HcIwJsd0/kXl5roqgPhWhpbxL+s8cWMVD6+Lg0HS1gI9dnBZ3dN238UMYmerk+fCpN7l4V0ShuqM1gq1a7nNw==
   dependencies:
     "@element-plus/icons" "^0.0.11"
     "@popperjs/core" "^2.4.4"
