@@ -2,7 +2,7 @@
 	<el-select
 		filterable
 		placeholder="选择公众号"
-		size="small"
+		:size="size"
 		v-model="value"
 		clearable
 		@change="onCurrentChange"
@@ -24,7 +24,11 @@ export default defineComponent({
 	name: "account-select",
 
 	props: {
-		modelValue: [Number, String]
+		modelValue: [Number, String],
+		size: {
+			type: String,
+			default: "mini",
+		}
 	},
 
 	emits: ["update:modelValue"],
@@ -35,6 +39,8 @@ export default defineComponent({
 		const options = ref([]);
 
 		const value = ref(props.modelValue);
+
+		const size = ref(props.size)
 
 		onMounted(() => {
 			service.wechat.account
@@ -55,6 +61,7 @@ export default defineComponent({
 
 		return {
 			value,
+			size,
 			options,
 			onCurrentChange
 		};

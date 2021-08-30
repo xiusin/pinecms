@@ -9,6 +9,13 @@ class WechatTags extends BaseService {
 			data
 		});
 	}
+	tagging(data: any) {
+		return this.request({
+			url: "/tagging",
+			method: "POST",
+			data
+		});
+	}
 }
 
 export default WechatTags;

@@ -15,7 +15,7 @@ type WechatMember struct {
 	Subscribe      bool    `json:"subscribe"`
 	Unionid        string  `json:"unionid"`
 	Remark         string  `json:"remark"`
-	TagidList      []int64 `json:"tagid_list" xorm:"json"`
+	TagidList      []int32 `json:"tagid_list" xorm:"json"`
 	SubscribeScene string  `json:"subscribe_scene"`
 	QrSceneStr     string  `json:"qr_scene_str"`
 	Poster         string  `json:"poster"`

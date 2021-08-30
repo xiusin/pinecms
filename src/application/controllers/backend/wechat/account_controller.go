@@ -17,8 +17,7 @@ func (c *WechatAccountController) Construct() {
 }
 
 func (c *WechatAccountController) PostClear()  {
-	appid := "wxe43df03110f5981b"
-	account, _ := GetOfficialAccount(appid)
+	account, _ := GetOfficialAccount(*helper.Bytes2String(c.Input().GetStringBytes("appid")))
 
 	if err := account.GetBasic().ClearQuota(); err != nil {
 		helper.Ajax(err, 1, c.Ctx())

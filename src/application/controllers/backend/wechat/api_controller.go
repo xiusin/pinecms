@@ -5,6 +5,7 @@ import (
 	"github.com/silenceper/wechat/v2/officialaccount/message"
 	"github.com/valyala/fasthttp/fasthttpadaptor"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"net/http"
 	"time"
@@ -38,6 +39,27 @@ func msgHandler(ctx *pine.Context) {
 
 	//设置接收消息的处理方法
 	srv.SetMessageHandler(func(msg *message.MixMessage) *message.Reply {
+		// 处理自动回复消息
+
+		var rules []tables.WechatMsgReplyRule
+
+		orm.SQL("SELECT * FROM "+controllers.GetTableName("wechat_msg_reply_rule")+
+			" WHERE ((match_value = ? AND exact_match = 1) OR (INSTR(?, match_value) > 0 AND  exact_match = 0))",
+			msg.Content, msg.Content).Where("status = ?", 1).Find(&rules) // todo 添加时间区间
+
+		for _, rule := range rules {
+			switch rule.ReplyType { // 按照类型返回内容响应
+			case string(message.MsgTypeText):
+			case message.MsgTypeImage:
+			case message.MsgTypeMiniprogrampage:
+			case message.MsgTypeLink:
+			case message.MsgTypeEvent:
+			case message.MsgTypeVideo:
+			case message.MsgTypeVoice:
+			case message.MsgTypeShortVideo:
+			}
+		}
+
 		text := message.NewText(msg.Content)
 		return &message.Reply{MsgType: message.MsgTypeText, MsgData: text}
 	})

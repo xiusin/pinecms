@@ -1,6 +1,7 @@
 package wechat
 
 import (
+	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -28,17 +29,23 @@ func (c *WechatUserController) Construct() {
 
 	c.BaseController.Construct()
 	c.OpAfter = c.After
+	c.OpBefore = c.Before
 }
 
-func (c *WechatUserController) After(act int, params interface{}) error {
+func (c *WechatUserController) Before(act int, params interface{}) error {
+	if act == backend.OpList {
+		appid := string(c.Input().GetStringBytes("appid"))
+		if len(appid) > 0 {
+			(params.(*xorm.Session)).Where("appid = ?", appid)
+		}
+	}
+	return nil
+}
+
+func (c *WechatUserController) After(act int, _ interface{}) error {
 	if act == backend.OpEdit {
 		account, _ := GetOfficialAccount(c.Table.(*tables.WechatMember).Appid)
-
-		// 同步 更新备注 忽略结果输出
-		return account.GetUser().UpdateRemark(
-			c.Table.(*tables.WechatMember).Openid,
-			c.Table.(*tables.WechatMember).Remark,
-		)
+		account.GetUser().UpdateRemark(c.Table.(*tables.WechatMember).Openid, c.Table.(*tables.WechatMember).Remark)
 	}
 	return nil
 }
@@ -72,31 +79,35 @@ func (c *WechatUserController) PostSync() {
 		nextOpenId = users.NextOpenID
 
 		for _, openid := range users.Data.OpenIDs {
-			exist, _ := c.Orm.Where("openid = ?", openid).Exist(&tables.WechatMember{})
-			if exist {
-				continue
-			}
 			u, err := account.GetUser().GetUserInfo(openid)
 			if err != nil {
 				pine.Logger().Error("获取微信会员信息失败", err)
 				continue
 			}
-			c.Orm.InsertOne(&tables.WechatMember{
-				Appid:          q.AppId,
-				Openid:         u.OpenID,
-				Nickname:       u.Nickname,
-				Sex:            int(u.Sex),
-				City:           u.City,
-				Province:       u.Province,
-				Headimgurl:     u.Headimgurl,
-				SubscribeTime:  time.Unix(int64(u.SubscribeTime), 0).Format(helper.TimeFormat),
-				Subscribe:      u.Subscribe > 0,
-				Unionid:        u.UnionID,
-				Remark:         u.Remark,
-				TagidList:      nil,
-				SubscribeScene: u.SubscribeScene,
-				QrSceneStr:     u.QrSceneStr,
-			})
+			if exist, _ := c.Orm.Where("openid = ?", openid).Exist(&tables.WechatMember{}); exist {
+				c.Orm.Where("openid = ?", openid).Cols("tagid_list").Update(&tables.WechatMember{
+					TagidList: u.TagIDList,
+					Remark:    u.Remark,
+				})
+			} else {
+				c.Orm.InsertOne(&tables.WechatMember{
+					Appid:          q.AppId,
+					Openid:         u.OpenID,
+					Nickname:       u.Nickname,
+					Sex:            int(u.Sex),
+					City:           u.City,
+					Province:       u.Province,
+					Headimgurl:     u.Headimgurl,
+					SubscribeTime:  time.Unix(int64(u.SubscribeTime), 0).Format(helper.TimeFormat),
+					Subscribe:      u.Subscribe > 0,
+					Unionid:        u.UnionID,
+					Remark:         u.Remark,
+					TagidList:      u.TagIDList,
+					SubscribeScene: u.SubscribeScene,
+					QrSceneStr:     u.QrSceneStr,
+				})
+			}
+
 		}
 
 	}

@@ -47,7 +47,6 @@ export default {
 	},
 	methods: {
 		init(appid) {
-			console.log(this.appid);
 			this.appid = appid;
 			this.visible = true;
 			this.submitting = false;
@@ -122,6 +121,7 @@ export default {
 			this.submitting = true;
 			this.service.wechat.tags[tagid ? "edit" : "add"]({
 				id: tagid ? tagid : undefined,
+				appid: this.appid,
 				name: name
 			})
 				.then(() => {

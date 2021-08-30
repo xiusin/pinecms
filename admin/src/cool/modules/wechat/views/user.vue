@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<cl-crud :ref="setRefs('crud')" @load="onLoad">
+		<cl-crud :ref="setRefs('crud')" @load="onLoad" :on-refresh="onRefresh">
 			<el-row type="flex">
 				<cl-refresh-btn />
 				<cl-add-btn />
@@ -9,19 +9,20 @@
 					icon="el-icon-price-tag"
 					type="success"
 					@click="showTagManager"
+					:disabled="appid === ''"
 					>标签管理</el-button
 				>
-				<el-button size="mini" icon="el-icon-sort" type="warning" @click="syncFans"
+				<el-button size="mini" icon="el-icon-sort" type="warning" @click="syncFans" :disabled="appid === ''"
 					>同步粉丝</el-button
 				>
+				<el-button type="primary" size="mini" @click="userTagging('tagging')" :disabled="dataListSelections.length <= 0 || appid === ''">绑定标签</el-button>
+				<el-button type="primary" size="mini" @click="userTagging('untagging')" :disabled="dataListSelections.length <= 0 || appid === ''">解绑标签</el-button>
 				<cl-flex1 />
-				<cl-filter-group v-model="form" @change="change">
-					<account-select v-model="form.appid" />
-				</cl-filter-group>
+				<account-select v-model="appid" />
 			</el-row>
 
 			<el-row>
-				<cl-table v-bind="table">
+				<cl-table v-bind="table" @selection-change="onSelectionChange">
 					<template #column-headimgurl="{ scope }">
 						<el-image :src="scope.row.headimgurl" />
 					</template>
@@ -33,14 +34,7 @@
 				<cl-pagination />
 			</el-row>
 
-			<cl-upsert v-bind="upsert">
-				<template #slot-btns="{ scope }">
-					<el-button>查询</el-button>
-					<el-button type="primary" size="mini">绑定标签</el-button>
-					<el-button type="primary" size="mini">解绑标签</el-button>
-					<el-button type="danger" size="mini">批量删除</el-button>
-				</template>
-			</cl-upsert>
+			<cl-upsert v-bind="upsert" />
 		</cl-crud>
 
 		<wx-user-tags-manager
@@ -49,12 +43,12 @@
 			:appid="appid"
 			@close="showWxUserTagsEditor = false"
 		/>
-		<wx-user-tagging :ref="setRefs('wxUserTagging')" :wxUsers="dataListSelections" />
+		<wx-user-tagging :ref="setRefs('wxUserTagging')" :wxUsers="dataListSelections" :appid="appid" />
 	</div>
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, reactive, ref } from "vue";
+import {defineComponent, inject, reactive, ref, watch} from "vue";
 import { useRefs } from "/@/core";
 import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
 import { ElMessage } from "element-plus";
@@ -166,8 +160,7 @@ export default defineComponent({
 		const table = reactive<Table>({
 			columns: [
 				{
-					type: "index",
-					label: "#",
+					type: "selection",
 					width: 40
 				},
 				{
@@ -263,6 +256,7 @@ export default defineComponent({
 		}
 
 		const showWxUserTagsEditor = ref(false);
+
 		const appid = ref("");
 
 		function showTagManager() {
@@ -278,7 +272,6 @@ export default defineComponent({
 		const form = ref({ appid: "" });
 
 		function change(formData: any) {
-			console.log(formData);
 			form.value = formData;
 		}
 
@@ -297,10 +290,42 @@ export default defineComponent({
 				});
 		}
 
+		const dataListSelections = ref([])
+
+		function onSelectionChange(selection: any[]) {
+			dataListSelections.value = selection;
+		}
+
+		function userTagging(action: string) {
+			refs.value.wxUserTagging.init(action, appid.value)
+		}
+
+		watch(appid, (newValue, oldValue) => { //直接监听
+			refs.value.crud.refresh();
+		});
+
+
+		// 刷新列表
+		function refresh(params: any) {
+			refs.value.crud.refresh(params);
+		}
+
+		// 刷新监听
+		async function onRefresh(params: any, { next, render }: any) {
+			params["appid"] = appid.value;
+			const { list } = await next(params);
+			render(list);
+		}
+
 		return {
 			form,
 			change,
 			appid,
+			userTagging,
+			refresh,
+			onRefresh,
+			onSelectionChange,
+			dataListSelections,
 			showWxUserTagsEditor,
 			showTagManager,
 			syncFans,

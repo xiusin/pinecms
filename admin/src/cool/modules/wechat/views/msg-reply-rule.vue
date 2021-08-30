@@ -10,11 +10,7 @@
 		</el-row>
 
 		<el-row>
-			<cl-table v-bind="table">
-				<template #column-scope="{ scope }">
-					{{ scope.row.appid ? "当前公众号" : "全部公众号" }}
-				</template>
-			</cl-table>
+			<cl-table v-bind="table" />
 		</el-row>
 
 		<el-row type="flex">
@@ -254,12 +250,8 @@ export default defineComponent({
 					prop: "appid",
 					label: "公众号名称",
 					dict: accounts,
-					align: "left"
-				},
-				{
-					prop: "scope",
-					label: "作用范围",
-					width: 100
+					align: "left",
+					width: 230,
 				},
 				{
 					prop: "exactMatch",
