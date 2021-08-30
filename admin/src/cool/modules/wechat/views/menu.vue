@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div style="padding: 10px; background: #fff">
 		<div id="app-menu">
 			<!-- 预览窗 -->
 			<div class="weixin-preview">
@@ -81,9 +81,11 @@
 	</div>
 </template>
 <script>
+import wxMenuButtonEditor from "./wx-menu-button-editor.vue";
+
 export default {
 	components: {
-		wxMenuButtonEditor: () => import("./wx-menu-button-editor.vue")
+		wxMenuButtonEditor
 	},
 	data() {
 		return {
@@ -115,7 +117,6 @@ export default {
 		},
 		//选中主菜单
 		selectMenu(i) {
-			debugger
 			this.selectedMenuLevel = 1;
 			this.selectedSubMenuIndex = "";
 			this.selectedMenuIndex = i;
@@ -130,22 +131,26 @@ export default {
 		},
 		//添加菜单
 		addMenu(level, i) {
-			if (level == 1 && this.menu.buttons.length < 3) {
-				this.menu.buttons.push({
-					type: "view",
-					name: "菜单名称",
-					subButtons: [],
-					url: ""
-				});
-				this.selectMenu(this.menu.buttons.length - 1);
-			}
-			if (level == 2 && this.menu.buttons[i].subButtons.length < 5) {
-				this.menu.buttons[i].subButtons.push({
-					type: "view",
-					name: "子菜单名称",
-					url: ""
-				});
-				this.selectSubMenu(i, this.menu.buttons[i].subButtons.length - 1);
+			try {
+				if (level === 1 && this.menu.buttons.length < 3) {
+					this.menu.buttons.push({
+						type: "view",
+						name: "菜单名称",
+						subButtons: [],
+						url: ""
+					});
+					this.selectMenu(this.menu.buttons.length - 1);
+				}
+				if (level === 2 && this.menu.buttons[i].subButtons.length < 5) {
+					this.menu.buttons[i].subButtons.push({
+						type: "view",
+						name: "子菜单名称",
+						url: ""
+					});
+					this.selectSubMenu(i, this.menu.buttons[i].subButtons.length - 1);
+				}
+			} catch (e) {
+				console.error(e);
 			}
 		},
 		//删除菜单
@@ -386,7 +391,7 @@ export default {
 
 /*菜单内容*/
 .weixin-menu-detail {
-	width: 600px;
+	width: calc(100% - 340px);
 	padding: 0px 20px 5px;
 	background-color: #f4f5f9;
 	border: 1px solid #e7e7eb;
@@ -410,7 +415,7 @@ export default {
 }
 
 .weixin-menu-detail .menu-input-group {
-	width: 540px;
+	width: 100%;
 	margin: 10px 0 30px 0;
 	overflow: hidden;
 }

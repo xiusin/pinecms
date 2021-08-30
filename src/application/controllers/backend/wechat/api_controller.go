@@ -40,28 +40,40 @@ func msgHandler(ctx *pine.Context) {
 	//设置接收消息的处理方法
 	srv.SetMessageHandler(func(msg *message.MixMessage) *message.Reply {
 		// 处理自动回复消息
-
-		var rules []tables.WechatMsgReplyRule
+		var rule *tables.WechatMsgReplyRule
 
 		orm.SQL("SELECT * FROM "+controllers.GetTableName("wechat_msg_reply_rule")+
 			" WHERE ((match_value = ? AND exact_match = 1) OR (INSTR(?, match_value) > 0 AND  exact_match = 0))",
-			msg.Content, msg.Content).Where("status = ?", 1).Find(&rules) // todo 添加时间区间
-
-		for _, rule := range rules {
-			switch rule.ReplyType { // 按照类型返回内容响应
-			case string(message.MsgTypeText):
-			case message.MsgTypeImage:
-			case message.MsgTypeMiniprogrampage:
-			case message.MsgTypeLink:
-			case message.MsgTypeEvent:
-			case message.MsgTypeVideo:
-			case message.MsgTypeVoice:
-			case message.MsgTypeShortVideo:
-			}
+			msg.Content, msg.Content).
+			Where("appid = ?", appid).
+			Where("status = ?", 1).
+			Desc("exact_match", "id").
+			Get(&rule)
+		if rule == nil {
+			return nil
 		}
 
-		text := message.NewText(msg.Content)
-		return &message.Reply{MsgType: message.MsgTypeText, MsgData: text}
+		var msgData interface{}
+
+		switch rule.ReplyType { // 按照类型返回内容响应
+		case string(message.MsgTypeText): // 文本类型
+			msgData = message.NewText(rule.ReplyContent)
+		case message.MsgTypeImage:
+			msgData = message.NewImage(rule.ReplyContent)
+		case message.MsgTypeMiniprogrampage:
+			msgData = message.NewCustomerMiniprogrampageMessage(msg.OpenID, "", "", "", "")
+		case message.MsgTypeNews:
+			msgData = message.NewNews(nil)
+		case message.MsgTypeMusic:
+			msgData = message.NewMusic("", "", "", "", "")
+		case message.MsgTypeVideo:
+			msgData = message.NewVideo("", "", "")
+		case message.MsgTypeVoice:
+			msgData = message.NewVoice(rule.ReplyContent)
+		case message.MsgTypeTransfer:
+			msgData = message.NewTransferCustomer(rule.ReplyContent)
+		}
+		return &message.Reply{MsgType: message.MsgTypeText, MsgData: msgData}
 	})
 
 	//处理消息接收以及回复
@@ -80,4 +92,23 @@ func msgHandler(ctx *pine.Context) {
 	})
 
 	_ = srv.Send()
+}
+
+type WechatMsg struct {
+	Title string `json:"title"`
+	// 小程序
+	AppID        string `json:"appid"`
+	PagePath     string `json:"pagePath"`
+	ThumbMediaID string `json:"thumb_media_id"`
+
+	// 音乐 视频
+	Description string `json:"description"`
+	MusicURL    string `json:"music_url"`
+	HQMusicURL  string `json:"hq_music_url"`
+
+	MediaID string `json:"media_id"`
+
+	KfAccount string `json:"kf_account"`
+
+	Articles []*message.Article
 }

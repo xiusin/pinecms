@@ -11,7 +11,6 @@ require (
 	github.com/aliyun/aliyun-oss-go-sdk v2.1.9+incompatible
 	github.com/arl/statsviz v0.4.0
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
-	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc // indirect
 	github.com/fasthttp/websocket v1.4.3
 	github.com/fatih/structs v1.1.0
@@ -28,6 +27,7 @@ require (
 	github.com/gookit/color v1.4.2
 	github.com/gorilla/securecookie v1.1.1
 	github.com/kataras/go-mailer v0.1.0
+	github.com/klauspost/compress v1.13.5 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.7.0 // indirect
 	github.com/magefile/mage v1.11.0 // indirect
@@ -40,8 +40,7 @@ require (
 	github.com/savsgio/gotils v0.0.0-20210617111740-97865ed5a873 // indirect
 	github.com/schollz/progressbar v1.0.0
 	github.com/shirou/gopsutil v3.21.6+incompatible
-	github.com/silenceper/wechat v2.0.1+incompatible
-	github.com/silenceper/wechat/v2 v2.0.6 // indirect
+	github.com/silenceper/wechat/v2 v2.0.6
 	github.com/sonyarouje/simdb v0.1.0
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/cobra v1.2.1
@@ -52,7 +51,7 @@ require (
 	github.com/traefik/yaegi v0.9.19
 	github.com/valyala/fasthttp v1.29.0
 	github.com/xiusin/logger v0.0.5
-	github.com/xiusin/pine v0.0.0-20210830032743-95a2f0955a48
+	github.com/xiusin/pine v0.0.0-20210830034444-ea5fcd4239bc
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
 	golang.org/x/exp v0.0.0-20210712160552-8235cf48b5f6 // indirect
@@ -60,13 +59,11 @@ require (
 	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf // indirect
 	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b // indirect
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6 // indirect
-	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
-	gopkg.in/go-playground/validator.v8 v8.18.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 	xorm.io/builder v0.3.9
 	xorm.io/core v0.7.3
 )
 
-replace github.com/xiusin/pine => ../pine
+//replace github.com/xiusin/pine => ../pine
 
 //replace github.com/xiusin/logger => ../logger

@@ -43,10 +43,6 @@ func (c *WechatMaterialController) PostList(cacher cache.AbstractCache) {
 		return
 	}
 
-	if count == 0 {
-		c.PostSync()
-	}
-
 	helper.Ajax(pine.H{
 		"list": c.Entries,
 		"pagination": pine.H{

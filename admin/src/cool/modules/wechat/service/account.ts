@@ -2,10 +2,11 @@ import { BaseService, Service } from "/@/core";
 
 @Service("wechat/account")
 class WechatAccount extends BaseService {
-	clearQuota() {
+	clearQuota(data: any) {
 		return this.request({
 			url: "/clear",
-			method: "POST"
+			method: "POST",
+			data
 		});
 	}
 	select() {
