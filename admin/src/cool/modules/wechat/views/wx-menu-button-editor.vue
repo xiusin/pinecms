@@ -23,7 +23,7 @@
 				</el-input>
 			</div>
 		</div>
-		<div v-show="!button.subButtons || button.subButtons.length === 0">
+		<div v-show="!button.sub_button || button.sub_button.length === 0">
 			<div class="menu-input-group">
 				<div class="menu-label">菜单内容</div>
 				<div class="menu-input">
@@ -144,7 +144,10 @@ export default {
 		checkMenuName: function (val) {
 			if (this.selectedMenuLevel === 1 && this.getMenuNameLen(val) <= 10) {
 				this.menuNameBounds = false;
-			} else this.menuNameBounds = !(this.selectedMenuLevel === 2 && this.getMenuNameLen(val) <= 16);
+			} else
+				this.menuNameBounds = !(
+					this.selectedMenuLevel === 2 && this.getMenuNameLen(val) <= 16
+				);
 		},
 		getMenuNameLen: function (val) {
 			var len = 0;

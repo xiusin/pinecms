@@ -41,20 +41,24 @@ func msgHandler(ctx *pine.Context) {
 	//设置接收消息的处理方法
 	srv.SetMessageHandler(func(msg *message.MixMessage) *message.Reply {
 		// 处理自动回复消息
-		var rule *tables.WechatMsgReplyRule
+		var rules []*tables.WechatMsgReplyRule
+
 		var msgData interface{}
 
 		var baseSql = "SELECT * FROM %s WHERE ((match_value = ? AND exact_match = 1) OR (INSTR(?, match_value) > 0 AND  exact_match = 0))"
 
-		orm.SQL(fmt.Sprintf(baseSql, controllers.GetTableName("wechat_msg_reply_rule")), msg.Content, msg.Content).
+		sess := orm.SQL(fmt.Sprintf(baseSql, controllers.GetTableName("wechat_msg_reply_rule")), msg.Content, msg.Content).
 			Where("appid = ?", appid).
 			Where("status = ?", 1).
-			Desc("exact_match", "id").
-			Get(&rule)
-		if rule == nil {
+			Desc("exact_match", "id")
+
+		sess.Limit(1).Find(&rules)
+
+		if len(rules) == 0 {
 			return nil
 		}
 
+		rule := rules[0]
 		switch rule.ReplyType {
 		case string(message.MsgTypeText):
 			msgData = message.NewText(rule.ReplyContent)

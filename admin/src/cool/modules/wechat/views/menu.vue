@@ -19,7 +19,7 @@
 							</div>
 							<ul class="weixin-sub-menu">
 								<li
-									v-for="(sub, i2) in (btn.subButtons || [])"
+									v-for="(sub, i2) in (btn.sub_button || [])"
 									:key="i2"
 									class="menu-sub-item"
 									:class="{
@@ -40,17 +40,17 @@
 									</div>
 								</li>
 								<li
-									v-if="(btn.subButtons || []).length < 5"
+									v-if="(btn.sub_button || []).length < 5"
 									class="menu-sub-item"
 									:class="{
 										'on-drag-over':
-											onDragOverMenu === i + '_' + (btn.subButtons || []).length
+											onDragOverMenu === i + '_' + (btn.sub_button || []).length
 									}"
 									@click.stop="addMenu(2, i)"
 									@dragover.prevent="
-										onDragOverMenu = i + '_' + btn.subButtons.length
+										onDragOverMenu = i + '_' + btn.sub_button.length
 									"
-									@drop="onDrop(i, btn.subButtons.length)"
+									@drop="onDrop(i, btn.sub_button.length)"
 								>
 									<div class="menu-item-title">
 										<i class="el-icon-plus"></i>
@@ -132,7 +132,7 @@ export default {
 			this.selectedMenuLevel = 2;
 			this.selectedMenuIndex = i;
 			this.selectedSubMenuIndex = i2;
-			this.selectedButton = this.menu.buttons[i].subButtons[i2];
+			this.selectedButton = this.menu.buttons[i].sub_button[i2];
 		},
 		//添加菜单
 		addMenu(level, i) {
@@ -145,21 +145,21 @@ export default {
 					this.menu.buttons.push({
 						type: "view",
 						name: "菜单名称",
-						subButtons: [],
+						sub_button: [],
 						url: ""
 					});
 					this.selectMenu(this.menu.buttons.length - 1);
 				}
-				if (typeof this.menu.buttons[i].subButtons === "undefined") {
-					this.menu.buttons[i].subButtons = [];
+				if (typeof this.menu.buttons[i].sub_button === "undefined") {
+					this.menu.buttons[i].sub_button = [];
 				}
-				if (level === 2 && this.menu.buttons[i].subButtons.length < 5) {
-					this.menu.buttons[i].subButtons.push({
+				if (level === 2 && this.menu.buttons[i].sub_button.length < 5) {
+					this.menu.buttons[i].sub_button.push({
 						type: "view",
 						name: "子菜单名称",
 						url: ""
 					});
-					this.selectSubMenu(i, this.menu.buttons[i].subButtons.length - 1);
+					this.selectSubMenu(i, this.menu.buttons[i].sub_button.length - 1);
 				}
 			} catch (e) {
 				console.error(e);
@@ -171,7 +171,7 @@ export default {
 				this.menu.buttons.splice(this.selectedMenuIndex, 1);
 				this.unSelectMenu();
 			} else if (this.selectedMenuLevel === 2) {
-				this.menu.buttons[this.selectedMenuIndex].subButtons.splice(
+				this.menu.buttons[this.selectedMenuIndex].sub_button.splice(
 					this.selectedSubMenuIndex,
 					1
 				);
@@ -187,7 +187,7 @@ export default {
 		updateWxMenu() {
 			let btns = [];
 			for (const idx in this.menu.buttons) {
-				let subBtn =  this.menu.buttons[idx].subButtons || [];
+				let subBtn =  this.menu.buttons[idx].sub_button || [];
 				btns[idx] = this.menu.buttons[idx];
 				btns[idx].sub_button = subBtn;
 			}
@@ -209,14 +209,14 @@ export default {
 			if (i === this.selectedMenuIndex && i2 === this.selectedSubMenuIndex)
 				//拖拽到了原位置
 				return;
-			if (i !== this.selectedMenuIndex && this.menu.buttons[i].subButtons.length >= 5) {
+			if (i !== this.selectedMenuIndex && this.menu.buttons[i].sub_button.length >= 5) {
 				this.$message.error("目标组已满");
 				return;
 			}
-			this.menu.buttons[i].subButtons.splice(i2, 0, this.selectedButton);
+			this.menu.buttons[i].sub_button.splice(i2, 0, this.selectedButton);
 			let delSubIndex = this.selectedSubMenuIndex;
 			if (i === this.selectedMenuIndex && i2 < this.selectedSubMenuIndex) delSubIndex++;
-			this.menu.buttons[this.selectedMenuIndex].subButtons.splice(delSubIndex, 1);
+			this.menu.buttons[this.selectedMenuIndex].sub_button.splice(delSubIndex, 1);
 			this.unSelectMenu();
 		}
 	}
