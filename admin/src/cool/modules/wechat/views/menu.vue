@@ -1,16 +1,17 @@
 <template>
 	<div style="padding: 10px; background: #fff">
 		<div id="app-menu">
-			<!-- 预览窗 -->
 			<div class="weixin-preview">
 				<div class="weixin-bd">
-					<div class="weixin-header">公众号菜单</div>
+					<div class="weixin-header">公众号菜单
+						<account-select v-model="appid"/>
+					</div>
 					<ul class="weixin-menu" id="weixin-menu">
 						<li
 							v-for="(btn, i) in menu.buttons"
 							:key="i"
 							class="menu-item"
-							:class="{ current: selectedMenuIndex === i && selectedMenuLevel == 1 }"
+							:class="{ current: selectedMenuIndex === i && selectedMenuLevel === 1 }"
 							@click="selectMenu(i)"
 						>
 							<div class="menu-item-title">
@@ -18,15 +19,15 @@
 							</div>
 							<ul class="weixin-sub-menu">
 								<li
-									v-for="(sub, i2) in btn.subButtons"
+									v-for="(sub, i2) in (btn.subButtons || [])"
 									:key="i2"
 									class="menu-sub-item"
 									:class="{
 										current:
 											selectedMenuIndex === i &&
 											selectedSubMenuIndex === i2 &&
-											selectedMenuLevel == 2,
-										'on-drag-over': onDragOverMenu == i + '_' + i2
+											selectedMenuLevel === 2,
+										'on-drag-over': onDragOverMenu === i + '_' + i2
 									}"
 									@click.stop="selectSubMenu(i, i2)"
 									draggable="true"
@@ -39,11 +40,11 @@
 									</div>
 								</li>
 								<li
-									v-if="btn.subButtons.length < 5"
+									v-if="(btn.subButtons || []).length < 5"
 									class="menu-sub-item"
 									:class="{
 										'on-drag-over':
-											onDragOverMenu == i + '_' + btn.subButtons.length
+											onDragOverMenu === i + '_' + (btn.subButtons || []).length
 									}"
 									@click.stop="addMenu(2, i)"
 									@dragover.prevent="
@@ -75,21 +76,25 @@
 			</div>
 		</div>
 		<div class="weixin-btn-group" @click="updateWxMenu">
-			<el-button type="success" icon="el-icon-upload">发布</el-button>
-			<el-button type="warning" icon="el-icon-delete" @click="delMenu">清空</el-button>
+			<el-button type="success" :disabled="appid === ''" icon="el-icon-upload">发布</el-button>
+			<el-button type="warning" :disabled="appid === ''" icon="el-icon-delete" @click="delMenu">清空</el-button>
 		</div>
 	</div>
 </template>
 <script>
+
 import wxMenuButtonEditor from "./wx-menu-button-editor.vue";
+import AccountSelect from "../components/account-select.vue";
 
 export default {
 	components: {
+		AccountSelect,
 		wxMenuButtonEditor
 	},
 	data() {
 		return {
-			menu: { buttons: [] }, //当前菜单
+			appid: "",
+			menu: {buttons: [], menuid: 0}, //当前菜单
 			selectedMenuIndex: 0, //当前选中菜单索引
 			selectedSubMenuIndex: 0, //当前选中子菜单索引
 			selectedMenuLevel: 0, //选中菜单级别
@@ -97,24 +102,24 @@ export default {
 			onDragOverMenu: 0 //当前鼠标拖动到的位置
 		};
 	},
-	mounted() {
-		this.getWxMenu();
+	watch: {
+		appid: function () {
+			this.init();
+		}
 	},
 	methods: {
-		getWxMenu() {
-			// this.$http({
-			// 	url: this.$http.adornUrl("/manage/wxMenu/getMenu")
-			// }).then(({ data }) => {
-			// 	if (data.code == 200) {
-			// 		this.menu = data.data.menu;
-			// 	} else {
-			// 		this.$message({
-			// 			type: "error",
-			// 			message: data.msg
-			// 		});
-			// 	}
-			// });
+		init() {
+			this.service.wechat.menu.info({
+				appid: this.appid,
+			}).then((data) => {
+				this.menu.buttons = data.button;
+				this.menu.menuid = data.menuid;
+			}).catch((e) => {
+				this.$message.error(e)
+				this.menu = {buttons: [], menuid: 0}
+			});
 		},
+
 		//选中主菜单
 		selectMenu(i) {
 			this.selectedMenuLevel = 1;
@@ -131,6 +136,10 @@ export default {
 		},
 		//添加菜单
 		addMenu(level, i) {
+			if (this.appid === '') {
+				this.$message.error('请先选择公众号');
+				return;
+			}
 			try {
 				if (level === 1 && this.menu.buttons.length < 3) {
 					this.menu.buttons.push({
@@ -140,6 +149,9 @@ export default {
 						url: ""
 					});
 					this.selectMenu(this.menu.buttons.length - 1);
+				}
+				if (typeof this.menu.buttons[i].subButtons === "undefined") {
+					this.menu.buttons[i].subButtons = [];
 				}
 				if (level === 2 && this.menu.buttons[i].subButtons.length < 5) {
 					this.menu.buttons[i].subButtons.push({
@@ -155,10 +167,10 @@ export default {
 		},
 		//删除菜单
 		delMenu() {
-			if (this.selectedMenuLevel == 1 && confirm("删除后菜单下设置的内容将被删除")) {
+			if (this.selectedMenuLevel === 1 && confirm("删除后菜单下设置的内容将被删除")) {
 				this.menu.buttons.splice(this.selectedMenuIndex, 1);
 				this.unSelectMenu();
-			} else if (this.selectedMenuLevel == 2) {
+			} else if (this.selectedMenuLevel === 2) {
 				this.menu.buttons[this.selectedMenuIndex].subButtons.splice(
 					this.selectedSubMenuIndex,
 					1
@@ -167,38 +179,43 @@ export default {
 			}
 		},
 		unSelectMenu() {
-			//不选中任何菜单
 			this.selectedMenuLevel = 0;
 			this.selectedMenuIndex = "";
 			this.selectedSubMenuIndex = "";
 			this.selectedButton = "";
 		},
 		updateWxMenu() {
-			this.$http({
-				url: this.$http.adornUrl("/manage/wxMenu/updateMenu"),
-				data: this.menu,
-				method: "post"
-			}).then(({ data }) => {
-				if (data.code == 200) {
-					this.$message.success("操作成功");
-				} else {
-					this.$message.error(data.msg);
-				}
-			});
+			let btns = [];
+			for (const idx in this.menu.buttons) {
+				let subBtn =  this.menu.buttons[idx].subButtons || [];
+				btns[idx] = this.menu.buttons[idx];
+				btns[idx].sub_button = subBtn;
+			}
+			this.service.wechat.menu.update({
+				appid: this.appid,
+				menu: {
+					button: this.menu.buttons || [],
+					menuid: this.menu.menuid || 0
+				},
+			}).then((data) => {
+				this.$message.success('发布菜单成功');
+			}).catch(e => {
+				this.$message.error(e);
+			})
 		},
 		onDrop(i, i2) {
 			//拖拽移动位置
 			this.onDragOverMenu = "";
-			if (i == this.selectedMenuIndex && i2 == this.selectedSubMenuIndex)
+			if (i === this.selectedMenuIndex && i2 === this.selectedSubMenuIndex)
 				//拖拽到了原位置
 				return;
-			if (i != this.selectedMenuIndex && this.menu.buttons[i].subButtons.length >= 5) {
+			if (i !== this.selectedMenuIndex && this.menu.buttons[i].subButtons.length >= 5) {
 				this.$message.error("目标组已满");
 				return;
 			}
 			this.menu.buttons[i].subButtons.splice(i2, 0, this.selectedButton);
 			let delSubIndex = this.selectedSubMenuIndex;
-			if (i == this.selectedMenuIndex && i2 < this.selectedSubMenuIndex) delSubIndex++;
+			if (i === this.selectedMenuIndex && i2 < this.selectedSubMenuIndex) delSubIndex++;
 			this.menu.buttons[this.selectedMenuIndex].subButtons.splice(delSubIndex, 1);
 			this.unSelectMenu();
 		}
@@ -416,14 +433,16 @@ export default {
 
 .weixin-menu-detail .menu-input-group {
 	width: 100%;
-	margin: 10px 0 30px 0;
+	margin: 10px 0 10px 0;
 	overflow: hidden;
 }
 
 .weixin-menu-detail .menu-label {
 	float: left;
-	height: 30px;
-	line-height: 30px;
+	font-size: 13px;
+	margin-right: 10px;
+	height: 40px;
+	line-height: 40px;
 	width: 80px;
 	text-align: right;
 }
@@ -445,9 +464,13 @@ export default {
 }
 
 .weixin-menu-detail .menu-tips {
-	color: #8d8d8d;
-	padding-top: 4px;
-	margin: 0;
+	color: #1c1c1c;
+	padding: 4px 10px;
+	margin-bottom: 15px;
+	border-left: 2px solid #459ae9;
+	height: 30px;
+	line-height: 25px;
+	font-size: 14px;
 }
 
 .weixin-menu-detail .menu-tips.cursor {
@@ -461,13 +484,11 @@ export default {
 
 .weixin-menu-detail .menu-content {
 	padding: 16px 20px;
+	margin-top: 30px;
 	border: 1px solid #e7e7eb;
 	background-color: #fff;
 }
 
-.weixin-menu-detail .menu-content .menu-input-group {
-	margin: 0px 0 10px 0;
-}
 
 .weixin-menu-detail .menu-content .menu-label {
 	text-align: left;

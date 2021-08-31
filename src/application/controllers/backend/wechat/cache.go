@@ -11,6 +11,8 @@ const CacheKeyWechatMaterialListKeys = "pinecms.wechat.material.list.key"
 
 const CacheKeyWechatUserTags = "pinecms.wechat.user.tags.%s"
 
+const CacheKeyWechatMenu = "pinecms.wechat.menu.%s"
+
 const CacheTimeSecs = 30 * 24 * 3600
 
 type WechatTokenCacher struct {

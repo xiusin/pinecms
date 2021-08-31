@@ -1,6 +1,7 @@
 package wechat
 
 import (
+	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/silenceper/wechat/v2/officialaccount/message"
 	"github.com/valyala/fasthttp/fasthttpadaptor"
@@ -41,10 +42,11 @@ func msgHandler(ctx *pine.Context) {
 	srv.SetMessageHandler(func(msg *message.MixMessage) *message.Reply {
 		// 处理自动回复消息
 		var rule *tables.WechatMsgReplyRule
+		var msgData interface{}
 
-		orm.SQL("SELECT * FROM "+controllers.GetTableName("wechat_msg_reply_rule")+
-			" WHERE ((match_value = ? AND exact_match = 1) OR (INSTR(?, match_value) > 0 AND  exact_match = 0))",
-			msg.Content, msg.Content).
+		var baseSql = "SELECT * FROM %s WHERE ((match_value = ? AND exact_match = 1) OR (INSTR(?, match_value) > 0 AND  exact_match = 0))"
+
+		orm.SQL(fmt.Sprintf(baseSql, controllers.GetTableName("wechat_msg_reply_rule")), msg.Content, msg.Content).
 			Where("appid = ?", appid).
 			Where("status = ?", 1).
 			Desc("exact_match", "id").
@@ -53,10 +55,8 @@ func msgHandler(ctx *pine.Context) {
 			return nil
 		}
 
-		var msgData interface{}
-
-		switch rule.ReplyType { // 按照类型返回内容响应
-		case string(message.MsgTypeText): // 文本类型
+		switch rule.ReplyType {
+		case string(message.MsgTypeText):
 			msgData = message.NewText(rule.ReplyContent)
 		case message.MsgTypeImage:
 			msgData = message.NewImage(rule.ReplyContent)

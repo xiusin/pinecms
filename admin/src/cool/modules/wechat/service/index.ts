@@ -6,6 +6,7 @@ import Material from "./material";
 import Rule from "./rule";
 import Template from "./template";
 import Tags from "./tags";
+import Menu from "./menu";
 
 export default {
 	wechat: {
@@ -16,6 +17,7 @@ export default {
 		rule: new Rule(),
 		material: new Material(),
 		template: new Template(),
-		tags: new Tags()
+		tags: new Tags(),
+		menu: new Menu(),
 	}
 };
