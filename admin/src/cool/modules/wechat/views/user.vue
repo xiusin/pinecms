@@ -4,6 +4,9 @@
 			<el-row type="flex">
 				<cl-refresh-btn />
 				<cl-add-btn />
+				<el-button size="mini">
+					会员概况(点击查看地图分布)
+				</el-button>
 				<el-button
 					size="mini"
 					icon="el-icon-price-tag"
@@ -44,6 +47,7 @@
 			@close="showWxUserTagsEditor = false"
 		/>
 		<wx-user-tagging :ref="setRefs('wxUserTagging')" :wxUsers="dataListSelections" :appid="appid" />
+
 	</div>
 </template>
 

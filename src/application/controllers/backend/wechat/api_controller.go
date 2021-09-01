@@ -19,11 +19,13 @@ func msgHandler(ctx *pine.Context) {
 			ctx.WriteJSON(pine.H{"code": 400500, "message": err})
 		}
 	}()
+
 	appid := ctx.Params().Get("appid")
 	if len(appid) == 0 {
 		ctx.Abort(404)
 		return
 	}
+
 	account, _ := GetOfficialAccount(appid)
 	req := &http.Request{}
 	if err := fasthttpadaptor.ConvertRequest(ctx.RequestCtx, req, true); err != nil {
@@ -59,6 +61,7 @@ func msgHandler(ctx *pine.Context) {
 		}
 
 		rule := rules[0]
+
 		switch rule.ReplyType {
 		case string(message.MsgTypeText):
 			msgData = message.NewText(rule.ReplyContent)
@@ -86,16 +89,22 @@ func msgHandler(ctx *pine.Context) {
 		return
 	}
 
-	//回复消息：演示回复用户发送的消息
-	orm.InsertOne(&tables.WechatLog{
-		AppId:     appid,
-		OpenId:    string(srv.RequestMsg.FromUserName),
-		MsgType:   string(srv.RequestMsg.MsgType),
-		Detail:    srv.RequestMsg,
-		CreatedAt: tables.LocalTime(time.Unix(srv.RequestMsg.CreateTime, 0)),
-	})
+	if srv.RequestMsg != nil {
+		orm.InsertOne(&tables.WechatLog{
+			AppId:     appid,
+			OpenId:    string(srv.RequestMsg.FromUserName),
+			MsgType:   string(srv.RequestMsg.MsgType),
+			Detail:    srv.RequestMsg,
+			CreatedAt: tables.LocalTime(time.Unix(srv.RequestMsg.CreateTime, 0)),
+		})
+	}
 
 	_ = srv.Send()
+}
+
+// Plugin TODO 回复插件
+type Plugin struct {
+
 }
 
 type WechatMsg struct {

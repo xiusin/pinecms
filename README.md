@@ -94,15 +94,35 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 ![crud命令](./images/crud.png)
 
+
+
+# 微信模块 
+
+- 账号授权
+![账号授权](./images/wechat-account.png)
+  
+- 会员管理
+![会员管理](./images/wechat-member.png)
+  
+- 菜单管理
+![菜单管理](./images/wechat-menu.png)
+  
+- 消息管理
+![消息管理](./images/wechat-msg.png)
+  
+- 模板管理
+![消息模板](./images/wechat-template.png)
+
+
+
 # Doing
 - 重写为前后端分离
 - 一键CRUD(view models controllers menus)
+- 微信插件
 
 # TODO  
 - github.com/gokeeptech/gktemplate
-- github.com/traefik/yaegi `作为脚本处理`
 - Bleve 全文检索
-- 微信插件
 - daemon 守护进程
 - 插件公共页面配置 (尽可能不让二次开发)
 - hook方式支持插件钩子注入信息

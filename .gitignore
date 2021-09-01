@@ -24,3 +24,5 @@ dist
 /admin/wx-manage/
 /sunny
 /main
+/frp/frpc
+/frp/frpc.ini
