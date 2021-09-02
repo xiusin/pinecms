@@ -26,3 +26,4 @@ dist
 /main
 /frp/frpc
 /frp/frpc.ini
+/tests/
