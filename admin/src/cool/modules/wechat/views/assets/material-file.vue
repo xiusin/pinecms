@@ -54,7 +54,7 @@
 			:page-sizes="[20]"
 			:page-size="20"
 			:total="totalCount"
-			layout="total, prev,pager, next"
+			layout="total,prev,pager,next"
 		/>
 		<!-- 弹窗, 新增 / 修改 -->
 		<add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="onChange" />
@@ -108,8 +108,8 @@ export default {
 					appid: "wxe43df03110f5981b"
 				})
 				.then((data) => {
-					this.dataList = data.item;
-					this.totalCount = data.total_count;
+					this.dataList = data.list;
+					this.totalCount = data.pagination.total;
 					this.pageIndex++;
 					this.dataListLoading = false;
 				})

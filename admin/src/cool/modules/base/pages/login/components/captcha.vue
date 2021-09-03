@@ -56,6 +56,10 @@ export default defineComponent({
 <style lang="scss" scoped>
 .login-captcha {
 	height: 36px;
+	position: absolute;
+	top: 0;
+	right: 0;
+
 	cursor: pointer;
 
 	.svg {

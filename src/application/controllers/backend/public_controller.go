@@ -3,14 +3,12 @@ package backend
 import (
 	"crypto/md5"
 	"fmt"
-	"github.com/afocus/captcha"
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/captcha"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
-	"image/png"
 	"io"
 	"path/filepath"
 	"strings"
@@ -69,11 +67,14 @@ func (c *PublicController) PostUpload() {
 	}
 }
 
-func (c *PublicController) GetVerifyCode() {
-	cpt := captcha.New()
-	cpt.SetFont(helper.GetRootPath("resources/fonts/comic.ttf"))
-	img, str := cpt.Create(4, captcha.CLEAR)
-	c.Session().AddFlush(controllers.CacheVerifyCode, str)
-	c.Ctx().SetContentType("img/png")
-	png.Encode(c.Ctx().Response.BodyWriter(), img)
+func (c *PublicController) GetCaptcha() {
+	id, base64s, err := captcha.Get("")
+	if err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
+	}
+	helper.Ajax(pine.H{
+		"captchaId": id,
+		"data": base64s,
+	}, 0, c.Ctx())
 }

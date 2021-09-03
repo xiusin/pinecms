@@ -153,4 +153,10 @@ func (c *WechatMsgTemplateController) PostSend() {
 		}
 	}
 	helper.Ajax(fmt.Sprintf("发送信息%d成功, %d失败", failed, len(users)-failed), 0, c.Ctx())
+
+
+
+	// 客服消息
+	//account.GetCustomerMessageManager().Send()
+
 }

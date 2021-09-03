@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/xiusin/pine"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -25,14 +24,14 @@ var (
 		Short: "启动开发服务器",
 		RunE:  devCommand,
 	}
-	rebuildNotifier         = make(chan struct{})
-	types, ignoreDirs       []string
-	rootDir, proxyChannelId string
-	buildName               = "pinecms-dev-build"
-	delay, limit            int32
-	watcher                 *fsnotify.Watcher
-	counter                 int32
-	globalCancel            func()
+	rebuildNotifier   = make(chan struct{})
+	types, ignoreDirs []string
+	rootDir           string
+	buildName         = "pinecms-dev-build"
+	delay, limit      int32
+	watcher           *fsnotify.Watcher
+	counter           int32
+	globalCancel      func()
 )
 
 const winExt = ".exe"
@@ -43,7 +42,6 @@ func init() {
 	devCmd.Flags().String("root", util.AppPath(), "监听的根目录")
 	devCmd.Flags().Int32("delay", 3, "每次构建进程的延迟时间单位：秒")
 	devCmd.Flags().Int32("limit", 500, "监听文件的最大数量")
-	devCmd.Flags().String("proxyChannelId", "", "代理隧道ID, 需要目录下放置代理执行文件sunny")
 	var err error
 	watcher, err = fsnotify.NewWatcher()
 	if err != nil {
@@ -69,7 +67,6 @@ func devCommand(cmd *cobra.Command, args []string) error {
 		panic(err)
 	}
 	go eventNotify()
-	go ngrokProxy()
 	go serve()
 	<-closeCh
 	if globalCancel != nil {
@@ -83,6 +80,7 @@ func devCommand(cmd *cobra.Command, args []string) error {
 func serve() {
 	var nextEventCh = make(chan struct{})
 	for {
+		logger.Print("启动服务...")
 		ctx, cancel := context.WithCancel(context.Background())
 		globalCancel = cancel
 		process := exec.CommandContext(ctx, fmt.Sprintf("./%s", buildName), "serve", "run")
@@ -96,11 +94,10 @@ func serve() {
 		if err := process.Start(); err != nil {
 			logger.Error(err)
 		}
-		excludeErrors := "signal:"
-		if err := process.Wait(); err != nil && !strings.Contains(err.Error(), excludeErrors) {
-			logger.Error(err)
-		}
+		process.Wait()
+		process = nil
 		<-nextEventCh
+		logger.Print("服务退出...")
 	}
 }
 func build() error {
@@ -193,26 +190,6 @@ func eventNotify() {
 	}
 }
 
-func ngrokProxy() {
-	if len(proxyChannelId) == 0 {
-		return
-	}
-	// 查看是否存在可执行的sunny
-	bin := "./sunny"
-	if runtime.GOOS == "windows" {
-		bin += winExt
-	}
-	if _, err := os.Stat(bin); err != nil {
-		return
-	}
-	pine.Logger().Print("========= 启动代理ngrok =========")
-	cmd := exec.Command(bin, "-log-level", "ERROR", "clientid", proxyChannelId)
-
-	if err := cmd.Run(); err != nil {
-		pine.Logger().Warning(err)
-	}
-}
-
 func getCommandFlags(cmd *cobra.Command) (err error) {
 	ignoreDirs, err = cmd.Flags().GetStringSlice("ignoreDirs")
 	if err != nil {
@@ -234,6 +211,5 @@ func getCommandFlags(cmd *cobra.Command) (err error) {
 	if err != nil {
 		return
 	}
-	proxyChannelId, _ = cmd.Flags().GetString("proxyChannelId")
 	return
 }

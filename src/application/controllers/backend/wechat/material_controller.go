@@ -59,22 +59,27 @@ func (c *WechatMaterialController) PostSync() {
 
 	_, err := c.Orm.Transaction(func(session *xorm.Session) (interface{}, error) {
 		session.Where("id > 0").Delete(c.Table)
-		types := []material.MediaType{material.MediaTypeImage, material.MediaTypeThumb, material.MediaTypeVoice, material.MediaTypeVideo}
+		types := []material.PermanentMaterialType{
+			material.PermanentMaterialTypeImage,
+			material.PermanentMaterialTypeVideo,
+			material.PermanentMaterialTypeVoice,
+			material.PermanentMaterialTypeNews,
+		}
 		for _, mediaType := range types {
 			page, size, finished := 1, 20, false
 			for !finished {
-				data, err := account.GetMaterial().BatchGetMaterial(material.PermanentMaterialType(mediaType), int64((page-1)*size), int64(size))
+				data, err := account.GetMaterial().BatchGetMaterial(mediaType, int64((page-1)*size), int64(size))
 				if err != nil {
 					return nil, err
 				} else {
 					for _, item := range data.Item {
-						session.InsertOne(&tables.WechatMaterial{
+						fmt.Println(session.InsertOne(&tables.WechatMaterial{
 							Appid:      appid,
 							Type:       string(mediaType),
 							MediaId:    item.MediaID,
 							Url:        item.URL,
 							UpdateTime: tables.LocalTime(time.Unix(item.UpdateTime, 0)),
-						})
+						}))
 					}
 				}
 				page++

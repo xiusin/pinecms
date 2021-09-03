@@ -6,6 +6,7 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/application/models"
+	"github.com/xiusin/pinecms/src/common/captcha"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
 	"time"
@@ -30,12 +31,15 @@ func (c *LoginController) Login() {
 		Desc:     "账号密码登录系统， 并且返回JWT凭证",
 	})
 
-	if err := parseParam(c.Ctx(), &p); err != nil {
-		helper.Ajax(err, 1, c.Ctx())
+	parseParam(c.Ctx(), &p)
+
+	if p.Password == "" || p.Username == "" || p.CaptchaId == "" || p.CaptchaValue == "" {
+		helper.Ajax("参数不能为空", 1, c.Ctx())
 		return
 	}
-	if p.Password == "" || p.Username == "" {
-		helper.Ajax("参数不能为空", 1, c.Ctx())
+
+	if !captcha.Verify(p.CaptchaId, p.CaptchaValue) {
+		helper.Ajax("验证码错误, 请重新输入", 1, c.Ctx())
 		return
 	}
 

@@ -40,11 +40,11 @@
 									</el-input>
 								</el-form-item>
 
-								<el-form-item label="验证码" class="captcha" v-if="false">
+								<el-form-item label="验证码" class="captcha">
 									<el-input
 										v-model="form.verifyCode"
 										placeholder="请输入图片验证码"
-										maxlength="4"
+										maxlength="5"
 										auto-complete="off"
 										@keyup.enter="toLogin"
 									/>

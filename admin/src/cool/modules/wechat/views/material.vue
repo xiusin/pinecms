@@ -1,7 +1,8 @@
 <template>
 	<div style="padding: 10px; background: #fff">
 		<div style="padding: 10px 0">
-			<el-button size="mini" type="warning" @click="sync()">同步素材数据</el-button>
+			<account-select v-model="appid" />
+			<el-button style="margin-left: 5px;" size="mini" type="warning" @click="sync()" :disabled="appid === ''">同步素材</el-button>
 		</div>
 		<el-tabs v-model="activeTab" @tab-click="handleTabClick">
 			<el-tab-pane :label="'图片素材（' + assetsCount.imageCount + ')'" name="image">
@@ -22,14 +23,17 @@
 <script>
 import MaterialFile from "./assets/material-file.vue";
 import MaterialNews from "./assets/material-news.vue";
+import AccountSelect from "../components/account-select.vue";
 
 export default {
 	components: {
+		AccountSelect,
 		MaterialFile,
 		MaterialNews
 	},
 	data() {
 		return {
+			appid: "",
 			activeTab: "image",
 			assetsCount: { imageCount: 0, videoCount: 0, voiceCount: 0, newsCount: 0 }
 		};
