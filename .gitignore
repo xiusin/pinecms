@@ -27,3 +27,4 @@ dist
 /frp/frpc
 /frp/frpc.ini
 /tests/
+/docdb/apiEntity
