@@ -341,13 +341,14 @@ export default defineComponent({
 			assetsSelectorVisible.value = false;
 		}
 
+		// 检查展示素材 并显示打开类型
 		function checkShowMaterial(type: string) {
 			const config = {
 				image: "image",
 				voice: "voice",
 				video: "video",
 				mpnews: "news",
-				miniprogrampage: "image", //小程序需选择卡片图
+				miniprogrampage: "image",
 				music: "image"
 			};
 			assetsType.value = config[type] || "";
@@ -357,7 +358,7 @@ export default defineComponent({
 			assetsSelectorVisible.value = true;
 		}
 
-		function onInfo(data, { done }) {
+		function onInfo(data: any, { done }) {
 			currentRuleForm.value = data;
 			done(data);
 		}

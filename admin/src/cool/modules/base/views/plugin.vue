@@ -198,48 +198,54 @@ export default defineComponent({
 				}
 			},
 			columns: [
-				{
-					label: "插件路径",
-					prop: "path",
-					width: 180,
-					align: "left"
-				},
+				// {
+				// 	label: "插件路径",
+				// 	prop: "path",
+				// 	width: 180,
+				// 	align: "left"
+				// },
 				{
 					label: "名称",
 					prop: "name",
 					showOverflowTooltip: true,
-					width: 140
-				},
-				{
-					label: "作者",
-					prop: "author",
-					width: 120
-				},
-				{
-					label: "联系方式",
-					prop: "contact",
-					showOverflowTooltip: true,
-					width: 180
+					width: 150,
+					align: "left"
 				},
 				{
 					label: "功能描述",
 					prop: "description",
+					align: "left",
 					showOverflowTooltip: true
+				},
+				{
+					label: "作者",
+					prop: "author",
+					width: 100
+				},
+				{
+					label: "价格",
+					prop: "price",
+					width: 80
+				},
+				{
+					label: "下载",
+					prop: "download",
+					width: 80
 				},
 				{
 					label: "版本号",
 					prop: "version",
-					width: 110
+					width: 100
 				},
 				{
 					label: "是否启用",
 					prop: "enable",
-					width: 110
+					width: 80
 				},
 				{
 					label: "状态",
 					prop: "status",
-					width: 150,
+					width: 70,
 					dict: [
 						{
 							label: "缺少配置",
@@ -271,7 +277,7 @@ export default defineComponent({
 				},
 				{
 					type: "op",
-					width: 120,
+					width: 80,
 					buttons: ["slot-conf"]
 				}
 			]
