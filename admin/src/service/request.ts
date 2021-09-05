@@ -60,7 +60,7 @@ axios.interceptors.request.use(
 				}
 			}
 			if (Object.keys(config.data.params).length === 0) {
-				delete config.data.params
+				delete config.data.params;
 			}
 		}
 

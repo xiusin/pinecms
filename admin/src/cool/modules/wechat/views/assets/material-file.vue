@@ -1,61 +1,72 @@
 <template>
 	<div class="mod-menu">
-		<el-form :inline="true" :model="dataForm" >
+		<el-form :inline="true" :model="dataForm" v-if="!selectMode">
 			<el-form-item>
 				<el-button size="mini" type="primary" @click="addOrUpdateHandle()">新增</el-button>
 			</el-form-item>
 		</el-form>
-		<div v-loading="dataListLoading"  style="min-height: 500px">
-			<div class="card" v-for="item in dataList" :key="item.media_id" @click="onSelect(item)">
-				<el-image
-					v-if="fileType === 'image'"
-					class="card-image"
-					alt=""
-					:src="item.url"
-					fit="contain"
-				/>
-				<div v-else class="card-preview">
-					<div
-						v-if="fileType === 'voice'"
-						class="card-preview-icon el-icon-microphone"
-					></div>
-					<div
-						v-if="fileType === 'video'"
-						class="card-preview-icon el-icon-video-camera-solid"
-					></div>
-					<div class="card-preview-text">管理后台不支持预览<br />微信中可正常播放</div>
-				</div>
-				<div class="card-footer">
-					<div class="text-cut-name">{{ item.name }}</div>
-					<!--                    <div>{{$moment(item.updateTime).calendar()}}</div>-->
-					<div class="flex justify-between align-center" v-show="!selectMode">
-						<el-button
-							size="mini"
-							type="text"
-							v-copy="item.media_id"
-							icon="el-icon-copy-document"
+		<div v-loading="dataListLoading">
+			<div style="height: auto">
+				<div
+					class="card"
+					v-for="item in dataList"
+					:key="item.media_id"
+					@click="onSelect(item)"
+				>
+					<el-image
+						v-if="fileType === 'image'"
+						class="card-image"
+						alt=""
+						:src="getImgUrl(item.url)"
+						fit="contain"
+						lazy
+					/>
+					<div v-else class="card-preview">
+						<div
+							v-if="fileType === 'voice'"
+							class="card-preview-icon el-icon-microphone"
+						></div>
+						<div
+							v-if="fileType === 'video'"
+							class="card-preview-icon el-icon-video-camera-solid"
+						></div>
+						<div class="card-preview-text">
+							管理后台不支持预览<br />微信中可正常播放
+						</div>
+					</div>
+					<div class="card-footer">
+						<div class="text-cut-name">{{ item.name }}</div>
+						<div>{{ item.updateTime }}</div>
+						<div class="flex justify-between align-center" v-show="!selectMode">
+							<el-button
+								size="mini"
+								type="text"
+								v-copy="item.media_id"
+								icon="el-icon-copy-document"
 							>复制media_id
-						</el-button>
-						<el-button
-							size="mini"
-							type="text"
-							icon="el-icon-delete"
-							@click="deleteHandle(item.media_id)"
+							</el-button>
+							<el-button
+								size="mini"
+								type="text"
+								icon="el-icon-delete"
+								@click="deleteHandle(item.media_id)"
 							>删除
-						</el-button>
+							</el-button>
+						</div>
 					</div>
 				</div>
 			</div>
+
+			<el-pagination
+				style="margin-top: 20px"
+				@current-change="currentChangeHandle"
+				:current-page="pageIndex"
+				:page-sizes="[20]"
+				:page-size="20"
+				:total="totalCount"
+				layout="total,prev,pager,next"
+			/>
 		</div>
-		<el-pagination
-        style="float: right"
-			@current-change="currentChangeHandle"
-			:current-page="pageIndex"
-			:page-sizes="[20]"
-			:page-size="20"
-			:total="totalCount"
-			layout="total,prev,pager,next"
-		/>
 		<!-- 弹窗, 新增 / 修改 -->
 		<add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="onChange" />
 	</div>
@@ -74,11 +85,11 @@ export default {
 			default: "image"
 		},
 		selectMode: {
-			// 是否选择模式，选择模式下点击素材选中，不可新增和删除
 			type: Boolean,
 			default: false
 		}
 	},
+	emits: { selected: null },
 	data() {
 		return {
 			dataForm: {},
@@ -90,12 +101,18 @@ export default {
 			dataListLoading: false
 		};
 	},
-	mounted() {},
+	mounted() {
+		console.log(this.selectMode, this.fileType);
+		this.selectMode && this.getDataList();
+	},
 	methods: {
 		init() {
 			if (!this.dataList.length) {
 				this.getDataList();
 			}
+		},
+		getImgUrl(url) {
+			return this.service.wechat.material.preview(url);
 		},
 		getDataList() {
 			if (this.dataListLoading) return;

@@ -15,11 +15,6 @@ import "./mock";
 // element-plus
 import ElementPlus from "element-plus";
 import "./assets/css/element-variables.scss";
-import "dayjs/locale/zh-cn";
-import locale from "element-plus/lib/locale/lang/zh-cn";
-// import locale from "element-plus/lib/locale";
-// locale.use(lang)
-
 // mitt
 import mitt from "mitt";
 
@@ -34,11 +29,10 @@ bootstrap(app)
 	.then(() => {
 		// echarts 可视图表
 		app.component("v-chart", VueECharts);
-
 		// 事件通讯
 		app.provide("mitt", mitt());
 
-		app.use(store).use(router).use(VueUeditorWrap).use(ElementPlus, { locale }).mount("#app");
+		app.use(store).use(router).use(VueUeditorWrap).use(ElementPlus).mount("#app");
 	})
 	.catch((err: string) => {
 		console.error(`COOL-ADMIN 启动失败`, err);

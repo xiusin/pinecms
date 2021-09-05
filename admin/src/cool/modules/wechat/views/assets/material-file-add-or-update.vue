@@ -5,6 +5,9 @@
 		v-model="visible"
 	>
 		<el-form :model="dataForm" :rules="dataRule" ref="dataForm" label-width="80px">
+			<el-form-item label="公众号" prop="appid">
+				<account-select v-model="dataForm.appid" style="width: 100%" size="small" />
+			</el-form-item>
 			<el-form-item label="媒体文件">
 				<el-button type="primary" size="mini">
 					选择文件
@@ -68,12 +71,15 @@
 </template>
 
 <script>
+import AccountSelect from "../../components/account-select.vue";
 export default {
+	components: { AccountSelect },
 	data() {
 		return {
 			visible: false,
 			uploading: false,
 			dataForm: {
+				appid: "",
 				mediaId: "",
 				file: "",
 				fileName: "",
@@ -82,6 +88,7 @@ export default {
 				mediaType: "image"
 			},
 			dataRule: {
+				appid: [{ required: true, message: "请选择公众号", trigger: "blur" }],
 				fileName: [{ required: true, message: "素材名称不能为空", trigger: "blur" }],
 				mediaType: [{ required: true, message: "素材类型不能为空", trigger: "blur" }]
 			}
@@ -101,6 +108,7 @@ export default {
 					let form = new FormData();
 					form.append("mediaId", this.dataForm.mediaId || "");
 					form.append("file", this.dataForm.file);
+					form.append("appid", this.dataForm.appid);
 					form.append("fileName", this.dataForm.fileName);
 					form.append("mediaType", this.dataForm.mediaType);
 					if (this.dataForm.mediaType === "video") {

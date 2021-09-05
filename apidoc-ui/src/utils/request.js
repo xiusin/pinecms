@@ -33,6 +33,7 @@ const service = axios.create({
     process.env.NODE_ENV === "development" ? "http://localhost:2019" : host,
   timeout: 60 * 1000
 });
+
 // 请求拦截器
 service.interceptors.request.use(
   config => {

@@ -17,7 +17,7 @@
     "codemirror": "^5.62.2",
     "core-js": "^3.6.5",
     "echarts": "^5.0.2",
-    "element-plus": "^1.0.2-beta.70",
+    "element-plus": "^1.0.2-beta.71",
     "file-saver": "^2.0.5",
     "glob": "^7.1.6",
     "js-beautify": "^1.13.5",

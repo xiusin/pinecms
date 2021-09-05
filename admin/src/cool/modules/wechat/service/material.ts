@@ -1,4 +1,6 @@
 import { BaseService, Service } from "/@/core";
+import { getUrl } from "../../../../core/utils";
+import store from "/@/store";
 
 @Service("wechat/material")
 class WechatMaterial extends BaseService {
@@ -13,6 +15,12 @@ class WechatMaterial extends BaseService {
 			url: "/sync",
 			method: "POST"
 		});
+	}
+	preview(url: string) {
+		const token = store.getters.token || "";
+		return getUrl(
+			"/wechat/material/preview?url=" + encodeURIComponent(url) + "&token=" + token
+		);
 	}
 	upload(data: any) {
 		return this.request({

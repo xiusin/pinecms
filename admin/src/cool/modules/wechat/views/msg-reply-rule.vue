@@ -1,72 +1,74 @@
 <template>
-	<cl-crud :ref="setRefs('crud')" @load="onLoad">
-		<el-row type="flex">
-			<cl-add-btn />
-			<cl-refresh-btn />
-			<cl-flex1 />
-			<cl-filter-group v-model="form">
-				<account-select v-model="form.appid" />
-			</cl-filter-group>
-		</el-row>
+	<div>
+		<cl-crud :ref="setRefs('crud')" @load="onLoad">
+			<el-row type="flex">
+				<cl-add-btn />
+				<cl-refresh-btn />
+				<cl-flex1 />
+				<cl-filter-group v-model="form">
+					<account-select v-model="form.appid" />
+				</cl-filter-group>
+			</el-row>
 
-		<el-row>
-			<cl-table v-bind="table" />
-		</el-row>
+			<el-row>
+				<cl-table v-bind="table" />
+			</el-row>
 
-		<el-row type="flex">
-			<cl-flex1 />
-			<cl-pagination />
-		</el-row>
+			<el-row type="flex">
+				<cl-flex1 />
+				<cl-pagination />
+			</el-row>
 
-		<cl-upsert v-model="form" v-bind="upsert">
-			<template #slot-appid="{ scope }">
-				<account-select
-					v-model="scope.appid"
-					@change="
-						(val) => {
-							console.log(val);
-						}
-					"
-				/>
-			</template>
+			<cl-upsert v-bind="upsert" :on-info="onInfo">
+				<template #slot-appid="{ scope }">
+					<account-select v-model="scope.appid" />
+				</template>
 
-			<template #slot-content="{ scope }">
-				<el-input
-					v-model="scope.replyContent"
-					size="mini"
-					type="textarea"
-					:rows="5"
-					placeholder="文本、图文ID、media_id、json配置"
-				/>
-				<el-button
-					type="text"
-					size="mini"
-					@click="
-						() => {
-							if (scope.replyContent) {
-								scope.replyContent += '<a href=\'链接地址\'>链接文字</a>';
-							} else {
-								scope.replyContent = '<a href=\'链接地址\'>链接文字</a>';
+				<template #slot-content="{ scope }">
+					<el-input
+						v-model="scope.replyContent"
+						size="mini"
+						type="textarea"
+						:rows="5"
+						placeholder="文本、图文ID、media_id、json配置"
+					/>
+					<el-button
+						v-if="'text' === scope.replyType"
+						type="text"
+						size="mini"
+						@click="
+							() => {
+								if (scope.replyContent) {
+									scope.replyContent += '<a href=\'链接地址\'>链接文字</a>';
+								} else {
+									scope.replyContent = '<a href=\'链接地址\'>链接文字</a>';
+								}
 							}
-						}
-					"
-					>插入链接</el-button
-				>
-				<el-button type="text" size="mini"> 从素材库中选择<span>缩略图</span> </el-button>
-			</template>
-		</cl-upsert>
-	</cl-crud>
+						"
+						>插入链接
+					</el-button>
+					<el-button
+						type="text"
+						size="mini"
+						v-if="checkShowMaterial(scope.replyType)"
+						@click="assetsSelectorVisible = true"
+					>
+						从素材库中选择<span
+							v-if="
+								'miniprogrampage' === scope.replyType || 'music' === scope.replyType
+							"
+							>缩略图</span
+						>
+					</el-button>
+				</template>
+			</cl-upsert>
+		</cl-crud>
 
-	<!--	<el-dialog-->
-	<!--		title="选择素材"-->
-	<!--		v-model="accessModalRef"-->
-	<!--		:modal="true"-->
-	<!--		append-to-body-->
-	<!--		@close="onClose"-->
-	<!--	>-->
-	<!--		<material-news @selected="onSelect" selectMode />-->
-	<!--		&lt;!&ndash;		<material-file :fileType="selectType" @selected="onSelect" selectMode></material-file>&ndash;&gt;-->
-	<!--	</el-dialog>-->
+		<cl-dialog title="选择素材" v-model="assetsSelectorVisible" width="50%">
+			<material-news v-if="assetsType === 'news'" selectMode @selected="onAssetsSelect" />
+			<material-file v-else :fileType="assetsType" selectMode @selected="onAssetsSelect" />
+		</cl-dialog>
+	</div>
 </template>
 
 <script lang="ts">
@@ -76,6 +78,7 @@ import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
 import AccountSelect from "../components/account-select.vue";
 import MaterialFile from "./assets/material-file.vue";
 import MaterialNews from "./assets/material-news.vue";
+
 export default defineComponent({
 	name: "wechat-account",
 	components: {
@@ -88,9 +91,9 @@ export default defineComponent({
 
 		const { refs, setRefs }: any = useRefs();
 
-		const accessModalRef = ref(true);
-
 		const form = ref({ appid: "" });
+
+		const currentRuleForm = ref({});
 
 		const accounts = ref([]);
 
@@ -251,7 +254,7 @@ export default defineComponent({
 					label: "公众号名称",
 					dict: accounts,
 					align: "left",
-					width: 230,
+					width: 230
 				},
 				{
 					prop: "exactMatch",
@@ -322,13 +325,54 @@ export default defineComponent({
 			});
 		});
 
+		const assetsType = ref("");
+
+		const assetsSelectorVisible = ref(false);
+
+		function onAssetsSelect(assetsInfo: any) {
+			if (assetsInfo.replyType == "miniprogrampage" || assetsInfo.replyType == "music") {
+				let data = JSON.parse(assetsInfo.replyContent);
+				if (data && data.thumb_media_id) data.thumb_media_id = assetsInfo.mediaId;
+				currentRuleForm.value.replyContent = JSON.stringify(data, null, 4);
+			} else {
+				currentRuleForm.value.replyContent = assetsInfo.media_id;
+			}
+			console.log(currentRuleForm.value);
+			assetsSelectorVisible.value = false;
+		}
+
+		function checkShowMaterial(type: string) {
+			const config = {
+				image: "image",
+				voice: "voice",
+				video: "video",
+				mpnews: "news",
+				miniprogrampage: "image", //小程序需选择卡片图
+				music: "image"
+			};
+			assetsType.value = config[type] || "";
+			return assetsType.value;
+		}
+		function showSelector() {
+			assetsSelectorVisible.value = true;
+		}
+
+		function onInfo(data, { done }) {
+			currentRuleForm.value = data;
+			done(data);
+		}
 		return {
+			onInfo,
 			service,
-			form,
-			accessModalRef,
 			refs,
+			form,
 			table,
 			setRefs,
+			assetsSelectorVisible,
+			onAssetsSelect,
+			showSelector,
+			checkShowMaterial,
+			assetsType,
 			onLoad,
 			upsert
 		};

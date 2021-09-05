@@ -1,4 +1,4 @@
-import { routerMode } from "/@/config/env";
+import { routerMode, baseUrl } from "/@/config/env";
 import storage from "./storage";
 
 export function isArray(value: any) {
@@ -207,6 +207,11 @@ export function getBrowser() {
 	};
 }
 
+export function getUrl(path: string) {
+	const { origin } = window.location;
+	return origin + baseUrl + path;
+}
+
 export function href(path: string, newWindow?: boolean) {
 	const { origin, pathname } = window.location;
 
@@ -221,7 +226,6 @@ export function href(path: string, newWindow?: boolean) {
 	} else {
 		url = origin + import.meta.env.BASE_URL + "#" + path;
 	}
-
 	if (newWindow) {
 		window.open(url);
 	} else {

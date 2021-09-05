@@ -2,17 +2,13 @@
 
 </template>
 <script>
+import MaterialFile from "./material-file.vue";
+import MaterialNews from "./material-news.vue";
 export default {
 	name: "assets-selector",
-	emits: ["selected", "onClose"],
-	data: function () {
-		return {
-			dataVisible: this.visible
-		}
-	},
 	components: {
-		MaterialFile: () => import("./material-file.vue"),
-		MaterialNews: () => import("./material-news.vue")
+		MaterialFile,
+		MaterialNews
 	},
 	props: {
 		selectType: {
@@ -21,8 +17,14 @@ export default {
 		},
 		visible: {
 			type: Boolean,
-			default: false
+			default: true
 		}
+	},
+	emits: ["selected", "onClose"],
+	data: function () {
+	  console.log("init");
+		return {
+		};
 	},
 	methods: {
 		onSelect(itemInfo) {
@@ -32,5 +34,5 @@ export default {
 			this.$emit("onClose");
 		}
 	}
-}
+};
 </script>

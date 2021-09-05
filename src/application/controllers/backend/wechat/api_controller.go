@@ -38,6 +38,7 @@ func msgHandler(ctx *pine.Context) {
 		ctx.Abort(403, "消息来源异常")
 		return
 	}
+
 	orm := ctx.Value("orm").(*xorm.Engine)
 
 	//设置接收消息的处理方法
@@ -48,7 +49,7 @@ func msgHandler(ctx *pine.Context) {
 		var msgData interface{}
 
 		var baseSql = "SELECT * FROM %s WHERE " +
-			"((match_value = ? AND exact_match = 1) OR "+
+			"((match_value = ? AND exact_match = 1) OR " +
 			"(INSTR(?, match_value) > 0 AND  exact_match = 0)) AND appid = '" + appid +
 			"' AND status = 1 ORDER BY exact_match DESC, id DESC LIMIT 1"
 
@@ -104,7 +105,6 @@ func msgHandler(ctx *pine.Context) {
 
 // Plugin TODO 回复插件
 type Plugin struct {
-
 }
 
 type WechatMsg struct {

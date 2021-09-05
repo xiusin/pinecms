@@ -16,6 +16,9 @@ func VerifyJwtToken() pine.Handler {
 		uri := ctx.Path()
 		if !strings.Contains(uri, "login") && !strings.Contains(uri, "/public/") && !strings.Contains(uri, "thumb") {
 			token := ctx.Header("Authorization")
+			if token == "" {
+				token = ctx.GetString("token")
+			}
 			var hs = jwt.NewHS256([]byte(config.AppConfig().JwtKey))
 			// 验证token
 			var pl controllers.LoginAdminPayload
