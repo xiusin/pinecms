@@ -21,7 +21,7 @@ const baseUrl: String = (function () {
 		proxy = store.get("proxy") || "dev";
 	}
 
-	return isDev ? `/${proxy}` : `/v2`; //${host}
+	return isDev ? `/${proxy}` : `/v2`; //${host} 可以填写/pro或/v2
 })();
 
 // Socket

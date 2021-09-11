@@ -61,14 +61,13 @@ func (tm *taskManager) initYaegi() (i *interp.Interpreter, err error) {
 	i = interp.New(interp.Options{})
 	err = i.Use(stdlib.Symbols)
 	tm.CheckErr(err, "导入标准库失败", false)
-
 	err = i.Use(interp.Exports{
 		"pinecms/pinecms": {
-			"DB": reflect.ValueOf((*xorm.Engine)(nil)),
+			"DB": reflect.ValueOf(xorm.Engine{}), //
+			//"Table"
 		},
 	})
 	tm.CheckErr(err, "导出自定义包异常", false)
-
 	return i, err
 
 }
@@ -91,7 +90,6 @@ func (tm *taskManager) Cron() {
 
 func taskScript(service string) string {
 	return filepath.Join(tm.scriptPath, service+".gsh")
-
 }
 
 //RegisterTask 注册任务到任务管理对象
@@ -129,15 +127,15 @@ func RegisterTask(id int64, task *table.TaskInfo) {
 func TaskJobFunc(info *table.TaskInfo) func() {
 	id := info.Id
 	return func() {
+		var dur time.Duration
 		defer func() {
 			if err := recover(); err != nil {
-				go func() {
-					_, _ = tm.orm.InsertOne(&table.TaskLog{
-						TaskId: id,
-						Status: false,
-						Detail: err.(error).Error(),
-					})
-				}()
+				_, _ = tm.orm.InsertOne(&table.TaskLog{
+					TaskId:   id,
+					Status:   false,
+					Detail: fmt.Sprintf("%s", err),
+					ExecTime: dur.Milliseconds(),
+				})
 			}
 		}()
 		task := &table.TaskInfo{}
@@ -176,9 +174,11 @@ func TaskJobFunc(info *table.TaskInfo) func() {
 		}()
 		tm.Lock()
 		defer tm.Unlock()
+		start := time.Now()
+
 		taskSh := taskScript(info.Service)
 		var fn TaskFunc
-		if fn, exist = tm.pool[info.Id]; !exist {
+		if fn, exist = tm.pool[info.Id]; !exist { // todo 动态载入脚本修改 (是否需要一个延迟)
 			if engine, err := tm.initYaegi(); err != nil {
 				panic(err)
 			} else {
@@ -186,17 +186,18 @@ func TaskJobFunc(info *table.TaskInfo) func() {
 				tm.CheckErr(err, "脚本语法错误", true)
 				v, err := engine.Eval(tm.ExecFn)
 				tm.CheckErr(err, "执行脚本错误", true)
-				tm.pool[info.Id] = v.Interface().(TaskFunc)
+				tm.pool[info.Id] = v.Interface().(func(*xorm.Engine) (string, error))
 			}
 		}
 		msg, err := fn(tm.orm)
 		tm.CheckErr(err, "脚本结果异常", true)
-
+		dur = time.Now().Sub(start)
 		go func() {
 			_, err = tm.orm.InsertOne(&table.TaskLog{
-				TaskId: id,
-				Status: true,
-				Detail: msg,
+				TaskId:   id,
+				Status:   true,
+				Detail:   msg,
+				ExecTime: dur.Milliseconds(),
 			})
 		}()
 	}

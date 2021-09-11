@@ -26,5 +26,7 @@ dist
 /main
 /frp/frpc
 /frp/frpc.ini
-/tests/
 /docdb/apiEntity
+tests/*.png
+tests/*.jpg
+tests/*.h

@@ -7,10 +7,15 @@ require (
 	github.com/StackExchange/wmi v1.2.0 // indirect
 	github.com/alecthomas/chroma v0.9.2
 	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0
+	github.com/alibabacloud-go/darabonba-openapi v0.1.6
+	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.2
+	github.com/alibabacloud-go/tea v1.1.15
 	github.com/aliyun/aliyun-oss-go-sdk v2.1.9+incompatible
 	github.com/arl/statsviz v0.4.0
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
+	github.com/c2fo/testify v0.0.0-20150827203832-fba96363964a // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc // indirect
+	github.com/doug-martin/goqu v5.0.0+incompatible
 	github.com/fasthttp/websocket v1.4.3
 	github.com/fatih/structs v1.1.0
 	github.com/fsnotify/fsnotify v1.4.9
@@ -29,6 +34,7 @@ require (
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.7.0 // indirect
 	github.com/magefile/mage v1.11.0 // indirect
+	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/mojocn/base64Captcha v1.3.5
@@ -46,24 +52,22 @@ require (
 	github.com/takama/daemon v1.0.0
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/apigateway v1.0.232
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.232
-	github.com/tfriedel6/canvas v0.12.1
 	github.com/tklauser/go-sysconf v0.3.7 // indirect
 	github.com/traefik/yaegi v0.9.19
-	github.com/valyala/fasthttp v1.29.0
+	github.com/valyala/fasthttp v1.30.0
 	github.com/xiusin/logger v0.0.5
-	github.com/xiusin/pine v0.0.0-20210830034444-ea5fcd4239bc
+	github.com/xiusin/pine v0.0.0-20210910053150-5449ca582d3a
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
 	golang.org/x/exp v0.0.0-20210712160552-8235cf48b5f6 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
-	golang.org/x/sys v0.0.0-20210903071746-97244b99971b // indirect
+	golang.org/x/sys v0.0.0-20210909193231-528a39cd75f3 // indirect
 	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b // indirect
+	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6 // indirect
+	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0 // indirect
+	gopkg.in/doug-martin/goqu.v5 v5.0.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 	xorm.io/builder v0.3.9
 	xorm.io/core v0.7.3
 )
-
-//replace github.com/xiusin/pine => ../pine
-
-//replace github.com/xiusin/logger => ../logger

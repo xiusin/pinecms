@@ -41,7 +41,7 @@ export default (): UserConfig => {
 				},
 
 				"/pro": {
-					target: "https://show.cool-admin.com",
+					target: "https://pinecms.xiusin.cn/v2",
 					changeOrigin: true,
 					rewrite: (path) => path.replace(/^\/pro/, "/api")
 				}

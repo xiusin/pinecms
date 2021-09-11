@@ -57,7 +57,7 @@ func Ac() *config.Config {
 
 func initApp() {
 	app = pine.New()
-	di.Set("pine.application", func(builder di.AbstractBuilder) (interface{}, error) {
+	di.Set(controllers.ServiceApplication, func(builder di.AbstractBuilder) (interface{}, error) {
 		return app, nil
 	}, true)
 	diConfig()
@@ -126,10 +126,10 @@ func registerStatic() {
 }
 
 func registerV2BackendRoutes() {
+
 	app.GET("/admin/", func(ctx *pine.Context) {
-		byts, err := ioutil.ReadFile("dist/index.html")
-		if err != nil {
-			_ = ctx.WriteString(err.Error())
+		if byts, err := ioutil.ReadFile("dist/index.html"); err != nil {
+			ctx.Abort(500, err.Error())
 		} else {
 			_ = ctx.WriteHTMLBytes(byts)
 		}
@@ -147,10 +147,7 @@ func registerV2BackendRoutes() {
 		middleware.StatesViz(app),
 	)
 
-	g := app.Group(
-		"/v2",
-		middleware.VerifyJwtToken(),
-	)
+	g := app.Group("/v2", middleware.VerifyJwtToken())
 
 	router.InitModuleRouter(g, app)
 
@@ -191,7 +188,7 @@ func registerV2BackendRoutes() {
 	app.Group("/v2/public").Handle(new(backend.PublicController))
 	app.Group("/v2/api").Handle(new(backend.PublicController))
 
-	di.Set("pine.backend_router_group", func(builder di.AbstractBuilder) (interface{}, error) {
+	di.Set(controllers.ServiceBackendRouter, func(builder di.AbstractBuilder) (interface{}, error) {
 		return g, nil
 	}, true)
 }
@@ -205,12 +202,12 @@ func runServe() {
 		}
 	})
 	go plugins.Init()
-	//app.DumpRouteTable()
+
 	app.Run(
 		pine.Addr(fmt.Sprintf(":%d", conf.Port)),
 		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))),
 		pine.WithoutStartupLog(false),
-		pine.WithServerName("pinecms.xiusin.cn"),
+		pine.WithServerName("xiusin/pinecms"),
 		pine.WithCookie(true),
 	)
 }

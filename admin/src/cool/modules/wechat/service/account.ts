@@ -9,6 +9,13 @@ class WechatAccount extends BaseService {
 			data
 		});
 	}
+	distribution(data: any) {
+		return this.request({
+			url: "/distribution",
+			method: "POST",
+			data
+		});
+	}
 	select() {
 		return this.request({
 			url: "/select",

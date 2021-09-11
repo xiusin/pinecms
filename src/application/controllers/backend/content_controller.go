@@ -1,13 +1,13 @@
 package backend
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type ContentController struct {
@@ -91,6 +91,39 @@ func (c *ContentController) PostList() {
 	}
 }
 
+// PostEdit 编辑内容
+func (c *ContentController) PostEdit() {
+	id := c.Input().GetInt("id")
+	mid := c.Input().GetInt("mid")
+	catid := c.Input().GetInt("catid")
+	if mid < 1 || catid < 1 || id < 1 {
+		helper.Ajax("缺少关键参数", 1, c.Ctx())
+		return
+	}
+
+	var document tables.DocumentModel
+	c.Orm.Where("id = ?", mid).Get(&document)
+	if document.Id == 0 {
+		helper.Ajax("模型不存在", 1, c.Ctx())
+		return
+	}
+	c.Table = controllers.GetTableName(document.Table) // 设置表名
+	query := c.Orm.Table(c.Table)
+
+	var data = map[string]interface{}{}
+	c.Ctx().BindJSON(&data)
+
+	data["updated_time"] = helper.NowDate("Y-m-d H:i:s")
+
+	ret, _ := query.Where("id = ?", id).Where("mid = ?", mid).Where("catid = ?", catid).AllCols().Update(&data)
+
+	if ret > 0 {
+		helper.Ajax("更新内容成功", 1, c.Ctx())
+	} else {
+		helper.Ajax("更新内容失败", 0, c.Ctx())
+	}
+}
+
 func (c *ContentController) GetInfo() {
 	var mid, _ = c.Ctx().GetInt("mid")
 	var id, _ = c.Ctx().GetInt("id")
@@ -138,7 +171,7 @@ func (c *ContentController) PostDelete() {
 	for _, id := range ids.Ids {
 		idArr = append(idArr, strconv.Itoa(int(id)))
 	}
-	ret, err := c.Orm.Exec("UPDATE `" + c.Table.(string) + "` SET `deleted_at` = '" + time.Now().In(helper.GetLocation()).Format(helper.TimeFormat) + "' WHERE `" + c.TableKey + "` IN (" + strings.Join(idArr, ",") + ")")
+	ret, err := c.Orm.Exec("DELETE FROM `" + c.Table.(string) + "` WHERE `" + c.TableKey + "` IN (" + strings.Join(idArr, ",") + ")")
 	if err != nil {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return

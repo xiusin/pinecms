@@ -1,76 +1,77 @@
 <template>
-	<div class="page-login">
-		<div class="box">
-			<div class="login-wrapper">
-				<div class="login-screen">
-					<div class="well">
-						<div class="login-head">
-							<img src="login-head.png" style="width:100%;"/>
-						</div>
-						<div class="login-form">
-							<img id="profile-img" class="profile-img-card" src="avatar.png"/>
-							<p id="profile-name" class="profile-name-card"></p>
-							<el-form class="form" size="medium" :disabled="saving">
-								<el-form-item>
-									<el-input
-										v-model="form.username"
-										placeholder="请输入用户名"
-										maxlength="20"
-										size="small"
-										auto-complete="off"
-									>
-										<template #prepend>
-											<i class="el-icon-s-custom"></i>
-										</template>
-									</el-input>
-								</el-form-item>
+	<div class="login-bg">
+		<div class="page-login">
+			<div class="box">
+				<div class="login-wrapper">
+					<div class="login-screen">
+						<div class="well">
+							<div class="login-head">
+								<img src="/login-head.png" style="width: 100%" />
+							</div>
+							<div class="login-form">
+								<img id="profile-img" class="profile-img-card" src="/avatar.png" />
+								<p id="profile-name" class="profile-name-card"></p>
+								<el-form class="form" size="medium" :disabled="saving">
+									<el-form-item>
+										<el-input
+											v-model="form.username"
+											placeholder="请输入用户名"
+											maxlength="32"
+											size="small"
+											auto-complete="off"
+										>
+											<template #prepend>
+												<i class="el-icon-s-custom"></i>
+											</template>
+										</el-input>
+									</el-form-item>
 
-								<el-form-item>
-									<el-input
-										v-model="form.password"
-										type="password"
-										placeholder="请输入密码"
-										maxlength="20"
-										size="small"
-										auto-complete="off"
-									>
-										<template #prepend>
-											<i class="el-icon-key"></i>
-										</template>
-									</el-input>
-								</el-form-item>
+									<el-form-item>
+										<el-input
+											v-model="form.password"
+											type="password"
+											placeholder="请输入密码"
+											maxlength="16"
+											size="small"
+											auto-complete="off"
+										>
+											<template #prepend>
+												<i class="el-icon-key"></i>
+											</template>
+										</el-input>
+									</el-form-item>
 
-								<el-form-item label="验证码" class="captcha">
-									<el-input
-										v-model="form.verifyCode"
-										placeholder="请输入图片验证码"
-										maxlength="5"
-										auto-complete="off"
-										@keyup.enter="toLogin"
-									/>
+									<el-form-item label="验证码" class="captcha">
+										<el-input
+											v-model="form.verifyCode"
+											placeholder="请输入图片验证码"
+											maxlength="5"
+											auto-complete="off"
+											@keyup.enter="toLogin"
+										/>
 
-									<captcha
-										:ref="setRefs('captcha')"
-										v-model="form.captchaId"
-										class="value"
-										@change="
-														() => {
-															form.verifyCode = '';
-														}
-													"
-									/>
-								</el-form-item>
-							</el-form>
+										<captcha
+											:ref="setRefs('captcha')"
+											v-model="form.captchaId"
+											class="value"
+											@change="
+												() => {
+													form.verifyCode = '';
+												}
+											"
+										/>
+									</el-form-item>
+								</el-form>
 
-							<el-button
-								style="width: 100%"
-								size="small"
-								type="danger"
-								class="submit-btn"
-								:loading="saving"
-								@click="toLogin"
-							>登录
-							</el-button>
+								<el-button
+									style="width: 100%"
+									size="small"
+									class="submit-btn"
+									:loading="saving"
+									@click="toLogin"
+									>登录
+								</el-button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -80,25 +81,22 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive, ref} from "vue";
-import {ElMessage, ElIcon} from "element-plus";
-import {useRouter} from "vue-router";
-import {useStore} from "vuex";
+import { defineComponent, reactive, ref } from "vue";
+import { ElMessage } from "element-plus";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 import Captcha from "./components/captcha.vue";
-import {useRefs} from "/@/core";
-import IconSvg from "../../components/icon-svg/index.vue";
+import { useRefs } from "/@/core";
 
 export default defineComponent({
 	components: {
-		IconSvg,
-		Captcha,
-		ElIcon
+		Captcha
 	},
 
 	setup() {
 		const router = useRouter();
 		const store = useStore();
-		const {refs, setRefs}: any = useRefs();
+		const { refs, setRefs }: any = useRefs();
 
 		const saving = ref<boolean>(false);
 
@@ -177,11 +175,16 @@ a {
 	color: #444;
 }
 
+.login-bg {
+	padding-top: 200px;
+	background: url("/loginbg.png");
+	height: 100%;
+}
+
 .login-screen {
 	max-width: 430px;
 	padding: 0;
-	margin: 100px auto 0 auto;
-
+	margin: 0 auto;
 }
 
 .login-screen .well {
@@ -236,5 +239,4 @@ a {
 #login-form .form-control {
 	font-size: 13px;
 }
-
 </style>

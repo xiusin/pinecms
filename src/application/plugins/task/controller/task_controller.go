@@ -63,23 +63,20 @@ func (c *TaskController) GetLog() {
 	pageSize, _ := c.Ctx().GetInt("size", 0)
 	status, _ := c.Ctx().GetInt("status", -1)
 	sess := c.Orm.Desc("id")
-
 	if id > 0 {
 		sess.Where("task_id = ?", id)
 	}
 	if status >= 0 {
 		sess.Where("status = ?", status)
 	}
-
 	if page < 1 {
 		page = 1
 	}
 	if pageSize < 10 {
 		pageSize = 10
 	}
-	sess.Limit((page-1)*pageSize, pageSize)
-	var logs []table.TaskLog
-	count, _ := sess.FindAndCount(&logs)
+	var logs = []table.TaskLog{}
+	count, _ := sess.Decr("id").Limit(pageSize, (page-1)*pageSize).FindAndCount(&logs)
 	helper.Ajax(pine.H{
 		"pagination": pine.H{
 			"page":  page,

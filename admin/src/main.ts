@@ -27,15 +27,12 @@ const app = createApp(App);
 
 bootstrap(app)
 	.then(() => {
-		// echarts 可视图表
 		app.component("v-chart", VueECharts);
-		// 事件通讯
 		app.provide("mitt", mitt());
-
 		app.use(store).use(router).use(VueUeditorWrap).use(ElementPlus).mount("#app");
 	})
 	.catch((err: string) => {
-		console.error(`COOL-ADMIN 启动失败`, err);
+		console.error(`启动失败`, err);
 	});
 
 store.dispatch("appLoad");

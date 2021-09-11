@@ -21,12 +21,7 @@ func (c *WechatMagController) Construct() {
 }
 
 func (c *WechatMagController) PostReply() {
-	var inputs = struct {
-		AppId        string `json:"appid"`
-		OpenId       string `json:"openid"`
-		ReplyContent string `json:"replyContent"`
-		ReplyType    string `json:"replyType"`
-	}{}
+	var inputs = replyMsg{}
 
 	if err := c.Ctx().BindJSON(&inputs); err != nil {
 		helper.Ajax(err, 1, c.Ctx())

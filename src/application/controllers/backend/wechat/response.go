@@ -5,18 +5,18 @@ import (
 	"net/http"
 )
 
-type wechatResponseWriter struct {
+type wechatResponseWrapper struct {
 	*fasthttp.RequestCtx
 }
 
-func (w wechatResponseWriter) Header() http.Header {
+func (w wechatResponseWrapper) Header() http.Header {
 	return map[string][]string{}
 }
 
-func (w wechatResponseWriter) Write(bytes []byte) (int, error) {
+func (w wechatResponseWrapper) Write(bytes []byte) (int, error) {
 	return w.RequestCtx.Write(bytes)
 }
 
-func (w wechatResponseWriter) WriteHeader(statusCode int) {
+func (w wechatResponseWrapper) WriteHeader(statusCode int) {
 	w.Response.SetStatusCode(statusCode)
 }

@@ -1,7 +1,9 @@
 package wechat
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/doug-martin/goqu"
 	"github.com/go-xorm/xorm"
 	"github.com/silenceper/wechat/v2/officialaccount/message"
 	"github.com/valyala/fasthttp/fasthttpadaptor"
@@ -27,41 +29,58 @@ func msgHandler(ctx *pine.Context) {
 	}
 
 	account, _ := GetOfficialAccount(appid)
+
 	req := &http.Request{}
 	if err := fasthttpadaptor.ConvertRequest(ctx.RequestCtx, req, true); err != nil {
-		pine.Logger().Error("转换请求失败", err)
-		ctx.Abort(500, "转换请求失败")
+		ctx.Abort(500, "无法转换请求: "+err.Error())
 		return
 	}
-	srv := account.GetServer(req, &wechatResponseWriter{ctx.RequestCtx})
+
+	srv := account.GetServer(req, &wechatResponseWrapper{ctx.RequestCtx})
 	if !srv.Validate() {
-		ctx.Abort(403, "消息来源异常")
+		ctx.Abort(403, "消息无法验证")
 		return
 	}
 
 	orm := ctx.Value("orm").(*xorm.Engine)
-
-	//设置接收消息的处理方法
 	srv.SetMessageHandler(func(msg *message.MixMessage) *message.Reply {
-		// 处理自动回复消息
 		var rules []*tables.WechatMsgReplyRule
-
 		var msgData interface{}
+		var replyMsg interface{}
+		var err error
 
-		var baseSql = "SELECT * FROM %s WHERE " +
-			"((match_value = ? AND exact_match = 1) OR " +
+		goqu.From(controllers.GetTableName("wechat_msg_reply_rule")).Where(
+			goqu.Or(goqu.Ex{
+				"match_value": msg.Content,
+				"exact_match": 1,
+			}, goqu.Ex{
+				"match_value": msg.Content,
+				"exact_match": 0,
+			}))
+
+		var baseSql = "SELECT * FROM %s WHERE ((match_value = ? AND exact_match = 1) OR " +
 			"(INSTR(?, match_value) > 0 AND  exact_match = 0)) AND appid = '" + appid +
 			"' AND status = 1 ORDER BY exact_match DESC, id DESC LIMIT 1"
 
-		sess := orm.SQL(fmt.Sprintf(baseSql, controllers.GetTableName("wechat_msg_reply_rule")), msg.Content, msg.Content)
+		orm.SQL(fmt.Sprintf(baseSql, controllers.GetTableName("wechat_msg_reply_rule")), msg.Content, msg.Content).Find(&rules)
 
-		sess.Find(&rules)
-
-		if len(rules) == 0 {
+		if len(rules) == 0 || len(rules[0].ReplyContent) == 0 {
 			return nil
 		}
 
 		rule := rules[0]
+
+		if message.MsgTypeMiniprogrampage == rule.ReplyType || message.MsgTypeMusic == rule.ReplyType || message.MsgTypeVideo == rule.ReplyType {
+			replyMsg = &WechatMsg{}
+			json.Unmarshal([]byte(rule.ReplyContent), replyMsg)
+		} else if message.MsgTypeNews == rule.ReplyType {
+			replyMsg = []*message.Article{}
+			err = json.Unmarshal([]byte(rule.ReplyContent), &replyMsg)
+		}
+		if err != nil {
+			pine.Logger().Error("自动文章信息失败", err)
+			return nil
+		}
 
 		switch rule.ReplyType {
 		case string(message.MsgTypeText):
@@ -69,13 +88,16 @@ func msgHandler(ctx *pine.Context) {
 		case message.MsgTypeImage:
 			msgData = message.NewImage(rule.ReplyContent)
 		case message.MsgTypeMiniprogrampage:
-			msgData = message.NewCustomerMiniprogrampageMessage(msg.OpenID, "", "", "", "")
+			rm := replyMsg.(*WechatMsg)
+			msgData = message.NewCustomerMiniprogrampageMessage(msg.OpenID, rm.Title, appid, rm.PagePath, rm.ThumbMediaID)
 		case message.MsgTypeNews:
-			msgData = message.NewNews(nil)
+			msgData = message.NewNews(replyMsg.([]*message.Article))
 		case message.MsgTypeMusic:
-			msgData = message.NewMusic("", "", "", "", "")
+			rm := replyMsg.(*WechatMsg)
+			msgData = message.NewMusic(rm.Title, rm.Description, rm.MusicURL, rm.HQMusicURL, rm.ThumbMediaID)
 		case message.MsgTypeVideo:
-			msgData = message.NewVideo("", "", "")
+			rm := replyMsg.(*WechatMsg)
+			msgData = message.NewVideo(rm.MediaID, rm.Title, rm.Description)
 		case message.MsgTypeVoice:
 			msgData = message.NewVoice(rule.ReplyContent)
 		case message.MsgTypeTransfer:
@@ -86,7 +108,7 @@ func msgHandler(ctx *pine.Context) {
 
 	//处理消息接收以及回复
 	if err := srv.Serve(); err != nil {
-		pine.Logger().Error("处理消息异常", err)
+		pine.Logger().Warning("处理消息异常", err)
 		return
 	}
 
@@ -100,28 +122,7 @@ func msgHandler(ctx *pine.Context) {
 		})
 	}
 
-	_ = srv.Send()
-}
-
-// Plugin TODO 回复插件
-type Plugin struct {
-}
-
-type WechatMsg struct {
-	Title string `json:"title"`
-	// 小程序
-	AppID        string `json:"appid"`
-	PagePath     string `json:"pagePath"`
-	ThumbMediaID string `json:"thumb_media_id"`
-
-	// 音乐 视频
-	Description string `json:"description"`
-	MusicURL    string `json:"music_url"`
-	HQMusicURL  string `json:"hq_music_url"`
-
-	MediaID string `json:"media_id"`
-
-	KfAccount string `json:"kf_account"`
-
-	Articles []*message.Article
+	if err := srv.Send(); err != nil {
+		pine.Logger().Error("编码回复消息失败", err)
+	}
 }

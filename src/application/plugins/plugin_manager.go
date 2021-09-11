@@ -23,12 +23,9 @@ import (
 	"time"
 )
 
-// https://market.topthink.com/product/389 样例
-// https://h.jizhicms.cn/ 模板样例
-// sql parser 模型创建
 //https://github.com/GoAdminGroup/go-admin/blob/master/plugins/plugins.go
-//https://github.com/tsenart/vegeta
-// make plugin
+// TODO 废除JSON配置读取, 命令行注入不在此提供, 使用api处理
+// 		允许注入到task任务管理, 使用脚本处理
 
 const ext = ".so"
 
@@ -37,17 +34,14 @@ const exportedVarSuffix = "Plugin"
 const jsonName = "config.json"
 
 type PluginIntf interface {
-	Init(
-		*pine.Application,
-		*pine.Router,
-	) // 初始化插件
-	Prefix(string)         // 路由前缀, 注册后修改需要重启程序
-	Sign() string          // 插件的唯一标识, 需要开发者搞一个独一无二如 uuid
-	View() string          // 配置视图json信息
-	Menu(interface{}, int) // 安装插件位置
-	Install()              // 安装插件, 首次扫描后执行.
-	Uninstall()            // 卸载后禁止访问
-	Upgrade()              // 更新插件
+	Init(di.AbstractBuilder) // 初始化插件
+	Prefix(string)           // 路由前缀, 注册后修改需要重启程序
+	Sign() string            // 插件的唯一标识, 需要开发者搞一个独一无二如 uuid
+	View() string            // 配置视图json信息
+	Menu(interface{}, int)   // 安装插件位置
+	Install()                // 安装插件, 首次扫描后执行.
+	Uninstall()              // 卸载后禁止访问
+	Upgrade()                // 更新插件
 }
 
 type Plug struct {
@@ -65,7 +59,6 @@ var pluginMgr = &pluginManager{
 
 // todo 可以打包子目录进行前端代码发布, 或后端源代码
 // 插件端可以配置导出assets.zip
-
 type pluginManager struct {
 	sync.Mutex
 	plugins        map[string]*Plug
@@ -158,10 +151,7 @@ func (p *pluginManager) Install(filename string) (PluginIntf, error) {
 		delete(pluginMgr.scannedPlugins, filename)
 		return nil, errors.New(filename + "没有实现PluginIntf接口")
 	}
-	pluginEntity.Init(
-		di.MustGet("pine.application").(*pine.Application),
-		di.MustGet("pine.backend_router_group").(*pine.Router),
-	)
+	pluginEntity.Init(di.GetDefaultDI())
 	pluginMgr.plugins[filename] = &Plug{plug: plug, pi: pluginEntity}
 	pluginMgr.installPlugins[filename] = struct{}{} // 记录安装
 	return pluginEntity, nil
@@ -170,7 +160,7 @@ func (p *pluginManager) Install(filename string) (PluginIntf, error) {
 // Download 下载插件,系统,go版本,插件版本
 // TODO 怎么处理进度呢? 下载完成或下载失败
 func (p *pluginManager) Download(name string) {
-	if p.path == "" {
+	if len(p.path) == 0 {
 		return
 	}
 	pluginPath := filepath.Join(p.path, name+ext)
@@ -222,7 +212,6 @@ func (p *pluginManager) Uninstall(name string) {
 
 func Init() {
 	if runtime.GOOS == "windows" {
-		pine.Logger().Warning("windows 系统不支持插件功能")
 		return
 	}
 	pluginPath := config.AppConfig().PluginPath
@@ -230,10 +219,11 @@ func Init() {
 		pluginMgr.path = pluginPath
 		_ = os.Mkdir(pluginMgr.path, os.ModePerm)
 	} else {
-		pine.Logger().Print("没有配置PluginPath, 禁用plugin功能")
+		pine.Logger().Warning("没有配置PluginPath, 禁用plugin功能")
 		return
 	}
 	scanPluginDir()
+	go tickScanDir()
 	pluginMgr.loadPlugin()
 }
 

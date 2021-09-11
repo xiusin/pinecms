@@ -192,7 +192,7 @@
 							</div>
 
 							<div class="f">
-								<span>执行时间：{{ item.createTime }}</span>
+								<span>执行时间：{{ item.exec_time }}ms</span>
 							</div>
 						</li>
 

@@ -8,23 +8,15 @@ import (
 	"github.com/xiusin/pinecms/src/common/helper"
 )
 
-type editParam struct {
-	Appid string `json:"appid"`
-	Menu  struct {
-		Button []*menu.Button `json:"button"`
-		MenuID int64         `json:"menuid"`
-	} `json:"menu"`
-}
-
 type WechatMenuController struct {
 	backend.BaseController
 	key string
-	p editParam
+	p menuParam
 }
 
 func (c *WechatMenuController) Construct() {
 	c.BaseController.Construct()
-	c.p = editParam{}
+	c.p = menuParam{}
 }
 
 func (c *WechatMenuController) PostEdit() {

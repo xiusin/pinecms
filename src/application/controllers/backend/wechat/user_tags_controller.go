@@ -16,14 +16,6 @@ type WechatUserTagsController struct {
 	p UserTags
 }
 
-type UserTags struct {
-	Appid   string   `json:"appid"`
-	Id      int64    `json:"id"`
-	Name    string   `json:"name"`
-	Openids []string `json:"openids"`
-	Action  string   `json:"action"`
-}
-
 func (c *WechatUserTagsController) Construct() {
 	c.BaseController.Construct()
 }

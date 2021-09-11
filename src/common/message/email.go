@@ -7,14 +7,14 @@ import (
 	"strconv"
 )
 
-type EmailMessage struct{
+type EmailMessage struct {
 	client *mailer.Mailer
 }
 
 var ServiceEmailMessage = "pinecms.message.service.email"
 
 func (n *EmailMessage) Init() error {
-	conf,err := config.SiteConfig()
+	conf, err := config.SiteConfig()
 	if err != nil {
 		return err
 	}
@@ -30,17 +30,17 @@ func (n *EmailMessage) Init() error {
 		FromAlias: conf["EMAIL_SEND_NAME"],
 	})
 	return nil
- }
+}
 
-func (n *EmailMessage) Notice(receiver []string, params []interface{}, templateId int) error { return nil }
+func (n *EmailMessage) Notice(receiver []string, params []interface{}, templateId int) error {
+	return nil
+}
 
 func (n *EmailMessage) Send(receiver []string, msg string, typo int) error {
-	return n.client.Send("","", receiver...)
+	return n.client.Send("", "", receiver...)
 }
 
-func (n *EmailMessage) UpdateCfg() error {
-	return n.Init()
-}
+func (n *EmailMessage) UpdateCfg() error { return n.Init() }
 
 func init() {
 	di.Set(ServiceEmailMessage, func(builder di.AbstractBuilder) (interface{}, error) {

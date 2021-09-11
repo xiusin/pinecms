@@ -4,6 +4,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/plugins/task/controller"
 	"github.com/xiusin/pinecms/src/application/plugins/task/manager"
 	"github.com/xiusin/pinecms/src/application/plugins/task/table"
@@ -13,7 +14,6 @@ import (
 type Task struct {
 	sync.Once
 	orm       *xorm.Engine
-	app       *pine.Application
 	prefix    string
 	isInstall bool
 }
@@ -147,7 +147,7 @@ func (p *Task) Install() {
 			pine.Logger().Error("安装task插件数据库失败", err)
 		}
 		pine.Logger().Print("[plugin:task] 启动定时任务")
-		_, _ = p.orm.Cols("entity_id", "error").Update(&table.TaskInfo{})
+
 		manager.TaskManager().Cron()
 	}
 	p.isInstall = true
@@ -160,19 +160,21 @@ func (p *Task) Prefix(prefix string) {
 func (p *Task) Upgrade() {
 }
 
-func (p *Task) Init(
-	app *pine.Application,
-	backend *pine.Router,
-) {
+func (p *Task) Init(services di.AbstractBuilder) {
 	p.Do(func() {
-		//rootCmd.AddCommand(cmd.TaskCmd)
-		p.app = app
 		p.orm = di.MustGet(&xorm.Engine{}).(*xorm.Engine)
 		p.Install()
 		if len(p.prefix) == 0 {
 			p.prefix = "/task"
 		}
-		backend.Handle(new(controller.TaskController), p.prefix)
+		//di.Set(di.ServicePineLogger, func(builder di.AbstractBuilder) (interface{}, error) {
+		//	return services.MustGet(di.ServicePineLogger).(logger.AbstractLogger), nil
+		//}, true)
+
+		_, _ = p.orm.Cols("entity_id", "error").Update(&table.TaskInfo{})
+
+		services.MustGet(controllers.ServiceBackendRouter).(*pine.Router).Handle(new(controller.TaskController), p.prefix)
+		pine.Logger().Print("[plugin:task] 注册路由成功")
 	})
 }
 

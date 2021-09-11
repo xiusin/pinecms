@@ -164,15 +164,6 @@ func (c *WechatMaterialController) PostDelete() {
 	helper.Ajax("删除资源成功", 0, c.Ctx())
 }
 
-type MaterialUploadForm struct {
-	Appid        string `json:"appid"`
-	MediaID      string `json:"mediaId"`
-	FileName     string `json:"fileName"`
-	Title        string `json:"title"`
-	Introduction string `json:"introduction"`
-	MediaType    string `json:"mediaType"`
-}
-
 func (c *WechatMaterialController) PostUpload() {
 	var form MaterialUploadForm
 	c.Ctx().BindForm(&form)
