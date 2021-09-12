@@ -280,6 +280,12 @@ func (c *BaseController) PostEdit() {
 		}
 	}
 	if c.edit() {
+		if c.OpAfter != nil {
+			if err := c.OpAfter(OpEdit, c.Table); err != nil {
+				helper.Ajax(err.Error(), 1, c.Ctx())
+				return
+			}
+		}
 		helper.Ajax("修改数据成功", 0, c.Ctx())
 	} else {
 		helper.Ajax("修改数据失败", 1, c.Ctx())

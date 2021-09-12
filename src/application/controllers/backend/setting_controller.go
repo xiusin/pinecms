@@ -1,9 +1,14 @@
 package backend
 
 import (
+	"fmt"
+	"github.com/go-xorm/xorm"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"github.com/xiusin/pinecms/src/common/message"
+	"github.com/xiusin/pinecms/src/config"
 )
 
 type SettingController struct {
@@ -29,13 +34,24 @@ func (c *SettingController) Construct() {
 	}
 	c.setApiEntity()
 
-	c.SearchFields = []SearchFieldDsl{
-		{Field: "`group`"},
+	c.OpBefore = c.before
+	c.OpAfter = c.after
+}
+
+func (c *SettingController) before(act int, params interface{}) error {
+	if act == OpList {
+		params.(*xorm.Session).Where("`group` = ?", string(c.Input().Get("params").GetStringBytes("group")))
 	}
-	c.KeywordsSearch = []SearchFieldDsl{
-		{Field: "form_name", Op: "LIKE", DataExp: "%$?%"},
-		{Field: "`key`", Op: "LIKE", DataExp: "%$?%"},
+	return nil
+}
+
+func (c *SettingController) after(act int, params interface{}) error {
+	fmt.Println("after", act)
+	if act == OpEdit {
+		helper.AbstractCache().Delete(controllers.CacheSetting)
+		config.SiteConfig()
 	}
+	return nil
 }
 
 // PostGroups 获取新分组
@@ -48,4 +64,22 @@ func (c *SettingController) PostGroups() {
 		kvs = append(kvs, KV{Label: group.Group, Value: group.Group})
 	}
 	helper.Ajax(kvs, 0, c.Ctx())
+}
+
+func (c *SettingController) PostTest() {
+	email := string(c.Input().GetStringBytes("email"))
+	title := string(c.Input().GetStringBytes("title"))
+	content := string(c.Input().GetStringBytes("content"))
+
+	emailMessage := &message.EmailMessage{}
+	if err := emailMessage.Init(); err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
+	}
+
+	if err := emailMessage.Send([]string{email}, title, content); err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+	} else {
+		helper.Ajax("发送邮箱成功", 0, c.Ctx())
+	}
 }

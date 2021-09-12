@@ -8,3 +8,12 @@ orm:
   show_exec_time: true
   max_open_conns: 10
   max_idle_conns: 10
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password:
+  index: 1
+  max_active: 100
+  max_idle: 5
+  idle_timeout: 60

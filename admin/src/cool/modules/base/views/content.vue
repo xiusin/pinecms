@@ -133,10 +133,8 @@
 							:on-info="onInfo"
 						/>
 					</cl-crud>
-					<iframe v-if="catType === 2" src="http://www.baidu.com"></iframe>
 					<template v-if="catType === 1">
-
-						<div style="padding: 20px;">
+						<div style="padding: 20px">
 							<el-breadcrumb separator-class="el-icon-arrow-right">
 								<el-breadcrumb-item>内容管理</el-breadcrumb-item>
 								<el-breadcrumb-item>发布</el-breadcrumb-item>
@@ -157,6 +155,7 @@ import { computed, defineComponent, inject, onBeforeMount, reactive, ref, watch 
 import { useRefs } from "/@/core";
 import { deepTree } from "/@/core/utils";
 import { QueryList, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { ElMessage } from "element-plus";
 
 export default defineComponent({
 	name: "sys-content",
@@ -182,10 +181,8 @@ export default defineComponent({
 		const menuList = ref<any[]>([]);
 		// 展开值
 		const expandedKeys = ref<any[]>([]);
-
 		// 栏目树结构
 		const treeRef = ref<any>({});
-
 		// 抽屉
 		const drawerRef = ref(true);
 		const catType = ref<any>(0);
@@ -195,13 +192,13 @@ export default defineComponent({
 			catId.value = id;
 			catName.value = catname;
 			catType.value = type;
-			console.log(catType.value);
 			if (catType.value == 0) {
 				midRef.value = model_id;
 				refresh({ cid: catId.value });
 			} else if (catType.value == 1) {
-				service.system.content.getPageInfo({id: catId.value}).then((data) => {
+				service.system.content.getPageInfo({ id: catId.value }).then((data: any) => {
 					refs.value.form.open({
+						form: data,
 						items: [
 							{
 								label: "标题",
@@ -243,12 +240,33 @@ export default defineComponent({
 								label: "内容",
 								prop: "content",
 								component: {
-									name: "vue-ueditor-wrap"
+									name: "cl-editor-quill",
+									props: {
+										height: 600
+									}
 								}
 							}
-						]
-					})
-				})
+						],
+						op: {
+							saveButtonText: "确定",
+							buttons: ["save"]
+						},
+						on: {
+							submit: (data: any, { done }: any) => {
+								service.system.content
+									.savePageInfo(data)
+									.then(() => {
+										ElMessage.success("保存成功");
+										done();
+									})
+									.catch((e: any) => {
+										ElMessage.error(e);
+										done();
+									});
+							}
+						}
+					});
+				});
 			}
 		}
 
@@ -263,7 +281,7 @@ export default defineComponent({
 		const catKey = ref<string>("");
 
 		onBeforeMount(async function () {
-			const ret = await service.system.category.list();
+			const ret = await service.system.category.list({type: "content"});
 			menuList.value = ret.list.filter((e: any) => e.type != 2);
 			catId.value = menuList.value[0].id;
 
@@ -291,7 +309,7 @@ export default defineComponent({
 			if (!catType.value) {
 				setTimeout(() => {
 					refs.value.crud.refresh(params);
-				}, 20)
+				}, 20);
 			}
 		}
 

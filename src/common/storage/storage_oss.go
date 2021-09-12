@@ -8,6 +8,7 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/config"
 	"io"
+	"mime"
 	"path/filepath"
 	"strings"
 
@@ -38,14 +39,14 @@ func (s *OssUploader) Exists(name string) (bool, error) {
 }
 
 func NewOssUploader(config map[string]string) *OssUploader {
-	if config["OSS_ENDPOINT"] == "" || config["OSS_KEYID"] == "" || config["OSS_KEYSECRET"] == "" || config["OSS_BUCKETNAME"] == "" {
+	if config["OSS_ENDPOINT"] == "" || config["OSS_KEYID"] == "" || config["OSS_KEYSECRET"] == "" || config["OSS_BUCKET"] == "" {
 		panic("请配置OSS信息")
 	}
 	client, err := oss.New(config["OSS_ENDPOINT"], config["OSS_KEYID"], config["OSS_KEYSECRET"])
 	if err != nil {
 		panic(err)
 	}
-	bucket, err := client.Bucket(config["OSS_BUCKETNAME"])
+	bucket, err := client.Bucket(config["OSS_BUCKET"])
 	if err != nil {
 		return nil
 	}
@@ -66,7 +67,8 @@ func (s *OssUploader) Upload(storageName string, LocalFile io.Reader) (string, e
 		return "", errors.New("ossClient is error")
 	}
 	storageName = strings.TrimLeft(storageName, "/")
-	if err := s.bucket.PutObject(storageName, LocalFile); err != nil { //上传图片对象
+	contentType := mime.TypeByExtension(filepath.Ext(storageName))
+	if err := s.bucket.PutObject(storageName, LocalFile, oss.ContentType(contentType)); err != nil { //上传图片对象
 		pine.Logger().Error("upoadFile failed", storageName, LocalFile == nil)
 		return "", err
 	}
@@ -96,7 +98,7 @@ func init() {
 		defer func() {
 			if errPanic := recover(); errPanic != nil {
 				engine = nil
-				err = errPanic.(error)
+				err = errors.New(fmt.Sprintf("%s", err))
 			}
 		}()
 		cfg, err := config.SiteConfig()
@@ -104,6 +106,7 @@ func init() {
 			return nil, err
 		}
 		engine = NewOssUploader(cfg)
+		fmt.Println("实例化oss uploader", engine)
 		return engine, nil
 	}, false)
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"strings"
 )
 
@@ -28,6 +29,32 @@ func (c *UserController) Construct() {
 
 	c.OpBefore = c.before
 	c.OpAfter = c.after
+}
+
+func (c *UserController) GetAdminInfo() {
+	c.Orm.Where("id = ?", c.Ctx().Value("adminid")).Get(c.Table)
+	helper.Ajax(c.Table, 0, c.Ctx())
+}
+
+func (c *UserController) PostPersonUpdate() {
+	c.Ctx().BindJSON(c.Table)
+	user := c.Table.(*tables.Admin)
+	loginUser := &tables.Admin{}
+	c.Orm.Where("id = ?", c.Ctx().Value("adminid")).Get(loginUser)
+
+	if loginUser.Userid == 0 {
+		helper.Ajax("获取信息失败", 1, c.Ctx())
+		return
+	}
+
+	loginUser.Avatar = user.Avatar
+	loginUser.Realname = user.Realname
+	if len(user.Password) > 0 {
+		loginUser.Encrypt = helper.GetRandomString(6)
+		loginUser.Password = helper.Password(user.Password, loginUser.Encrypt)
+	}
+	c.Orm.Where("id = ?", loginUser.Userid).Update(loginUser)
+	helper.Ajax("更新信息成功", 0, c.Ctx())
 }
 
 func (c *UserController) before(opType int, param interface{}) error {
@@ -59,4 +86,8 @@ func (c *UserController) after(opType int, param interface{}) error {
 		}
 	}
 	return nil
+}
+
+func (c *UserController) PostLogout() {
+	helper.Ajax("退出成功", 0, c.Ctx())
 }

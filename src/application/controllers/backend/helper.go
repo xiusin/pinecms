@@ -20,7 +20,7 @@ func getStorageEngine(settingData map[string]string) storage.Uploader {
 	var uploadEngine storage.Uploader
 	uploader, err := di.Get(fmt.Sprintf(controllers.ServiceUploaderEngine, engine))
 	if err != nil {
-		pine.Logger().Error("缺少存储驱动, 自动转换为本地存储", err)
+		pine.Logger().Warning("缺少存储驱动, 自动转换为本地存储", err)
 		uploadEngine = storage.NewFileUploader(siteUrl, prefixDir, uploadDir)
 	} else {
 		uploadEngine = uploader.(storage.Uploader)
@@ -71,7 +71,7 @@ func ArrayColMap(arr interface{}, col string) map[interface{}]interface{} {
 	}
 	var cols []interface{}
 	for i := 0; i < val.Len(); i++ {
-		cols = append(cols, )
+		cols = append(cols)
 		maps[val.Index(i).FieldByName(col).Interface()] = val.Index(i).Interface()
 	}
 	return maps

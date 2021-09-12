@@ -25,13 +25,13 @@ const actions = {
 
 	// 用户退出
 	async userLogout({ dispatch }: any): Promise<any> {
-		await store.service.common.userLogout();
+		await store.service.system.user.userLogout();
 		return dispatch("userRemove");
 	},
 
 	// 用户信息
 	userInfo({ commit }: any): Promise<any> {
-		return store.service.common.userInfo().then((res: any) => {
+		return store.service.system.user.userInfo().then((res: any) => {
 			commit("SET_USERINFO", res);
 			return res;
 		});

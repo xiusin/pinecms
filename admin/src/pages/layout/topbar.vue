@@ -33,8 +33,8 @@
 		<div class="app-topbar__user">
 			<el-dropdown trigger="click" :hide-on-click="false" @command="onCommand">
 				<span v-if="userInfo" class="el-dropdown-link">
-					<span class="name">{{ userInfo.nickName }}</span>
-					<img class="avatar" :src="userInfo.headImg" />
+					<span class="name">{{ userInfo.realname }}</span>
+					<img class="avatar" :src="userInfo.avatar" />
 				</span>
 
 				<template #dropdown>

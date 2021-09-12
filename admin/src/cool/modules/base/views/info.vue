@@ -41,16 +41,11 @@ export default defineComponent({
 
 		// 保存
 		async function save() {
-			const { headImg, nickName, password } = form;
-
+			const { avatar, realname, password } = form;
 			saving.value = true;
 
-			await service.common
-				.userUpdate({
-					headImg,
-					nickName,
-					password
-				})
+			await service.system.user
+				.saveInfo({ avatar, realname, password })
 				.then(() => {
 					form.password = "";
 					ElMessage.success("修改成功");

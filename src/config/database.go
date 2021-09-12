@@ -30,6 +30,16 @@ type DbInfo struct {
 	Name     string
 }
 
+type Redis struct {
+	Host        string `json:"host"`
+	Port        int    `json:"port"`
+	Password    string `json:"password"`
+	Index       int    `json:"index"`
+	MaxActive   int    `json:"max_active"`
+	MaxIdle     int    `json:"max_idle"`
+	IdleTimeout int    `json:"idle_timeout"`
+}
+
 func (t *DbInfo) Check() bool {
 	return (strings.Trim(t.ServeIp, " ") == "" || strings.Contains(t.ServeIp, " ") ||
 		strings.Trim(t.Port, " ") == "" || strings.Contains(t.Port, " ") ||
@@ -41,8 +51,9 @@ func (t *DbInfo) Check() bool {
 type DbConfig struct {
 	*xorm.Engine `yaml:"-"`
 	sync.Once    `yaml:"-"`
-	Db           Db  `yaml:"db"`
-	Orm          Orm `yaml:"orm"`
+	Db           Db    `yaml:"db"`
+	Orm          Orm   `yaml:"orm"`
+	Redis        Redis `yaml:"redis"`
 }
 
 func (t *DbConfig) Inited() bool {

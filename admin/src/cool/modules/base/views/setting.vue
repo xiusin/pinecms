@@ -16,6 +16,12 @@
 					:name="item.label"
 					><cl-table v-bind="table"
 				/></el-tab-pane>
+				<div style="padding: 10px 0; text-align: right" v-if="tab === '邮箱设置'">
+					<el-button size="mini" type="info" @click="sendTestEmail"
+						>测试发送邮件</el-button
+					>
+					<cl-form :ref="setRefs('emailForm')" />
+				</div>
 			</el-tabs>
 		</el-row>
 
@@ -31,6 +37,7 @@
 import { defineComponent, inject, reactive, ref, watch } from "vue";
 import { useRefs } from "/@/core";
 import { CrudLoad, QueryList, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { ElMessage } from "element-plus";
 
 export default defineComponent({
 	name: "sys-setting",
@@ -74,7 +81,7 @@ export default defineComponent({
 				{
 					label: "备注",
 					prop: "remark",
-					width: 150,
+					width: 250,
 					align: "left",
 					showOverflowTooltip: true
 				},
@@ -198,6 +205,73 @@ export default defineComponent({
 		// 监听打开
 		function onUpsertOpen(isEdit: boolean, data: any) {}
 
+		function sendTestEmail() {
+			refs.value.emailForm.open({
+				items: [
+					{
+						label: "接收邮箱",
+						prop: "email",
+						component: {
+							name: "el-input",
+
+							attrs: {
+								placeholder: "请填写接收邮箱"
+							}
+						},
+						rules: {
+							required: true,
+							message: "接收邮箱不能为空"
+						}
+					},
+					{
+						label: "标题",
+						prop: "title",
+						value: "测试邮箱",
+						component: {
+							name: "el-input",
+							attrs: {
+								placeholder: "请填写接收标题"
+							}
+						},
+						rules: {
+							required: true,
+							message: "接收邮箱不能为空"
+						}
+					},
+					{
+						label: "邮箱内容",
+						prop: "content",
+						value: "测试邮箱内容~",
+						component: {
+							name: "cl-editor-quill",
+							props: {
+								height: 500
+							}
+						},
+						rules: {
+							required: true,
+							message: "邮箱内容必须填写"
+						}
+					}
+				],
+				on: {
+					submit: (data: any, { close, done }: any) => {
+						service.system.setting
+							.sendTestEmail(data)
+							.then(() => {
+								ElMessage.success("发送成功");
+								done();
+								close();
+							})
+							.catch((e: any) => {
+								done();
+								ElMessage.error(e);
+							});
+					}
+				}
+			});
+		}
+
 		return {
 			table,
 			upsert,
@@ -206,7 +280,8 @@ export default defineComponent({
 			list,
 			tab,
 			refresh,
-			onUpsertOpen
+			onUpsertOpen,
+			sendTestEmail
 		};
 	}
 });

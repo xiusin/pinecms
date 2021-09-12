@@ -178,6 +178,7 @@ a {
 .login-bg {
 	padding-top: 200px;
 	background: url("/loginbg.png");
+	background-size: 100% 100%;
 	height: 100%;
 }
 

@@ -2,7 +2,8 @@ package config
 
 import (
 	"fmt"
-	"github.com/xiusin/pine/cache/providers/bitcask"
+	"github.com/gomodule/redigo/redis"
+	pine_redis "github.com/xiusin/pine/cache/providers/redis"
 	request_log "github.com/xiusin/pine/middlewares/request-log"
 	"github.com/xiusin/pine/sessions"
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
@@ -214,7 +215,35 @@ func runServe() {
 }
 
 func InitCache() {
-	cacheHandler = bitcask.New(int(conf.Session.Expires), conf.CacheDb, time.Minute*10)
+	//cacheHandler = bitcask.New(int(conf.Session.Expires), conf.CacheDb, time.Minute*10)
+	pool := &redis.Pool{
+		MaxIdle:     dc.Redis.MaxIdle,
+		IdleTimeout: time.Duration(dc.Redis.IdleTimeout) * time.Second,
+		MaxActive:   dc.Redis.MaxActive,
+		Wait:        true,
+		Dial: func() (redis.Conn, error) {
+			c, err := redis.Dial("tcp", fmt.Sprintf("%s:%d", dc.Redis.Host, dc.Redis.Port))
+			if err != nil {
+				pine.Logger().Errorf("Redis.Dial: %v", err)
+				return nil, err
+			}
+			if len(dc.Redis.Password) > 0 {
+				if _, err := c.Do("AUTH", dc.Redis.Password); err != nil {
+					c.Close()
+					pine.Logger().Errorf("Redis.AUTH: %v", err)
+					return nil, err
+				}
+			}
+			if _, err := c.Do("SELECT", dc.Redis.Index); err != nil {
+				c.Close()
+				pine.Logger().Errorf("Redis.SELECT: %v", err)
+				return nil, err
+			}
+			return c, nil
+		},
+	}
+
+	cacheHandler = pine_redis.New(pool, 1800)
 
 	theme, _ := cacheHandler.Get(controllers.CacheTheme)
 	if len(theme) > 0 {

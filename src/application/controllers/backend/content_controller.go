@@ -4,6 +4,7 @@ import (
 	"github.com/xiusin/pinecms/src/application/models"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -198,4 +199,26 @@ func (c *ContentController) GetPage() {
 		}
 	}
 	helper.Ajax(page, 0, c.Ctx())
+}
+
+func (c *ContentController) PostPage() {
+	var page tables.Page
+	c.Ctx().BindJSON(&page)
+	if page.Id == 0 {
+		helper.Ajax("分类ID不存在", 1, c.Ctx())
+		return
+	}
+	var ret int64
+	page.UpdatedAt = tables.LocalTime(time.Now())
+	page.CreatedAt = tables.LocalTime(time.Now())
+	if exist, _ := c.Orm.Where("id = ?", page.Id).Exist(&tables.Page{}); exist {
+		ret, _ = c.Orm.Where("id = ?", page.Id).Update(&page)
+	} else {
+		ret, _ = c.Orm.InsertOne(&page)
+	}
+	if ret > 0 {
+		helper.Ajax("更新单页成功", 0, c.Ctx())
+	} else {
+		helper.Ajax("更新单页失败", 1, c.Ctx())
+	}
 }

@@ -8,6 +8,13 @@ class SysSetting extends BaseService {
 			method: "POST"
 		});
 	}
+	sendTestEmail(data: any) {
+		return this.request({
+			url: "/test",
+			method: "POST",
+			data
+		});
+	}
 }
 
 export default SysSetting;

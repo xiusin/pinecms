@@ -12,7 +12,7 @@ const (
 // AbstractMessage 发送接口
 type AbstractMessage interface {
 	Init() error
-	Send(receiver []string, msg string, typo int) error
+	Send(receiver []string, subject string, body string) error
 	// receiver 接收人数组 params 模板内数据
 	Notice(receiver []string, params []interface{}, templateId int) error
 

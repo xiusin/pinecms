@@ -15,9 +15,6 @@
 								v-bind="adSpaceTable"
 								@selection-change="onSelectionChange"
 							>
-								<template #column-image="{ scope }">
-									<img :src="scope.row.image" alt="" />
-								</template>
 								<template #slot-btn="{ scope }">
 									<el-button
 										@click="
@@ -58,12 +55,13 @@
 								v-bind="table"
 								@selection-change="onSelectionChange"
 							>
-								<template #column-headImg="{ scope }">
-									<cl-avatar
-										shape="square"
-										size="medium"
-										:src="scope.row.headImg"
-										:style="{ margin: 'auto' }"
+								<template #column-image="{ scope }">
+									<el-image
+										lazy
+										:preview-src-list="[scope.row.image]"
+										:src="scope.row.image"
+										fit="contain"
+										style="max-height: 50px; max-width: 80px"
 									/>
 								</template>
 							</cl-table>
@@ -125,7 +123,14 @@ export default defineComponent({
 				},
 				{
 					prop: "image",
-					label: "值"
+					label: "图片"
+					// component: {
+					// 	name: "el-image",
+					// 	props: {
+					// 		fit: "contain",
+					// 		height: 40
+					// 	}
+					// }
 				},
 				{
 					prop: "start_time",
@@ -296,13 +301,17 @@ export default defineComponent({
 					prop: "image",
 					label: "图片",
 					span: 24,
-					component: "upload"
+					component: {
+						name: "cl-upload"
+					}
 				},
 				{
 					prop: "linkurl",
 					label: "链接地址",
 					span: 24,
-					component: "el-input"
+					component: {
+						name: "el-input"
+					}
 				},
 				{
 					prop: "status",

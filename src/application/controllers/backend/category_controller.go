@@ -3,6 +3,7 @@ package backend
 import (
 	"errors"
 	"fmt"
+	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -28,7 +29,12 @@ func (c *CategoryController) Construct() {
 }
 
 func (c *CategoryController) before(act int, params interface{}) error {
-	if act == OpDel {
+	if act == OpList {
+		typ := string(c.Input().GetStringBytes("type"))
+		if typ == "content" {
+			params.(*xorm.Session).Where("`type` <> ?", 2)
+		}
+	} else if act == OpDel {
 		ids := params.(*idParams)
 		if len(ids.Ids) > 1 {
 			return errors.New("分类不支持批量删除")
