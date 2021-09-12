@@ -87,6 +87,7 @@ func InitDB() {
 				&tables.DocumentModelField{},
 				&tables.DictCategory{},
 				&tables.Category{},
+				&tables.Page{},
 				&tables.AdminRole{},
 				&tables.Member{},
 				&tables.MemberGroup{},

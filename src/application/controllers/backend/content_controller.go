@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"github.com/xiusin/pinecms/src/application/models"
 	"strconv"
 	"strings"
 
@@ -181,4 +182,20 @@ func (c *ContentController) PostDelete() {
 		return
 	}
 	helper.Ajax("删除成功", 0, c.Ctx())
+}
+
+func (c *ContentController) GetPage() {
+	catid, _ := c.Ctx().GetInt64("id")
+	if catid == 0 {
+		helper.Ajax("页面错误", 1, c.Ctx())
+		return
+	}
+	pageModel := models.NewPageModel()
+	page := pageModel.GetPage(catid)
+	if page == nil {
+		page = &tables.Page{
+			Id: catid,
+		}
+	}
+	helper.Ajax(page, 0, c.Ctx())
 }

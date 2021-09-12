@@ -134,25 +134,17 @@
 						/>
 					</cl-crud>
 					<iframe v-if="catType === 2" src="http://www.baidu.com"></iframe>
-					<template v-else>
-						<cl-form inner>
-							<el-form-item label="用户名">
-								<el-input
-									placeholder="请输入用户名"
-									maxlength="20"
-									auto-complete="off"
-								/>
-							</el-form-item>
+					<template v-if="catType === 1">
 
-							<el-form-item label="密码">
-								<el-input
-									type="password"
-									placeholder="请输入密码"
-									maxlength="20"
-									auto-complete="off"
-								/>
-							</el-form-item>
-						</cl-form>
+						<div style="padding: 20px;">
+							<el-breadcrumb separator-class="el-icon-arrow-right">
+								<el-breadcrumb-item>内容管理</el-breadcrumb-item>
+								<el-breadcrumb-item>发布</el-breadcrumb-item>
+								<el-breadcrumb-item>编辑单页</el-breadcrumb-item>
+							</el-breadcrumb>
+							<el-divider content-position="left">页面信息</el-divider>
+							<cl-form :ref="setRefs('form')" inner />
+						</div>
 					</template>
 				</div>
 			</div>
@@ -196,15 +188,67 @@ export default defineComponent({
 
 		// 抽屉
 		const drawerRef = ref(true);
+		const catType = ref<any>(0);
 
 		// 绑定值回调
 		function onCurrentChange({ id, catname, type, model_id }: any) {
 			catId.value = id;
 			catName.value = catname;
 			catType.value = type;
+			console.log(catType.value);
 			if (catType.value == 0) {
 				midRef.value = model_id;
 				refresh({ cid: catId.value });
+			} else if (catType.value == 1) {
+				service.system.content.getPageInfo({id: catId.value}).then((data) => {
+					refs.value.form.open({
+						items: [
+							{
+								label: "标题",
+								prop: "title",
+								component: {
+									name: "el-input",
+									attrs: {
+										placeholder: "请填写标题"
+									}
+								},
+								rules: {
+									required: true,
+									message: "请填写标题"
+								}
+							},
+							{
+								label: "关键字",
+								prop: "keywords",
+								component: {
+									name: "el-input",
+									attrs: {
+										placeholder: "请填写关键字"
+									}
+								}
+							},
+							{
+								label: "描述",
+								prop: "description",
+								component: {
+									name: "el-input",
+									attrs: {
+										type: "textarea",
+										rows: 4,
+										placeholder: "请填写关键字"
+									}
+								}
+							},
+							{
+								label: "内容",
+								prop: "content",
+								component: {
+									name: "vue-ueditor-wrap"
+								}
+							}
+						]
+					})
+				})
 			}
 		}
 
@@ -214,7 +258,6 @@ export default defineComponent({
 		const treeList = computed(() => deepTree(menuList.value));
 		const advItemList = ref([]);
 		const catId = ref<any>(0);
-		const catType = ref<any>(0);
 		const midRef = ref<any>(0);
 		const catName = ref<string>("");
 		const catKey = ref<string>("");
@@ -246,7 +289,9 @@ export default defineComponent({
 		// 刷新列表
 		function refresh(params: any) {
 			if (!catType.value) {
-				refs.value.crud.refresh(params);
+				setTimeout(() => {
+					refs.value.crud.refresh(params);
+				}, 20)
 			}
 		}
 
@@ -275,7 +320,6 @@ export default defineComponent({
 		watch(midRef, (newValue) => {
 			midRef.value = newValue;
 			service.system.model.modelTable({ mid: newValue }).then((data: any) => {
-				console.log(data);
 				data.columns.map((item: any) => {
 					if (item.component) {
 						item.component =

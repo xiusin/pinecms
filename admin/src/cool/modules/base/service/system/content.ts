@@ -9,6 +9,22 @@ class SysContent extends BaseService {
 			params
 		});
 	}
+
+	getPageInfo(params: any) {
+		return this.request({
+			url: "/page",
+			method: "GET",
+			params,
+		});
+	}
+
+	savePageInfo(data: any) {
+		return this.request({
+			url: "/page",
+			method: "POST",
+			data,
+		});
+	}
 }
 
 export default SysContent;

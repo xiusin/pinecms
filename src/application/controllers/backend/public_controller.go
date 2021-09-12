@@ -23,6 +23,10 @@ func (c *PublicController) GetMenu() {
 	helper.Ajax(pine.H{"menus": menus}, 0, c.Ctx())
 }
 
+func (c *PublicController) PostLogout()  {
+	helper.Ajax("退出成功", 0, c.Ctx())
+}
+
 func (c *PublicController) PostUpload() {
 	cfg, _ := config.SiteConfig()
 	uploader, uploadDir := getStorageEngine(cfg), helper.NowDate("20060405")

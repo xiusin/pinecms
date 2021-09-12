@@ -59,8 +59,8 @@ func (c *WechatMaterialController) PostList(cacher cache.AbstractCache) {
 }
 
 func (c *WechatMaterialController) GetPreview() {
+	c.Ctx().Response.Header.Set("Cache-Control", "max-age=78400")
 	url := c.Ctx().GetString("url")
-
 	resp, err := http.Get(url)
 	if err != nil {
 		helper.Ajax(err, 1, c.Ctx())
