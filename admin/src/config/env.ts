@@ -9,7 +9,7 @@ const routerMode: String = "hash";
 const isDev: Boolean = import.meta.env.MODE === "development";
 
 // Host
-const host: String = "http://cms-api.xiusin.cn";
+const host: String = "";
 
 // 请求地址
 const baseUrl: String = (function () {

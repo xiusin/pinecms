@@ -135,4 +135,5 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - https://github.com/lljj-x/vue-json-schema-form
 - http://goframe.ele.rxthink.cn/tool/generate
 - https://gitee.com/unifig/unifig-admin?_from=gitee_search
-
+- redis manager管理插件
+- https://github.com/timshannon/bolthold
