@@ -1,7 +1,7 @@
 <template>
 	<iframe
 		style="width: 100%; height: 100%"
-		src="http://localhost:2019/debug/statsviz/"
+		:src="url"
 		frameborder="0"
 		scrolling="no"
 		id="bdIframe"
@@ -10,13 +10,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, inject, onMounted, ref } from "vue";
 
 export default defineComponent({
 	name: "sys-statsviz",
 
 	setup() {
-		return {};
+		const url = ref("");
+		const service = inject<any>("service");
+		onMounted(() => {
+			service.system.common.statsviz().then((data: any) => {
+				url.value = data;
+			});
+		});
+		return {
+			url
+		};
 	}
 });
 </script>

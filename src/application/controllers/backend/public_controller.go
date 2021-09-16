@@ -1,14 +1,15 @@
 package backend
 
 import (
+	"path/filepath"
+	"strings"
+
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/captcha"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
-	"path/filepath"
-	"strings"
 )
 
 type PublicController struct {
@@ -75,4 +76,14 @@ func (c *PublicController) GetCaptcha() {
 		return
 	}
 	helper.Ajax(pine.H{"captchaId": id, "data": base64s}, 0, c.Ctx())
+}
+
+func (c *PublicController) GetPprof() {
+	baseHost := string(c.Ctx().URI().Scheme()) + "://" + string(c.Ctx().Host())
+	helper.Ajax(baseHost+"/debug/pprof/", 0, c.Ctx())
+}
+
+func (c *PublicController) GetStatsviz() {
+	baseHost := string(c.Ctx().URI().Scheme()) + "://" + string(c.Ctx().Host())
+	helper.Ajax(baseHost+"/debug/statsviz/", 0, c.Ctx())
 }

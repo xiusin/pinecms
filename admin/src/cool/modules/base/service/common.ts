@@ -53,6 +53,18 @@ class Common extends BaseService {
 			url: "/menu"
 		});
 	}
+
+	pprof() {
+		return this.request({
+			url: "/pprof"
+		});
+	}
+
+	statsviz() {
+		return this.request({
+			url: "/statsviz"
+		});
+	}
 }
 
 export default Common;

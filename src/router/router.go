@@ -2,7 +2,6 @@ package router
 
 import (
 	"github.com/xiusin/pine"
-	"io/ioutil"
 )
 
 func InitRouter(app *pine.Application) {
@@ -11,7 +10,7 @@ func InitRouter(app *pine.Application) {
 	//app.Handle(new(frontend.FescController))
 	//app.Handle(new(frontend.IndexController))
 	app.GET("/", func(ctx *pine.Context) {
-		s, _ := ioutil.ReadFile("./dist/index.html")
-		ctx.WriteHTMLBytes(s)
+		ctx.WriteString(string(ctx.RequestCtx.URI().Scheme()) + "://" + string(ctx.Host()) + "/admin/")
 	})
+
 }
