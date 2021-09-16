@@ -17,7 +17,7 @@ pinecms-dev-build.exe~
 /apidoc.html
 /apidoc.html.json
 /apidoc/
-dist
+/admin/dist
 *.so
 /admin/public/Ueditor/
 /apidoc-ui/public/UEditor/
