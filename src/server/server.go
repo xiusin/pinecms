@@ -138,6 +138,7 @@ func registerV2BackendRoutes() {
 	})
 
 	if config.AppConfig().Debug {
+		app.Use(middleware.Demo())
 		app.Use(middleware.Cors())
 	}
 
