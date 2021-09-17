@@ -2,21 +2,22 @@ package config
 
 import (
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
+	"time"
+
 	"github.com/gomodule/redigo/redis"
 	pine_redis "github.com/xiusin/pine/cache/providers/redis"
 	request_log "github.com/xiusin/pine/middlewares/request-log"
 	"github.com/xiusin/pine/sessions"
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
+	"github.com/xiusin/pinecms/src/application/controllers/backend/mywebsql"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/wechat"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/application/plugins"
 	logger2 "github.com/xiusin/pinecms/src/common/logger"
-	"io"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"path/filepath"
-	"time"
 
 	"github.com/gorilla/securecookie"
 	"github.com/xiusin/logger"
@@ -129,14 +130,6 @@ func registerStatic() {
 
 func registerV2BackendRoutes() {
 
-	app.GET("/admin/", func(ctx *pine.Context) {
-		if byts, err := ioutil.ReadFile("dist/index.html"); err != nil {
-			ctx.Abort(500, err.Error())
-		} else {
-			_ = ctx.WriteHTMLBytes(byts)
-		}
-	})
-
 	if config.AppConfig().Debug {
 		app.Use(middleware.Demo())
 		app.Use(middleware.Cors())
@@ -187,6 +180,7 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.DatabaseBackupController))
 
 	wechat.InitRouter(app, g)
+	mywebsql.InitRouter(app, g)
 
 	app.Group("/v2/public").Handle(new(backend.PublicController))
 	app.Group("/v2/api").Handle(new(backend.PublicController))

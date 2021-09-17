@@ -117,7 +117,7 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - 系统内部BUG修复，图片处理
 - 图片系统以及md5处理
 - cms系统完善表单字段自定义配置（可自定义模型页面），搜索字段配置（不使用高级搜索表单）
-- 插件公共页面配置 （.so下载，源代码下载）(尽可能不让二次开发)
+- 插件公共页面配置 （.so下载，源代码下载）
 - 插件允许暴露公共前端页面
 - 微信插件
     - 素材管理
@@ -130,10 +130,8 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - github.com/gokeeptech/gktemplate
 - Bleve 全文检索 （插件提供）
 - hook方式支持插件钩子注入信息
-- 一键CRUD
 - http://8.140.114.57:7000/opsli-boot/doc.html#/opsli%202.X/%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8-%E6%97%A5%E5%BF%97/createUsingGET
 - https://github.com/lljj-x/vue-json-schema-form
 - http://goframe.ele.rxthink.cn/tool/generate
 - https://gitee.com/unifig/unifig-admin?_from=gitee_search
-- redis manager管理插件
 - https://github.com/timshannon/bolthold
