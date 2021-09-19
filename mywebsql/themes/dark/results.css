@@ -1,0 +1,118 @@
+table.results > thead > tr > th {
+	background: linear-gradient(top,#767272);
+	background: -moz-linear-gradient(top,#767272);
+	background: -webkit-gradient(linear,left);
+	background: -webkit-linear-gradient(top,#767272);
+	background: -o-linear-gradient(top,#767272);
+	background: -ms-linear-gradient(top,#767272);
+	background: linear-gradient(top,#767272);
+	border-color: #c5c5c5;
+	border-style: solid;
+	border-width: 1px 1px 1px 0;
+	color: #e6e6e6;
+	font-family: arial;
+	font-size: 9pt;
+	font-weight: 700;
+	text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+}
+
+table.results > thead > tr > th span.pk {
+	background: url(themes/dark/images/objects.png) no-repeat;
+	background-position: -8px -201px;
+}
+
+table.results > thead > tr > th span.uk {
+	background: url(themes/dark/images/objects.png) no-repeat;
+	background-position: -8px -225px;
+}
+
+table.results > tbody > tr > td {
+	border-bottom: 1px solid #cdcdcd;
+	border-right: 1px solid #cdcdcd;
+	font-family: arial;
+	font-size: 9pt;
+}
+
+table.results > tbody > tr > td.tj {
+	background: #444;
+}
+
+table.results > tbody > tr > td.tnl {
+	color: red;
+}
+
+table.results > tbody > tr > td span.blob {
+	background: url(themes/dark/images/blobs.png) no-repeat;
+}
+
+table.results > tbody > tr > td form.cell_editor_form {
+	border-width: 0;
+}
+
+table.results > tbody > tr > td input.cell_editor {
+	background: #ccc;
+	border: 2px solid #333;
+	box-shadow: 0 0 4px #ccc;
+	color: #131313;
+	font-family: arial;
+	font-size: 9pt;
+	font-weight: 400;
+}
+
+table.results tr:nth-child(even) {
+	background-color: #6f6f6f;
+}
+
+table.results > tbody > tr > td span.text {
+	background-position: -8px -14px;
+}
+
+table.results > tbody > tr > td span.bmp {
+	background-position: -8px -44px;
+}
+
+table.results > tbody > tr > td span.gif {
+	background-position: -8px -86px;
+}
+
+table.results > tbody > tr > td span.ico {
+	background-position: -8px -116px;
+}
+
+table.results > tbody > tr > td span.jpg {
+	background-position: -8px -160px;
+}
+
+table.results > tbody > tr > td span.png {
+	background-position: -8px -187px;
+}
+
+table.results > tbody > tr > td span.ser {
+	background-position: -8px -230px;
+}
+
+table.results > tbody > tr > td .cell_editlist {
+	background: #ccc;
+	border: 2px solid #333;
+	box-shadow: 0 0 4px #ccc;
+	color: #131313;
+}
+
+table.results > thead > tr > th div {
+	font-weight: 700;
+}
+
+table.results > tbody > tr > td span.i {
+	font-family: arial;
+	font-size: 9pt;
+	font-weight: 400;
+}
+
+table.results th {
+	background: -moz-linear-gradient(top,#767272 0%,#272828 100%);
+	background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,#767272),color-stop(100%,#272828));
+	background: -webkit-linear-gradient(top,#767272 0%,#272828 100%);
+	background: -o-linear-gradient(top,#767272 0%,#272828 100%);
+	background: -ms-linear-gradient(top,#767272 0%,#272828 100%);
+	background: linear-gradient(top,#767272 0%,#272828 100%);
+}

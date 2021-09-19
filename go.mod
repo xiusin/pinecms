@@ -32,6 +32,7 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/gookit/color v1.4.2
 	github.com/gorilla/securecookie v1.1.1
+	github.com/jmoiron/sqlx v1.3.4 // indirect
 	github.com/kataras/go-mailer v0.1.0
 	github.com/klauspost/compress v1.13.5 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect

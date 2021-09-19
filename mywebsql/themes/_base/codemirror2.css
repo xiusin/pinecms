@@ -1,0 +1,96 @@
+.CodeMirror {
+  line-height: 1em;
+  position: relative;
+  overflow: hidden;
+}
+
+.CodeMirror-scroll {
+  overflow: auto;
+  height: 300px;
+  position: relative;
+  outline: none;
+}
+
+.CodeMirror-scrollbar {
+  position: absolute;
+  right: 0; top: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  z-index: 5;
+}
+.CodeMirror-scrollbar-inner {
+  width: 1px;
+}
+.CodeMirror-scrollbar.cm-sb-overlap {
+  position: absolute;
+  z-index: 1;
+  float: none;
+  right: 0;
+  min-width: 12px;
+}
+.CodeMirror-scrollbar.cm-sb-nonoverlap {
+  min-width: 12px;
+}
+.CodeMirror-scrollbar.cm-sb-ie7 {
+  min-width: 18px;
+}
+
+.CodeMirror-gutter {
+  position: absolute; left: 0; top: 0;
+  z-index: 10;
+  min-width: 2em;
+  height: 100%;
+}
+.CodeMirror-gutter-text {
+  text-align: right;
+  padding: .4em .2em .4em .4em;
+  white-space: pre !important;
+  cursor: default;
+}
+.CodeMirror-lines {
+  padding: .4em;
+  white-space: pre;
+  cursor: text;
+}
+
+.CodeMirror pre {
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
+  border-width: 0; margin: 0; padding: 0; background: transparent;
+  padding: 0; margin: 0;
+  white-space: pre;
+  word-wrap: normal;
+  line-height: inherit;
+}
+
+.CodeMirror-wrap pre {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: normal;
+}
+.CodeMirror-wrap .CodeMirror-scroll {
+  overflow-x: hidden;
+}
+
+.CodeMirror textarea {
+  outline: none !important;
+}
+
+.CodeMirror pre.CodeMirror-cursor {
+  z-index: 10;
+  position: absolute;
+  visibility: hidden;
+  width: 0;
+}
+.cm-keymap-fat-cursor pre.CodeMirror-cursor {
+  width: auto;
+}
+
+.CodeMirror pre.CodeMirror-cursor.CodeMirror-overwrite {}
+.CodeMirror-focused pre.CodeMirror-cursor {
+  visibility: visible;
+}
+
+span.cm-link {text-decoration: underline;}

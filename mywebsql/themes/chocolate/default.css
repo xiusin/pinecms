@@ -1,0 +1,378 @@
+* {
+	color: #efefef;
+	font-family: Tahoma;
+	font-size: 8pt;
+	font-weight: 400;
+}
+
+.ui-layout-pane {
+	background: #444;
+	border: 0;
+}
+
+.ui-layout-pane-center {
+	background: #444;
+}
+
+#tab-history {
+	color: #000;
+	font-family: verdana;
+	font-size: 8pt;
+}
+
+#dblist {
+	background: #1c160d;
+	border: none;
+	font-family: Arial;
+	font-size: 10pt;
+	font-weight: 400;
+}
+
+#editToolbar {
+	background-color: #777;
+	border: 1px solid #666;
+	border-radius: 3px;
+	color: #fff;
+	font-family: arial;
+	font-size: 9pt;
+	font-weight: 400;
+}
+
+#editToolbar .tb-header {
+	background: #1c160d;
+	color: #ccc;
+	font-weight: 700;
+}
+
+#inplace-text {
+	background-color: #e8ebec;
+	border: 1px solid #a6a8a9;
+	border-radius: 3px;
+	color: #000;
+}
+
+#sql-history .dt {
+	color: #555;
+}
+
+#main_header .title .main {
+	color: #00c589;
+	font-family: segoe ui,arial;
+	font-size: 12px;
+	font-weight: 700;
+	text-shadow: 1px 1px 2px #aaa;
+}
+
+#main_header .title .version {
+	color: #e08da6;
+	font-family: tahoma;
+	font-size: 7pt;
+	font-weight: 700;
+}
+
+#main_header .info {
+	background: #444;
+	color: #ccc;
+	font-family: arial;
+	font-size: 11px;
+	font-weight: 400;
+}
+
+#messageContainer div.note {
+	color: #f21;
+	font-weight: 700;
+}
+
+#pagingContainer a {
+	color: #fff;
+	font-weight: 700;
+}
+
+#pagingContainer span.page {
+	color: #fff;
+	font-weight: 700;
+}
+
+#commandEditor,#commandEditor2,#commandEditor3 {
+	border: 0;
+	font-family: courier new,verdana;
+	font-size: 10pt;
+	font-weight: 400;
+}
+
+.heading1 {
+	background: #888;
+	border-bottom: 1px solid #444;
+	border-top: 1px solid #444;
+	color: navy;
+	font-family: Tahoma,Trebuchet MS,Verdana;
+	font-size: 8pt;
+	font-weight: 700;
+}
+
+.heading2 {
+	background: #d6e7f5;
+	border-bottom: 1px solid navy;
+	color: navy;
+	font-family: Tahoma,Trebuchet MS,Verdana;
+	font-size: 8pt;
+	font-weight: 700;
+}
+
+.label {
+	color: #fff;
+	font-family: Trebuchet MS,Verdana;
+	font-size: 9pt;
+	font-weight: 700;
+}
+
+.hinfo {
+	background-color: #777;
+}
+
+.info {
+	background: #777;
+	color: #000;
+	font-family: Trebuchet MS,Verdana;
+	font-size: 9pt;
+	font-weight: 700;
+}
+
+div.code-editor {
+	border: 3px double #cdcdcd;
+}
+
+textarea.text-editor {
+	border: none;
+	font-family: verdana;
+	font-size: 9pt;
+}
+
+input[type=text],input[type=password] {
+	background: #777;
+	border: 1px solid #999;
+}
+
+hr {
+	color: #87ceeb;
+}
+
+label {
+	color: #fff;
+}
+
+#loader {
+	background-color: #fff;
+	border: 1px solid #999;
+}
+
+.CodeMirror-line-numbers {
+	background-color: #fff;
+	color: #aaa;
+	font-family: courier new;
+	font-size: 10pt;
+}
+
+.CodeMirror-wrapping {
+	background-color: #fff;
+}
+
+a.btn {
+	color: green;
+	font-family: tahoma;
+	font-size: 8pt;
+	font-weight: 700;
+}
+
+#editor_container,#editor_container2,#editor_container3 {
+	border: 1px solid #999;
+	border-top: 0;
+}
+
+#db_combo span {
+	color: #fff;
+	font-weight: 700;
+}
+
+#object_list {
+	background: #444;
+}
+
+#screen-wait div span {
+	color: #444;
+	font-family: segoe ui;
+	font-size: 10pt;
+	font-weight: 700;
+}
+
+#screen-wait div img {
+	border: 1px solid #cdcdcd;
+}
+
+#taskbar .min-all {
+	background: url(themes/chocolate/images/objects.png) no-repeat;
+	background-position: -5px -698px;
+}
+
+.ui-tabs .ui-tabs-nav {
+	background: transparent;
+}
+
+.ui-layout-resizer,.ui-data-resizer {
+	background: #444;
+}
+
+.ui-layout-resizer:hover,.ui-data-resizer:hover {
+	background: #999;
+}
+
+.ui-layout-resizer-south:hover {
+	background: #444;
+}
+
+.ui-data-resizer-south:hover {
+	background: #999;
+}
+
+.ui-layout-toggler-north-closed {
+	background-position: 0 1px;
+}
+
+.ui-layout-toggler-west-closed {
+	background-position: -4px 0;
+}
+
+.ui-data-toggler-south-closed {
+	background-position: 0 -4px;
+}
+
+.ui-layout-pane-center .ui-layout-content {
+	background: #777;
+	border: 1px solid #999;
+	border-top: 0;
+}
+
+.ui-layout-toggler-north,.ui-layout-toggler-south,.ui-data-toggler-north,.ui-data-toggler-south {
+	background: url(themes/chocolate/images/sizerv.gif);
+	background-repeat: no-repeat;
+}
+
+.ui-layout-toggler-east,.ui-layout-toggler-west,.ui-data-toggler-east,.ui-data-toggler-west {
+	background: url(themes/chocolate/images/sizerh.gif);
+	background-repeat: no-repeat;
+}
+
+#sql-history tr:hover {
+	background: #dff0fb;
+}
+
+#sql-history .hst {
+	color: #002985;
+}
+
+#main_header .server {
+	color: #fff;
+	font-weight: 700;
+}
+
+div#popup_contents .ui-widget-content {
+	border: none;
+}
+
+#dialog-text-editor #text-editor {
+	border: 5px solid #fff;
+	font-family: verdana,arial;
+	font-size: 13px;
+}
+
+.header {
+	font-weight: 700;
+}
+
+.footer {
+	font-weight: 700;
+}
+
+#dblist option {
+	font-family: Arial;
+	font-size: 10pt;
+	font-weight: 400;
+}
+
+#inplace-text textarea {
+	font-family: arial;
+	font-size: 9pt;
+	font-weight: 400;
+}
+
+#sql-history tr td {
+	font-family: verdana;
+	font-size: 9pt;
+}
+
+div.sql-text {
+	font-family: Courier New;
+	font-size: 10pt;
+}
+
+#main_header .updates {
+	font-family: arial;
+	font-size: 12px;
+	font-weight: 400;
+}
+
+#pagingContainer select {
+	font-weight: 700;
+}
+
+.cm-s-default span {
+	font-family: courier new;
+	font-size: 10pt;
+}
+
+div#rec_pager {
+	font-weight: 700;
+}
+
+#object-filter-text {
+	font-size: 11px;
+}
+
+div#popup_buttons select {
+	font-family: arial;
+	font-size: 10pt;
+}
+
+div#popup_buttons select option {
+	font-family: arial;
+	font-size: 10pt;
+	font-weight: 400;
+}
+
+#editToolbar .fname,#editToolbar .ftype {
+	font-weight: 700;
+}
+
+b {
+	font-family: verdana;
+	font-size: 9pt;
+	font-weight: 700;
+}
+
+span.webdings {
+	font-family: webdings;
+}
+
+pre.blob {
+	font-family: verdana;
+	font-size: 9pt;
+}
+
+textarea.blobeditor {
+	font-family: verdana;
+	font-size: 9pt;
+}
+
+div#rec_pager div.numrec {
+	font-weight: 700;
+}

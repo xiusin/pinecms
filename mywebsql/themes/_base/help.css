@@ -1,0 +1,47 @@
+div.docinfo {
+	margin-bottom: 3px;
+	padding: 8px;
+}
+ul.links {
+	cursor: default;
+	float: left;
+	height: 100%;
+	padding: 3px 0 3px 3px;
+	width: 170px;
+}
+ul.links li {
+	float: none;
+	list-style: none;
+	padding: 3px 5px 0 0;
+}
+ul.links li a {
+	display: block;
+	text-decoration: none;
+}
+ul.links li a:hover {
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+}
+div.content {
+	height: 83%;
+	overflow: auto;
+	padding: 0 3px 3px;
+}
+div.content div, div.content table tr td {
+	padding: 5px 10px;
+}
+div.content div.heading {
+	margin: 0;
+	padding: 6px 10px;
+}
+div.content div.subheading {
+	margin: 0;
+	padding: 6px 10px;
+}
+div.content ul {
+	padding: 6px;
+}
+div.content ul li {
+	list-style: disc;
+	margin: 2px 0 6px 20px;
+}

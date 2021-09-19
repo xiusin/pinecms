@@ -1,0 +1,26 @@
+#popup_container {
+	background: #fff;
+	border: solid 3px #654c26;
+	box-shadow: 1px 1px 10px #5e5e5e;
+	color: #000;
+	font-family: Verdana,Arial,sans-serif;
+	font-size: 9pt;
+}
+
+#popup_title {
+	background: #deedf7 url(themes/paper/images/ui-bg_highlight.png) repeat-x scroll 50% 50%;
+	border-bottom: 1px solid #654c26;
+	color: #222;
+	font-family: Tahoma,Arial;
+	font-size: 8pt;
+	font-weight: 700;
+}
+
+#popup_content {
+	color: #000;
+}
+
+#popup_message {
+	font-family: sans-serif,arial;
+	font-size: 9pt;
+}

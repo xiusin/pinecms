@@ -1,0 +1,623 @@
+-------------------------------
+version 3.8
+-------------------------------
+Updates:
+- sort by descending order on first click (as records sort in ascending order by default)
+
+Miscellaneous:
+- Fix display of result headers in safari (avoid wrapping)
+
+-------------------------------
+version 3.7
+-------------------------------
+Updates:
+
+Bufixes:
+- problems with php running as FCGi in nginx server
+- corrupt output on some php configuration, mainly due to incompatible settings
+- list of table not displayed for PostgreSQL databases when importing a single table data from csv files
+- on some php configurations, database selection did not work due to cookies and request variables being merged
+- insert queries generated for some Pgsql databases failed to execute due to syntax errors
+- fixed data table import bug with pgsql databases, generating incorrect queries with table namespaces
+- fixed sorting and pagination issues with query data (thanks to Peng Xiao for valuable feedback)
+General:
+- added compatibility to PHP 5.2 after user requests
+
+-------------------------------
+version 3.6
+-------------------------------
+Updates:
+- Edit mode updates:
+	for enum/boolean fields, datalist is available to choose from
+	date fields can now be updated with datepicker
+- fixed results header for better navigation and data management
+- .sqlite3 is now recognized as valid sqlite database extension
+- improved in-place editing visual styles
+- SQLite and SQLite3 library improvements for record editing functionality
+- Added SQL editor hotkeys:
+	Ctrl+Up -> Increase text size
+	Ctrl+Down -> Decrease text size
+	Ctrl+Shift+Del -> Clear SQL editor
+- Warnings are now shown in message pane that occur during query execution
+Bugfixes:
+- Enum and set field values handling with special characters
+General:
+- Results for data queries and other types of queries are shown separately
+- Cleaned up themes structure, to simply theme modification and creation
+- Aero theme is removed from the package
+- Reduced package size due to removal / cleanup of various javascript code
+- Other lots of minor improvements in various areas of application frontend / backend
+
+-------------------------------
+version 3.5
+-------------------------------
+Updates:
+- support for SQLite3 driver added, so database created with SQLite3 can be managed
+	(thanks to J. Gutierrez for providing valuable feedback in this regard)
+- added Arabic translation (thanks to Muhannad Ajjan for providing the complete translation)
+- filename format can be changed before creating server side backups (to add prefix or additional info to filename)
+- Auto pagination now works for all select queries other than table select
+- Sorting is now done on the server side instead of client side, also improves integration with pagination
+- Removed .htaccess file from root of installation folder, that caused internal server error on many hosts.
+	All htaccess settings are now internally managed by MyWebSQL
+Bug fixes:
+- minor bugs in the sqlite library, causing generation of errors in log
+- sql comments were erroneously appended to exported data in html/xhtml format
+General:
+
+-------------------------------
+version 3.4
+-------------------------------
+Updates:
+- Connection details for custom database servers can be provided on login screen.
+	This option is disabled by default. See link below for more details
+	http://mywebsql.net/docs/connecting-to-database-servers/user-defined-connections/
+- More options in export dialog to fine tune the format of generated SQL script
+- Export dialog options are enabled/disabled based on selection of export data for best results
+- Database export option now available for PostgreSQL databases also (limited to table data only)
+- Secure login is enabled/disable automatically based on PHP configuration
+	this fixes the blank screen issue on first run, reported by some users with missing PHP extensions
+Bug fixes:
+- Shift+space key would indent the SQL editor, causing annoyance for most users
+- Server information tab displayed MySQL server label regardless of database type
+- Pgsql tables showed no result even though the query successfully returned valid result set
+- Pgsql users other than 'postgres' unable to login to MyWebSQL
+General:
+- Exported query results contain the actual SQL statement for reference purposes
+- install.php script now properly identifies and displays issue in PHP installation for running MyWebSQL
+
+-------------------------------
+version 3.3
+-------------------------------
+Updates:
+- added bulk insert statement option in export script to speed up imports and reduce output file size
+- allow skipping foreign key checks while dropping tables in batch mode to ensure deletion of all selected tables
+- new user options dialog to control some aspects of the gui based on user's preferences
+- object list shows the (estimated) number of record count for tables (requires option to be set in preferences)
+- object list allows table listing to be sorted based on last update time (requires option to be set in preferences)
+- editing large text data can be done in a separate dialog (requires option to be set in preferences)
+Bug fixes:
+- export results record id was being reset after the selected limit in config for queries with variables
+- namespace related issues fixed with right click menus in object viewer
+
+-------------------------------
+version 3.2
+-------------------------------
+Updates:
+- database backup module added, which allows saving database backups on the server
+- some additions to export database module for more control over the export script
+- updated german translation provided by Nikolaus Krismer
+Bug fixes:
+- editable inputs did not have default context menu functionality
+- problems with escape sequences in edited queries generation caused some queries to fail
+- copying a record in the interface caused slight problem with editing due to textbox problems (touch events issue)
+General:
+-------------------------------
+version 3.1
+-------------------------------
+Updates:
+- sql queries are saved on per-editor basis and loaded the same (previously only saved the last executed query)
+- Record editing feature works on touch devices using taphold event (Requested by Karl Hemmings)
+- improved and bugfixed SQL generation code. Generated SQL is more uniform across databases,
+	and respects each database specific escape sequences
+- Access to particular modules within MyWebSQL can be now allowed or denied using config.
+  Please see online documentation for more details.
+- Database Manager tool added to the interface to manage server databases more easily
+Bug fixes:
+- quick search filter was not being applied to database listing
+- quick search filter input was missing from themes other than default theme (css fixed)
+- empty data fields in results sometimes caused additional sql in where clause generation
+- SQL comments work with '--', instead of needing an extra space like '-- '
+- batch operations for objects other than tables failed to execute from batch module
+- command history contained extra lines in multilines queries, and resulted in extra <br > tags in copied text
+- some ui fixes in chrome and other browsers
+General:
+- batch module command generation now properly quotes object names
+
+-------------------------------
+version 3.0.1
+-------------------------------
+- quick bugfix to download module that caused errors in the generated sql batch file
+
+-------------------------------
+version 3.0 Final
+-------------------------------
+Updates:
+- added search on object list to filter a large number of objects in tree quickly
+- Table search tool fixed and working on pgsql databases for basic data types
+- Updated WordPress plugin to new 3.0 codebase
+- Single file distribution updated to latest codebase
+Bug Fixes:
+- pgsql table operations fixed (drop, create copy, rename etc)
+- incorrect limit clause did not work on some pgsql tables when fetching data
+- batch operation dialog failed to work for pgsql databases
+- clicking on table name in one schema incorrectly selects the same table name in other schema (only if same table name existed in two schemas)
+- connection failure message on login screen for db server connection failure
+- IE9 related beta version issues fixed
+General:
+- table description lists fields in their ordinal position (pgsql)
+
+-------------------------------
+version 3.0 Beta
+-------------------------------
+Updates:
+- PostgreSQL partial support. Object list, queries, table data display works as usual. Other features are either
+	partially implemented, or planned for future versions.
+- Added custom authentication support. It is much simpler now to implement your own method of authenticating users, if the need arises.
+- Added install.php script. Checks for various configurations on server and notifies about any errors or warnings
+      that might cause MyWebSQL to not run properly.
+- Single file distribution. A single file version of MyWebSQL with all features for quick deployment and use
+		please visit the project files section on sourceforge to download the single file distribution
+- object count is displayed in object viewer for only types that have one or more objects
+- some minor ui updates
+Bug Fixes:
+- where clause generation problems when data had NULL values and no key definitions
+- properly display messages if one or more database client libraries are not installed when accessing the databases
+- lots of other small issues fixed
+General:
+- Updated codemirror2 to latest version
+
+-------------------------------
+version 2.9
+-------------------------------
+Updates:
+- Added new themes:
+  Bootstrap - based on jquery ui twitter bootstrap theme (by addy osmani)
+  Chocolate - based on jQuery UI theme mint-chocolate
+  Pinky - A colourful pink theme
+- Syntax editor improvements: Codemirror2 support improved, other editor areas cleaned up
+- Fixed session issue with multiple blocking requests to keep the interface responsive
+Bug Fixes:
+- Fixed a bug in SQL parser that caused infinite loop in parser at end of file, resulting in unresponsive interface (reported by Brandon Hoffman)
+- Blob data could not be viewed if result contained field from more than one table
+- Dialogs once re-opened behaved erratically on minimize/restore
+- Changing table engine type erroneously generated drop primary key statement for some tables
+- Record editing could not save record if the where clause contained certain text
+General:
+- Automatically refresh object list after successful creation of new objects
+- updated language on the interface where some of the text did not translate properly
+- Cleaned up themes and standardized message/error display interface
+
+-------------------------------
+version 2.8
+-------------------------------
+Updates:
+- Added data import option from CSV files into tables
+- Added batch operation module. Allows performing various operations on multiple objects in database easily
+  (add/remove table prefixes, drop objects, generate sql commands for selected objects etc.)
+- Added quick search in information display tables for quickly filtering result data
+- Improved SQLite support
+- Automatically refresh object list after completing batch imports (requested by umairj)
+- suppressed warning in error log on some PHP versions (requested by Danny)
+- Language names appear in their own language in menus for ease of understanding
+Bug Fixes:
+- Lots of issues fixed in SQLite database handling
+- where clause generated query error in updates if it contained text fields
+- many corrections in multilingual strings in the languages
+General:
+- Updated jquery/codemirror2 to latest version
+
+-------------------------------
+version 2.7.6
+-------------------------------
+Updates:
+- Updated codemirror2 to latest version and improved mysql syntax highlighting
+Bug Fixes:
+- More fixes to login failure / display problems with FASTCGI servers
+General:
+
+-------------------------------
+version 2.7.5
+-------------------------------
+Updates:
+- default interface language can now be set in configuration
+- installation package now contains all files inside a root folder (requested by some users)
+Bug Fixes:
+- usability issues when authentication type was set to NONE
+- usability issues with IIS+fastCGI servers
+- usability issues when using some specific server configurations of php/apache
+- record editing and export output problems when mysql5 driver was used instead of mysqli
+- other minor bugfixes and improvements
+
+-------------------------------
+version 2.7
+-------------------------------
+Updates:
+- added 'copy record' functionality in result grid. Select one or more records and use the copy function to quickly create new records with same data.
+- added CSV(Excel) and YAML formats in table/results export module. Code for export functionality refactored to allow creation of more export drivers easily.
+- Exporting large amount of data does not fail with memory limit errors by php
+  (still requires php timeout settings to be large enough, or unlimited so that all data can be processed)
+- results editor now automatically scrolls to right position in results to keep current edited field visible
+  also basic field information is shown while editing the results
+- improved software update check option which does not block user interface. Also update for new version is checked every Monday.
+  update settings can be changed by modifiyng config/updates.php file
+- process manager allows more than one process to kill in one request
+- added main menu interface option to select the type of sql editor at runtime
+  (also fixed some issues with CodeMirror2 implementation, but it is still experimental)
+- Speed improvements in some areas of functionality
+Bug Fixes:
+- Loading and minor theme issues with Internet Explorer 8 browser
+- result set scrolling issues due to recent updates to ui libraries
+- result set textarea editor setting values empty in some scenarios
+- some minor structure changes to table structure using table editor did not get updated
+- some other small bugfixes reported by users
+General:
+- Default theme revised and cleaned up a bit as per user requests (minor fixes to other themes also)
+- more code cleanup and configuration files
+
+-------------------------------
+version 2.5
+-------------------------------
+Changes:
+- Support for managing SQLite databases. Includes mostly used functionality like creating databases/tables and querying tables. Import/export and GUI based record editing not available (mainly due to restrictions with sqlite driver support)
+- imporved server configuration settings. You can now explicitly specify the mysql driver to us with a particular connection (e.g. mysqli, mysql5 or legacy driver etc)
+- Updated encryption library for PHP 5.3. Much faster login screen, but falls back to default if using older version
+   of PHP or missing encryption extensions (requires openssl+gmp extensions)
+General:
+- Updated french language translation (with special thanks to Sylvain Chauveau)
+
+-------------------------------
+version 2.3
+-------------------------------
+Changes:
+- Unobtrusive dialogs: all tools and import/export dialogs can be minimized and do not block the user interface
+  > Useful when creating/tables, so that more than one table can be created/edited at the same time
+  > Database import/export can be minimized while you can continue work on the main interface etc.
+- Query editor functionalty improved. You can now change (or add) default query editor with one of your own choice (e.g. ACE editor)
+	Please see documentation at http://mywebsql.net/docs/miscellaneous/adding-changing-sql-editors/
+- Added codemirror2 as alternate sql editor (experimental). Can be enabled in the config for testing
+Bugs Fixed:
+- plain text query editor hotkeys did not work properly (default syntax highlighted editor worked fine)
+- plain text query editor text not returned from current editor (javascript issue)
+General:
+- Fixed some warnings in code
+
+-------------------------------
+version 2.2
+-------------------------------
+Updates:
+	- Added option to select mysql server at login time. Please see online documentation to see configuration details
+		http://mywebsql.net/docs/interface-basics/connecting-to-multiple-servers/
+	- Added session variable options using the 'SET @...' command. Please see the basic information on using session variables at the link below
+		http://mywebsql.net/docs/advanced-usage/using-session-variables-in-queries/
+	- Added right click option to copy a table/view/procedure/view with different name
+Bugs Fixed:
+Table editor:
+	- generated erroneous query if more than one table was created using set/enum fields
+	- did not generate default value in sql for number fields
+General:
+	- newly created database name showed up at the end of database list (instead at the right place)
+	- import failed for sql dump generated by MyWebSQL in some scenarios
+	- drop object confirmation asked every time despite user's preferences to not ask every time
+	- text field data is shown by default in grid view instead of info text, if it is less than 80 characters or less (configurable)
+
+-------------------------------
+version 2.1
+-------------------------------
+Changes:
+- User manager now allows removing the user password (previously only allowed changing passwords)
+- Search tool to search for text in database with selected options
+Bugs Fixed:
+- Header menu did not appear properly after re-opening browser if header was hidden
+- index manager sometimes failed to add index if there was initially no index in a table
+- index manager script error when adding an index to a table which had no index
+- index manager generated error in query for adding a primary key to table without a primary key
+- utf8 text data sometimes did not properly insert/update for database with character set other than utf8
+- a rare but annoying javascript error specially in ie (and sometimes in other browsers) immediately after page load
+- fixed edit toolbar and text field editor positioning issues in chrome and IE 7,8
+Updates:
+- automatic detection of user's language based on browser settings
+- Updated to latest jquery ui library
+- improved loading time for the interface by delaying some of the interface initialization for later (popups etc)
+
+------------------------------
+version 2.0 Final Release
+-------------------------------
+Changes:
+- Index manager button text changed to be more easier to understand
+- Table editor buttons display and hide properly based on selected tab
+- Language files added for various languages (Google translated for the time being)
+- Some IE related javascript issues fixed by including json2 script for IE7 browsers
+Bugs Fixed:
+- user manager privileges not flushed on some actions
+- Loading screen for imcompatible browsers fixed
+- session expiry now handled properly and message is displayed to user for reloading the page
+- creation of new table did not refresh the object list automatically
+- when text field editor closes, it leaves incorrect information about the field in table cell
+- text field editor placement was out of screen on some scenarios
+- table editor incorrectly accepts field length for types that do not require length
+	also fixed field length option for all field types
+- table editor did not properly update primary key index in some cases
+- table editor added extra command in alter statement for table engine type and character set
+- table describe command did not show all text in the results (field type was obscured)
+- blob edit dialog did not report error when blob editing failed (due to file upload error)
+- Humanity, paper, aero theme styles updated
+- quick start tutorials and related script issues fixed
+- update langauge files and missing text in modules for translation
+
+-------------------------------
+version 2.0 Beta
+-------------------------------
+- new: Interface is now completely multilingual. All modules updated to separate code and content
+- new: Tool to manage table indexes
+- new: Tool to manager database users and privileges (with special thanks to Ovais Tariq)
+- new: Tool to analyze and/or repair database tables
+- new: application and rightclick menu items contain icons for better visual cue
+- new: text field inplace editing mechanism is now improved and simplified
+- new: blob field inplace editing mechanism is now implemented for file uploads in blob fields
+- new: 3 new themes (including an 'Aero' style transparent theme)
+- new: brand new splash and login screen
+- new: module to quick check for updates from the interface for new versions of software from website
+- update: session security enhanced further by encrypting more insecure session variables
+- update: export modules now includes mysql events to be exported
+- update: history now allows copying a single selected query as well as all queries to clipboard by right click menu
+- update: slightly improved syntax highlighting for sql editor
+- update: changing database does not refresh the whole page, only object list
+		saves extra loading time and preserves other page elements (queries etc)
+- update: resizing handles are larger when the panel is docked, to allow easier to be used (feedback from jquery layout group)
+- update: Html class functions made static. object instantiation is not required anymore
+- lots of other minor tweaks and improvements
+
+-------------------------------
+version 1.8
+-------------------------------
+- added: functionality to manage mysql5 'event' objects
+- added etags in scripts and css to save bandwidth and improve browser caching
+- added: encryption based security in login screen to disable plain text login information sent over the wire.
+		enabled automatically if MyWebSql is not hosted on https url
+- added: new interface icons for object viewer
+- update: object tree list saves it expanded/collapsed state after refresh on query execution
+- update: existings themes/styles brushed up and cleaned and all css formatted properly (dark theme look revised)
+- update: page header and logo can now be make to hide to provide additional space in the browser for results and sql editor
+		(right click header area to show context menu)
+- update: page and docking window layout is now saved and restored on next visit
+- updated links in menu to new bugs and feature requests pages on mywebsql.net site
+- updated to latest jquery and ui libraries
+- other minor updates/fixes
+
+-------------------------------
+version 1.7
+-------------------------------
+- update: mysql4 support revised. Objects/elements not supported in mysql4 do not appear in the interface
+- update: Internet Explorer 9 related compatibility issues fixed
+- added: record editing allows adding new records in wysiwyg mode, while allowing editing of existing ones
+- added: change engine type module for quickly changing the table type only without changing structure
+- update: object list now refreshes automatically when database is modified
+- bugfix: history right click menu copy command was not working properly
+- update: more commands available for tables and other db objects through right click menus
+
+-------------------------------
+version 1.6
+-------------------------------
+- added: WYSIWYG table creator/editor.
+- added: right click menu for databases in object tree
+- added: right click menus for panels, and main menu options to access the same commands
+- added: more operations supported for database object through right click menus (alter, drop, rename, truncate)
+- bugfix: minor display issue with first loading when authentication type was set to NONE
+- bugfix: record editing shortcut keys improper behaviour after sorting results
+- fix: resizing popup dialogs was causing erratic mouse behavoiur and improperly resizing popups
+- update: quick start tutorials added to help menu for new users
+- update: popup screens now use theme based styles instead of default html stlying
+- update: source code cleaned up and formatted through out the application in uniform style
+- other minor improvements and fixes
+
+-------------------------------
+version 1.5.1
+-------------------------------
+- bugfix: export command failing to download database dump
+- bugfix: import command failing due to foreign key check for data exported through MyWebSql interface
+- bugfix: blob dialog did not display binary blob column value in some situations
+
+-------------------------------
+version 1.5 Final
+-------------------------------
+- converted icons and small images to sprites
+- fixed codemirror errors for dialogs when compressed javascripts were used
+- bugfix: NULL values were not being sorted if a column contained mix values
+- bugfix: where clause generated for some specialized field names caused error in query
+- bugfix: changing themes sometimes caused javascript warning shown before reloading the page
+- bufix: incoplete database object list shown if there was only one database on server
+- update: result display slightly mproved when it contains binary data
+- added: Generate sql option in the interface during record editing. Generates sql for user actions instead of
+		directly executing queries
+- update: existing themes made compatible with new code
+
+-------------------------------
+version 1.5 Beta
+-------------------------------
+- added: 2 more sql editors, each of the three editors now accessible through hotkeys
+- bugfix: sql output for certain timestamp fields generated incorrectly during export
+- bugfix: minor issue when last query is not select and results are exported
+- added: syntax highlighting for all queries displayed on the interface
+- added: logout option in the interface (required and requested)
+- added: default information displayed for tables and other db objects when left-clicked
+- update: line numbers enabled for sql editor
+- update:detailed online documentation now up and running. Quick help contents bundled with the package
+- update: edit/delete queries now execute directly instead of being generated inside sql editor (requested)
+- update main menu re-organized for ease of use and more options added
+- update: sql editor now improved than earlier versions with better syntax highlighting
+- optimizations: removed unused code files from project, and configuration files re-organized slightly
+- added minified versions of scripts for speeding up page loading and client side performance
+- lots of other minor improvements and fixes
+
+-------------------------------
+version 1.4
+-------------------------------
+- added: two more themes for the interface (light (grayish and simple) and dark (a bit colourful but darkish theme))
+- added: hotkeys for query/query all execution (customizable through editing key config file, see help for details)
+- added: pagination support to results when viewing table data (requested by Richard Bondi)
+- update: when a ddl is executed, additional link allows the page to be refreshed so that database
+	objects list is updated to reflect the changes
+- update: confirmation dialogs allow remembering the choice on first confirmation and can be turned on/off from options
+- update: help content updated to reflect new changes to the application
+- interface changes: default interface theme cleaned up a bit to be more spacious to allow room for sql editor and results
+- interface changes: record statusbar moved below results, saving some space for the overall application layout
+- code changes: refactored session and preferences related code for better management
+- code changes: added encryption to sensitive values in session data, to increase security on shared servers
+
+-------------------------------
+version 1.3.5
+-------------------------------
+- bugfix: export table did not add fieldnames to the insert query if the option was checked
+- bugfix: blob display dialog did not work when the blob type was changed
+- bugfix: character encoding was not properly displayed in result set (special thanks to Richard Bondi for his feedback)
+- update: Enhanced record editing now works in all browsers (quick fix suggested by Ovais Tariq [http://tech.ovaistariq.net])
+- update: blob/text column display in result set improved
+- update: fixed extra request being sent to server in some cases and caused delay in popup dialogs
+- added 'Request a feature' button to the main toolbar
+
+-------------------------------
+version 1.3
+-------------------------------
+- improved import batch query module:
+	Now works with bzip and gzip files also along with plain text files
+	Allows continuing execution in case a query fails
+	Logs more information to the user before and after import
+- improved export module:
+  Allows exporting either database structure,data or both, a single table or the current result set
+  Allows better selection of objects to be exported (including views, procedures, functions and triggers)
+  Properly creates insert command for all types of fields (bug fixed with numeric values)
+  Exports table/results data as insert statement, xml, xhtml or plaintext (csv format)
+- user interface: popup dialog user interface, resizer bars display improved, minor font adjustments
+- user interface: database object creation now also works in richedit mode
+- user interface: In Firefox, record editing now supports Tab/Shift+Tab/Up/Down Keys to navigate between result fields
+- update: help content and pages revised and updated help page to reflect changes in latest versions
+- bugfix: import and export modules submit buttons were broken due to javascript errors on some browsers
+- bugfix: unique keys in tables were not properly used while creating edit queries
+- bugfix: fixed minor compatibility issues with Internet Explorer 8
+
+-------------------------
+version 1.2 final
+-------------------------
+- fix: editing keys were not properly handled on some browsers
+- fix favicon missing on splash page
+- update: object tree fonts and padding fixed
+
+-------------------------
+version 1.2 beta
+-------------------------
+- new: added multiple authentication types to setup MyWebSql for multiple databases or users on one server easily
+	please read the documentation on how to update previous version here (http://mywebsql.net/upgrading)
+- new: last executed query reloads in sql editor after page reload
+- new: sql editor can now be set to autohide like object tree
+- update: codemirror updated to version 0.8
+- update: jquery layout updated to latest version
+- fix: if update/delete query contained a few special characters, the output would be wrong
+- fix: table highlight would not work when doing queries
+- fix: sql editor resizing caused wrong text selection in chrome and caused problem in resizing in other browsers
+- fix: tables with 'spaces' in their names would not be selectable in the tree
+- code cleanup: code execution framework simplified. all additional modules can now reside in one folder
+- code cleanup: Removed all php warnings and notices from code
+- code cleanup: moved all javascripts to one folder (including codemirror). Improved checks in cache.php to maximize
+	security with user provided script and css paths
+- code cleanup: Most of the code is now xhtml 1.0 compliant
+- lots of other minor improvements
+
+-------------------------
+version 1.0.2
+-------------------------
+- fixed bug in record editing, if < or > was used in the edited field
+- Updated codemirror editor, fixes IE8 cursor hopping and firefox issues with cut/paste
+- updated some javascript code to improve post query browser update speed
+
+-------------------------
+version 1.0.1
+-------------------------
+- fixed compatibility problems with php 5.3.0 and above
+- fixed problem with edit field in resultset causing html code to be overwritten
+- updated jquery to latest version. Should be a performance boost on in user interface on all browsers
+- fixed minor user interface issues with Chrome browser
+
+-------------------------
+version 1.0
+-------------------------
+- added support for mysql4 databases (thanks to Ally Shayan for the work and testing)
+- fixed problem with edit field in resultset in beta code
+- fixed session expiration code to properly inform if session gets expired
+- added right click options in history tab for copying/clearing command history
+- added menu item to create new database
+- added primary key/unique key icons to results
+- help contents cleaned up a bit, credits section updated
+- cleaned up commented out code which was left for reference
+- minor fixes to GUI and css
+
+
+-------------------------
+version 1.0-Beta
+-------------------------
+- export results now also viewable along with download option
+- redesign of the whole interface in jquery, for cross browser compatibility
+- minor fixes and changes to the interafce in the redesign
+- updated codemirror to version 0.61 - most probably fixes the copy paste bug in sql editor
+
+-------------------------
+version 0.5
+-------------------------
+- added support for database triggers
+- added new tool: process manager for viewing and killing processes
+- added new option: view mysql server variables
+- added new export type: plain text (CSV style)
+- bugfixes in export result functionality
+- better handling of NULL values in interface and queries
+- application now uses mysqli extension when available. This can be turned off/on from configuration file.
+- more status information available about the mysql connection
+- more browser compatibility fixes
+
+-------------------------
+version 0.4
+-------------------------
+- More browser compatibility fixes in drag drop, resizing page elements etc
+- Some UI enhancements (eyecandy)
+- Fixed javascript source path in export screens, causing exports to fail
+- Query results performance is increased by 30-40%, by eliminating some redundant and extra DHTML stuff
+
+-------------------------
+version 0.3
+-------------------------
+- fixed query editor getSqlCode() bug in firefox (came up in ver 0.2 only)
+- fixed object tree: 1. menu going out of display bounds. 2. menu not hiding on clicks
+- record editing, deletion now works properly on firefox and opera also ! (checked in firefox 3.0.5)
+- fixed a bug in determining if a resultset contained NULL values or empty field
+- added more options for database export command (include create table/drop table, select tables to export)
+- other miscellaneous cross browser issues
+- running batch queries using interface is now possible (multiple results display still NOT supported)
+- code folder cleaned up. Moved images,css and library files to separate folders.
+
+
+-------------------------
+version 0.2
+-------------------------
+- Added options to import/export results and database/tables as sql batch scripts
+- added config item: TRACE_FILEPATH. Use it if you like to change the error log path for the application
+- db connection is no longer limited to a single table in the database
+- cookies are now specific to url for mywebsql and no longer accessible on other parts of domain
+- pressing tab in the sql editor now moves focus to query button
+- connection oriented configuration bugs fixed
+- sql editor is now resizable on IE
+- minor annoying bugfixes on the UI
+
+
+-------------------------
+version 0.1
+-------------------------
+- First public release.

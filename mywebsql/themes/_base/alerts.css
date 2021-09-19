@@ -1,0 +1,28 @@
+#popup_container {
+	max-width: 600px;
+	min-width: 320px;
+}
+#popup_title {
+	cursor: default;
+	margin: 0;
+	padding: 7px 0 7px 10px;
+	text-align: left;
+	text-align: left;
+}
+#popup_content {
+	margin: 0;
+	padding: 15px;
+}
+#popup_content div {
+	padding: 5px 0;
+}
+#popup_message {
+	line-height: 1.4em;
+	padding: 0 20px;
+}
+.popup_panel {
+	text-align: center;
+}
+#popup_prompt {
+	margin: 0.5em 0;
+}

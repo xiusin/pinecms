@@ -1,0 +1,23 @@
+html {
+	cursor: text;
+}
+.editbox {
+	margin: 0.3em;
+	padding: 0;
+}
+.editbox p {
+	margin: 0;
+}
+.CodeMirror-line-numbers {
+	line-height: 1.2em;
+	padding: 4px 8px 4px 5px;
+}
+div.sql_lines {
+	float: left;
+	padding: 0 10px 0 0;
+}
+pre.sql_output {
+	float: left;
+	width: 90%;
+	white-space: normal;
+}

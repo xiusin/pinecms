@@ -1,0 +1,42 @@
+Installation of MyWebSQL is pretty straightforward.
+---------------------------------------------------
+
+1. Extract all files inside the archive into any folder of your choice.
+
+2. Move the folder into a subdirectory of your weberver documentroot, or you
+   can create a new virtual alias/host if your webserver allows you to do that.
+
+3. [optional] In your browser, navigate to 'install.php' to check for the PHP installation and settings
+	to make sure MyWebSQL will run on your server without problems.
+
+4. [optional] Open the file servers.php inside the "config" folder. Review and change/add
+   additional servers information in the file.
+
+5. [optional] Open the file config.php inside the "config" folder. Review and change if you
+   need to change any defaults.
+
+6. [optional] Open the file auth.php inside the "config" folder.
+   modify the AUTH_TYPE constant and related values if you wish to change the authentication method for the application.
+
+7. Thats all !. Load a browser and hit the url ...
+
+--------------------------------------------------
+Software Updates
+--------------------------------------------------
+
+- By default an update check runs for new releases every Monday when MyWebSQL is used for first time.
+  You can disable this check by modifying 'updates.php' file in the config folder.
+- You can use the built-in update check functionality in the main application menu to see if a new
+  version is available.
+
+   http://mywebsql.net
+   
+--------------------------------------------------
+Troubleshooting & Support
+--------------------------------------------------
+Complete documentation for the project is available at [http://mywebsql.net/docs/].
+Refer to the troubleshooting section in the docs if you are having trouble installing/using MyWebSQL.
+If your problem still persists, you can use on the website to submit bug reports. Your queries will be answered as soon
+as possible.
+
+Thank you for using MyWebSQL.

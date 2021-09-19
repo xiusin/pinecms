@@ -1,0 +1,1 @@
+Base theme for MyWebSQL. Required by all other themes

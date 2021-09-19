@@ -1,0 +1,144 @@
+.EHmarker {
+	border: 2px solid #FF0000;
+}
+#EHhelpOverlay {
+	background: #ffffff;
+	filter: Alpha(Opacity=10);
+	opacity: .10;
+	z-index: 99997;
+}
+#EHhelpBox {
+	box-shadow: 3px 3px 5px #eeeeee;
+	color: black;
+	padding: 10px;
+	position: absolute;
+	right: 45%;
+	top: 40%;
+	z-index: 99998;
+	-moz-box-shadow: 3px 3px 5px #eeeeee;
+	-webkit-box-shadow: 3px 3px 5px #eeeeee;
+}
+#EHhelpBox .title {
+	border-bottom: 1px dashed #555555;
+	color: #444444;
+	font-family: segoe ui;
+	font-size: 12pt;
+	font-weight: bold;
+	padding: 0 0 3px 5px;
+}
+#EHhelpBox a {
+	color: #666666;
+	display: block;
+	font-family: segoe ui,arial;
+	font-size: 14px;
+	margin: 3px 5px 0;
+	text-decoration: none;
+}
+#EHhelpBox a:hover {
+	color: green;
+	text-decoration: none;
+}
+#EHpointer {
+	background: transparent url(cursor.png) 0 0 no-repeat;
+	cursor: pointer;
+	display: none;
+	height: 32px;
+	left: 0px;
+	position: absolute;
+	top: 0px;
+	width: 32px;
+	z-index: 99999;
+}
+#EHtooltip {
+	background: #f7f5d1;
+	border: 1px solid #333;
+	color: #333;
+	display: none;
+	font-family: segoe ui, verdana, arial;
+	font-size: 14px;
+	padding: 3px 5px;
+	position: absolute;
+	z-index: 99999;
+}
+#EHtooltip ul li {
+	font-family: segoe ui, verdana, arial;
+	font-size: 14px;
+	list-style: disc;
+}
+.EHtooltipc {
+	background: #f7f5d1;
+	border: 1px solid #333;
+	color: #333;
+	display: block;
+	font-size: 11px;
+	line-height: 11px;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	width: auto;
+	z-index: 99999;
+}
+.EHtooltipc:hover {
+	z-index: 99999;
+}
+.EHtooltipc span {
+	background-color: #FF0000;
+	border: 2px solid white;
+	color: white;
+	float: left;
+	margin: 0;
+	padding: 2px 4px;
+	position: relative;
+}
+.EHtooltmp {
+	background: #f7f5d1;
+	border: 1px solid #333;
+	color: #333;
+	display: block;
+	font-size: 11px;
+	line-height: 11px;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	z-index: 99999;
+}
+.EHtooltmp p {
+	display: block;
+	float: left;
+	margin: 0;
+	padding: 3px;
+	position: relative;
+	width: auto;
+}
+.EHtooltmp a.EHclose {
+	background-color: #FF0000;
+	border: 2px solid white;
+	color: white;
+	display: block;
+	float: left;
+	font-weight: bold;
+	margin: 0;
+	padding: 2px 4px;
+	position: relative;
+}
+.EHtoolgost {
+	background: #eee;
+	border: 1px solid #999;
+	color: #666;
+	display: none;
+	font-size: 11px;
+	line-height: 11px;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	z-index: 99999;
+}
+.EHtoolgost span {
+	background-color: #eee;
+	border: 2px solid white;
+	color: #666;
+	float: left;
+	margin: 0;
+	padding: 2px 4px;
+	position: relative;
+}

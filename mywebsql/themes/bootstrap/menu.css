@@ -1,0 +1,214 @@
+ul.dropdown li {
+	border: 1px solid transparent;
+}
+
+ul.dropdown li a {
+	color: #222;
+	font-family: segoe ui,arial,verdana;
+	font-size: 12px;
+	font-weight: 400;
+}
+
+ul.dropdown li.hover,ul.dropdown li:hover {
+	background-color: #fafafa;
+	border: 1px solid #888;
+}
+
+ul.dropdown > li:hover {
+	-moz-box-shadow: 2px 2px 4px #5e5e5e;
+	-webkit-box-shadow: 2px 2px 4px #5e5e5e;
+	box-shadow: 2px 2px 4px #5e5e5e;
+}
+
+ul.dropdown > li:hover:after {
+	background-color: #fafafa;
+	color: transparent;
+}
+
+ul.dropdown ul {
+	-moz-box-shadow: 2px 2px 4px #5e5e5e;
+	-webkit-box-shadow: 2px 2px 4px #5e5e5e;
+	background: #fafafa url(themes/bootstrap/images/cmenu-bg.gif) repeat-y scroll left top;
+	border: 1px solid #888;
+	box-shadow: 2px 2px 4px #5e5e5e;
+}
+
+ul.dropdown ul li {
+	border: 1px solid transparent;
+	color: #000;
+	font-weight: 400;
+}
+
+ul.dropdown ul li a {
+	background: url(themes/bootstrap/images/objects.png) no-repeat;
+	background-position: -30px -30px;
+}
+
+ul.dropdown li.separator,ul.dropdown li.separator:hover {
+	background: none;
+	border: none;
+	color: #c5c5c5;
+	font-size: 5px;
+}
+
+ul.context {
+	-moz-box-shadow: 3px 3px 4px #5e5e5e;
+	-webkit-box-shadow: 3px 3px 4px #5e5e5e;
+	background: #fafafa url(themes/bootstrap/images/cmenu-bg.gif) repeat-y scroll left top;
+	border: 1px solid #888;
+	box-shadow: 3px 3px 4px #5e5e5e;
+}
+
+ul.context li {
+	border: 1px solid transparent;
+}
+
+ul.context > li:hover,ul.dropdown > li.right:hover {
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}
+
+ul.context li a {
+	background: url(themes/bootstrap/images/objects.png) no-repeat;
+	background-position: -30px -30px;
+}
+
+ul.dropdown li a.ilgout {
+	background: url(themes/bootstrap/images/objects.png) no-repeat;
+	background-position: -5px -440px;
+}
+
+ul.dropdown a:hover {
+	color: #000;
+}
+
+ul.dropdown li.right:hover {
+	border-bottom: 1px solid #888;
+}
+
+ul.dropdown li.hover a {
+	color: #666;
+}
+
+ul.dropdown ul li:hover {
+	background: #dbdbdb;
+	border: 1px solid #c3c3c3;
+}
+
+ul.dropdown ul li a:hover {
+	color: #000;
+}
+
+ul.dropdown ul li:hover a {
+	color: #000;
+}
+
+ul.dropdown ul ul li a:hover {
+	color: #000;
+}
+
+ul.dropdown ul ul li:hover a {
+	color: #000;
+}
+
+ul.context li.hover,ul.context li:hover {
+	background: #dbdbdb;
+	border: 1px solid #c3c3c3;
+}
+
+ul.dropdown li a.itable {
+	background-position: -6px -29px;
+}
+
+ul.dropdown li a.iview {
+	background-position: -6px -54px;
+}
+
+ul.dropdown li a.iproc {
+	background-position: -6px -78px;
+}
+
+ul.dropdown li a.ifunc {
+	background-position: -6px -101px;
+}
+
+ul.dropdown li a.itrig {
+	background-position: -6px -125px;
+}
+
+ul.dropdown li a.ievt {
+	background-position: -6px -150px;
+}
+
+ul.dropdown li a.ischm {
+	background-position: -6px -5px;
+}
+
+ul.dropdown li a.itrunc {
+	background-position: -6px -810px;
+}
+
+ul.dropdown li a.idrop {
+	background-position: -6px -268px;
+}
+
+ul.dropdown li a.iren {
+	background-position: -6px -810px;
+}
+
+ul.dropdown li a.iimprt {
+	background-position: -6px -413px;
+}
+
+ul.dropdown li a.iexpdb {
+	background-position: -6px -638px;
+}
+
+ul.dropdown li a.iexprt {
+	background-position: -6px -292px;
+}
+
+ul.dropdown li a.itprc {
+	background-position: -7px -548px;
+}
+
+ul.dropdown li a.itusr {
+	background-position: -7px -578px;
+}
+
+ul.dropdown li a.itchk {
+	background-position: -5px -609px;
+}
+
+ul.dropdown li a.itsrch {
+	background-position: -5px -668px;
+}
+
+ul.dropdown li a.ihlp {
+	background-position: -7px -341px;
+}
+
+ul.dropdown li a.idocs {
+	background-position: -7px -461px;
+}
+
+ul.dropdown li a.itutor {
+	background-position: -7px -516px;
+}
+
+ul.dropdown li a.iftr {
+	background-position: -7px -487px;
+}
+
+ul.dropdown li a.ibug {
+	background-position: -7px -366px;
+}
+
+ul.dropdown li a.irfrsh {
+	background-position: -6px -388px;
+}
+
+ul.dropdown li a.check {
+	background-position: -6px -246px;
+}

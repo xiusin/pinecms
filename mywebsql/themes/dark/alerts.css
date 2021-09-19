@@ -1,0 +1,28 @@
+#popup_container {
+	-moz-box-shadow: 1px 1px 10px #5e5e5e;
+	background: #fff;
+	border: 0;
+	box-shadow: 1px 1px 10px #5e5e5e;
+	color: #000;
+	font-family: Verdana,Arial,sans-serif;
+	font-size: 9pt;
+}
+
+#popup_title {
+	background: #deedf7 url(themes/dark/images/ui-bg_highlight.png) repeat-x scroll 50% 50%;
+	border: 1px solid #a1a1a1;
+	color: #fff;
+	font-family: Tahoma,Arial;
+	font-size: 8pt;
+	font-weight: 700;
+}
+
+#popup_content {
+	background-color: #444;
+	color: #eee;
+}
+
+#popup_message {
+	font-family: "sans-serif",arial;
+	font-size: 9pt;
+}

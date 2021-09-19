@@ -1,0 +1,61 @@
+.treeview, .treeview ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.treeview .hitarea {
+	cursor: pointer;
+	float: left;
+	height: 16px;
+	margin-left: -16px;
+	width: 16px;
+}
+.treeview li {
+	cursor: default;
+	margin: 0;
+	padding: 0 0 0 16px;
+}
+#treecontrol {
+	display: none;
+	margin: 1em 0;
+}
+.filetree li span {
+	display: inline-block;
+	margin: 0;
+	padding: 3px 4px 3px 20px;
+}
+.filetree li span.file a {
+	margin-left: -16px;
+	padding-left: 19px;
+}
+.filetree span a {
+	text-decoration: none;
+}
+.filetree span a:visited {
+	text-decoration: none;
+}
+.dblist {
+	margin: 5px 0;
+}
+.dblist li {
+	padding: 2px 2px 2px 16px;
+}
+.dblist span.odb, .dblist span.db {
+	display: block;
+	padding: 1px 0 1px 20px;
+}
+.dblist a, .dblist a:visited {
+	text-decoration: none;
+}
+.dblist a:hover {
+	text-decoration: underline;
+}
+.filetree span.count, .filetree li span.count {
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	margin: 0;
+	padding: 1px 4px;
+}
+.filetree span.count, .filetree li ul li span.count {
+	margin: 0 0 0 5px;
+}

@@ -1,0 +1,86 @@
+table.results > thead > tr > th {
+	cursor: default;
+	overflow: hidden;
+	padding: 5px 6px 4px;
+	text-align: left;
+	white-space: nowrap;
+}
+table.results > thead > tr > th span.pk {
+	display: inline-block;
+	height: 14px;
+	width: 20px;
+}
+table.results > thead > tr > th span.uk {
+	display: inline-block;
+	height: 14px;
+	width: 20px;
+}
+table.results > tbody > tr > td {
+	height: 22px;
+	position: relative;
+}
+table.results > tbody > tr > td.tj {
+	padding-right: 6px;
+	text-align: right;
+	width: 30px;
+}
+table.results > tbody > tr > td.tl {
+	cursor: default;
+	padding-left: 4px;
+	padding-right: 2px;
+	text-align: left;
+}
+table.results > tbody > tr > td.tr {
+	cursor: default;
+	padding-left: 4px;
+	padding-right: 4px;
+	text-align: right;
+}
+table.results > tbody > tr > td.tnl {
+	cursor: default;
+	padding-left: 4px;
+	text-align: left;
+}
+table.results .tch {
+	cursor: default;
+	padding: 0 4px;
+	width: 14px;
+}
+table.results > tbody > tr > td span.blob {
+	cursor: pointer;
+	display: inline-block;
+	height: 16px;
+	text-align: right;
+	width: 18px;
+}
+table.results > tbody > tr > td form.cell_editor_form {
+	margin: 0;
+	padding: 0;
+}
+table.results > tbody > tr > td input.cell_editor {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+}
+table.results > tbody > tr > td .cell_editlist {
+	position: absolute;
+	right: 0;
+	top: 0;
+	padding: 3px 4px;
+	z-index: 1999;
+}
+table.results .dp {
+	display: none;
+	position: absolute;
+	top: 101%;
+	right: 0;
+	z-index: 2000;
+}
+#dataHeader, #infoHeader {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 5000
+}

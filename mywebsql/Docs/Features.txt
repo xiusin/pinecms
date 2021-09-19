@@ -1,0 +1,19 @@
+- Fast and friendly interface. Anyone with minimal knowledge of database can learn to use MySQL easily
+- Works on most webservers/hostings without any special configuration
+- Supports MySQL 4 and 5, PostgreSQL 8 and 9 and SQLite databases out of the box
+- Multilingual interface with simple language translation files
+- Supports multiple themes (you can easily create your own using any jQuery UI theme)
+- Multiple servers to choose from when connecting to a database server
+- Multiple SQL editors with syntax highlighting to write and execute queries
+- Import database script, export database, tables or results to multiple formats
+  export even very large databases without worrying about php memory limits
+- Zero configuration required to get up and running. Just download, unzip and you are on.
+- multitask with dialogs while you work on the main interface
+- Batch operations on database
+- Quick inplace record editing without switching pages. also you can edit multiple records at once and save by teh click of a button
+- Online documentation to help with troubleshooting and using
+- customizable layout to show/hide various elements of interface
+- WYSIWYG table creator/editor to create and edit tables on the fly
+- Database management tools like Process Manager, User and Permission Manager, Table checker/optimizer, Database Text Search, Table Index Manager
+- Online demo to let you try out before you download and use
+- Online bug reporting and feature requests for everyone

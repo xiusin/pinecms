@@ -10,7 +10,6 @@ import (
 
 	"github.com/gomodule/redigo/redis"
 	pine_redis "github.com/xiusin/pine/cache/providers/redis"
-	request_log "github.com/xiusin/pine/middlewares/request-log"
 	"github.com/xiusin/pine/sessions"
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/mywebsql"
@@ -137,7 +136,7 @@ func registerV2BackendRoutes() {
 
 	app.Use(
 		middleware.Pprof(),
-		request_log.RequestRecorder(),
+		//request_log.RequestRecorder(),
 		middleware.SetGlobalConfigData(),
 		apidoc.New(app, nil),
 		middleware.StatesViz(app),

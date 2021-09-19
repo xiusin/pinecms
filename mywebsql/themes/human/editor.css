@@ -1,0 +1,72 @@
+.editbox {
+	color: #494949;
+	font-family: monospace;
+	font-size: 10pt;
+}
+
+span.sql-keyword {
+	color: blue;
+}
+
+span.sql-var {
+	color: red;
+}
+
+span.sql-comment {
+	color: #a70;
+}
+
+span.sql-literal {
+	color: green;
+}
+
+span.sql-operator {
+	color: blue;
+}
+
+span.sql-word {
+	color: #494949;
+}
+
+span.sql-quoted-word {
+	color: #680;
+}
+
+span.sql-function {
+	color: #ff8c00;
+}
+
+span.sql-type {
+	color: purple;
+}
+
+span.sql-separator {
+	color: #666;
+}
+
+span.sql-number {
+	color: #0ff;
+}
+
+.CodeMirror-wrapping {
+	background-color: #fff;
+}
+
+.CodeMirror-line-numbers {
+	background-color: #fff;
+	border-right: 1px dotted #d4d4d4;
+	color: #aaa;
+	font-family: courier new;
+	font-size: 10pt;
+}
+
+div.sql_lines {
+	color: #999;
+	font-family: courier new;
+	font-size: 10pt;
+}
+
+pre.sql_output span {
+	font-family: courier new;
+	font-size: 10pt;
+}

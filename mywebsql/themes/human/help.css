@@ -1,0 +1,80 @@
+div.docinfo {
+	border-bottom: 1px solid #555;
+	font-family: arial;
+	font-size: 12px;
+}
+
+ul.links {
+	background-color: #efefef;
+}
+
+ul.links li a {
+	color: #000;
+	font-family: Arial;
+	font-size: 9pt;
+	font-weight: 700;
+}
+
+ul.links li a:hover {
+	background-color: #dfdfdf;
+	border-radius: 6px;
+	color: green;
+}
+
+div.content {
+	background-color: #fff;
+}
+
+div.content div.heading {
+	background-color: #c2e2f8;
+	font-family: Verdana;
+	font-size: 9pt;
+	font-weight: 700;
+}
+
+div.content div.subheading {
+	background-color: #c2e2f8;
+	font-family: Verdana;
+	font-size: 8pt;
+	font-weight: 700;
+}
+
+div.docinfo a {
+	color: green;
+	font-family: arial;
+	font-size: 12px;
+	font-weight: 700;
+}
+
+ul.links li.current {
+	background-color: #fff;
+}
+
+div.content a {
+	color: green;
+	font-family: arial;
+	font-size: 12px;
+	font-weight: 700;
+}
+
+div.content a:hover {
+	color: red;
+}
+
+ul.links li {
+	font-family: Arial;
+	font-size: 9pt;
+	font-weight: 700;
+}
+
+div.content div,div.content table tr td {
+	font-family: Verdana;
+	font-size: 10pt;
+	font-weight: 400;
+}
+
+div.content ul li {
+	font-family: Arial;
+	font-size: 10pt;
+	font-weight: 400;
+}

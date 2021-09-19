@@ -1,0 +1,103 @@
+#popup_contents div.input {
+	padding: 8px 10px;
+}
+#popup_contents div.float {
+	float: left;
+}
+#popup_contents div.input span {
+	display: inline-block;
+	margin-right: 5px;
+	min-width: 110px;
+}
+#popup_contents div.input select {
+	height: 21px;
+	vertical-align: middle;
+}
+#popup_contents div.input option {
+	padding: 1px 7px 2px;
+}
+#table_grid {
+	margin: 2px;
+}
+#table_grid tr th {
+	cursor: default;
+	overflow: hidden;
+	padding: 5px 6px 4px;
+	text-align: left;
+}
+#table_grid tr td {
+	cursor: default;
+	height: 17px;
+	padding: 5px;
+	text-align: left;
+	position: relative;
+}
+#table_grid tr td.check {
+	text-align: center;
+}
+#table_grid tr td.empty {
+	padding: 5px 3px;
+	text-align: center;
+}
+#table_grid tr td span {
+	cursor: default;
+	text-align: left;
+}
+#table_grid span.check {
+	cursor: pointer;
+	display: inline-block;
+	height: 16px;
+	margin-left: 6px;
+	text-indent: -9999px;
+	width: 18px;
+}
+#table_grid span.list {
+	cursor: pointer;
+	display: inline-block;
+	height: 16px;
+	margin-left: 6px;
+	text-align: right;
+	width: 18px;
+}
+#table_grid form.cell_editor_form {
+	margin: 0;
+	padding: 0;
+}
+#table_grid tr td input.cell_editor {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+}
+#table_grid select.cell_combo {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+}
+#table_grid select.cell_combo, #table_grid select.cell_combo option {
+	padding: 2px;
+}
+#grid-messages {
+	padding: 5px;
+	position: absolute;
+	right: 5px;
+	top: 2px;
+	z-index: 1001;
+}
+#dialog-list select {
+	height: 100px;
+	margin: 5px 5px 10px;
+	padding: 2px;
+	width: 210px;
+}
+#dialog-list select option {
+	padding: 2px 5px;
+}
+#dialog-list input[type=text] {
+	margin: 0 5px;
+	padding: 4px;
+	width: 200px;
+}

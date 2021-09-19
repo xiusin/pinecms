@@ -1,0 +1,22 @@
+Guidelines for Translators
+---------------------------------------------------
+
+1. All translation for one particular language is present in one file inside the 'lang' folder.
+
+2. The language code in filename represents the language to be used in the file. A list of the codes
+	and associated language is present in the file 'config/lang.php' for lookup.
+
+3. Since the language file is php code itself, you should only change the english sentences and words
+	and avoid changing any php code in the file.
+	
+4. Each line of text contains the english word/sentence, followed by '=>' and then the translated text.
+	This should be useful for the translator so that both the english and translated text are available
+	for review side by side during editing. You should ONLY CHANGE THE SECOND text on the line and leave
+	the first one intact in English. Alternatively, translate the text that is surrounded by double quotes (""),
+	and leave the text as is which is inside single quotes ('').
+
+5. Before submitting the finalized translation, please review the change once to make sure everything is
+	correctly translated. We will take care of the rest.
+	
+Please mention your contact information when submitting the translation, and whether you are available for
+further updates to the language (when new text is added or existing updated)

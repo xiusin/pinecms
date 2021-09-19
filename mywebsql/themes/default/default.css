@@ -1,0 +1,371 @@
+.ui-layout-pane {
+	background: #fff;
+	border: 0;
+}
+
+.ui-layout-pane-center {
+	background: #fff;
+}
+
+#tab-history {
+	color: #000;
+	font-family: verdana;
+	font-size: 8pt;
+}
+
+#dblist {
+	background: transparent;
+	border: none;
+	color: #222;
+	font-family: Arial;
+	font-size: 10pt;
+	font-weight: 400;
+}
+
+#editToolbar {
+	background-color: #f5f8f9;
+	border: 1px solid #a6c9e2;
+	border-radius: 3px;
+	color: #000;
+	font-family: arial;
+	font-size: 9pt;
+	font-weight: 400;
+}
+
+#inplace-text {
+	background-color: #dfeffc;
+	border: 1px solid #a6c9e2;
+	border-radius: 3px;
+	color: #000;
+}
+
+#sql-history .dt {
+	color: green;
+}
+
+#main_header .title .main {
+	color: #009c16;
+	font-family: segoe ui,tahoma;
+	font-size: 12px;
+	font-weight: 700;
+	text-shadow: 3px 3px 2px #ccc;
+}
+
+#main_header .title .version {
+	color: #fd36cb;
+	font-family: tahoma;
+	font-size: 7pt;
+	font-weight: 700;
+}
+
+#main_header .info {
+	background: #fff;
+	color: #5e5e5e;
+	font-family: arial;
+	font-size: 11px;
+	font-weight: 400;
+}
+
+#messageContainer div.note {
+	color: #f21;
+	font-weight: 700;
+}
+
+#pagingContainer a {
+	color: #363636;
+	font-weight: 700;
+}
+
+#pagingContainer span.page {
+	color: #aaa;
+	font-weight: 700;
+}
+
+#commandEditor,#commandEditor2,#commandEditor3 {
+	border: 0;
+	font-family: courier new,verdana;
+	font-size: 10pt;
+	font-weight: 400;
+}
+
+.heading1 {
+	background: #fcfdfd;
+	border-bottom: 1px solid #dcdcdc;
+	border-top: 1px solid #dcdcdc;
+	color: #1d5987;
+	font-family: Tahoma,Trebuchet MS,Verdana;
+	font-size: 8pt;
+	font-weight: 700;
+}
+
+.heading2 {
+	background: #d0e5f5;
+	border-bottom: 1px solid #1d5987;
+	color: #1d5987;
+	font-family: Tahoma,Trebuchet MS,Verdana;
+	font-size: 8pt;
+	font-weight: 700;
+}
+
+.label {
+	color: #000;
+	font-family: Trebuchet MS,Verdana;
+	font-size: 9pt;
+	font-weight: 700;
+}
+
+.hinfo {
+	background-color: #fefefe;
+}
+
+.info {
+	background: #fff;
+	color: #000;
+	font-family: Trebuchet MS,Verdana;
+	font-size: 9pt;
+	font-weight: 700;
+}
+
+div.code-editor {
+	border: 3px double #aed0ea;
+}
+
+textarea.text-editor {
+	border: none;
+	font-family: verdana;
+	font-size: 9pt;
+}
+
+input[type=text],input[type=password] {
+	border: 1px solid #aaa;
+}
+
+hr {
+	color: #5c9ccc;
+}
+
+#loader {
+	background-color: #fff;
+	border: 1px solid #aed0ea;
+}
+
+.CodeMirror-line-numbers {
+	background-color: #fff;
+	color: #aaa;
+	font-family: courier new;
+	font-size: 10pt;
+}
+
+a.btn {
+	color: green;
+	font-family: tahoma;
+	font-size: 8pt;
+	font-weight: 700;
+}
+
+#editor_container,#editor_container2,#editor_container3 {
+	border: 1px solid #79b7e7;
+	border-top: 0;
+}
+
+#db_combo span {
+	color: #000;
+	font-weight: 700;
+}
+
+#object_list {
+	background: #fff;
+}
+
+#screen-wait div span {
+	color: #79b7e7;
+	font-family: segoe ui;
+	font-size: 10pt;
+	font-weight: 700;
+}
+
+#screen-wait div img {
+	border: 1px solid #4297d7;
+}
+
+#taskbar .min-all {
+	background: url(themes/default/images/objects.png) no-repeat;
+	background-position: -5px -698px;
+}
+
+#dialog-text-editor #text-editor {
+	border: 5px solid #fff;
+	font-family: verdana,arial;
+	font-size: 13px;
+}
+
+.CodeMirror-wrapping {
+	background-color: #fff;
+}
+
+.ui-tabs .ui-tabs-nav {
+	background: transparent;
+}
+
+.ui-layout-resizer:hover,.ui-data-resizer:hover {
+	background: #aed0ea;
+}
+
+.ui-layout-resizer-south:hover {
+	background: #dfeffc;
+}
+
+.ui-data-resizer-south:hover {
+	background: #aed0ea;
+}
+
+.ui-layout-toggler-north-closed {
+	background-position: 0 1px;
+}
+
+.ui-layout-toggler-west-closed {
+	background-position: -4px 0;
+}
+
+.ui-data-toggler-south-closed {
+	background-position: 0 -4px;
+}
+
+.ui-layout-pane-center .ui-layout-content {
+	background: #fff;
+	border: 1px solid #79b7e7;
+	border-top: 0;
+}
+
+.ui-layout-toggler-north,.ui-layout-toggler-south,.ui-data-toggler-north,.ui-data-toggler-south {
+	background-image: url(themes/default/images/sizerv.gif);
+	background-repeat: no-repeat;
+}
+
+.ui-layout-toggler-east,.ui-layout-toggler-west,.ui-data-toggler-east,.ui-data-toggler-west {
+	background-image: url(themes/default/images/sizerh.gif);
+	background-repeat: no-repeat;
+}
+
+#sql-history tr:hover {
+	background: #dfeffc;
+}
+
+#sql-history .hst {
+	color: #2e6e9e;
+}
+
+#main_header .server {
+	color: #4297d7;
+	font-weight: 700;
+}
+
+div#popup_contents .ui-widget-content {
+	border: none;
+}
+
+input.blur {
+	color: #777;
+}
+
+* {
+	font-family: Tahoma;
+	font-size: 8pt;
+	font-weight: 400;
+}
+
+.header {
+	font-weight: 700;
+}
+
+.footer {
+	font-weight: 700;
+}
+
+#dblist option {
+	font-family: Arial;
+	font-size: 10pt;
+	font-weight: 400;
+}
+
+#editToolbar .tb-header {
+	font-weight: 700;
+}
+
+#inplace-text textarea {
+	font-family: arial;
+	font-size: 9pt;
+	font-weight: 400;
+}
+
+#sql-history tr td {
+	font-family: verdana;
+	font-size: 9pt;
+}
+
+div.sql-text {
+	font-family: Courier New;
+	font-size: 10pt;
+}
+
+#main_header .updates {
+	font-family: arial;
+	font-size: 12px;
+	font-weight: 400;
+}
+
+#pagingContainer select {
+	font-weight: 700;
+}
+
+.cm-s-default span {
+	font-family: courier new;
+	font-size: 10pt;
+}
+
+div#rec_pager {
+	font-weight: 700;
+}
+
+#object-filter-text {
+	font-size: 11px;
+}
+
+div#popup_buttons select {
+	font-family: arial;
+	font-size: 10pt;
+}
+
+div#popup_buttons select option {
+	font-family: arial;
+	font-size: 10pt;
+	font-weight: 400;
+}
+
+#editToolbar .fname,#editToolbar .ftype {
+	font-weight: 700;
+}
+
+b {
+	font-family: verdana;
+	font-size: 9pt;
+	font-weight: 700;
+}
+
+span.webdings {
+	font-family: webdings;
+}
+
+pre.blob {
+	font-family: verdana;
+	font-size: 9pt;
+}
+
+textarea.blobeditor {
+	font-family: verdana;
+	font-size: 9pt;
+}
+
+div#rec_pager div.numrec {
+	font-weight: 700;
+}

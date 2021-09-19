@@ -1,0 +1,130 @@
+.treeview,.treeview ul {
+	background-color: #444;
+	color: #eee;
+}
+
+.treeview .hitarea {
+	background: url(themes/chocolate/images/treeview.gif) -64px -22px no-repeat;
+}
+
+.treeview li {
+	color: #eee;
+}
+
+.filetree li span {
+	background: url(themes/chocolate/images/objects.png) no-repeat;
+	font-family: arial;
+	font-size: 9pt;
+}
+
+.filetree li span.file a {
+	background: url(themes/chocolate/images/objects.png) no-repeat;
+	background-position: -8px -176px;
+}
+
+.filetree span a:visited {
+	color: #eee;
+}
+
+.dblist a,.dblist a:visited {
+	color: #eee;
+	font-family: arial;
+	font-size: 9pt;
+}
+
+.filetree span.count,.filetree li span.count {
+	background: none;
+	background-color: #999;
+	border-radius: 3px;
+	font-size: 11px;
+}
+
+.treeview a.selected {
+	background-color: #1c160d;
+}
+
+.treeview li.collapsable,.treeview li.expandable {
+	background-position: 0 -176px;
+}
+
+.treeview .expandable-hitarea {
+	background-position: -80px 0;
+}
+
+.treeview li.last {
+	background-position: 0 -1766px;
+}
+
+.treeview li.lastCollapsable,.treeview li.lastExpandable {
+	background-image: url(themes/chocolate/images/treeview.gif) no-repeat;
+}
+
+.treeview li.lastCollapsable {
+	background-position: 0 -111px;
+}
+
+.treeview li.lastExpandable {
+	background-position: -32px -67px;
+}
+
+.treeview div.lastCollapsable-hitarea,.treeview div.lastExpandable-hitarea {
+	background-position: 0;
+}
+
+.filetree li span.schmf {
+	background-position: -8px -6px;
+}
+
+.filetree li span.tablef {
+	background-position: -8px -31px;
+}
+
+.filetree li span.viewf {
+	background-position: -8px -55px;
+}
+
+.filetree li span.procf {
+	background-position: -8px -79px;
+}
+
+.filetree li span.funcf {
+	background-position: -8px -102px;
+}
+
+.filetree li span.trigf {
+	background-position: -8px -126px;
+}
+
+.filetree li span.evtf {
+	background-position: -8px -151px;
+}
+
+.filetree li span.file {
+	background: none;
+}
+
+.filetree li span.current {
+	background: url(themes/chocolate/images/ui-bg_highlight-soft_20_201913_1x100.png) repeat-x scroll 50% 48% #1c160d;
+}
+
+.filetree span a:hover {
+	border-bottom: 1px dotted #acacac;
+}
+
+.dblist span.odb {
+	background: url(themes/chocolate/images/objects.png) no-repeat;
+	background-position: -8px -8px;
+}
+
+#tablelist a {
+	color: #eee;
+}
+
+#tablelist span.current a {
+	color: #fff;
+}
+
+.filetree span a {
+	font-family: arial;
+	font-size: 9pt;
+}
