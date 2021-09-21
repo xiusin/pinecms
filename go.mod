@@ -28,11 +28,11 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/go-xorm/xorm v0.7.9
 	github.com/gobuffalo/helpers v0.6.2 // indirect
-	github.com/gobuffalo/plush v3.8.3+incompatible // indirect
+	github.com/gobuffalo/plush v3.8.3+incompatible
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/gookit/color v1.4.2
 	github.com/gorilla/securecookie v1.1.1
-	github.com/jmoiron/sqlx v1.3.4 // indirect
+	github.com/jmoiron/sqlx v1.3.4
 	github.com/kataras/go-mailer v0.1.0
 	github.com/klauspost/compress v1.13.5 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect

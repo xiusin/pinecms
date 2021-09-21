@@ -1,6 +1,9 @@
 package common
 
-import "database/sql"
+import (
+	"database/sql"
+	"reflect"
+)
 
 const AUTH_TYPE = "LOGIN"
 
@@ -17,11 +20,12 @@ const ALLOW_CUSTOM_SERVER_TYPES = "mysql,pgsql"
 const MODULE_ACCESS_MODE = "deny"
 
 type Server struct {
-	Host     string
-	Driver   string
-	User     string
-	Password string
-	Port     string
+	ServerName string
+	Host       string
+	Driver     string
+	User       string
+	Password   string
+	Port       string
 }
 
 const BACKUP_FOLDER = "/backups/"
@@ -159,6 +163,17 @@ type Table struct {
 	Comment       string         `json:"comment" db:"Comment"`
 }
 
+func GetTableInfoHeaders() []string {
+	var headers []string
+	vs := reflect.TypeOf(&Table{}).Elem()
+
+	for i := 0; i < vs.NumField(); i++ {
+		headers = append(headers, vs.Field(i).Tag.Get("db"))
+	}
+
+	return headers
+}
+
 type ProcedureOrFunction struct {
 	Db                  string        `json:"db" db:"Db"`
 	Name                string        `json:"name" db:"Name"`
@@ -175,5 +190,77 @@ type ProcedureOrFunction struct {
 
 type TriggerOrEvent struct {
 	TriggerName string `json:"trigger_name" db:"TRIGGER_NAME"`
-	EventName string `json:"event_name" db:"EVENT_NAME"`
+	EventName   string `json:"event_name" db:"EVENT_NAME"`
+}
+
+type Column struct {
+	TableCataLog           string          `json:"-" db:"TABLE_CATALOG"`
+	TableSchema            string          `json:"-" db:"TABLE_SCHEMA"`
+	TableName              string          `json:"table" db:"TABLE_NAME"`
+	ColumnName             string          `json:"name" db:"COLUMN_NAME"`
+	OrdinalPosition        string          `json:"-" db:"ORDINAL_POSITION"`
+	ColumnDefault          *sql.NullString `json:"-" db:"COLUMN_DEFAULT"`
+	IsNullAble             string          `json:"-" db:"IS_NULLABLE"`
+	DataType               string          `json:"-" db:"DATA_TYPE"`
+	CharacterMaximumLength *sql.NullInt64  `json:"-" db:"CHARACTER_MAXIMUM_LENGTH"`
+	CharacterOctetLength   *sql.NullInt64  `json:"-" db:"CHARACTER_OCTET_LENGTH"`
+	NumericPrecision       *sql.NullInt64  `json:"-" db:"NUMERIC_PRECISION"`
+	NumericScale           *sql.NullInt64  `json:"-" db:"NUMERIC_SCALE"`
+	DatetimePrecision      *sql.NullString `json:"-" db:"DATETIME_PRECISION"`
+	CharacterSetName       *sql.NullString `json:"-" db:"CHARACTER_SET_NAME"`
+	CollationName          *sql.NullString `json:"-" db:"COLLATION_NAME"`
+	ColumnType             string          `json:"-" db:"COLUMN_TYPE"`
+	ColumnKey              string          `json:"-" db:"COLUMN_KEY"`
+	Extra                  string          `json:"-" db:"EXTRA"`
+	Privileges             string          `json:"-" db:"PRIVILEGES"`
+	ColumnComment          string          `json:"-" db:"COLUMN_COMMENT"`
+	GenerationExpression   string          `json:"-" db:"GENERATION_EXPRESSION"`
+
+	// 前端使用
+	NotNull  bool     `json:"not_null"`
+	Blob     bool     `json:"blob"`
+	PKey     bool     `json:"pkey"`
+	UKey     bool     `json:"ukey"`
+	MKey     bool     `json:"mkey"`
+	ZeroFill bool     `json:"zerofill"`
+	Unsigned bool     `json:"unsigned"`
+	Autoinc  bool     `json:"autoinc"`
+	Numeric  bool     `json:"numeric"`
+	Type     string   `json:"type"`
+	List     []string `json:"list"`
+}
+
+type Variable struct {
+	VariableName string `db:"Variable_name" json:"variable_name"`
+	Value        string `db:"Value" json:"value"`
+}
+
+type CreateCommand struct {
+	Table       string `db:"Table"`
+	CreateTable string `db:"Create Table"`
+}
+
+type Engine struct {
+	Engine       string          `db:"Engine"`
+	Support      string          `db:"Support"`
+	Comment      string          `db:"Comment"`
+	Transactions *sql.NullString `db:"Transactions"`
+	XA           *sql.NullString `db:"XA"`
+	Savepoints   string          `db:"Savepoints"`
+}
+
+type Charset struct {
+	Charset          string `db:"Charset"`
+	Description      string `db:"Description"`
+	DefaultCollation string `db:"Default_collation"`
+	Maxlen           int    `db:"Maxlen"`
+}
+
+type Collation struct {
+	Id        int64  `db:"Id"`
+	Collation string `db:"Collation"`
+	Charset   string `db:"Charset"`
+	Default   string `db:"Default"`
+	Compiled  string `db:"Compiled"`
+	Sortlen   int64  `db:"Sortlen"`
 }

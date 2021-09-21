@@ -134,7 +134,7 @@ $(document).ready(function () {
 	});
 
 	$('#screen-wait').remove();
-	$('#wrkfrm').attr('src', 'index.php?q=wrkfrm&type=info');
+	$('#wrkfrm').attr('src', 'index?q=wrkfrm&type=info');
 
 	loadUserPreferences();
 	showNavBtns('query', 'queryall');

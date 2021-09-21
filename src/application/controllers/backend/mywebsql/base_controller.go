@@ -17,7 +17,6 @@ import (
 
 var l sync.Once
 
-
 type MyWebSql struct {
 	pine.Controller
 	plush *render.Plush
@@ -46,6 +45,7 @@ func (c *MyWebSql) Construct() {
 	c.ViewData("MAX_TEXT_LENGTH_DISPLAY", common.MAX_TEXT_LENGTH_DISPLAY)
 	c.ViewData("APP_VERSION", common.APP_VERSION)
 	c.ViewData("EXTERNAL_PATH", "/mywebsql/")
+	c.ViewData("PRODUCT_URL", "https://github.com/xiusin/mywebsql/")
 
 	c.plush = di.MustGet(common.RenderService).(*render.Plush)
 
@@ -56,9 +56,11 @@ func (c *MyWebSql) saveAuthSession(serve common.Server) {
 	c.Session().Set("auth", string(sess))
 }
 
-func (c *MyWebSql) getAuthSession(serve common.Server) {
-	sess, _ := json.Marshal(&serve)
-	c.Session().Set("auth", string(sess))
+func (c *MyWebSql) getAuthSession() common.Server {
+	auth := c.Session().Get("auth")
+	var authServer common.Server
+	json.Unmarshal([]byte(auth), &authServer)
+	return authServer
 }
 
 func (c *MyWebSql) clearAuthSession() {

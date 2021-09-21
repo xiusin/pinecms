@@ -5,6 +5,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/mywebsql/common"
 	"html/template"
+	"strings"
 
 	"github.com/xiusin/pine"
 )
@@ -15,11 +16,14 @@ type IndexController struct {
 }
 
 func (c *IndexController) GetIndex() {
-
-
-
 	if db := c.GetSQLX(); db == nil {
 		c.clearAuthSession()
+
+		if c.Ctx().GetString("q") == "wrkfrm" {
+			c.Render().HTML("session_expired.php")
+			return
+		}
+
 		form, _ := c.plush.Exec("auth.php", pine.H{
 			"LOGINID":     "root",
 			"SERVER_NAME": "",
@@ -39,17 +43,17 @@ func (c *IndexController) GetIndex() {
 
 		c.Render().HTML("splash.php")
 	} else {
+		defer db.Close()
 
-
-		//if (v($_REQUEST["db"]) && ( Session::get('db', 'name') != v($_REQUEST["db"]) ) ) {
-		//Session::set('db', 'changed', true);
-		//Session::set('db', 'name', $_REQUEST["db"]);
-		//if (v($_GET["x"]) == 1)
-		//echo '<div id="results">1</div>';	// success
-		//else
-		//header('Location: '.EXTERNAL_PATH);
-		//exit;
-		//}
+		if c.Ctx().PostValue("q") == "wrkfrm" {
+			c.Ctx().SetContentType(pine.ContentTypeHTML)
+			if err := db.Ping(); err != nil {
+				c.Ctx().WriteString(err.Error())
+			} else {
+				c.Ctx().WriteString(common.ExecuteRequest(db, c.Ctx()))
+			}
+			return
+		}
 
 		dbname := c.Ctx().GetString("db")
 
@@ -66,18 +70,27 @@ func (c *IndexController) GetIndex() {
 			return
 		}
 
-
 		c.ViewData("KEY_CODES", common.KEY_CODES)
 		c.ViewData("MenuBarHTML", template.HTML(common.GetMenuBarHTML()))
 
-		html,dblist, _ := common.PrintDbList(db, c.Session())
+		html, dblist, _ := common.PrintDbList(db, c.Session())
 
 		dbname = c.Session().Get("db.name")
 
 		treeHtml := common.GetDatabaseTreeHTML(db, dblist, dbname)
-
+		auth := c.getAuthSession()
+		c.ViewData("auth", auth)
+		c.ViewData("version", c.Session().Get("db.version"))
+		c.ViewData("version_full", c.Session().Get("db.version_full"))
+		c.ViewData("version_comment", c.Session().Get("db.version_comment"))
 		c.ViewData("dbListHtml", template.HTML(html))
 		c.ViewData("treeHtml", template.HTML(treeHtml))
+		c.ViewData("contextMenusHTML", template.HTML(common.GetContextMenusHTML()))
+		c.ViewData("HotkeysHTML", template.HTML(common.GetHotkeysHTML()))
+		c.ViewData("UpdateSqlEditor", template.HTML(common.UpdateSqlEditor()))
+
+		c.ViewData("KEYCODE_SETNULL", strings.Replace(common.T("Press {{KEY}} to set NULL"), "{{KEY}}", common.KEY_CODES["KEYCODE_SETNULL"][1], 1))
+		c.ViewData("LoginUser", strings.Replace(common.T("Logged in as: {{USER}}"), "{{USER}}", auth.User, 1))
 
 		dialogs, _ := c.plush.Exec("dialogs.php", pine.H{})
 		c.ViewData("dialogs", template.HTML(dialogs))
@@ -99,6 +112,7 @@ func (c *IndexController) PostIndex() {
 	} else {
 		serve.User = authUser
 		serve.Password = authPwd
+		serve.ServerName = server
 		db, err := sqlx.Open(serve.Driver, fmt.Sprintf("%s:%s@tcp(%s:%s)/?charset=utf8", serve.User, serve.Password, serve.Host, serve.Port))
 		if err != nil {
 			c.clearAuthSession()

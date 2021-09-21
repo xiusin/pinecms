@@ -15,23 +15,11 @@
 	<![endif]-->
 </head>
 <body class="mainbody">
-// <?php
-// 	if (!$DB->connect(DB_HOST,DB_USER,DB_PASS,getDbName())) {
-// 		include(BASE_PATH . "/modules/splash.php");
-// 		die(getSplashScreen(showDBError()));
-// 	}
-// 	if (Session::get('session', 'init') != '1') {
-// 		// session just started, so we load information here
-// 		Session::set('db', 'user', $DB->getCurrentUser(), true);
-// 		Session::set('session', 'init', 1);
-// 	}
-//
-// 	$KEY_CODES = getKeyCodes();
-// ?>
+
 	<div id="editToolbar">
 		<div class="tb-header ui-widget-header"><span class="fname"></span></div>
 		<div class="tb-row">Type: <span class="ftype"></span></div>
-		<div class="tb-row">[ <?php echo str_replace('{{KEY}}', $KEY_CODES['KEYCODE_SETNULL'][1], __('Press {{KEY}} to set NULL')); ?> ]</div>
+		<div class="tb-row">[ <%= KEYCODE_SETNULL %> ]</div>
 	</div>
 
 	<div id="inplace-text">
@@ -40,14 +28,15 @@
 
 	<div class="ui-layout-north">
 		<div id="main_header">
-			<a target="_blank" href="<?php echo PROJECT_SITEURL;?>"><img src="img/logo.png" class="logo" alt="MyWebSQL" width="45" height="38" border="0" /></a>
+			<a target="_blank" href="/mywebsql/index/index"><img src="/mywebsql/img/logo.png" class="logo" alt="MyWebSQL" width="45" height="38" border="0" /></a>
 			<div class="title">
 				<div class="main">MyWebSQL</div>
-				<div class="version"><?php echo __('version') . ' ' . APP_VERSION; ?></div>
+				<div class="version"><%= T("version") + APP_VERSION %></div>
 			</div>
 			<div class="info">
-				<span class="server"><?php echo htmlspecialchars(Session::get('auth', 'server_name', true)); ?></span> - <?php echo htmlspecialchars(Session::get('db', 'version_comment')); ?>&nbsp;<?php echo htmlspecialchars(Session::get('db', 'version_full')); ?><br />
-				<?php echo str_replace('{{USER}}', htmlspecialchars(Session::get('db', 'user', true)), __('Logged in as: {{USER}}')); ?>
+				<span class="server"><%= auth.ServerName %></span> - <%= version_comment %>&nbsp;
+				<%= version_full %><br />
+				<%= LoginUser %>
 			</div>
 			<div class="updates ui-state-active"></div>
 		</div>
@@ -67,7 +56,7 @@
 	</div>
 
 	<div id="object-filter" class="ui-state-default">
-		<input type="text" id="object-filter-text" size="5" placeholder="Type to filter object list" data-placeholder="<%= T("Type to filter object list") %>" />
+		<input type="text" id="object-filter-text" size="5" placeholder="<%= T("Type to filter object list") %>" data-placeholder="<%= T("Type to filter object list") %>" />
 	</div>
 
 </div>
@@ -184,14 +173,7 @@
 // ?>
 </script>
 <script type="text/javascript" language="javascript" src="/mywebsql/cache?script=layout,ui,dialogs,context,alerts,cookies,select,interface,options,treeview,common,taskbar,settings,query,tables,clipboard"></script>
-<?php
-
-	echo getContextMenusHTML();
-
-	updateSqlEditor();
-
-	echo getHotkeysHTML();
-
-	echo getGeneratedJS();
-?>
+<%= contextMenusHTML %>
+<%= UpdateSqlEditor %>
+<%= HotkeysHTML %>
 </body></html>
