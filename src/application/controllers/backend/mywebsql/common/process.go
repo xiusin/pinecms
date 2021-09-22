@@ -127,8 +127,55 @@ func (p *Process) QueryVariables() []Variable {
 	return variables
 }
 
-func (p *Process) createErrorGrid(query string) string {
-	return "错误表格，需要渲染页面"
+func (p *Process) createErrorGrid(query string, err error, params ...int) string {
+	if query == "" {
+		query = p.ctx.Session().Get("select.query")
+	}
+
+	p.removeSelectSession()
+
+	numQueries, affectedRows := 0, -1
+	if len(params) > 0 {
+		numQueries = params[0]
+	}
+	if len(params) > 1 {
+		affectedRows = params[1]
+	}
+
+	grid := "<div id='results'>\n"
+	if numQueries > 0 {
+		grid += "<div class=\"message ui-state-default\">"
+		var msg string
+		if numQueries == 1 {
+			msg = T("1 query successfully executed")
+		} else {
+			msg = strings.ReplaceAll(T("{{NUM}} queries successfully executed"), "{{NUM}}", numQueries)
+		}
+
+		msg += "<br/><br/>" + strings.ReplaceAll(T("{{NUM}} record(s) were affected"), "{{NUM}}", affectedRows)
+		grid += msg + "</div>"
+	}
+
+
+	match := regexp.MustCompile("/[\\n|\\r]?[\\n]+/")
+
+	formattedQuery :=  match.ReplaceAllString(query, "<br>")
+
+	grid += "<div class=\"message ui-state-error\">"+ T("Error occurred while executing the query")+
+	":</div><div class=\"message ui-state-highlight\">" + err.Error() + 
+	"</div><div class=\"sql-text ui-state-error\">"+ formattedQuery + "</div>"
+
+
+	grid += "</div>"
+	grid += "<script type=\"text/javascript\" language='javascript'> parent.transferResultMessage(-1, '&nbsp;', '" + T("Error occurred while executing the query") + "');\n"
+	grid += "parent.addCmdHistory(\"" + strings.ReplaceAll( p.ctx.Session().Get("select.query"), "\r\n", "<br/>") + "\");\n"
+	grid += "parent.resetFrame();\n"
+	grid += "</script>\n"
+
+
+
+
+	return grid
 }
 
 func (p *Process) getTemplateSQL(templateName string) string {
@@ -382,4 +429,140 @@ func (p *Process) GetCollations() []string {
 	}
 	sort.Strings(ret)
 	return ret
+}
+
+func (p *Process) Logout() string {
+	p.ctx.Session().Destory()	// 销毁session
+	return string(p.Render("logout", nil))
+}
+
+// Infovars 服务器变量
+func (p *Process) Infovars() string {
+
+}
+
+// Search 搜索数据
+func (p *Process) Search() string {
+
+}
+
+// Queryall
+func (p *Process) Queryall() string {
+
+}
+
+// Truncate 截断数据表
+func (p *Process) Truncate() string {
+
+}
+
+// Drop 删除数据表
+func (p *Process) Drop() string {
+
+}
+
+// Rename 重命名
+func (p *Process) Rename() string {
+
+}
+
+// Dbrepair 修复表
+func (p *Process) Dbrepair() string {
+
+}
+
+// Dbcreate 创建表
+func (p *Process) Dbcreate() string {
+	p.removeSelectSession()
+
+	name := p.ctx.FormValue("name")
+	dbSelect := p.ctx.FormValue("query")
+
+	sql := "create database `" + name + "`"
+
+	if _, err := p.db.Exec(sql); err != nil {
+		return p.createErrorGrid("", err)
+	}
+	redirect = "0"
+
+	if dbSelect != "" {
+		p.ctx.Session().Set("db.change", "true")
+		p.ctx.Session().Set("db.name", name)
+		redirect = "1"
+	}
+	
+	return string(p.Render("dbcreate", pine.H{
+				"DB_NAME": name,
+				"SQL": sql,
+				"TIME": 0,
+				"REDIRECT": redirect,
+	}))
+
+}
+
+// Tableinsert 插入表数据
+func (p *Process) Tableinsert() string {
+
+}
+
+// Tableupdate 更新表数据
+func (p *Process) Tableupdate() string {
+
+}
+
+// Showcreate 展示创建语句
+func (p *Process) Showcreate() string {
+	p.removeSelectSession()
+	extraMsg := ""
+}
+
+
+// Processes 进程管理器
+func (p *Process) Processes() string {
+
+}
+
+// Help 帮助页面
+func (p *Process)Help() string {
+	page := p.ctx.FormValue("p")
+	if page == "" {
+		page = "queries"
+	}
+	pages := []string {
+		"queries": "Executing queries",
+		"results":"Working with results",
+		"keyboard":"Keyboard shortcuts",
+		"prefs": "Preferences",
+		"misc": "Miscellaneous",
+		"credits": "Credits",
+		"about": "About",
+	}
+	if _, ok := pages[page]; !ok {
+		page = "queries"
+	}
+	contents := p.Render("help/" + page)
+	return p.Rename("help", pine.H{	"pages": pages,"page": page	})
+}
+
+// Backup 备份数据
+func (p *Process) Backup () string {
+
+}
+
+// removeSelectSession 移除选择状态的session数据
+func (p *Process) removeSelectSession() {
+	sessionKeys := []string{"result", "pkey", "ukey", "mkey", "unique_table"}
+	for _, v := range sessionKeys {
+		p.ctx.Session().Remove("select." + v)
+	}
+}
+
+// Render 渲染模板
+func (p *Process) Render(name string, data pine.H) []byte {
+	var byts []byte
+	var err error
+	if byts, err = GetPlush().Exec(name + ".php", data); err != nil {
+		pine.Logger().Warning("渲染模板"+name+".php失败", err)
+	}
+	return byts
 }
