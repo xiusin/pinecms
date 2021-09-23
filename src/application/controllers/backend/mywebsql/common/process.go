@@ -111,11 +111,10 @@ func (p *Process) Query() string {
 	// TODO 区分查询是否需要返回执行结果
 	if strings.ToLower(querySql[:6]) == "select" {
 		queryType := p.getQueryType(querySql)
-		pine.Logger().Debug("exec select sql", queryType)
 		if queryType["can_limit"] {
 			html = p.createResultGrid(querySql)
 		} else {
-			html = p.createSimpleGrid(T("Query")+": "+querySql, querySql)
+			html = p.createSimpleGrid(T("Query")+": "+querySql, querySql, nil)
 		}
 	} else {
 
@@ -234,21 +233,31 @@ func (p *Process) simpleQuery() string {
 		}
 	}
 
-	return ""
+	return query
 }
 
 func (p *Process) sortQuery(query, field string) string  {
 	query = strings.Trim(query, " \r\n\t")
-	//sort := ""
 	sortType := p.selectSession("sort")
-
+	//limit := ""
 	if sortType == "" {
 		sortType = "DESC"
 	}
 
-	//pine.Logger().Debug("执行SQL", query)
-	matchs := regexp.MustCompile(LIMIT_REGEXP).FindStringSubmatch(query)
-	//pine.Logger().Debug("matchs", matchs)
+	// 匹配LIMIT语句
+	matches := regexp.MustCompile(LIMIT_REGEXP).FindStringSubmatch(query)
+
+	// 匹配sort语句
+	matches = regexp.MustCompile(SORT_REGEXP).FindStringSubmatch(query)
+	pine.Logger().Debug("matches", matches)
+
+	p.Session().Set("select.sortcol", field)
+	p.Session().Set("select.sort", sortType)
+
+	//query += " ORDER BY " + field + " " + sortType + " " + limit
+
+	pine.Logger().Debug("SORT 最终SQL", query)
+
 	return query
 }
 
@@ -263,9 +272,7 @@ func (p *Process) getQueryType(query string) map[string]bool {
 			types["can_limit"] = true
 		}
 	}
-	//define('LIMIT_REGEXP', '/(.*)[\s]+(limit[\s]+[\d]+([\s]*(,|offset)[\s]*[\d]+)?)$/is');
-	//define('SORT_REGEXP', '/(.*)[\s]+(ORDER[\s]+BY[\s]+([a-zA-z0-9\._]+|`.*`|\'.*\'|".*")\s*(ASC|DESC)?(\s*\,\s*([a-zA-z0-9\._]+|`.*`|\'.*\'|".*")\s*(ASC|DESC)?)*)$/is');
-	match, err := regexp.MatchString("(.*)[\\s]+(limit[\\s]+[\\d]+([\\s]*(,|offset)[\\s]*[\\d]+)?)$", query)
+	match, err := regexp.MatchString(LIMIT_REGEXP, query)
 	if err != nil {
 		pine.Logger().Error("匹配sql错误", err)
 	}
@@ -351,7 +358,6 @@ func (p *Process) getTemplateSQL(templateName string) string {
 func (p *Process) Infoserver() string {
 	grid := ""
 	variables := p.QueryVariables()
-
 	if len(variables) == 0 {
 		return ""
 	}
@@ -367,7 +373,7 @@ func (p *Process) Infoserver() string {
 		case "character_set_server":
 			v["SERVER_CHARSET"] = variable.Value
 		case "character_set_client":
-			v["SERVER_CHARSET"] = variable.Value
+			v["CLIENT_CHARSET"] = variable.Value
 		case "character_set_database":
 			v["DATABASE_CHARSET"] = variable.Value
 		case "character_set_results":
@@ -376,36 +382,23 @@ func (p *Process) Infoserver() string {
 		v[variable.VariableName] = variable.Value
 	}
 
-	if dbname := p.Session().Get("db.name"); dbname == "" {
+	if p.dbname == "" {
 		v["JS"] = `parent.$("#main-menu").find(".db").hide();`
 	}
-	content, _ := GetPlush().Exec("infoserver.php", v)
-
-	grid += string(content)
+	pine.Logger().Debug("V", v)
+	grid += string(p.Render("infoserver", v))
 
 	return grid
 }
 
 func (p *Process) createSimpleGrid(message string, query string) string {
+	pine.Logger().Debug("createSimpleGrid")
 	grid := "<div id='results'>"
 	grid += "<div class='message ui-state-default'>" + message + "<span style='float:right'>" + T("Quick Search") +
 		"&nbsp;<input type=\"text\" id=\"quick-info-search\" maxlength=\"50\" /></div>"
 	grid += "<table cellspacing='0' width='100%' border='0' class='results' id='infoTable'><thead>\n"
 
-	f := p.getFieldInfo()
-
 	grid += "<tr id='fhead'><th class='th index'><div>#</div></th>\n"
-
-	for _, fn := range f {
-		cls, dsrt := "th", "text"
-		if fn.Numeric {
-			cls = "th_numeric"
-			dsrt = "numeric"
-		}
-		grid += "<th nowrap=\"nowrap\" class='" + cls + "' data-sort='" + dsrt + "'><div>" + fn.ColumnName + "</div></th>\n"
-	}
-
-	grid += "</tr></thead><tbody>\n"
 
 	// 遍历数据
 	rows, err := p.db.Query(query)
@@ -413,6 +406,23 @@ func (p *Process) createSimpleGrid(message string, query string) string {
 		pine.Logger().Warning("查询异常", query, err)
 		return p.createErrorGrid(query, err)
 	}
+
+	fields , _ := rows.Columns()
+	fieldTypes, _ := rows.ColumnTypes()
+
+	for k, fn := range fields {
+		cls, dsrt := "th", "text"
+		fieldType := fieldTypes[k]
+		if exist, _ := helper.InArray(fieldType.DatabaseTypeName(), []string{"DECIMAL", "INT","BIGINT", "TINYINT", "FLOAT", "DOUBLE"}); exist {
+			cls = "th_numeric"
+			dsrt = "numeric"
+		}
+		grid += "<th nowrap=\"nowrap\" class='" + cls + "' data-sort='" + dsrt + "'><div>" + fn + "</div></th>\n"
+	}
+
+	grid += "</tr></thead><tbody>\n"
+
+
 
 	datas, err := p.row2arrMap(rows)
 	if err != nil {
@@ -423,9 +433,9 @@ func (p *Process) createSimpleGrid(message string, query string) string {
 	for j, table := range datas {
 		grid += `<tr id="rc` + strconv.Itoa(j) + `" class="row"><td class="tj">` + strconv.Itoa(j+1) + `</td>`
 
-		for i, fn := range f {
+		for i, fn := range fields {
 			class := "tl"
-			if fn.Numeric {
+			if fieldTypes[i].DecimalSize() {
 				class = "tr"
 			}
 			rs := table[fn.ColumnName]
@@ -481,7 +491,6 @@ func (p *Process) createResultGrid(query string) string {
 	f := p.getFieldInfo()
 
 	if p.Session().Get("select.can_limit") == "true" && len(f) > 0 {
-		pine.Logger().Debug("set select.unique_table")
 		p.Session().Set("select.unique_table", f[0].TableName)
 	}
 
@@ -576,7 +585,10 @@ func (p *Process) createResultGrid(query string) string {
 				} else {
 					if v, ok := rs.([]byte); ok && len(v) != 0 {
 						data = string(rs.([]byte))
+					} else if v, ok := rs.(time.Time); ok {
+						data = v.Format(helper.TimeFormat) // TODO 根据时区返回时间
 					} else {
+						pine.Logger().Debug("字段" + column.ColumnName + "类型", reflect.ValueOf(rs).Type().String())
 						data = fmt.Sprintf("%s", rs)
 					}
 				}
@@ -929,8 +941,7 @@ func (p *Process) Logout() string {
 
 // Infovars 服务器变量
 func (p *Process) Infovars() string {
-	return ""
-
+	return p.createSimpleGrid(T("Server Variables"), "SHOW VARIABLES", &Variable{})
 }
 
 // Search 搜索数据
@@ -1041,6 +1052,20 @@ func (p *Process) Help() string {
 	}
 	contents := p.Render("help/"+page, nil)
 	return string(p.Render("help", pine.H{"pages": pages, "page": page, "contents": contents}))
+}
+
+// Createtbl 创建表
+func (p *Process) Createtbl() string {
+	action := p.formData.id
+	var html string
+	if action == "create" || action == "alter" {
+
+	} else {
+		rows := []string{}
+		engines := Html.ArrayToOptions(nil, "", "")
+		fmt.Println(rows, engines)
+	}
+	return html
 }
 
 // Backup 备份数据

@@ -3,7 +3,6 @@ package common
 import "C"
 import (
 	"database/sql"
-	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"reflect"
 	"strings"
@@ -99,6 +98,7 @@ const DEVELOPER_EMAIL = "xiusin.chen@gmail.com"
 const COOKIE_LIFETIME = 1440
 
 const LIMIT_REGEXP = `(.*)[\s]+(limit[\s]+[\d]+([\s]*(,|offset)[\s]*[\d]+)?)$`
+const SORT_REGEXP = "(.*)[\\s]+(ORDER[\\s]+BY[\\s]+([a-zA-z0-9\\._]+|`.*`|\\'.*\\'|\".*\")\\s*(ASC|DESC)?(\\s*\\,\\s*([a-zA-z0-9\\._]+|`.*`|\\'.*\\'|\".*\")\\s*(ASC|DESC)?)*)$"
 
 var DB_LIST = map[string][]string{
 	"Test Server": {"test", "wordpress"},
@@ -248,7 +248,6 @@ func (c *Column) Fill() {
 	c.ZeroFill = strings.Contains(c.ColumnType, "zerofill")
 	c.Unsigned = strings.Contains(c.ColumnType, "unsigned")
 	c.Type = c.ColumnType
-	pine.Logger().Debug("fill", c.ColumnName, c.Blob, c.DataType)
 }
 
 type Variable struct {

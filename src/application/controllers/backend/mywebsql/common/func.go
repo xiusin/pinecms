@@ -303,7 +303,6 @@ func ExecuteRequest(db *sqlx.DB, ctx *pine.Context) string {
 	if queryType != "" {
 		html += InitProcess(db, ctx).exec(queryType)
 	}
-
 	html += "</form></body></html>"
 	return html
 }
