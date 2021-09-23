@@ -2,6 +2,7 @@ package common
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
@@ -298,10 +299,9 @@ func ExecuteRequest(db *sqlx.DB, ctx *pine.Context) string {
 		queryType = postType
 	}
 	ctx.RequestCtx.QueryArgs().Set("type", queryType)
-
+	pine.Logger().Debug("type", queryType)
 	if queryType != "" {
-		query := strings.Trim(ctx.PostValue("query"), " \t\r\n;")
-		html += InitProcess(db, ctx, query).exec(queryType)
+		html += InitProcess(db, ctx).exec(queryType)
 	}
 
 	html += "</form></body></html>"
@@ -331,4 +331,28 @@ func startForm(db *sqlx.DB) string {
 		"<input type='hidden' name='name' value='' />" +
 		"<input type='hidden' name='query' value='' />"
 
+}
+
+func formatBytes(length int64) string {
+	if length < 1024 {
+		return fmt.Sprintf("%d B", length)
+	}
+
+	if length < 1024*1024 {
+		return fmt.Sprintf("%.2f KB", float64(length)/1024)
+	}
+
+	return fmt.Sprintf("%.2f MB", float64(length)/1024/1024)
+}
+
+func strReplace(repaces []string, to[]string, str string) string {
+	for i, repace := range repaces {
+		str = strings.ReplaceAll(str, repace, to[i])
+	}
+	return str
+}
+
+func jsonEncode(data interface{}) string {
+	byts, _ := json.Marshal(data)
+	return string(byts)
 }

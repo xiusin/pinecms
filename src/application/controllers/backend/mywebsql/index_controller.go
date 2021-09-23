@@ -27,7 +27,7 @@ func (c *IndexController) GetIndex() {
 		form, _ := c.plush.Exec("auth.php", pine.H{
 			"LOGINID":     "root",
 			"SERVER_NAME": "",
-			"SERVER_TYPE": "",
+			"SERVER_TYPE": "mysql",
 		})
 		formCode := `<div class="login"><form method="post" action="" name="dbform" id="dbform" style="text-align:center">` + string(form) + `</form></div>`
 		if len(c.hasError) > 0 {
@@ -79,6 +79,7 @@ func (c *IndexController) GetIndex() {
 
 		treeHtml := common.GetDatabaseTreeHTML(db, dblist, dbname)
 		auth := c.getAuthSession()
+
 		c.ViewData("auth", auth)
 		c.ViewData("version", c.Session().Get("db.version"))
 		c.ViewData("version_full", c.Session().Get("db.version_full"))

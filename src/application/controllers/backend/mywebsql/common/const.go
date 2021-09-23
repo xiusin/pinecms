@@ -1,8 +1,12 @@
 package common
 
+import "C"
 import (
 	"database/sql"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"reflect"
+	"strings"
 )
 
 const AUTH_TYPE = "LOGIN"
@@ -93,6 +97,8 @@ const PROJECT_SITEURL = "http://mywebsql.xiusin.cn/"
 const DEVELOPER_EMAIL = "xiusin.chen@gmail.com"
 
 const COOKIE_LIFETIME = 1440
+
+const LIMIT_REGEXP = `(.*)[\s]+(limit[\s]+[\d]+([\s]*(,|offset)[\s]*[\d]+)?)$`
 
 var DB_LIST = map[string][]string{
 	"Test Server": {"test", "wordpress"},
@@ -194,10 +200,9 @@ type TriggerOrEvent struct {
 }
 
 type Column struct {
-	TableCataLog           string          `json:"-" db:"TABLE_CATALOG"`
-	TableSchema            string          `json:"-" db:"TABLE_SCHEMA"`
-	TableName              string          `json:"table" db:"TABLE_NAME"`
-	ColumnName             string          `json:"name" db:"COLUMN_NAME"`
+	TableCataLog string `json:"-" db:"TABLE_CATALOG"`
+	TableSchema  string `json:"-" db:"TABLE_SCHEMA"`
+
 	OrdinalPosition        string          `json:"-" db:"ORDINAL_POSITION"`
 	ColumnDefault          *sql.NullString `json:"-" db:"COLUMN_DEFAULT"`
 	IsNullAble             string          `json:"-" db:"IS_NULLABLE"`
@@ -213,21 +218,37 @@ type Column struct {
 	ColumnKey              string          `json:"-" db:"COLUMN_KEY"`
 	Extra                  string          `json:"-" db:"EXTRA"`
 	Privileges             string          `json:"-" db:"PRIVILEGES"`
+	SRS_ID                 *sql.NullString `json:"srs_id" db:"SRS_ID"`
 	ColumnComment          string          `json:"-" db:"COLUMN_COMMENT"`
 	GenerationExpression   string          `json:"-" db:"GENERATION_EXPRESSION"`
 
 	// 前端使用
-	NotNull  bool     `json:"not_null"`
-	Blob     bool     `json:"blob"`
-	PKey     bool     `json:"pkey"`
-	UKey     bool     `json:"ukey"`
-	MKey     bool     `json:"mkey"`
-	ZeroFill bool     `json:"zerofill"`
-	Unsigned bool     `json:"unsigned"`
-	Autoinc  bool     `json:"autoinc"`
-	Numeric  bool     `json:"numeric"`
-	Type     string   `json:"type"`
-	List     []string `json:"list"`
+	TableName  string   `json:"table" db:"TABLE_NAME"`
+	ColumnName string   `json:"name" db:"COLUMN_NAME"`
+	NotNull    bool     `json:"not_null"`
+	Blob       bool     `json:"blob"`
+	PKey       bool     `json:"pkey"`
+	UKey       bool     `json:"ukey"`
+	MKey       bool     `json:"mkey"`
+	ZeroFill   bool     `json:"zerofill"`
+	Unsigned   bool     `json:"unsigned"`
+	Autoinc    bool     `json:"autoinc"`
+	Numeric    bool     `json:"numeric"`
+	Type       string   `json:"type"`
+	List       []string `json:"list"`
+}
+
+func (c *Column) Fill() {
+	c.NotNull = c.IsNullAble == "NO"
+	c.Numeric, _ = helper.InArray(c.DataType, []string{"float", "double", "decimal", "tinyint", "int", "bigint", "mediumint", "numeric"})
+	c.Blob, _ = helper.InArray(c.DataType, []string{"binary", "blob", "text", "longtext"})
+	c.Autoinc = c.Extra == "auto_increment"
+	c.PKey = c.ColumnKey == "PRI"
+	c.UKey = c.ColumnKey == "UNI"
+	c.ZeroFill = strings.Contains(c.ColumnType, "zerofill")
+	c.Unsigned = strings.Contains(c.ColumnType, "unsigned")
+	c.Type = c.ColumnType
+	pine.Logger().Debug("fill", c.ColumnName, c.Blob, c.DataType)
 }
 
 type Variable struct {
