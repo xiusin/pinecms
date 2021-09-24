@@ -62,5 +62,6 @@ func Cache(ctx *pine.Context) {
 			}
 		}
 	}
+	ctx.Response.Header.Set("Cache-Control", "max-age=78400")
 	ctx.Write(byts.Bytes())
 }

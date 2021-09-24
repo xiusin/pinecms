@@ -5,9 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/jmoiron/sqlx"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pinecms/src/common/helper"
+	"html/template"
 	"math"
 	"reflect"
 	"regexp"
@@ -15,6 +13,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 type Process struct {
@@ -24,7 +26,7 @@ type Process struct {
 	formData struct {
 		id    string
 		page  int
-		name string
+		name  string
 		table string
 		query string
 	}
@@ -88,6 +90,112 @@ func (p *Process) Showinfo() string {
 
 }
 
+// Objcreate 创建对象, 如事务,视图,存储过程等
+func (p *Process) Objcreate() string {
+	typo := "message ui-state-highlight"
+	var msg string
+	var refresh bool
+	objinfo := p.FormValue("objinfo")
+	if objinfo != "" {
+		msg = p.createDatabaseObject(objinfo)
+		if msg == "" {
+			msg = T("The command executed successfully")
+			typo = "message ui-state-default"
+			refresh = true
+		} else {
+			typo = "message ui-state-error"
+		}
+	} else {
+		msg = T("Any existing object with the same name should be dropped manually before executing the creation command") +
+			"!<br/>" + T("Enter command for object creation")
+	}
+
+	return p.displayCreateObjectForm(objinfo, msg, typo, refresh)
+}
+
+// displayCreateObjectForm 显示创建对象表单 @ref Objcreate
+func (p *Process) displayCreateObjectForm(objInfo, msg, typo string, refresh bool) string {
+	if objInfo == "" {
+		objInfo = p.getObjectCreateCommand()
+	}
+	form := "</textarea></td></tr>"
+
+	editorLink := template.HTML("<script type=\"text/javascript\" language=\"javascript\" src=\"/mywebsql/cache?script=editor/codemirror\"></script>")
+
+	editorOptions := template.HTML("parserfile: \"mysql.js\", path: \"/mywebsql/js/editor/\"")
+
+	v := pine.H{
+		"ID":             p.formData.id,
+		"MESSAGE":        template.HTML(msg),
+		"MESSAGE_TYPE":   typo,
+		"OBJINFO":        objInfo,
+		"EDITOR_LINK":    editorLink,
+		"EDITOR_OPTIONS": editorOptions,
+		"REFRESH":        "0",
+	}
+	if refresh {
+		v["REFRESH"] = "1"
+	}
+
+	return form + string(p.Render("objcreate", v))
+}
+
+func (p *Process) createDatabaseObject(info string) string {
+	cmd := strings.Trim(info, " \t\r\n;")
+	if strings.ToLower(cmd[:6]) == "create" {
+		return T("Only create commands are accepted")
+	}
+
+	if _, err := p.db.Exec(cmd); err != nil {
+		return err.Error()
+	}
+
+	ws := p.getWarnings()
+	if len(ws) > 0 {
+		for _, s := range ws {
+			return s
+		}
+	}
+	return ""
+}
+
+func (p *Process) getObjectCreateCommand() string {
+	templates := map[string]string{
+		"0": "templates/table",
+		"1": "templates/view",
+		"2": "templates/procedure",
+		"3": "templates/function",
+		"4": "templates/trigger",
+		"5": "templates/event",
+		"6": "templates/schema",
+	}
+
+	return string(p.Render(templates[p.formData.id], nil))
+}
+
+func (p *Process) getWarnings() map[int]string {
+	var ret = map[int]string{}
+	if rows, err := p.db.Queryx("SHOW WARNINGS"); err != nil {
+		pine.Logger().Warning("获取警告失败", err)
+	} else {
+		for rows.Next() {
+			results := make(map[string]interface{})
+			err = rows.MapScan(results)
+			code, _ := strconv.Atoi(string(results["Code"].([]byte)))
+			ret[code] = string(results["Message"].([]byte))
+		}
+	}
+	return ret
+}
+
+func (p *Process) Infodb() string {
+	if p.dbname == "" {
+		return string(p.Render("invalid_request", nil))
+	}
+	query := "show table status where Engine is not null"
+	return p.createSimpleGrid(T("Database summary")+": ["+p.dbname+"]", query)
+}
+
 func (p *Process) Query() string {
 	var querySql string
 	if p.formData.id == "table" {
@@ -114,7 +222,7 @@ func (p *Process) Query() string {
 		if queryType["can_limit"] {
 			html = p.createResultGrid(querySql)
 		} else {
-			html = p.createSimpleGrid(T("Query")+": "+querySql, querySql, nil)
+			html = p.createSimpleGrid(T("Query")+": "+querySql, querySql)
 		}
 	} else {
 
@@ -216,7 +324,7 @@ func (p *Process) simpleQuery() string {
 
 	queryType := p.getQueryType(query)
 
-	if !queryType["result"]  || !queryType["can_limit"]{
+	if !queryType["result"] || !queryType["can_limit"] {
 		return query
 	}
 
@@ -236,7 +344,7 @@ func (p *Process) simpleQuery() string {
 	return query
 }
 
-func (p *Process) sortQuery(query, field string) string  {
+func (p *Process) sortQuery(query, field string) string {
 	query = strings.Trim(query, " \r\n\t")
 	sortType := p.selectSession("sort")
 	//limit := ""
@@ -282,19 +390,28 @@ func (p *Process) getQueryType(query string) map[string]bool {
 	return types
 }
 
-func (p *Process) exec(module string) string {
+func (p *Process) exec(module string) (html string) {
+	defer func() {
+		if err := recover(); err != nil {
+			pine.Logger().Error(err)
+			html = p.createErrorGrid("解析执行方法失败", fmt.Errorf("%s", err))
+		}
+	}()
 	val := reflect.ValueOf(&p).Elem().MethodByName(helper.UcFirst(module))
 	if !val.IsValid() {
-		return p.createErrorGrid("", nil)
+		html = p.createErrorGrid("无法解析处理句柄", nil)
+	} else {
+		html = val.Call([]reflect.Value{})[0].String()
 	}
-	return val.Call([]reflect.Value{})[0].String()
+	return
 }
 
 func (p *Process) QueryVariables() []Variable {
 	query := "SHOW VARIABLES"
-
 	var variables []Variable
-	p.db.Select(&variables, query)
+	if err := p.db.Select(&variables, query); err != nil {
+		pine.Logger().Warning("获取变量失败", err)
+	}
 	return variables
 }
 
@@ -407,13 +524,13 @@ func (p *Process) createSimpleGrid(message string, query string) string {
 		return p.createErrorGrid(query, err)
 	}
 
-	fields , _ := rows.Columns()
+	fields, _ := rows.Columns()
 	fieldTypes, _ := rows.ColumnTypes()
 
 	for k, fn := range fields {
 		cls, dsrt := "th", "text"
 		fieldType := fieldTypes[k]
-		if exist, _ := helper.InArray(fieldType.DatabaseTypeName(), []string{"DECIMAL", "INT","BIGINT", "TINYINT", "FLOAT", "DOUBLE"}); exist {
+		if exist, _ := helper.InArray(fieldType.DatabaseTypeName(), []string{"DECIMAL", "INT", "BIGINT", "TINYINT", "FLOAT", "DOUBLE"}); exist {
 			cls = "th_numeric"
 			dsrt = "numeric"
 		}
@@ -421,8 +538,6 @@ func (p *Process) createSimpleGrid(message string, query string) string {
 	}
 
 	grid += "</tr></thead><tbody>\n"
-
-
 
 	datas, err := p.row2arrMap(rows)
 	if err != nil {
@@ -433,30 +548,39 @@ func (p *Process) createSimpleGrid(message string, query string) string {
 	for j, table := range datas {
 		grid += `<tr id="rc` + strconv.Itoa(j) + `" class="row"><td class="tj">` + strconv.Itoa(j+1) + `</td>`
 
-		for i, fn := range fields {
+		for i, field := range fields {
 			class := "tl"
-			if fieldTypes[i].DecimalSize() {
-				class = "tr"
+			if j == 0 {
+				pine.Logger().Print(field, fieldTypes[i].ScanType().Name(), fieldTypes[i].DatabaseTypeName())
 			}
-			rs := table[fn.ColumnName]
-			if rs == nil {
-				class = "tnl"
-			}
-
-			if fn.Blob {
-				if fn.DataType == "binary" || fn.DataType == "blob" {
-					class += " blob"
-				} else {
-					class += " text"
-				}
-			}
+			rs := table[field]
 			data := "&nbsp;"
 			if rs == nil {
+				class = "tnl"
 				data = "NULL"
-			} else if rs.(string) != "" {
-				data = rs.(string)
 			}
-			grid += "<td nowrap=\"nowrap\" id=\"r" + p.n2s(j) + "\".\"f" + p.n2s(i) + "\" class=\"" + class + "\">" + data + "</td>"
+
+			switch fieldTypes[i].DatabaseTypeName() {
+			case "VARCHAR", "CHAR", "TEXT":
+				class += " text"
+				if rs != nil && len(rs.([]byte)) != 0 {
+					data = string(rs.([]byte))
+				}
+			case "INT", "BIGINT":
+				class = "tr"
+				if rs != nil && len(rs.([]byte)) != 0 {
+					data = string(rs.([]byte))
+				}
+			case "TIMESTAMP", "DATETIME":
+				if rs != nil {
+					data = rs.(time.Time).Format(helper.TimeFormat)
+				}
+			case "binary", "blob": // blob
+
+			}
+
+			// TODO 确认blob类型以及数字类型. 后续碰到补充
+			grid += "<td nowrap=\"nowrap\" id=\"r" + p.n2s(j) + "f" + p.n2s(i) + "\" class=\"" + class + "\">" + data + "</td>"
 		}
 		grid += "</tr>\n"
 	}
@@ -588,7 +712,7 @@ func (p *Process) createResultGrid(query string) string {
 					} else if v, ok := rs.(time.Time); ok {
 						data = v.Format(helper.TimeFormat) // TODO 根据时区返回时间
 					} else {
-						pine.Logger().Debug("字段" + column.ColumnName + "类型", reflect.ValueOf(rs).Type().String())
+						pine.Logger().Debug("字段"+column.ColumnName+"类型", reflect.ValueOf(rs).Type().String())
 						data = fmt.Sprintf("%s", rs)
 					}
 				}
@@ -902,7 +1026,9 @@ func (p *Process) GetTruncateCommand(table string) string {
 
 func (p *Process) GetEngines() []string {
 	var engines []Engine
-	p.db.Select(&engines, "show engines")
+	if err := p.db.Select(&engines, "show engines"); err != nil {
+		pine.Logger().Warning("获取存储引擎失败", err)
+	}
 	var ret []string
 	for _, engine := range engines {
 		if engine.Support != "NO" {
@@ -913,13 +1039,17 @@ func (p *Process) GetEngines() []string {
 }
 
 func (p *Process) GetCharsets() []string {
-	var charsets []Charset
-	p.db.Select(&charsets, "show character set")
 	var ret []string
-	for _, charset := range charsets {
-		ret = append(ret, charset.Charset)
+	if rows, err := p.db.Queryx("show character set"); err != nil {
+		pine.Logger().Warning("获取字符集失败", err)
+	} else {
+		for rows.Next() {
+			results := make(map[string]interface{})
+			rows.MapScan(results)
+			ret = append(ret, string(results["Charset"].([]byte)))
+		}
+		sort.Strings(ret)
 	}
-	sort.Strings(ret)
 	return ret
 }
 
@@ -941,12 +1071,52 @@ func (p *Process) Logout() string {
 
 // Infovars 服务器变量
 func (p *Process) Infovars() string {
-	return p.createSimpleGrid(T("Server Variables"), "SHOW VARIABLES", &Variable{})
+	return p.createSimpleGrid(T("Server Variables"), "SHOW VARIABLES")
 }
 
 // Search 搜索数据
 func (p *Process) Search() string {
 	return ""
+
+}
+
+// Options 选项配置 用于配置系统内数据
+func (p *Process) Options() string {
+	pk := p.PostString("p", "ui")
+
+	pagesort := []string{"results", "editing", "misc", "ui"}
+
+	pages := pine.H{
+		"results": T("Results"),
+		"editing": T("Record Editing"),
+		"misc":    T("Miscellaneous"),
+		"ui":      T("Interface"),
+	}
+
+	if _, exist := pages[pk]; !exist {
+		pk = "ui"
+	}
+
+	content := string(p.Render("options/"+pk, nil))
+
+	lis := ""
+	for _, x := range pagesort {
+		y := pages[x]
+		if pk == x {
+			lis += "<li class=\"current\"><img border=\"0\" align=\"absmiddle\" src='/mywebsql/img/options/o_" + x + ".gif' alt=\"\" />" + y.(string) + "</li>"
+		} else {
+			lis += "<li><a href=\"#" + x + "\"><img border=\"0\" align=\"absmiddle\" src='/mywebsql/img/options/o_" + x + ".gif' alt=\"\" />" + y.(string) + "</a></li>"
+		}
+	}
+
+	return string(p.Render("options", pine.H{
+		"CONTENT": template.HTML(content),
+		"lis":     template.HTML(lis),
+		"data": pine.H{
+			"pages": pages,
+			"page":  pk,
+		},
+	}))
 
 }
 
@@ -976,8 +1146,50 @@ func (p *Process) Rename() string {
 
 // Dbrepair 修复表
 func (p *Process) Dbrepair() string {
-	return ""
+	// TODO tables 必须得数组
+	if p.FormValue("optype") != "" && p.FormValue("tables[]") != "" {
+		return p.checkTables()
+	} else {
+		tableStrs := getTables(p.db, p.dbname)
+		var tables []string
+		for _, v := range tableStrs {
+			tables = append(tables, v.Name)
+		}
+		byts, _ := json.Marshal(&tables)
+		extra := ""
+		if len(tables) > 0 {
+			extra += "$('#db_objects').html('');\n"
+			extra += "uiShowObjectList(tables, 'tables', '" + T("Tables") + "');\n"
+		}
 
+		return string(p.Render("dbrepair", pine.H{
+			"tables":  string(byts),
+			"extraJs": template.HTML(extra)}))
+	}
+}
+
+func (p *Process) checkTables() string {
+	typo := p.FormValue("optype")
+	options := map[string]interface{}{}
+
+	postdata := p.PostData()
+	pine.Logger().Debug("postData", postdata)
+	if p.FormValue("skiplog") == "on" {
+		options["skiplog"] = true
+	} else {
+		options["skiplog"] = false
+	}
+	options["checktype"] = p.PostValue("checktype")
+	options["repairtype"] = postdata["repairtype"]
+	tables := postdata["tables[]"]
+	checker := NewTableChecker(p.db)
+	checker.SetOperation(typo)
+	checker.SetOptions(options)
+	checker.SetTables(tables)
+	checker.Runcheck()
+	results := checker.GetResults()
+	byts, _ := json.Marshal(&results)
+	return string(p.Render("dbrepair_results", pine.H{"RESULTS": template.HTML(string(byts))}))
 }
 
 // Dbcreate 创建表
@@ -1028,8 +1240,74 @@ func (p *Process) Showcreate() string {
 
 // Processes 进程管理器
 func (p *Process) Processes() string {
-	return ""
+	html := "<link href='/mywebsql/cache?css=theme,default,alerts,results' rel=\"stylesheet\" />\n"
 
+	typo := "message ui-state-highlight"
+
+	msg := T("Select a process and click the button to kill the process")
+
+	prcid := p.FormValue("prcid") // TODO 需要支持传递数组参数
+
+	if prcid != "" {
+		//prcids := []string{prcid}
+		// TODO 提交杀死进程
+	}
+
+	return html + p.displayProcessList(msg, typo)
+
+}
+
+func (p *Process) displayProcessList(msg, typo string) string {
+	html := "<input type='hidden' name='q' value='wrkfrm' />"
+	html += "<input type='hidden' name='type' value='processes' />"
+	html += "<input type='hidden' name='id' value='' />"
+	html += "<table border=0 cellspacing=2 cellpadding=2 width='100%'>"
+	if len(msg) > 0 {
+		html += "<tr><td height=\"25\"><div class=\"" + typo + "\">" + msg + "</div></td></tr>"
+	}
+	html += "<tr><td colspan=2 valign=top>"
+
+	if rows, err := p.db.Queryx("show full processlist"); err != nil {
+		pine.Logger().Warning("获取进程列表失败", err)
+		html += T("Failed to get process list")
+	} else {
+		html += "<table class='results postsort' border=0 cellspacing=1 cellpadding=2 width='100%' id='processes'><tbody>"
+		html += "<tr id='fhead'><th></th><th class='th'>" + T("Process ID") + "</th><th class='th'>" + T("Command") + "</th><th class='th'>" + T("Time") +
+			"</th><th class='th'>" + T("Info") + "</th></tr>"
+
+		for rows.Next() {
+			results := make(map[string]interface{})
+			err = rows.MapScan(results)
+
+			id := string(results["Id"].([]byte))
+			command := string(results["Command"].([]byte))
+			var timed string
+			if results["Time"] != nil {
+				timed = string(results["Time"].([]byte))
+			}
+			var info string
+			if results["Info"] != nil {
+				info = string(results["Info"].([]byte))
+			}
+
+			html += "<tr class='row'><td class=\"tch\"><input type=\"checkbox\" name='prcid[]' value='" + id + "' /></td>" +
+				"<td class='tl'>" + id + "</td><td class='tl'>" + command + "</td>" +
+				"<td class='tl'>" + timed + "</td><td class='tl'>" + info + "</td></tr>"
+		}
+
+		html += "</tbody></table>"
+
+		html += "<tr><td colspan=2 align=right><div id=\"popup_buttons\"><input type='submit' id=\"btn_kill\" name='btn_kill' value='" + T("Kill Process") + "' /></div></td></tr>"
+
+		html += "<script type=\"text/javascript\" language='javascript' src=\"/mywebsql/cache?script=common,jquery,ui,query,sorttable,tables\"></script>\n"
+
+		html += `<script type="text/javascript" language='javascript'>
+			window.title = "` + T("Process Manager") + `";
+			$('#btn_kill').button().click(function() { document.frmquery.submit(); });
+			setupTable('processes', {sortable:'inline', highlight:true, selectable:true});
+			</script>`
+	}
+	return html
 }
 
 // Help 帮助页面
@@ -1061,9 +1339,20 @@ func (p *Process) Createtbl() string {
 	if action == "create" || action == "alter" {
 
 	} else {
-		rows := []string{}
-		engines := Html.ArrayToOptions(nil, "", "")
-		fmt.Println(rows, engines)
+		engines := Html.ArrayToOptions(p.GetEngines(), "", "Default")
+		charsets := Html.ArrayToOptions(p.GetCharsets(), "", "Default")
+		collations := Html.ArrayToOptions(p.GetCollations(), "", "Default")
+		html = string(p.Render("editable", pine.H{
+			"ID":          action,
+			"MESSAGE":     "",
+			"ROWINFO":     "[]",
+			"ALTER_TABLE": "false",
+			"TABLE_NAME":  "",
+			"ENGINE":      engines,
+			"CHARSET":     charsets,
+			"COLLATION":   collations,
+			"COMMENT":     "",
+		}))
 	}
 	return html
 }

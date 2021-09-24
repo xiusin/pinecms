@@ -81,21 +81,14 @@
 <script type="text/javascript" language="javascript">
 window.title = "<%= T("Repair Tables") %>";
 var repairType = 'analyze';
-<?php
-	echo "var tables = " . json_encode( $data ) .";\n";
-?>
+
+var tables = JSON.parse(`<%= tables %>`.replace(/\&\#34;/g, "\""));
 
 $(function() {
 	$('#btn_repair').button().click(function() { repairTables() });
 
-<?php
-	if ( count($data) > 0 ) {
-?>
-		$('#db_objects').html('');
-<?php
-		echo "uiShowObjectList(tables, 'tables', '" . __('Tables') . "');\n";
-	}
-?>
+	<%= extraJs %>
+
 	$('.selectall').click(function(e) {
 		chk = $(this).attr('checked');
 		chk ? $(this).parent().next().find('input').attr('checked', "checked") : $(this).parent().next().find('input').removeAttr('checked');
@@ -118,6 +111,3 @@ $(function() {
 
 });
 </script>
-<?php
-	echo getGeneratedJS();
-?>

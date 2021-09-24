@@ -3,9 +3,10 @@ package common
 import "C"
 import (
 	"database/sql"
-	"github.com/xiusin/pinecms/src/common/helper"
 	"reflect"
 	"strings"
+
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 const AUTH_TYPE = "LOGIN"
@@ -40,9 +41,9 @@ const BACKUP_DATE_FORMAT = "Ymd-His"
 const RenderService = "pinecms.mywebsql.plush"
 
 var SERVER_LIST = map[string]Server{
-	"Localhost MySQL":      {Host: "localhost", Driver: "mysql", Port: "3306"},
-	"Localhost PostgreSQL": {Host: "localhost", Driver: "pgsql"},
-	"SQLite Databases":     {Host: "c:/sqlitedb/", Driver: "sqlite3", User: "root", Password: "sqlite"},
+	"Localhost MySQL": {Host: "localhost", Driver: "mysql", Port: "3306"},
+	// "Localhost PostgreSQL": {Host: "localhost", Driver: "pgsql"},
+	// "SQLite Databases":     {Host: "c:/sqlitedb/", Driver: "sqlite3", User: "root", Password: "sqlite"},
 }
 
 var LANGUAGES = map[string]string{
@@ -266,13 +267,13 @@ type Engine struct {
 	Comment      string          `db:"Comment"`
 	Transactions *sql.NullString `db:"Transactions"`
 	XA           *sql.NullString `db:"XA"`
-	Savepoints   string          `db:"Savepoints"`
+	Savepoints   *sql.NullString `db:"Savepoints"`
 }
 
 type Charset struct {
 	Charset          string `db:"Charset"`
 	Description      string `db:"Description"`
-	DefaultCollation string `db:"Default_collation"`
+	DefaultCollation string `db:"Default collation"`
 	Maxlen           int    `db:"Maxlen"`
 }
 

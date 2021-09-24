@@ -323,7 +323,7 @@ func startForm(db *sqlx.DB) string {
 	var EXTERNAL_PATH = '';
 	var THEME_PATH = '';
 	var DB = db_mysql;
-	</script>\n` +
+	</script>` +
 		"<form name='frmquery' id='frmquery' method='post' action='#' enctype='multipart/form-data' onsubmit='return false'>" +
 		"<input type='hidden' name='type' value='query' />" +
 		"<input type='hidden' name='id' value='' />" +

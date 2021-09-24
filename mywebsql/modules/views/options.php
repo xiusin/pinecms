@@ -4,14 +4,7 @@
 <div id="popup_wrapper">
 
 	<ul class="links">
-	<?php
-	foreach($data['pages'] as $x=>$y) {
-			if ($data['page'] == $x)
-				echo "<li class=\"current\"><img border=\"0\" align=\"absmiddle\" src='img/options/o_$x".".gif' alt=\"\" />$y</li>";
-			else
-				echo "<li><a href=\"#$x\"><img border=\"0\" align=\"absmiddle\" src='img/options/o_$x".".gif' alt=\"\" />$y</a></li>";
-		}
-	?>
+	<%= lis %>
 	</ul>
 	<div class="content">
 	<%= CONTENT %>
@@ -21,7 +14,7 @@
 
 <script type="text/javascript" language="javascript">
 	window.title = "<%= T("Options") %>";
-	var COOKIE_LIFETIME = <?php echo COOKIE_LIFETIME; ?>;
+	var COOKIE_LIFETIME = 1440;
 	$(function() {
 		$('ul.links a').click(function() {
 			page = $(this).attr('href').replace('#', '');
