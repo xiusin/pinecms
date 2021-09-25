@@ -167,9 +167,6 @@ func (p *Task) Init(services di.AbstractBuilder) {
 		if len(p.prefix) == 0 {
 			p.prefix = "/task"
 		}
-		//di.Set(di.ServicePineLogger, func(builder di.AbstractBuilder) (interface{}, error) {
-		//	return services.MustGet(di.ServicePineLogger).(logger.AbstractLogger), nil
-		//}, true)
 
 		_, _ = p.orm.Cols("entity_id", "error").Update(&table.TaskInfo{})
 

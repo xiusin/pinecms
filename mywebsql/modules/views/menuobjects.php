@@ -9,8 +9,7 @@
 <div id="object-menu">
 	<ul class="dropdown context ui-state-default">
 		<li><a class="itable" href="javascript:tableCreate([name])" title="<%= T("Create a new table in the database") %>"><%= T("Create Table") %></a></li>
-		<li class="option mysql5 mysqli pgsql sqlite sqlite3"><a class="iview" href="javascript:objCreate(1,
-		[name])" title="<%= T("Create a new view in the database") %>"><%= T("Create View") %></a></li>
+		<li class="option mysql5 mysqli pgsql sqlite sqlite3"><a class="iview" href="javascript:objCreate(1,[name])" title="<%= T("Create a new view in the database") %>"><%= T("Create View") %></a></li>
 		<li class="option mysql5 mysqli"><a class="iproc" href="javascript:objCreate(2, [name])" title="<%= T("Create a new stored procedure in the database") %>"><%= T("Create Stored Procedure") %></a></li>
 		<li class="option mysql5 mysqli pgsql"><a class="ifunc" href="javascript:objCreate(3, [name])" title="<%= T("Create a new user defined function in the database") %>"><%= T("Create Function") %></a></li>
 		<li class="option mysql5 mysqli pgsql sqlite sqlite3"><a class="itrig" href="javascript:objCreate(4, [name])" title="<%= T("Create a new trigger in the database") %>"><%= T("Create Trigger") %></a></li>
@@ -27,7 +26,7 @@
 	<li class="option mysql4 mysql5 mysqli pgsql"><a href="tableDescribe([name])"><%= T("Describe") %></a></li>
 	<li class="option mysql4 mysql5 mysqli sqlite sqlite3"><a href="showCreateCmd('table',	[name])"><%= T("Show create command") %></a></li>
 	<li><a href="tableViewData([name])"><%= T("View data") %></a></li>
-	<li class="option mysql4 mysql5 mysqli sqlite sqlite3"><a href="javascript:void(0)"><?php echo __('Alter Table');?> &raquo;</a>
+	<li class="option mysql4 mysql5 mysqli sqlite sqlite3"><a href="javascript:void(0)"><%= T("Alter Table") %> &raquo;</a>
 		<ul class="ui-state-default">
 			<li class="option mysql4 mysql5 mysqli"><a href="javascript:tableAlter([name])"><%= T("Structure") %></a></li>
 			<li class="option mysql4 mysql5 mysqli"><a href="tableIndexes([name])"><%= T("Indexes") %></a></li>
@@ -97,8 +96,7 @@
 <ul class="dropdown context ui-state-default">
 	<li class="option mysql4 mysql5 mysqli sqlite sqlite3"><a href="showCreateCmd('trigger', [name])"><%= T("Show create command") %></a></li>
 	<li><a href="objCreate(4)"><%= T("Create Trigger") %></a></li>
-	<li class="option mysql4 mysql5 mysqli sqlite sqlite3"><a href="javascript:void(0)"><?php echo __('More
-	operations'); ?> &raquo;</a>
+	<li class="option mysql4 mysql5 mysqli sqlite sqlite3"><a href="javascript:void(0)"><%= T("More operations") %> &raquo;</a>
 		<ul class="ui-state-default">
 			<li><a href="objDrop('trigger', [name])"><%= T("Drop") %></a></li>
 		</ul>

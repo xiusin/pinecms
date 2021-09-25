@@ -63,7 +63,7 @@ func (c *AssetsManagerController) getTempList(dir string) []map[string]interface
 
 func (c *AssetsManagerController) PostList() {
 	themeDir := filepath.Join(c.conf.View.FeDirname, c.conf.View.Theme)
-	helper.Ajax(dirTree(themeDir), 0, c.Ctx())
+	helper.Ajax(helper.DirTree(themeDir), 0, c.Ctx())
 }
 
 func (c *AssetsManagerController) PostEdit() {
@@ -196,39 +196,4 @@ func (c *AssetsManagerController) GetThumb() {
 	dirName := filepath.Join(c.conf.View.FeDirname, themeName, "thumb.png")
 	c.Ctx().SetContentType("img/png")
 	c.Ctx().SendFile(dirName)
-}
-
-type DirInfo struct {
-	Label    string      `json:"label"`
-	FullPath string      `json:"full_path"`
-	IsDir    bool        `json:"is_dir"`
-	Children interface{} `json:"children"`
-}
-
-func dirTree(dir string) []DirInfo {
-	fileInfos, _ := ioutil.ReadDir(dir)
-	var ms []DirInfo
-	for _, f := range fileInfos {
-		fullPath := filepath.Join(dir, f.Name())
-		if f.IsDir() {
-			s := DirInfo{
-				Label:    f.Name(),
-				IsDir:    true,
-				FullPath: fullPath,
-				Children: dirTree(fullPath),
-			}
-			ms = append(ms, s)
-		} else {
-			ext := strings.ToLower(filepath.Ext(f.Name()))
-			if ext != ".css" && ext != ".js" && ext != ".jet" && ext != ".html" && ext != ".htm" {
-				continue
-			}
-			ms = append(ms, DirInfo{
-				Label:    f.Name(),
-				FullPath: fullPath,
-				Children: "",
-			})
-		}
-	}
-	return ms
 }

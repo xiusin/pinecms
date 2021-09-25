@@ -4,7 +4,6 @@ import (
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"os"
 	"path/filepath"
 	"strings"
 )
@@ -24,25 +23,12 @@ func (c *DatabaseBackupController) RegisterRoute(b pine.IRouterWrapper) {
 func (c *DatabaseBackupController) BackupList() {
 	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
 	uploader := getStorageEngine(settingData)
-	list, prefix, err := uploader.List(baseBackupDir)
-	var files = []map[string]interface{}{}
+	list, _, err := uploader.List(baseBackupDir)
 	if err != nil {
 		c.Logger().Error(err)
 	}
-	for _, v := range list {
-		finfo, err := os.Stat(filepath.Join(settingData["UPLOAD_DIR"], baseBackupDir, strings.TrimLeft(v, filepath.Join(prefix, baseBackupDir))))
-		if err != nil {
-			helper.Ajax(err, 1, c.Ctx())
-			return
-		}
-		files = append(files, map[string]interface{}{
-			"id":     finfo.Name(),
-			"name":   finfo.Name(),
-			"size":   finfo.Size(),
-			"ctime":  finfo.ModTime(),
-		})
-	}
-	helper.Ajax(files, 0, c.Ctx())
+	pine.Logger().Print(list)
+	helper.Ajax(list, 0, c.Ctx())
 }
 
 func (c *DatabaseBackupController) BackupDownload() {

@@ -3,6 +3,7 @@ package storage
 import (
 	"errors"
 	"fmt"
+	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -11,8 +12,6 @@ import (
 	"mime"
 	"path/filepath"
 	"strings"
-
-	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 )
 
 type OssUploader struct {
@@ -75,14 +74,20 @@ func (s *OssUploader) Upload(storageName string, LocalFile io.Reader) (string, e
 	return s.host + "/" + storageName, nil
 }
 
-func (s *OssUploader) List(dir string) ([]string, string, error) {
+func (s *OssUploader) List(dir string) ([]File, string, error) {
 	list, err := s.bucket.ListObjects(oss.Prefix(strings.TrimLeft(getAvailableUrl(filepath.Join(s.urlPrefix, dir)), "/")))
 	if err != nil {
 		return nil, "", err
 	}
-	var files []string
+	var files []File
 	for _, object := range list.Objects {
-		files = append(files, s.host+object.Key)
+		files = append(files, File{
+			Id:       object.Key,
+			FullPath: s.host + "/" + object.Key,
+			Name:     filepath.Base(object.Key),
+			Size:     object.Size,
+			Ctime:    object.LastModified,
+		})
 	}
 	return files, s.host, nil
 }
@@ -106,7 +111,6 @@ func init() {
 			return nil, err
 		}
 		engine = NewOssUploader(cfg)
-		fmt.Println("实例化oss uploader", engine)
 		return engine, nil
 	}, false)
 }

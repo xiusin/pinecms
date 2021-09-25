@@ -19,6 +19,8 @@ import (
 	"github.com/xiusin/pinecms/src/common/helper"
 )
 
+const trimChar = " \r\n\t;"
+
 type Process struct {
 	*pine.Context
 	db       *sqlx.DB
@@ -45,15 +47,15 @@ func InitProcess(db *sqlx.DB, ctx *pine.Context) *Process {
 		p.db.Exec("USE " + p.dbname)
 	}
 
-	p.formData.query = p.FormValue("query")
-	p.formData.table = strings.Trim(p.FormValue("name"), " \r\n\t;")
+	p.formData.query = strings.Trim(p.FormValue("query"), trimChar)
+	p.formData.table = strings.Trim(p.FormValue("name"), trimChar)
 	p.formData.name = p.formData.table
 	p.formData.id = p.FormValue("id")
 	p.formData.page = 1
 
 	if match, _ := regexp.MatchString(`^\d+$`, p.formData.table); match {
 		p.formData.page, _ = strconv.Atoi(p.formData.table)
-		p.formData.table = strings.Trim(p.FormValue("query"), " \r\n\t;")
+		p.formData.table = strings.Trim(p.FormValue("query"), trimChar)
 		p.formData.query = ""
 	}
 
@@ -97,6 +99,7 @@ func (p *Process) Objcreate() string {
 	var refresh bool
 	objinfo := p.FormValue("objinfo")
 	if objinfo != "" {
+		pine.Logger().Debug("createObj", objinfo)
 		msg = p.createDatabaseObject(objinfo)
 		if msg == "" {
 			msg = T("The command executed successfully")
@@ -142,7 +145,7 @@ func (p *Process) displayCreateObjectForm(objInfo, msg, typo string, refresh boo
 
 func (p *Process) createDatabaseObject(info string) string {
 	cmd := strings.Trim(info, " \t\r\n;")
-	if strings.ToLower(cmd[:6]) == "create" {
+	if strings.ToLower(cmd[:6]) != "create" {
 		return T("Only create commands are accepted")
 	}
 
@@ -171,6 +174,64 @@ func (p *Process) getObjectCreateCommand() string {
 	}
 
 	return string(p.Render(templates[p.formData.id], nil))
+}
+
+// Objlist 切换数据库时触发
+func (p *Process) Objlist() string {
+	grid := `<div id="objlist">`
+	grid += GetDatabaseTreeHTML(p.db, []string{}, p.dbname)
+	grid += `</div>`
+	return grid
+}
+
+func (p *Process) Usermanager() string  {
+	return "用户管理界面"
+}
+
+// Databases 数据库操作管理
+func (p *Process) Databases() string {
+	dbs, err := GetDbList(p.db)
+	if err != nil {
+		return p.createErrorGrid("SHOW DATABASES", err)
+	}
+	byts, _ := json.Marshal(dbs)
+	datas := pine.H{"data": pine.H{"objects": template.HTML(byts)}, "objCount": len(dbs), "stats": nil}
+	if p.formData.id == "batch" {
+		postdata := p.PostData()
+		status := map[string]int{"success": 0, "errors": 0}
+		databases := postdata["databases[]"]
+		pine.Logger().Warning("删除数据库", databases)
+		if len(databases) > 0 {
+			for _, database := range databases {
+				if p.FormValue("dropcmd") == "on" {
+					if err := p.dropObject(database, "database"); err == nil {
+						status["success"]++
+					} else {
+						status["errors"]++
+					}
+				}
+			}
+			datas["stats"] = pine.H{"drop": status}
+			//>' . str_replace('{{ NUM }}', $data['stats']['drop']['success'], __('{{ NUM }} queries successfully executed')) . '
+			txt := "<p><span class=\"ui-icon ui-icon-check\"></span>" + strReplace([]string{"{{ NUM }}"}, []string{strconv.Itoa(status["success"])}, T("{{ NUM }} queries successfully executed")) + "</p>"
+			if status["errors"] > 0 {
+				txt += "<p><span class=\"ui-icon ui-icon-close\"></span>" +  strReplace([]string{"{{ NUM }}"}, []string{strconv.Itoa(status["success"])}, T("{{ NUM }} queries failed to execute")) + "</p>"
+			}
+			datas["statsHtml"] = txt
+		}
+	}
+	return string(p.Render("databases", datas))
+}
+
+func (p *Process) dropObject(name, typo string) error {
+	query := "drop " + typo + " `" + name + "`"
+	pine.Logger().Warning("执行删除操作: ", query)
+	_, err := p.db.Exec(query)
+	return err
+}
+
+func (p *Process) getObjectTypes() []string {
+	return []string{"tables", "views", "procedures", "functions", "triggers", "events"}
 }
 
 func (p *Process) getWarnings() map[int]string {
@@ -215,7 +276,6 @@ func (p *Process) Query() string {
 	var html string
 
 	p.loadDbVars()
-
 	// TODO 区分查询是否需要返回执行结果
 	if strings.ToLower(querySql[:6]) == "select" {
 		queryType := p.getQueryType(querySql)
@@ -351,10 +411,8 @@ func (p *Process) sortQuery(query, field string) string {
 	if sortType == "" {
 		sortType = "DESC"
 	}
-
 	// 匹配LIMIT语句
 	matches := regexp.MustCompile(LIMIT_REGEXP).FindStringSubmatch(query)
-
 	// 匹配sort语句
 	matches = regexp.MustCompile(SORT_REGEXP).FindStringSubmatch(query)
 	pine.Logger().Debug("matches", matches)
@@ -637,23 +695,18 @@ func (p *Process) createResultGrid(query string) string {
 			cls = "th_numeric"
 		}
 		grid += "<th nowrap=\"nowrap\" class='" + cls + "'><div>"
-
 		if column.PKey {
 			pkey = append(pkey, column.ColumnName)
 			grid += "<span class='pk' title='" + T("Primary key column") + "'>&nbsp;</span>"
 		}
-
 		if column.UKey {
 			ukey = append(ukey, column.ColumnName)
 			grid += "<span class='uk' title='" + T("Unique key column") + "'>&nbsp;</span>"
 		}
-
 		if column.MKey && !column.Blob {
 			mkey = append(mkey, column.ColumnName)
 		}
-
 		grid += column.ColumnName
-
 		// 排序应用
 		if p.Session().Get("select.sortcol") == strconv.Itoa(i+1) {
 			if p.Session().Get("select.sort") == "DESC" {
@@ -662,9 +715,7 @@ func (p *Process) createResultGrid(query string) string {
 				grid += "&nbsp;&#x25B4"
 			}
 		}
-
 		grid += "</div></th>"
-
 		fieldNames += "'" + strings.ReplaceAll(column.ColumnName, "'", "\\'") + "',"
 	}
 

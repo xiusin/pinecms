@@ -99,12 +99,6 @@ export default defineComponent({
 
 		// 表格配置
 		const table = reactive<Table>({
-			props: {
-				"default-sort": {
-					prop: "listorder",
-					order: "descending"
-				}
-			},
 			columns: [
 				{
 					prop: "name",

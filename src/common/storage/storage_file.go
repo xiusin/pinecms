@@ -45,15 +45,21 @@ func (s *FileUploader) Upload(storageName string, LocalFile io.Reader) (string, 
 	return s.GetFullUrl(storageName), nil
 }
 
-func (s *FileUploader) List(dir string) ([]string, string, error) {
+func (s *FileUploader) List(dir string) ([]File, string, error) {
 	scanDir := filepath.Join(s.baseDir, dir)
 	fs, err := ioutil.ReadDir(scanDir)
 	if err != nil {
 		return nil, "", err
 	}
-	var list []string
+	var list []File
 	for _, f := range fs {
-		list = append(list, filepath.Join(s.fixDir, dir, f.Name()))
+		list = append(list, File{
+			Id:       f.Name(),
+			FullPath: filepath.Join(s.fixDir, dir, f.Name()),
+			Name:     filepath.Base(f.Name()),
+			Size:     f.Size(),
+			Ctime:    f.ModTime(),
+		})
 	}
 	return list, s.fixDir, nil
 }

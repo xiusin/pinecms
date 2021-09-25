@@ -86,7 +86,7 @@ const HOTKEYS_ENABLED = true
 
 const DEFAULT_EDITOR = "codemirror"
 
-const DEFAULT_THEME = "default"
+var DEFAULT_THEME = "default"
 
 const DEFAULT_LANGUAGE = "zh"
 
@@ -150,24 +150,24 @@ type Database struct {
 }
 
 type Table struct {
-	Name          string         `json:"name" db:"Name"`
-	Engine        string         `json:"engine" db:"Engine"`
-	Version       int64          `json:"version" db:"Version"`
-	RowFormat     string         `json:"row_format" db:"Row_format"`
-	Rows          int64          `json:"rows" db:"Rows"`
-	AvgRowLength  int64          `json:"avg_row_length" db:"Avg_row_length"`
-	DataLength    int64          `json:"data_length" db:"Data_length"`
-	MaxDataLength int64          `json:"max_data_length" db:"Max_data_length"`
-	IndexLength   int64          `json:"index_length" db:"Index_length"`
-	DataFree      int64          `json:"data_free" db:"Data_free"`
-	AutoIncrement sql.NullInt64  `json:"auto_increment" db:"Auto_increment"`
-	CreateTime    *sql.NullTime  `json:"create_time" db:"Create_time"`
-	UpdateTime    *sql.NullTime  `json:"update_time" db:"Update_time"`
-	CheckTime     *sql.NullTime  `json:"check_time" db:"Check_time"`
-	Collation     string         `json:"collation" db:"Collation"`
-	CheckSum      sql.NullString `json:"check_sum" db:"Checksum"`
-	CreateOptions string         `json:"create_options" db:"Create_options"`
-	Comment       string         `json:"comment" db:"Comment"`
+	Name          string          `json:"name" db:"Name"`
+	Engine        *sql.NullString `json:"engine" db:"Engine"`
+	Version       *sql.NullInt64  `json:"version" db:"Version"`
+	RowFormat     *sql.NullString `json:"row_format" db:"Row_format"`
+	Rows          *sql.NullInt64  `json:"rows" db:"Rows"`
+	AvgRowLength  *sql.NullInt64  `json:"avg_row_length" db:"Avg_row_length"`
+	DataLength    *sql.NullInt64  `json:"data_length" db:"Data_length"`
+	MaxDataLength *sql.NullInt64  `json:"max_data_length" db:"Max_data_length"`
+	IndexLength   *sql.NullInt64  `json:"index_length" db:"Index_length"`
+	DataFree      *sql.NullInt64  `json:"data_free" db:"Data_free"`
+	AutoIncrement *sql.NullInt64  `json:"auto_increment" db:"Auto_increment"`
+	CreateTime    *sql.NullTime   `json:"create_time" db:"Create_time"`
+	UpdateTime    *sql.NullTime   `json:"update_time" db:"Update_time"`
+	CheckTime     *sql.NullTime   `json:"check_time" db:"Check_time"`
+	Collation     *sql.NullString `json:"collation" db:"Collation"`
+	CheckSum      *sql.NullString  `json:"check_sum" db:"Checksum"`
+	CreateOptions *sql.NullString `json:"create_options" db:"Create_options"`
+	Comment       string          `json:"comment" db:"Comment"`
 }
 
 func GetTableInfoHeaders() []string {

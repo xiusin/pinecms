@@ -7,6 +7,9 @@ import (
 	"github.com/xiusin/pinecms/src/application/plugins/task/manager"
 	"github.com/xiusin/pinecms/src/application/plugins/task/table"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -103,5 +106,41 @@ func (c *TaskController) save(status uint, act string) {
 		helper.Ajax(act+"任务成功", 0, c.Ctx())
 	} else {
 		helper.Ajax(act+"任务失败", 1, c.Ctx())
+	}
+}
+
+func (c *TaskController) PostScriptList() {
+	helper.Ajax(helper.DirTree(helper.GetRootPath("tasks")), 0, c.Ctx())
+}
+
+func (c *TaskController) PostScriptInfo() {
+	fullPath := string( c.Input().GetStringBytes("path"))
+	f, err := os.Open(fullPath)
+	if err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
+	}
+	defer f.Close()
+	stat, _ := f.Stat()
+	var content = make([]byte, stat.Size())
+	_, err = f.Read(content)
+	if err != nil {
+		helper.Ajax("获取脚本内容错误: "+err.Error(), 1, c.Ctx())
+		return
+	}
+	helper.Ajax(string(content), 0, c.Ctx())
+}
+
+
+func (c *TaskController) PostScriptSave() {
+	edit := c.Input().GetBool("edit")
+	fullPath := string(c.Input().GetStringBytes("path"))
+	if !edit {
+		fullPath = filepath.Join(helper.GetRootPath("tasks"), fullPath)
+	}
+	if err := ioutil.WriteFile(fullPath, c.Input().GetStringBytes("content"), os.ModePerm) ;err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+	} else {
+		helper.Ajax(fullPath, 0, c.Ctx())
 	}
 }

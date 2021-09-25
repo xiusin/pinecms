@@ -18,6 +18,7 @@ func (c *MemberController) Construct() {
 	c.Entries = &[]tables.Member{}
 	c.ApiEntityName = "会员"
 	c.Group = "会员管理"
+
 	c.BaseController.Construct()
 	c.OpBefore = c.before
 }

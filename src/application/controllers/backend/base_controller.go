@@ -8,7 +8,6 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-xorm/xorm"
-	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
@@ -123,7 +122,7 @@ func (c *BaseController) PostList() {
 			count, err = query.Limit(p.Size, (p.Page-1)*p.Size).FindAndCount(c.Entries)
 		}
 		if err != nil {
-			logger.Error(err)
+			pine.Logger().Error(err)
 			helper.Ajax("获取列表异常: "+err.Error(), 1, c.Ctx())
 			return
 		}

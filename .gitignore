@@ -31,3 +31,4 @@ tests/*.png
 tests/*.jpg
 tests/*.h
 .lh
+/plugins/

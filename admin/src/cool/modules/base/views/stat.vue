@@ -46,7 +46,10 @@
 								<td>本机IP</td>
 								<td>{{ state.local_ip }}</td>
 								<td>外网IP</td>
-								<td>{{ state.out_ip.IP }} ({{state.out_ip.Address.Province}}{{state.out_ip.Address.City}}{{state.out_ip.ISP}})</td>
+								<td>
+									{{ state.out_ip.IP }} ({{ state.out_ip.Address.Province
+									}}{{ state.out_ip.Address.City }}{{ state.out_ip.ISP }})
+								</td>
 							</tr>
 						</table>
 					</div>
@@ -150,7 +153,8 @@
 					<div slot="header" class="clearfix">
 						<span>网络IO</span>
 						<el-tag type="success" size="mini" style="float: right; border-radius: 2px">
-							上传:{{parseFloat(state.nets[0].send / 1024 / 1024).toFixed(2)}}K 下载:{{parseFloat(state.nets[0].recv / 1024 / 1024).toFixed(2)}}K
+							上传:{{ parseFloat(state.nets[0].send / 1024 / 1024).toFixed(2) }}K
+							下载:{{ parseFloat(state.nets[0].recv / 1024 / 1024).toFixed(2) }}K
 						</el-tag>
 					</div>
 					<div>
@@ -178,7 +182,6 @@ import Table from "../../demo/components/crud/table.vue";
 
 export default defineComponent({
 	name: "sys-stat",
-	components: { Table },
 	setup() {
 		const service = inject<any>("service");
 		let timer: NodeJS.Timeout;

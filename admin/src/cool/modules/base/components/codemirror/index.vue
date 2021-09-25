@@ -6,16 +6,15 @@
 
 <script lang="ts">
 import { defineComponent, nextTick, onMounted, ref, watch } from "vue";
+
 import CodeMirror from "codemirror";
 
-import "codemirror/theme/midnight.css";
 import "codemirror/lib/codemirror.css";
+import "codemirror/theme/juejin.css";
 import "codemirror/addon/hint/show-hint.css";
 import "codemirror/addon/hint/javascript-hint";
 import "codemirror/mode/javascript/javascript";
 import "codemirror/mode/go/go";
-import "codemirror/mode/css/css";
-import "codemirror/mode/sql/sql";
 import "codemirror/mode/htmlmixed/htmlmixed";
 
 export default defineComponent({
@@ -70,7 +69,7 @@ export default defineComponent({
 				// 实例化
 				editor = CodeMirror.fromTextArea(editorRef.value.querySelector("#editor"), {
 					mode: mode,
-					theme: "idea",
+					theme: "juejin",
 					styleActiveLine: true,
 					lineNumbers: true,
 					lineWrapping: true,

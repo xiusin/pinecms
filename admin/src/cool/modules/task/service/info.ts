@@ -36,6 +36,29 @@ class SysTask extends BaseService {
 			params
 		});
 	}
+
+	scriptList() {
+		return this.request({
+			url: "/script_list",
+			method: "POST"
+		});
+	}
+
+	scriptInfo(data: any) {
+		return this.request({
+			url: "/script_info",
+			method: "POST",
+			data
+		});
+	}
+	// 新增或保存内容
+	saveInfo(data: any) {
+		return this.request({
+			url: "/script_save",
+			method: "POST",
+			data
+		});
+	}
 }
 
 export default SysTask;

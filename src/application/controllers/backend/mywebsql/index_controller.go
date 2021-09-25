@@ -14,8 +14,38 @@ type IndexController struct {
 	MyWebSql
 	hasError string
 }
+var AjaxResponse = []byte(`<div id="results">1</div>`)
 
 func (c *IndexController) GetIndex() {
+	if  theme := c.Ctx().GetString("theme"); len(theme) > 0 {
+		c.Render().ViewData("THEME_PATH", theme)
+		c.Ctx().SetCookie("theme", theme, common.COOKIE_LIFETIME * 60 * 60)
+		c.Ctx().Write(AjaxResponse)
+		return
+	} else {
+		if theme := c.Ctx().GetCookie("theme"); len(theme) > 0 {
+			c.Render().ViewData("THEME_PATH", theme)
+		} else {
+			c.Render().ViewData("THEME_PATH", common.DEFAULT_THEME)
+		}
+	}
+
+	if  editor := c.Ctx().GetString("editor"); len(editor) > 0 {
+		c.Render().ViewData("SQL_EDITORTYPE", editor)
+		c.Ctx().SetCookie("editor", editor, common.COOKIE_LIFETIME * 60 * 60)
+		if c.Ctx().GetString("x") == "1" {
+			c.Ctx().Write(AjaxResponse)
+			return
+		}
+	} else {
+		//if editor := c.Ctx().GetCookie("editor"); len(editor) > 0 {
+		//	c.Render().ViewData("THEME_PATH", editor)
+		//} else {
+		//	c.Render().ViewData("THEME_PATH", common.DEFAULT_THEME)
+		//}
+	}
+
+
 	if db := c.GetSQLX(); db == nil {
 		c.clearAuthSession()
 
@@ -54,33 +84,30 @@ func (c *IndexController) GetIndex() {
 			}
 			return
 		}
-
 		dbname := c.Ctx().GetString("db")
-
 		// 异步切换数据库
 		if dbname != "" && dbname != c.Session().Get("db.name") {
 			c.Session().Set("db.change", "1")
 			c.Session().Set("db.name", dbname)
 			if v, _ := c.Ctx().GetInt("x"); v == 1 {
 				c.Ctx().Response.Header.SetContentType(pine.ContentTypeHTML)
-				c.Ctx().WriteString(`<div id="results">1</div>`)
+				c.Ctx().Write(AjaxResponse)
 			} else {
 				c.Ctx().Redirect("http://localhost:2019/mywebsql/index/index", 302)
 			}
 			return
 		}
 
-		c.ViewData("KEY_CODES", common.KEY_CODES)
-		c.ViewData("MenuBarHTML", template.HTML(common.GetMenuBarHTML()))
 
 		html, dblist, _ := common.PrintDbList(db, c.Session())
-
 		dbname = c.Session().Get("db.name")
-
 		treeHtml := common.GetDatabaseTreeHTML(db, dblist, dbname)
 		auth := c.getAuthSession()
+		dialogs, _ := c.plush.Exec("dialogs.php", nil)
 
 		c.ViewData("auth", auth)
+		c.ViewData("KEY_CODES", common.KEY_CODES)
+		c.ViewData("MenuBarHTML", template.HTML(common.GetMenuBarHTML()))
 		c.ViewData("version", c.Session().Get("db.version"))
 		c.ViewData("version_full", c.Session().Get("db.version_full"))
 		c.ViewData("version_comment", c.Session().Get("db.version_comment"))
@@ -89,11 +116,8 @@ func (c *IndexController) GetIndex() {
 		c.ViewData("contextMenusHTML", template.HTML(common.GetContextMenusHTML()))
 		c.ViewData("HotkeysHTML", template.HTML(common.GetHotkeysHTML()))
 		c.ViewData("UpdateSqlEditor", template.HTML(common.UpdateSqlEditor()))
-
 		c.ViewData("KEYCODE_SETNULL", strings.Replace(common.T("Press {{KEY}} to set NULL"), "{{KEY}}", common.KEY_CODES["KEYCODE_SETNULL"][1], 1))
 		c.ViewData("LoginUser", strings.Replace(common.T("Logged in as: {{USER}}"), "{{USER}}", auth.User, 1))
-
-		dialogs, _ := c.plush.Exec("dialogs.php", pine.H{})
 		c.ViewData("dialogs", template.HTML(dialogs))
 
 		c.Render().HTML("index.php")

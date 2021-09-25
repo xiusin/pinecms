@@ -9,6 +9,7 @@ import (
 	"github.com/xiusin/pine/sessions"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/mywebsql/render"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"html/template"
 	"strings"
 )
 
@@ -46,9 +47,9 @@ func GetMenuBarHTML() string {
 	}
 
 	data, _ := di.MustGet(RenderService).(*render.Plush).Exec("menubar.php", pine.H{
-		"THEMES_MENU":   themeMenu,
+		"THEMES_MENU":   template.HTML(themeMenu),
 		"LANGUAGE_MENU": "",
-		"EDITOR_MENU":   editorMenu,
+		"EDITOR_MENU":   template.HTML(editorMenu),
 	})
 
 	return string(data)
@@ -110,6 +111,18 @@ func getTables(db *sqlx.DB, currentDbName string) []Table {
 	return rets
 }
 
+func getViews(db *sqlx.DB, currentDbName string) []Table {
+	if currentDbName == "" {
+		return nil
+	}
+	querySql := `show table status where comment='view'`
+	rets := []Table{}
+	if err := db.Select(&rets, querySql); err != nil {
+		pine.Logger().Error("获取视图表异常", err)
+	}
+	return rets
+}
+
 func GetProcedures(db *sqlx.DB, currentDbName string) []ProcedureOrFunction {
 	if currentDbName == "" {
 		return nil
@@ -161,8 +174,9 @@ func GetEvents(db *sqlx.DB, currentDbName string) []TriggerOrEvent {
 func GetDatabaseTreeHTML(db *sqlx.DB, dblist []string, currentDbName string) string {
 	var html []byte
 	if currentDbName != "" {
+		db.Exec("USE " + currentDbName)
 		tables := getTables(db, currentDbName)
-		views := getTables(db, currentDbName)
+		views := getViews(db, currentDbName)
 		procedures := GetProcedures(db, currentDbName)
 		functions := GetFunctions(db, currentDbName)
 		triggers := GetTriggers(db, currentDbName)
@@ -295,6 +309,7 @@ func ExecuteRequest(db *sqlx.DB, ctx *pine.Context) string {
 	}
 	ctx.RequestCtx.QueryArgs().Del("type")
 	postType := string(ctx.RequestCtx.FormValue("type"))
+
 	if postType != "" {
 		queryType = postType
 	}

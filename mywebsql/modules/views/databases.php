@@ -9,19 +9,13 @@
 
 <div id="popup_wrapper">
 	<div id="popup_contents">
-		<?php if( isset( $data['stats'] ) ) { ?>
+		<%= if( data["stats"] != nil ) { %>
 			<div class="message ui-state-default">
-				<?php if( isset($data['stats']['drop']) ) {
-					$txt = '<p><span class="ui-icon ui-icon-check"></span>' . str_replace('<%= NUM %>', $data['stats']['drop']['success'], __('<%= NUM %> queries successfully executed')) . '</p>';
-					if ( $data['stats']['drop']['errors'] > 0 )
-						$txt .= '<p><span class="ui-icon ui-icon-close"></span>' . str_replace('<%= NUM %>', $data['stats']['drop']['errors'], __('<%= NUM %> queries failed to execute')) . '</p>';
-					echo $txt;
-				?>
-				<?php } ?>
+				<%= statsHtml %>
 			</div>
-		<?php } else { ?>
-			<div class="message ui-state-error"><%= T("WARNING') . ': ' . __('The following operation is irreversible') . '. ' . __('Potential data loss might occur") %></div>
-		<?php }?>
+		<% } else { %>
+			<div class="message ui-state-error"><%= T("WARNING")  + ". " + T("The following operation is irreversible")+". "+T("Potential data loss might occur") %></div>
+		<% } %>
 
 		<table border="0" cellpadding="5" cellspacing="8" style="width: 100%;height:100%">
 		<tr>
@@ -58,9 +52,7 @@
 <script type="text/javascript" language='javascript' src="/mywebsql/cache?script=common,jquery,ui,query,options,alerts"></script>
 <script type="text/javascript" language="javascript">
 window.title = "<%= T("Database Manager") %>";
-<?php
-	echo "var databases = " . json_encode( $data['objects'] ) .";\n";
-?>
+var databases = <%= data["objects"] %>;
 
 $(function() {
 	$('#btn_submit').button().click(function() {
@@ -92,14 +84,10 @@ $(function() {
 	if (databases.length == 0)
 		return;
 
-<?php
-	if ( count($data['objects']) > 0 ) {
-?>
+<%= if (objCount > 0) { %>
 		$('#db_objects').html('');
-<?php
-		echo "uiShowObjectList(databases, 'databases', '" . __( 'Databases' ) . "', true);\n";
-	}
-?>
+		uiShowObjectList(databases, 'databases', '<%= T("Databases") %>', true);
+<% } %>
 	$('.selectall').click(function(e) {
 		chk = $(this).attr('checked');
 		chk ? $(this).parent().next().find('input').attr('checked', "checked") : $(this).parent().next().find('input').removeAttr('checked');
@@ -116,6 +104,3 @@ $(function() {
 	});
 });
 </script>
-<?php
-	echo getGeneratedJS();
-?>

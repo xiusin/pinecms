@@ -2,6 +2,7 @@ package backend
 
 import (
 	"errors"
+	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 )
@@ -21,6 +22,8 @@ func (c *MemberGroupController) Construct() {
 
 func (c *MemberGroupController) before(act int, params interface{}) error {
 	switch act {
+	case OpList:
+		(params.(*xorm.Session)).Asc( "listorder", "id")
 	case OpAdd:
 		data := c.Table.(*tables.MemberGroup)
 		if exist, _ := c.Orm.Table(c.Table).Where("name = ?", data.Name).Exist(); exist {
