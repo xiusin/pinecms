@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
+	github.com/MarcGrol/golangAnnotations v1.0.0 // indirect
 	github.com/StackExchange/wmi v1.2.0 // indirect
 	github.com/alecthomas/chroma v0.9.2
 	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0
@@ -17,6 +18,7 @@ require (
 	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc // indirect
 	github.com/doug-martin/goqu v5.0.0+incompatible
 	github.com/fasthttp/websocket v1.4.3
+	github.com/fatih/color v1.13.0 // indirect
 	github.com/fatih/structs v1.1.0
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gbrlsnchs/jwt/v3 v3.0.0
@@ -29,16 +31,17 @@ require (
 	github.com/go-xorm/xorm v0.7.9
 	github.com/gobuffalo/helpers v0.6.2 // indirect
 	github.com/gobuffalo/plush v3.8.3+incompatible
+	github.com/gobuffalo/tags v2.1.7+incompatible // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/gookit/color v1.4.2
 	github.com/gorilla/securecookie v1.1.1
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/kataras/go-mailer v0.1.0
-	github.com/klauspost/compress v1.13.5 // indirect
+	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.7.0 // indirect
 	github.com/magefile/mage v1.11.0 // indirect
-	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/mattn/go-colorable v0.1.10 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/mojocn/base64Captcha v1.3.5
@@ -60,11 +63,12 @@ require (
 	github.com/traefik/yaegi v0.9.19
 	github.com/valyala/fasthttp v1.30.0
 	github.com/xiusin/logger v0.0.5
-	github.com/xiusin/pine v0.0.0-20210912040940-4252a528ca86
+	github.com/xiusin/pine v0.0.0-20210927052506-e02759cb4e8b
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
-	golang.org/x/sys v0.0.0-20210910150752-751e447fb3d0 // indirect
+	golang.org/x/net v0.0.0-20210924151903-3ad01bbaa167 // indirect
+	golang.org/x/sys v0.0.0-20210925032602-92d5a993a665 // indirect
 	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b // indirect
 	golang.org/x/text v0.3.7
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6 // indirect

@@ -25,6 +25,7 @@ type Process struct {
 	*pine.Context
 	db       *sqlx.DB
 	dbname   string
+	lastSQL  string
 	formData struct {
 		id    string
 		page  int
@@ -67,9 +68,10 @@ func (p *Process) Info() string {
 	if p.dbname != "" {
 		tip := T("Database summary") + ": [" + p.dbname + "]"
 		html = []byte(p.createDbInfoGrid(tip))
-	} else {
-		html = []byte(p.createResultGrid(""))
 	}
+	//  else {
+	// html = []byte(p.createResultGrid(""))
+	// }
 	return string(html)
 }
 
@@ -184,7 +186,7 @@ func (p *Process) Objlist() string {
 	return grid
 }
 
-func (p *Process) Usermanager() string  {
+func (p *Process) Usermanager() string {
 	return "用户管理界面"
 }
 
@@ -215,7 +217,7 @@ func (p *Process) Databases() string {
 			//>' . str_replace('{{ NUM }}', $data['stats']['drop']['success'], __('{{ NUM }} queries successfully executed')) . '
 			txt := "<p><span class=\"ui-icon ui-icon-check\"></span>" + strReplace([]string{"{{ NUM }}"}, []string{strconv.Itoa(status["success"])}, T("{{ NUM }} queries successfully executed")) + "</p>"
 			if status["errors"] > 0 {
-				txt += "<p><span class=\"ui-icon ui-icon-close\"></span>" +  strReplace([]string{"{{ NUM }}"}, []string{strconv.Itoa(status["success"])}, T("{{ NUM }} queries failed to execute")) + "</p>"
+				txt += "<p><span class=\"ui-icon ui-icon-close\"></span>" + strReplace([]string{"{{ NUM }}"}, []string{strconv.Itoa(status["success"])}, T("{{ NUM }} queries failed to execute")) + "</p>"
 			}
 			datas["statsHtml"] = txt
 		}
@@ -267,10 +269,8 @@ func (p *Process) Query() string {
 
 	querySql = strings.Trim(querySql, " \r\n")
 
-	pine.Logger().Debug("获取执行SQL", querySql)
-
 	if len(querySql) == 0 {
-		return p.createErrorGrid(querySql, errors.New("无法生存SQL语句"))
+		return p.createErrorGrid(querySql, errors.New("无法生成Query SQL"))
 	}
 
 	var html string
@@ -279,6 +279,7 @@ func (p *Process) Query() string {
 	// TODO 区分查询是否需要返回执行结果
 	if strings.ToLower(querySql[:6]) == "select" {
 		queryType := p.getQueryType(querySql)
+		pine.Logger().Debug(queryType["can_limit"])
 		if queryType["can_limit"] {
 			html = p.createResultGrid(querySql)
 		} else {
@@ -975,9 +976,11 @@ func (p *Process) createDbInfoGrid(message string) string {
 						} else if v, ok := val.(int32); ok {
 							data = fmt.Sprintf("%d", v)
 						} else if v, ok := val.(float64); ok {
-							data = strconv.FormatFloat(v, 'f', 6, 10)
+							data = strconv.FormatFloat(v, 'f', 6, 64)
 						} else if v, ok := val.(bool); ok {
 							data = strconv.FormatBool(v)
+						} else if v, ok := val.(string); ok {
+							data = v
 						} else {
 							data = fmt.Sprintf("%s", vs.Field(i).Interface())
 						}
@@ -992,26 +995,6 @@ func (p *Process) createDbInfoGrid(message string) string {
 		}
 		grid += "</tr>\n"
 	}
-
-	//$j = 0;
-	//while($r = $db->fetchRow(0, 'num')) {
-	//	$i = 0;
-	//	print "<tr id=\"rc$j\" class=\"row\">";
-	//	print "<td class=\"tj\">".($j+1)."</td>";
-	//
-	//	foreach($r as $rs) {
-	//		$class = ($rs === NULL) ? "tnl" : ($f[$i]->numeric == 1 ? "tr" : "tl");
-	//if ($f[$i]->blob)
-	//$class .= $f[$i]->type == 'binary' ? ' blob' : ' text';
-	//
-	//$data = ($rs === NULL) ? "NULL" : (($rs === "") ? "&nbsp;" : htmlspecialchars($rs));
-	//
-	//print "<td nowrap=\"nowrap\" id=\"r$j"."f$i\" class=\"$class\">$data</td>";
-	//$i++;
-	//}
-	//print "</tr>\n";
-	//$j++;
-	//}
 
 	grid += "</tbody></table>"
 	grid += "</div>"
@@ -1058,11 +1041,13 @@ func (p *Process) getCreateCommand(typo, name string) string {
 	} else {
 		sql = "show create " + typo + " `" + name + "`"
 	}
-	var createCommand CreateCommand
-	p.db.Select(&createCommand, sql)
-
-	if createCommand.CreateTable != "" {
-		cmd = createCommand.CreateTable
+	var createCommand []CreateCommand
+	if err := p.db.Select(&createCommand, sql); err != nil {
+		pine.Logger().Warning("查询创建语句异常", err)
+	}
+	p.lastSQL = sql
+	if len(createCommand) > 0 && createCommand[0].CreateTable != "" {
+		cmd = createCommand[0].CreateTable
 	}
 	return cmd
 }
@@ -1116,7 +1101,7 @@ func (p *Process) GetCollations() []string {
 }
 
 func (p *Process) Logout() string {
-	//p.Session().Destory() // 销毁session
+	p.Session().Destroy() // 销毁session
 	return string(p.Render("logout", nil))
 }
 
@@ -1159,6 +1144,15 @@ func (p *Process) Options() string {
 			lis += "<li><a href=\"#" + x + "\"><img border=\"0\" align=\"absmiddle\" src='/mywebsql/img/options/o_" + x + ".gif' alt=\"\" />" + y.(string) + "</a></li>"
 		}
 	}
+
+	// <?php
+	// foreach($data['pages'] as $x=>$y) {
+	// 		if ($data['page'] == $x)
+	// 			echo "<li class=\"current\"><img border=\"0\" align=\"absmiddle\" src='img/options/o_$x".".gif' alt=\"\" />$y</li>";
+	// 		else
+	// 			echo "<li><a href=\"#$x\"><img border=\"0\" align=\"absmiddle\" src='img/options/o_$x".".gif' alt=\"\" />$y</a></li>";
+	// 	}
+	// ?>
 
 	return string(p.Render("options", pine.H{
 		"CONTENT": template.HTML(content),
@@ -1285,8 +1279,43 @@ func (p *Process) Tableupdate() string {
 
 // Showcreate 展示创建语句
 func (p *Process) Showcreate() string {
-	extraMsg := ""
-	return extraMsg
+	dels := []string{"result", "pkey", "ukey", "mkey", "unique_table"}
+	for _, v := range dels {
+		p.Session().Remove("select." + v)
+	}
+
+	cmd := p.sanitizeCreateCommand(p.getCreateCommand(p.formData.id, p.formData.name))
+
+	v := pine.H{
+		"TYPE":    p.formData.id,
+		"NAME":    p.formData.name,
+		"COMMAND": template.HTML(cmd),
+		"TIME":    0,
+		"SQL":     template.HTML(p.lastSQL),
+		"MESSAGE": strReplace([]string{"{{TYPE}}", "{{NAME}}"}, []string{p.formData.id, p.formData.name}, T("Create command for {{TYPE}} {{NAME}}")),
+	}
+
+	return string(p.Render("showcreate", v))
+}
+
+func (p *Process) Describe() string {
+	if p.dbname == "" || p.formData.name == "" {
+		return string(p.Render("invalid_request", nil))
+	}
+
+	p.lastSQL = "DESCRIBE `" + p.formData.name + "`"
+	return p.createSimpleGrid(T("Table Description")+": ["+p.formData.name+"]", p.lastSQL)
+}
+
+func (p *Process) Copy() string {
+	if p.formData.name == "" || p.formData.query == "" {
+		return p.createErrorGrid("", errors.New("参数错误或不足"))
+	}
+
+}
+
+func (p *Process) copyObject() string {
+
 }
 
 // Processes 进程管理器

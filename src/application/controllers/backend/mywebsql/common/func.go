@@ -3,14 +3,15 @@ package common
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
+	"strings"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pine/sessions"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/mywebsql/render"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"html/template"
-	"strings"
 )
 
 func GetServerList() {
@@ -359,7 +360,7 @@ func formatBytes(length int64) string {
 	return fmt.Sprintf("%.2f MB", float64(length)/1024/1024)
 }
 
-func strReplace(repaces []string, to[]string, str string) string {
+func strReplace(repaces []string, to []string, str string) string {
 	for i, repace := range repaces {
 		str = strings.ReplaceAll(str, repace, to[i])
 	}

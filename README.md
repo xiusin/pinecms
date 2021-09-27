@@ -14,7 +14,7 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 ```
 
 ## 配置 ##
-1. 拷贝数据库文件 `data.db.dist` 并且命名为 `data.db`
+1. 执行数据链接生成命令: `./pinecms serve install`
 
 2. 数据库配置
     > 导入数据库结构`resources/pinecms.sql`
@@ -135,3 +135,28 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - http://goframe.ele.rxthink.cn/tool/generate
 - https://gitee.com/unifig/unifig-admin?_from=gitee_search
 - https://github.com/timshannon/bolthold
+
+
+
+# 注解路由开发
+
+```go
+
+// @Service(sign=true, name="默认解析为实例注释, 此处可填写为实例化内容")
+
+// @Group("/anno")
+type AnnoController struct {
+    //@Share(field) 看是否可以实现解析注入
+    Field *int
+}
+
+// @Post("/list", xxxxxxx)
+func (a *AnnoController) List() {
+
+}
+
+// @Request(methods=[GET,POST], "默认为方法名小驼峰, 填写则为填写名称")
+func (a *AnnoController) List() {
+
+}
+```

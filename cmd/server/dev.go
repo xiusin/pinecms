@@ -101,6 +101,8 @@ func serve() {
 	}
 }
 func build() error {
+	// TODO 自动安装下载golangAnnotations
+
 	start := time.Now()
 	cmd := exec.Command("go", "build", "-o", buildName)
 	cmd.Stdout = os.Stdout

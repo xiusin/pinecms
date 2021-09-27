@@ -9,11 +9,11 @@
 <div id="object-menu">
 	<ul class="dropdown context ui-state-default">
 		<li><a class="itable" href="javascript:tableCreate([name])" title="<%= T("Create a new table in the database") %>"><%= T("Create Table") %></a></li>
-		<li class="option mysql5 mysqli pgsql sqlite sqlite3"><a class="iview" href="javascript:objCreate(1,[name])" title="<%= T("Create a new view in the database") %>"><%= T("Create View") %></a></li>
-		<li class="option mysql5 mysqli"><a class="iproc" href="javascript:objCreate(2, [name])" title="<%= T("Create a new stored procedure in the database") %>"><%= T("Create Stored Procedure") %></a></li>
-		<li class="option mysql5 mysqli pgsql"><a class="ifunc" href="javascript:objCreate(3, [name])" title="<%= T("Create a new user defined function in the database") %>"><%= T("Create Function") %></a></li>
-		<li class="option mysql5 mysqli pgsql sqlite sqlite3"><a class="itrig" href="javascript:objCreate(4, [name])" title="<%= T("Create a new trigger in the database") %>"><%= T("Create Trigger") %></a></li>
-		<li class="option mysql5 mysqli"><a class="ievt" href="javascript:objCreate(5, [name])" title="<%= T("Create a new event in the database") %>"><%= T("Create Event") %></a></li>
+		<li class="option mysql5 mysqli mysql pgsql sqlite sqlite3"><a class="iview" href="javascript:objCreate(1,[name])" title="<%= T("Create a new view in the database") %>"><%= T("Create View") %></a></li>
+		<li class="option mysql5 mysqli mysql"><a class="iproc" href="javascript:objCreate(2, [name])" title="<%= T("Create a new stored procedure in the database") %>"><%= T("Create Stored Procedure") %></a></li>
+		<li class="option mysql5 mysqli mysql pgsql"><a class="ifunc" href="javascript:objCreate(3, [name])" title="<%= T("Create a new user defined function in the database") %>"><%= T("Create Function") %></a></li>
+		<li class="option mysql5 mysqli mysql pgsql sqlite sqlite3"><a class="itrig" href="javascript:objCreate(4, [name])" title="<%= T("Create a new trigger in the database") %>"><%= T("Create Trigger") %></a></li>
+		<li class="option mysql5 mysqli mysql"><a class="ievt" href="javascript:objCreate(5, [name])" title="<%= T("Create a new event in the database") %>"><%= T("Create Event") %></a></li>
 		<li class="option pgsql"><a class="ischm" href="javascript:objCreate(6, [name])" title="<%= T("Create a new schema in the database") %>"><%= T("Create Schema") %>...</a></li>
 	</ul>
 </div>
@@ -23,14 +23,14 @@
 	<li><a href="tableSelect([name])"><%= T("Select statement") %></a></li>
 	<li><a href="tableInsert([name])"><%= T("Insert statement") %></a></li>
 	<li><a href="tableUpdate([name])"><%= T("Update statement") %></a></li>
-	<li class="option mysql4 mysql5 mysqli pgsql"><a href="tableDescribe([name])"><%= T("Describe") %></a></li>
-	<li class="option mysql4 mysql5 mysqli sqlite sqlite3"><a href="showCreateCmd('table',	[name])"><%= T("Show create command") %></a></li>
+	<li class="option mysql4 mysql5 mysqli mysql pgsql"><a href="tableDescribe([name])"><%= T("Describe") %></a></li>
+	<li class="option mysql4 mysql5 mysqli mysql sqlite sqlite3"><a href="showCreateCmd('table',	[name])"><%= T("Show create command") %></a></li>
 	<li><a href="tableViewData([name])"><%= T("View data") %></a></li>
-	<li class="option mysql4 mysql5 mysqli sqlite sqlite3"><a href="javascript:void(0)"><%= T("Alter Table") %> &raquo;</a>
+	<li class="option mysql4 mysql5 mysqli mysql sqlite sqlite3"><a href="javascript:void(0)"><%= T("Alter Table") %> &raquo;</a>
 		<ul class="ui-state-default">
-			<li class="option mysql4 mysql5 mysqli"><a href="javascript:tableAlter([name])"><%= T("Structure") %></a></li>
-			<li class="option mysql4 mysql5 mysqli"><a href="tableIndexes([name])"><%= T("Indexes") %></a></li>
-			<li class="option mysql4 mysql5 mysqli"><a href="tableEngine([name])"><%= T("Engine Type") %></a></li>
+			<li class="option mysql4 mysql5 mysqli mysql"><a href="javascript:tableAlter([name])"><%= T("Structure") %></a></li>
+			<li class="option mysql4 mysql5 mysqli mysql"><a href="tableIndexes([name])"><%= T("Indexes") %></a></li>
+			<li class="option mysql4 mysql5 mysqli mysql"><a href="tableEngine([name])"><%= T("Engine Type") %></a></li>
 		</ul>
 	</li>
 	<li><a href="javascript:void(0)"><%= T("More operations") %> &raquo;</a>
@@ -43,22 +43,22 @@
 	</li>
 	<li class="separator">-------------------------------------------------------</li>
 	<li><a class="iexprt" href="tableExport([name])"><%= T("Export table data") %></a></li>
-	<li class="option mysql4 mysql5 mysqli sqlite sqlite3"><a class="itable" href="tableCreate()"><%= T("Create Table") %></a></li>
+	<li class="option mysql4 mysql5 mysqli mysql sqlite sqlite3"><a class="itable" href="tableCreate()"><%= T("Create Table") %></a></li>
 </ul>
 </div>
 
 <div id="view-menu">
 <ul class="dropdown context ui-state-default">
 	<li><a href="tableSelect([name])"><%= T("Select statement") %></a></li>
-	<li class="option mysql4 mysql5 mysqli"><a href="tableDescribe([name])"><%= T("Describe") %></a></li>
+	<li class="option mysql4 mysql5 mysqli mysql"><a href="tableDescribe([name])"><%= T("Describe") %></a></li>
 	<li><a href="showCreateCmd('view', [name])"><%= T("Show create command") %></a></li>
 	<li><a href="tableViewData([name])"><%= T("View data") %></a></li>
 	<li><a href="objCreate(1)"><%= T("Create View") %></a></li>
 	<li><a href="javascript:void(0)"><%= T("More operations") %> &raquo;</a>
 		<ul class="ui-state-default">
 			<li><a href="objDrop('view', [name])"><%= T("Drop") %></a></li>
-			<li class="option mysql4 mysql5 mysqli sqlite sqlite3"><a href="objRename('view', [name])"><%= T("Rename") %></a></li>
-			<li class="option mysql4 mysql5 mysqli sqlite sqlite3"><a class="icopy" href="objCopy('view', [name])"><%= T("Create Copy") %></a></li>
+			<li class="option mysql4 mysql5 mysqli mysql sqlite sqlite3"><a href="objRename('view', [name])"><%= T("Rename") %></a></li>
+			<li class="option mysql4 mysql5 mysqli mysql sqlite sqlite3"><a class="icopy" href="objCopy('view', [name])"><%= T("Create Copy") %></a></li>
 		</ul>
 	</li>
 </ul>
@@ -80,9 +80,9 @@
 
 <div id="func-menu">
 <ul class="dropdown context ui-state-default">
-	<li class="option mysql4 mysql5 mysqli sqlite sqlite3"><a href="showCreateCmd('function', [name])"><%= T("Show create command") %></a></li>
+	<li class="option mysql4 mysql5 mysqli mysql sqlite sqlite3"><a href="showCreateCmd('function', [name])"><%= T("Show create command") %></a></li>
 	<li><a href="objCreate(3)"><%= T("Create Function") %></a></li>
-	<li class="option mysql4 mysql5 mysqli sqlite sqlite3"><a href="javascript:void(0)"><%= T("More operations") %> &raquo;</a>
+	<li class="option mysql4 mysql5 mysqli mysql sqlite sqlite3"><a href="javascript:void(0)"><%= T("More operations") %> &raquo;</a>
 		<ul class="ui-state-default">
 			<li><a href="objDrop('function', [name])"><%= T("Drop") %></a></li>
 			<li><a href="objRename('function', [name])"><%= T("Rename") %></a></li>
@@ -94,9 +94,9 @@
 
 <div id="trig-menu">
 <ul class="dropdown context ui-state-default">
-	<li class="option mysql4 mysql5 mysqli sqlite sqlite3"><a href="showCreateCmd('trigger', [name])"><%= T("Show create command") %></a></li>
+	<li class="option mysql4 mysql5 mysqli mysql sqlite sqlite3"><a href="showCreateCmd('trigger', [name])"><%= T("Show create command") %></a></li>
 	<li><a href="objCreate(4)"><%= T("Create Trigger") %></a></li>
-	<li class="option mysql4 mysql5 mysqli sqlite sqlite3"><a href="javascript:void(0)"><%= T("More operations") %> &raquo;</a>
+	<li class="option mysql4 mysql5 mysqli mysql sqlite sqlite3"><a href="javascript:void(0)"><%= T("More operations") %> &raquo;</a>
 		<ul class="ui-state-default">
 			<li><a href="objDrop('trigger', [name])"><%= T("Drop") %></a></li>
 		</ul>

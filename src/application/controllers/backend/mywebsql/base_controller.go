@@ -3,15 +3,15 @@ package mywebsql
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"sync"
+
+	"github.com/jmoiron/sqlx"
 
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/mywebsql/common"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/mywebsql/render"
 
-	// "github.com/xiusin/pinecms/src/common"
 	"github.com/xiusin/pinecms/src/common/helper"
 )
 
@@ -74,6 +74,7 @@ func (c *MyWebSql) GetSQLX() *sqlx.DB {
 	if len(sess) == 0 {
 		return nil
 	}
+
 	json.Unmarshal([]byte(sess), &serve)
 	db, _ := sqlx.Open(serve.Driver, fmt.Sprintf("%s:%s@tcp(%s:%s)/?charset=utf8&parseTime=true", serve.User, serve.Password, serve.Host, serve.Port))
 	return db

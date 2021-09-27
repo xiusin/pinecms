@@ -3,7 +3,7 @@
     <li id="tables"><span class="tablef"><%= T("Tables") %></span><span class="count"><%= len(tables) %></span>
 		<%= for (key, v) in tables { %>
 		    <ul><li><span class="file otable" id="t_<%= v.Name %>">
-		    <a href='javascript:objDefault("table", "t_<%= v.Name %>")'><%= v.Name %></a></span><span class="count">123</span> <!--不要换行-->
+		    <a href='javascript:objDefault("table", "t_<%= v.Name %>")'><%= v.Name %></a></span><span class="count"></span> <!--不要换行-->
 		    </li>
 		    </ul>
 		<% } %>

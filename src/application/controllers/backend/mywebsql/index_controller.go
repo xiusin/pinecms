@@ -2,24 +2,39 @@ package mywebsql
 
 import (
 	"fmt"
-	"github.com/jmoiron/sqlx"
-	"github.com/xiusin/pinecms/src/application/controllers/backend/mywebsql/common"
 	"html/template"
 	"strings"
+	"sync"
+	"sync/atomic"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/xiusin/pinecms/src/application/controllers/backend/mywebsql/common"
 
 	"github.com/xiusin/pine"
 )
 
 type IndexController struct {
 	MyWebSql
-	hasError string
+	hasError     string
+	ShareVisitor *int
+	ShareAtomic  *atomic.Value
+	ShareLocker  *sync.Mutex
 }
+
 var AjaxResponse = []byte(`<div id="results">1</div>`)
 
 func (c *IndexController) GetIndex() {
-	if  theme := c.Ctx().GetString("theme"); len(theme) > 0 {
+	fmt.Println("c.ShareVisitor", *c.ShareVisitor)
+	fmt.Println("c.ShareLocker", c.ShareLocker)
+	fmt.Println("c.ShareAtomic", c.ShareAtomic)
+
+	c.ShareLocker.Lock()
+	*c.ShareVisitor++
+	c.ShareLocker.Unlock()
+
+	if theme := c.Ctx().GetString("theme"); len(theme) > 0 {
 		c.Render().ViewData("THEME_PATH", theme)
-		c.Ctx().SetCookie("theme", theme, common.COOKIE_LIFETIME * 60 * 60)
+		c.Ctx().SetCookie("theme", theme, common.COOKIE_LIFETIME*60*60)
 		c.Ctx().Write(AjaxResponse)
 		return
 	} else {
@@ -29,22 +44,22 @@ func (c *IndexController) GetIndex() {
 			c.Render().ViewData("THEME_PATH", common.DEFAULT_THEME)
 		}
 	}
-
-	if  editor := c.Ctx().GetString("editor"); len(editor) > 0 {
+	if editor := c.Ctx().GetString("editor"); len(editor) > 0 {
 		c.Render().ViewData("SQL_EDITORTYPE", editor)
-		c.Ctx().SetCookie("editor", editor, common.COOKIE_LIFETIME * 60 * 60)
+		c.Ctx().SetCookie("editor", editor, common.COOKIE_LIFETIME*60*60)
 		if c.Ctx().GetString("x") == "1" {
 			c.Ctx().Write(AjaxResponse)
 			return
 		}
+
 	} else {
+
 		//if editor := c.Ctx().GetCookie("editor"); len(editor) > 0 {
 		//	c.Render().ViewData("THEME_PATH", editor)
 		//} else {
 		//	c.Render().ViewData("THEME_PATH", common.DEFAULT_THEME)
 		//}
 	}
-
 
 	if db := c.GetSQLX(); db == nil {
 		c.clearAuthSession()
@@ -85,7 +100,6 @@ func (c *IndexController) GetIndex() {
 			return
 		}
 		dbname := c.Ctx().GetString("db")
-		// 异步切换数据库
 		if dbname != "" && dbname != c.Session().Get("db.name") {
 			c.Session().Set("db.change", "1")
 			c.Session().Set("db.name", dbname)
@@ -97,7 +111,6 @@ func (c *IndexController) GetIndex() {
 			}
 			return
 		}
-
 
 		html, dblist, _ := common.PrintDbList(db, c.Session())
 		dbname = c.Session().Get("db.name")
@@ -145,6 +158,7 @@ func (c *IndexController) PostIndex() {
 			c.GetIndex()
 			return
 		}
+
 		if err := db.Ping(); err != nil {
 			c.clearAuthSession()
 			c.hasError = err.Error()

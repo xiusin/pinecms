@@ -26,9 +26,10 @@ pinecms-dev-build.exe~
 /main
 /frp/frpc
 /frp/frpc.ini
-/docdb/apiEntity
+/docdb/
 tests/*.png
 tests/*.jpg
 tests/*.h
 .lh
 /plugins/
+/mywebsql_images
