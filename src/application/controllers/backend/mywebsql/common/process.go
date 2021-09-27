@@ -54,12 +54,12 @@ func InitProcess(db *sqlx.DB, ctx *pine.Context) *Process {
 	p.formData.id = p.FormValue("id")
 	p.formData.page = 1
 
-	if match, _ := regexp.MatchString(`^\d+$`, p.formData.table); match {
+	if match, _ := regexp.MatchString(`^\d+$`, p.formData.table); match || p.formData.table == "" {
 		p.formData.page, _ = strconv.Atoi(p.formData.table)
 		p.formData.table = strings.Trim(p.FormValue("query"), trimChar)
 		p.formData.query = ""
 	}
-
+	pine.Logger().Debugf("%+v", p.formData)
 	return p
 }
 
@@ -67,7 +67,7 @@ func (p *Process) Info() string {
 	var html []byte
 	if p.dbname != "" {
 		tip := T("Database summary") + ": [" + p.dbname + "]"
-		html = []byte(p.createDbInfoGrid(tip))
+		html = []byte(p.showDbInfoGrid(tip))
 	}
 	//  else {
 	// html = []byte(p.createResultGrid(""))
@@ -227,7 +227,7 @@ func (p *Process) Databases() string {
 
 func (p *Process) dropObject(name, typo string) error {
 	query := "drop " + typo + " `" + name + "`"
-	pine.Logger().Warning("执行删除操作: ", query)
+	p.lastSQL = query
 	_, err := p.db.Exec(query)
 	return err
 }
@@ -506,7 +506,7 @@ func (p *Process) createErrorGrid(query string, err error, params ...int) string
 		grid += msg + "</div>"
 	}
 
-	match := regexp.MustCompile("/[\\n|\\r]?[\\n]+/")
+	match := regexp.MustCompile("[\\n|\\r]?[\\n]+")
 
 	formattedQuery := match.ReplaceAllString(query, "<br>")
 
@@ -903,7 +903,9 @@ func (p *Process) getBlobDisplay(rs interface{}, info *Column, numRecord int, ed
 	return span
 }
 
-func (p *Process) createDbInfoGrid(message string) string {
+
+
+func (p *Process) showDbInfoGrid(message string) string {
 	grid := "<div id='results'>"
 	grid += "<div class='message ui-state-default'>" + message + "<span style='float:right'>" + T("Quick Search") +
 		"&nbsp;<input type=\"text\" id=\"quick-info-search\" maxlength=\"50\" /></div>"
@@ -976,6 +978,7 @@ func (p *Process) createDbInfoGrid(message string) string {
 						} else if v, ok := val.(int32); ok {
 							data = fmt.Sprintf("%d", v)
 						} else if v, ok := val.(float64); ok {
+							data = strconv.FormatFloat(v, 'f', 6, 10)
 							data = strconv.FormatFloat(v, 'f', 6, 64)
 						} else if v, ok := val.(bool); ok {
 							data = strconv.FormatBool(v)
@@ -996,6 +999,26 @@ func (p *Process) createDbInfoGrid(message string) string {
 		grid += "</tr>\n"
 	}
 
+	//$j = 0;
+	//while($r = $db->fetchRow(0, 'num')) {
+	//	$i = 0;
+	//	print "<tr id=\"rc$j\" class=\"row\">";
+	//	print "<td class=\"tj\">".($j+1)."</td>";
+	//
+	//	foreach($r as $rs) {
+	//		$class = ($rs === NULL) ? "tnl" : ($f[$i]->numeric == 1 ? "tr" : "tl");
+	//if ($f[$i]->blob)
+	//$class .= $f[$i]->type == 'binary' ? ' blob' : ' text';
+	//
+	//$data = ($rs === NULL) ? "NULL" : (($rs === "") ? "&nbsp;" : htmlspecialchars($rs));
+	//
+	//print "<td nowrap=\"nowrap\" id=\"r$j"."f$i\" class=\"$class\">$data</td>";
+	//$i++;
+	//}
+	//print "</tr>\n";
+	//$j++;
+	//}
+
 	grid += "</tbody></table>"
 	grid += "</div>"
 
@@ -1003,6 +1026,60 @@ func (p *Process) createDbInfoGrid(message string) string {
 	grid += "parent.transferInfoMessage();\n"
 	grid += "parent.resetFrame();\n"
 	grid += "</script>"
+	return grid
+}
+
+
+func (p *Process) createDbInfoGrid(query string, numQueries int, affectedRows int) string {
+	p.removeSelectSession([]string{"pkey", "ukey", "mkey", "unique_table"})
+	if query == "" {
+		query = p.formData.query
+	}
+
+	grid := "<div id='results'>\n"
+	grid += "<div class=\"message ui-state-default\">"
+
+	msg := T("1 query successfully executed")
+
+	if numQueries != 1 {
+		msg = strReplace([]string{"{{NUM}}"}, []string{fmt.Sprintf("%d", numQueries)}, T("{{NUM}} queries successfully executed"))
+	}
+
+	grid += msg + ".</div>"
+	grid += "<div class=\"message ui-state-highlight\">"
+	grid += strReplace([]string{"{{NUM}}"}, []string{fmt.Sprintf("%d", affectedRows)}, T("{{NUM}} record(s) were affected"))
+	grid += "</div>"
+
+	if numQueries == 1 {
+		match := regexp.MustCompile("[\\n|\\r]?[\\n]+")
+		formattedQuery := match.ReplaceAllString(query, "<br>")
+		grid +=  "<div class='sql-text ui-state-default'>" + formattedQuery + "</div>"
+		warnings := p.getWarnings()
+
+		if len(warnings) > 0 {
+			grid += "<div class=\"message ui-state-error\">"
+			for _, s := range warnings {
+				grid += s + "<br />"
+			}
+			grid += "</div>"
+		}
+	}
+	grid += "</div>"
+	grid += "<script type=\"text/javascript\" language='javascript'> parent.transferResultMessage(-1, '0', '"+
+		strReplace([]string{"{{NUM}}"},
+		[]string{fmt.Sprintf("%d", affectedRows)},
+		T("{{NUM}} record(s) updated"))+"');\n"
+
+	match := regexp.MustCompile(`[\n\r]`)
+	grid += "parent.addCmdHistory(\"" + match.ReplaceAllString(query, "<br>") + "\");\n"
+
+	if p.Session().Get("db.altered") == "true" {
+		p.Session().Remove("db.altered")
+		grid += "parent.objectsRefresh();\n"
+	}
+
+	grid += "parent.resetFrame();\n"
+	grid += "</script>\n"
 	return grid
 }
 
@@ -1112,8 +1189,21 @@ func (p *Process) Infovars() string {
 
 // Search 搜索数据
 func (p *Process) Search() string {
-	return ""
+	return "搜索数据"
+}
 
+// Indexes 索引设置
+func (p *Process) Indexes() string  {
+	return "索引设置"
+}
+
+// Enginetype 存储引擎切换
+func (p *Process) Enginetype() string  {
+	return "存储引擎"
+}
+
+func (p *Process) Altertbl() string  {
+	return "修改结构"
 }
 
 // Options 选项配置 用于配置系统内数据
@@ -1145,15 +1235,6 @@ func (p *Process) Options() string {
 		}
 	}
 
-	// <?php
-	// foreach($data['pages'] as $x=>$y) {
-	// 		if ($data['page'] == $x)
-	// 			echo "<li class=\"current\"><img border=\"0\" align=\"absmiddle\" src='img/options/o_$x".".gif' alt=\"\" />$y</li>";
-	// 		else
-	// 			echo "<li><a href=\"#$x\"><img border=\"0\" align=\"absmiddle\" src='img/options/o_$x".".gif' alt=\"\" />$y</a></li>";
-	// 	}
-	// ?>
-
 	return string(p.Render("options", pine.H{
 		"CONTENT": template.HTML(content),
 		"lis":     template.HTML(lis),
@@ -1173,20 +1254,40 @@ func (p *Process) Queryall() string {
 
 // Truncate 截断数据表
 func (p *Process) Truncate() string {
-	return ""
-
+	if p.formData.name == "" {
+		return p.createErrorGrid("", errors.New("参数错误"))
+	}
+	p.lastSQL = "TRUNCATE TABLE " + p.formData.name
+	if ret, err := p.db.Exec(p.lastSQL); err != nil {
+		return p.createErrorGrid(p.lastSQL, err)
+	} else {
+		row, _ := ret.RowsAffected()
+		return p.createDbInfoGrid(p.lastSQL, 1, int(row))
+	}
 }
 
 // Drop 删除数据表
 func (p *Process) Drop() string {
-	return ""
-
+	if p.formData.name == "" {
+		return p.createErrorGrid("", errors.New("没有删除的表参数"))
+	}
+	if err := p.dropObject(p.formData.name, p.formData.id); err != nil {
+		return p.createErrorGrid(p.lastSQL, err)
+	}
+	p.Session().Set("db.altered", "true")
+	return p.createDbInfoGrid(p.lastSQL, 1, 1)
 }
 
 // Rename 重命名
 func (p *Process) Rename() string {
-	return ""
+	newName := p.formData.query
 
+	if newName == "" || p.formData.name == "" {
+		return p.createErrorGrid("", errors.New("缺少参数"))
+	}
+
+
+	return "未完成重命名"
 }
 
 // Dbrepair 修复表
@@ -1239,7 +1340,7 @@ func (p *Process) checkTables() string {
 
 // Dbcreate 创建表
 func (p *Process) Dbcreate() string {
-	p.removeSelectSession()
+	p.removeSelectSession([]string{"result", "pkey", "ukey", "mkey", "unique_table"})
 
 	name := p.FormValue("name")
 	dbSelect := p.FormValue("query")
@@ -1312,9 +1413,43 @@ func (p *Process) Copy() string {
 		return p.createErrorGrid("", errors.New("参数错误或不足"))
 	}
 
+	if err := p.copyObject(p.formData.query); err != nil {
+		pine.Logger().Warning("copy failed", err)
+		return p.createErrorGrid(p.lastSQL, err)
+	} else {
+		p.Session().Set("db.altered", "true")
+		numQueries := 1
+		if p.formData.id == "table" {
+			numQueries = 2
+		}
+		return p.createDbInfoGrid(p.lastSQL, numQueries, -1)
+	}
 }
 
-func (p *Process) copyObject() string {
+func (p *Process) copyObject(newName string) error {
+	var query string
+	var err error
+	if p.formData.id == "table" {
+		query = "CREATE table `"+newName+"` LIKE `"+p.formData.name+"`"
+		p.lastSQL = query
+		if _, err = p.db.Exec(query); err != nil {
+			return err
+		}
+		query = "INSERT INTO `"+newName+"` SELECT * FROM `"+p.formData.name+"`"
+		p.lastSQL = query
+		if _, err = p.db.Exec(query); err != nil {
+			return err
+		}
+	} else {
+		//cmd := p.getCreateCommand(p.formData.id, p.formData.name)
+		//$command = $this->getCreateCommand($type, $name);
+		//$search = '/(create.*'.$type. ' )('.$name.'|\`'.$name.'\`)/i';
+		//$replace = '${1} `'.$new_name.'`';
+		//$query = preg_replace($search, $replace, $command, 1);
+		//$result = $this->query($query);
+	}
+
+	return err
 
 }
 
@@ -1443,8 +1578,7 @@ func (p *Process) Backup() string {
 }
 
 // removeSelectSession 移除选择状态的session数据
-func (p *Process) removeSelectSession() {
-	sessionKeys := []string{"result", "pkey", "ukey", "mkey", "unique_table"}
+func (p *Process) removeSelectSession(sessionKeys []string) {
 	for _, v := range sessionKeys {
 		p.Session().Remove("select." + v)
 	}

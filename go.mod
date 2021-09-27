@@ -4,7 +4,6 @@ go 1.16
 
 require (
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
-	github.com/MarcGrol/golangAnnotations v1.0.0 // indirect
 	github.com/StackExchange/wmi v1.2.0 // indirect
 	github.com/alecthomas/chroma v0.9.2
 	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0
