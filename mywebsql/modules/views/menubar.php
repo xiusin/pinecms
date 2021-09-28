@@ -23,7 +23,7 @@
 			</ul>
 		</li>
 
-		<li>
+		<li style="display:none">
 			<a href="javascript:void(0)"><%= T("Data") %></a>
 			<ul class="ui-state-default">
 				<li class="option mysql4 mysql mysql5 mysqli pgsql sqlite sqlite3"><a class="iimprt" href="javascript:dataImport()" title="<%= T("Import multiple queries from batch file") %>"><%= T("Import batch file") %>...</a></li>
@@ -37,12 +37,12 @@
 		<li class="option mysql4 mysql5 mysql mysqli pgsql sqlite sqlite3">
 			<a href="javascript:void(0)"><%= T("Tools") %></a>
 			<ul class="ui-state-default">
-				<li class="option mysql4 mysql5 mysql mysqli pgsql"><a class="itdb" href="javascript:toolsDbManager()" title="<%= T("Manage databases") %>"><%= T("Database Manager") %></a></li>
+				<li class="option mysql4 mysql5 mysql mysqli pgsql"><a class="itopts" href="javascript:toolsDbManager()" title="<%= T("Manage databases") %>"><%= T("Database Manager") %></a></li>
 				<li class="option mysql4 mysql5 mysql mysqli"><a class="itprc" href="javascript:toolsProcManager()" title="<%= T("View and manage database processes") %>"><%= T("Process Manager") %></a></li>
-				<li class="option mysql4 mysql5 mysql mysqli"><a class="itusr" href="javascript:toolsUsers()" title="<%= T("Manage database users") %>"><%= T("User Manager") %></a></li>
+				<!-- <li class="option mysql4 mysql5 mysql mysqli"><a class="itusr" href="javascript:toolsUsers()" title="<%= T("Manage database users") %>"><%= T("User Manager") %></a></li> -->
 				<li class="db option mysql4 mysql5 mysql pgsql mysqli"><a class="itchk" href="javascript:toolsDbCheck()" title="<%= T("Analyze and repair database tables") %>"><%= T("Repair Tables") %></a></li>
-				<li class="db option mysql4 mysql5 mysql mysqli pgsql sqlite sqlite3"><a class="itsrch" href="javascript:toolsDbSearch()" title="<%= T("Search for text in the database") %>"><%= T("Search in Database") %></a></li>
-				<li><a class="itopts" href="javascript:toolsOptions()" title="<%= T("Configure application options") %>"><%= T("Options") %></a></li>
+				<!-- <li class="db option mysql4 mysql5 mysql mysqli pgsql sqlite sqlite3"><a class="itsrch" href="javascript:toolsDbSearch()" title="<%= T("Search for text in the database") %>"><%= T("Search in Database") %></a></li> -->
+				<!-- <li><a class="itopts" href="javascript:toolsOptions()" title="<%= T("Configure application options") %>"><%= T("Options") %></a></li> -->
 			</ul>
 		</li>
 
@@ -83,10 +83,10 @@
 			<ul class="ui-state-default">
 				<li><a class="ihlp" href="javascript:helpShowAll()" title="<%= T("Learn the basics of using MyWebSQL") %>"><%= T("Help contents") %></a></li>
 				<li class="db"><a class="itutor" href="javascript:helpQuickTutorial()" title="<%= T("See quick hands-on tutorial of MyWebSQL interface") %>"><%= T("QuickStart Tutorials") %></a></li>
-				<li><a class="idocs" href="javascript:helpOnlineDocs()" title="<%= T("View online documentation on project website") %>"><%= T("Online documentation") %></a></li>
-				<li><a class="iftr" href="javascript:helpRequestFeature()" title="<%= T("If you would like your most favourite feature to be part of MyWebSQL, please click here to inform about it") %>"><%= T("Request a Feature") %>...</a></li>
-				<li><a class="ibug" href="javascript:helpReportBug()" title="<%= T("If you have found a problem, or having trouble using the application, please click here to report the problem") %>"><%= T("Report a Problem") %></a></li>
-				<li><a href="javascript:helpCheckUpdates()" title="<%= T("Check for updated versions of the application online") %>"><%= T("Check for updates") %></a></li>
+				<!-- <li><a class="idocs" href="javascript:helpOnlineDocs()" title="<%= T("View online documentation on project website") %>"><%= T("Online documentation") %></a></li> -->
+				<!-- <li><a class="iftr" href="javascript:helpRequestFeature()" title="<%= T("If you would like your most favourite feature to be part of MyWebSQL, please click here to inform about it") %>"><%= T("Request a Feature") %>...</a></li> -->
+				<!-- <li><a class="ibug" href="javascript:helpReportBug()" title="<%= T("If you have found a problem, or having trouble using the application, please click here to report the problem") %>"><%= T("Report a Problem") %></a></li> -->
+				<!-- <li><a href="javascript:helpCheckUpdates()" title="<%= T("Check for updated versions of the application online") %>"><%= T("Check for updates") %></a></li> -->
 			</ul>
 		</li>
 

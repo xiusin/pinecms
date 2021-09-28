@@ -129,7 +129,7 @@
 		</div>
 
 		<div id="loader">
-			<img width="60" height="12" id="loaderImg" src="themes/<%= THEME_PATH %>/images/loading.gif" alt="<%= T("Loading") %>..." />
+			<img width="60" height="12" id="loaderImg" src="/mywebsql/themes/default/images/loading.gif" alt="<%= T("Loading") %>..." />
 		</div>
 
 	</div>
@@ -143,7 +143,7 @@
 <%= dialogs %>
 <iframe src="javascript:false" name="wrkfrm" id="wrkfrm" frameborder="0" width="0" height="0"></iframe>
 <div id="screen-wait" class="ui-widget-overlay">
-	<div><span><%= T("Loading") %>...</span><img src="themes/<%= THEME_PATH %>/images/loading.gif" alt="" /></div>
+	<div><span><%= T("Loading") %>...</span><img src="/mywebsql/themes/default/images/loading.gif" alt="" /></div>
 	<div class="compat-notice" style="display:none;margin:200px auto;width:530px;color: #222222;font-family:segoe ui;font-size:13pt;font-weight:bold">
 		<%= T("Your browser appears to be very old and does not support all features required to run MyWebSQL.") %><br /><br />
 		<%= T("Try using a newer version of the browser to run this application.") %>

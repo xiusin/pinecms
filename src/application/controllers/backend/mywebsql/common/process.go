@@ -60,6 +60,7 @@ func InitProcess(db *sqlx.DB, ctx *pine.Context) *Process {
 		p.formData.table = strings.Trim(p.FormValue("query"), trimChar)
 		p.formData.query = ""
 	}
+
 	return p
 }
 
@@ -187,7 +188,7 @@ func (p *Process) Objlist() string {
 }
 
 func (p *Process) Usermanager() string {
-	return "用户管理界面"
+	return "用户管理界面 [低优先级]"
 }
 
 // Databases 数据库操作管理
@@ -1186,7 +1187,7 @@ func (p *Process) Infovars() string {
 
 // Search 搜索数据
 func (p *Process) Search() string {
-	return "搜索数据"
+	return "搜索数据 [低优先级]"
 }
 
 // Indexes 索引设置
@@ -1200,6 +1201,11 @@ func (p *Process) Enginetype() string {
 }
 
 func (p *Process) Altertbl() string {
+	if p.formData.id == "alter" {
+
+	} else {
+
+	}
 	return "修改结构"
 }
 
@@ -1296,9 +1302,9 @@ func (p *Process) Rename() string {
 
 func (p *Process) renameObject(newName string) error {
 	if p.formData.id == "table" {
-		p.lastSQL = "rename table `"+p.formData.name+"` to `"+newName+"`"
+		p.lastSQL = "rename table `" + p.formData.name + "` to `" + newName + "`"
 		if rows, err := p.db.Exec(p.lastSQL); err == nil {
-			p.affectRows,_ = rows.RowsAffected()
+			p.affectRows, _ = rows.RowsAffected()
 		} else {
 			return err
 		}
@@ -1388,13 +1394,109 @@ func (p *Process) Dbcreate() string {
 
 // Tableinsert 插入表数据
 func (p *Process) Tableinsert() string {
-	return ""
+	sql, err := p.getInsertStatement(p.formData.name)
+	if err != nil {
+		return p.createErrorGrid(p.lastSQL, err)
+	}
+	msg := "<div id='results'>" + sql + "</div>"
+	msg += "<script type=\"text/javascript\" language='javascript'> parent.transferQuery(); </script>\n"
+	return msg
+}
 
+func (p *Process) getInsertStatement(tbl string) (string, error) {
+	query := "show full fields from `" + tbl + "`"
+	p.lastSQL = query
+	if rows, err := p.db.Queryx(query); err != nil {
+		return "", err
+	} else {
+		str := "INSERT INTO `" + tbl + "` ("
+		str2 := ""
+		defer rows.Close()
+		var i = 0
+		for rows.Next() {
+			results := make(map[string]interface{})
+			rows.MapScan(results)
+			if i == 0 {
+				str += "`" + string(results["Field"].([]byte)) + "`"
+				if string(results["Extra"].([]byte)) == "auto_increment" {
+					str2 += " VALUES (NULL"
+				} else {
+					str2 += " VALUES (\"\""
+				}
+			} else {
+				str += ",`" + string(results["Field"].([]byte)) + "`"
+				if string(results["Extra"].([]byte)) == "auto_increment" {
+					str2 += ",NULL"
+				} else {
+					str2 += ",\"\""
+				}
+			}
+			i++
+		}
+		str += ")"
+		str2 += ")"
+		return str + str2, nil
+	}
 }
 
 // Tableupdate 更新表数据
 func (p *Process) Tableupdate() string {
-	return ""
+	sql, err := p.getUpdateStatement(p.formData.name)
+	if err != nil {
+		return p.createErrorGrid(p.lastSQL, err)
+	}
+	msg := "<div id='results'>" + sql + "</div>"
+	msg += "<script type=\"text/javascript\" language='javascript'> parent.transferQuery(); </script>\n"
+	return msg
+}
+
+// getUpdateStatement 获取更新语句
+func (p *Process) getUpdateStatement(tbl string) (string, error) {
+	query := "show full fields from `" + tbl + "`"
+	p.lastSQL = query
+	if rows, err := p.db.Queryx(query); err != nil {
+		return "", err
+	} else {
+		str := "UPDATE `" + tbl + "` SET "
+		str2 := ""
+		pKey := ""
+		defer rows.Close()
+		var i = 0
+		for rows.Next() {
+			results := make(map[string]interface{})
+			rows.MapScan(results)
+			if i == 0 {
+				str += "`" + string(results["Field"].([]byte)) + "`=\"\""
+				if string(results["Key"].([]byte)) != "" {
+					str2 += "`" + string(results["Field"].([]byte)) + "`=\"\""
+				}
+				if string(results["Key"].([]byte)) == "PRI" {
+					pKey = string(results["Field"].([]byte))
+				}
+			} else {
+				str += ",`" + string(results["Field"].([]byte)) + "`=\"\""
+				if string(results["Key"].([]byte)) == "" {
+					if string(results["Key"].([]byte)) == "PRI" {
+						pKey = string(results["Field"].([]byte))
+					}
+					if str2 != "" {
+						str2 += " AND "
+					}
+					str2 += "`" + string(results["Field"].([]byte)) + "`=\"\""
+				}
+			}
+			i++
+		}
+
+		if pKey != "" {
+			str2 = "`" + pKey + "`=\"\""
+		}
+		if str2 != "" {
+			str2 = " WHERE " + str2
+		}
+
+		return str + str2, nil
+	}
 }
 
 // Showcreate 展示创建语句
@@ -1475,20 +1577,39 @@ func (p *Process) copyObject(newName string) error {
 // Processes 进程管理器
 func (p *Process) Processes() string {
 	html := "<link href='/mywebsql/cache?css=theme,default,alerts,results' rel=\"stylesheet\" />\n"
-
 	typo := "message ui-state-highlight"
-
 	msg := T("Select a process and click the button to kill the process")
+	if val := p.PostData(); val != nil {
+		if prcids := val["prcid[]"]; len(prcids) > 0 {
+			killed := []string{}
+			missed := []string{}
 
-	prcid := p.FormValue("prcid") // TODO 需要支持传递数组参数
-
-	if prcid != "" {
-		//prcids := []string{prcid}
-		// TODO 提交杀死进程
+			for _, v := range prcids {
+				if err := p.killProcess(v); err == nil {
+					pine.Logger().Warning("kill 进程失败", err)
+					killed = append(killed, v)
+				} else {
+					missed = append(missed, v)
+				}
+			}
+			if len(killed) > 0 {
+				msg = T("The process with id [{{PID}}] was killed", strings.Join(killed, ","))
+				typo = "message ui-state-default"
+			} else {
+				msg = T("No such process [id = {{PID}}]", strings.Join(missed, ","))
+				typo = "message ui-state-error"
+			}
+		}
 	}
 
 	return html + p.displayProcessList(msg, typo)
 
+}
+
+func (p *Process) killProcess(pid string) error {
+	query := "KILL " + pid
+	_, err := p.db.Exec(query)
+	return err
 }
 
 func (p *Process) displayProcessList(msg, typo string) string {
@@ -1567,11 +1688,11 @@ func (p *Process) Help() string {
 
 	contents := p.Render("help/"+page, nil)
 	return string(p.Render("help", pine.H{
-		"indexs": [7]string{"queries", "results", "keyboard", "prefs", "misc", "credits", "about"},
-		"pages": pages,
-		"MSG": msg,
+		"indexs":          [7]string{"queries", "results", "keyboard", "prefs", "misc", "credits", "about"},
+		"pages":           pages,
+		"MSG":             msg,
 		"PROJECT_SITEURL": template.HTML(PROJECT_SITEURL),
-		"page": page, "contents": template.HTML(contents)}))
+		"page":            page, "contents": template.HTML(contents)}))
 }
 
 // Createtbl 创建表
