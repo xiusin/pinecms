@@ -315,7 +315,7 @@ func ExecuteRequest(db *sqlx.DB, ctx *pine.Context) string {
 		queryType = postType
 	}
 	ctx.RequestCtx.QueryArgs().Set("type", queryType)
-	pine.Logger().Debug("type", queryType)
+	pine.Logger().Debug("exec type", queryType)
 	if queryType != "" {
 		html += InitProcess(db, ctx).exec(queryType)
 	}

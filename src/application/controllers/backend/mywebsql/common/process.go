@@ -23,10 +23,11 @@ const trimChar = " \r\n\t;"
 
 type Process struct {
 	*pine.Context
-	db       *sqlx.DB
-	dbname   string
-	lastSQL  string
-	formData struct {
+	db         *sqlx.DB
+	dbname     string
+	lastSQL    string
+	affectRows int64
+	formData   struct {
 		id    string
 		page  int
 		name  string
@@ -59,7 +60,6 @@ func InitProcess(db *sqlx.DB, ctx *pine.Context) *Process {
 		p.formData.table = strings.Trim(p.FormValue("query"), trimChar)
 		p.formData.query = ""
 	}
-	pine.Logger().Debugf("%+v", p.formData)
 	return p
 }
 
@@ -903,8 +903,6 @@ func (p *Process) getBlobDisplay(rs interface{}, info *Column, numRecord int, ed
 	return span
 }
 
-
-
 func (p *Process) showDbInfoGrid(message string) string {
 	grid := "<div id='results'>"
 	grid += "<div class='message ui-state-default'>" + message + "<span style='float:right'>" + T("Quick Search") +
@@ -1029,8 +1027,7 @@ func (p *Process) showDbInfoGrid(message string) string {
 	return grid
 }
 
-
-func (p *Process) createDbInfoGrid(query string, numQueries int, affectedRows int) string {
+func (p *Process) createDbInfoGrid(query string, numQueries int) string {
 	p.removeSelectSession([]string{"pkey", "ukey", "mkey", "unique_table"})
 	if query == "" {
 		query = p.formData.query
@@ -1047,13 +1044,13 @@ func (p *Process) createDbInfoGrid(query string, numQueries int, affectedRows in
 
 	grid += msg + ".</div>"
 	grid += "<div class=\"message ui-state-highlight\">"
-	grid += strReplace([]string{"{{NUM}}"}, []string{fmt.Sprintf("%d", affectedRows)}, T("{{NUM}} record(s) were affected"))
+	grid += strReplace([]string{"{{NUM}}"}, []string{fmt.Sprintf("%d", p.affectRows)}, T("{{NUM}} record(s) were affected"))
 	grid += "</div>"
 
 	if numQueries == 1 {
 		match := regexp.MustCompile("[\\n|\\r]?[\\n]+")
 		formattedQuery := match.ReplaceAllString(query, "<br>")
-		grid +=  "<div class='sql-text ui-state-default'>" + formattedQuery + "</div>"
+		grid += "<div class='sql-text ui-state-default'>" + formattedQuery + "</div>"
 		warnings := p.getWarnings()
 
 		if len(warnings) > 0 {
@@ -1065,10 +1062,10 @@ func (p *Process) createDbInfoGrid(query string, numQueries int, affectedRows in
 		}
 	}
 	grid += "</div>"
-	grid += "<script type=\"text/javascript\" language='javascript'> parent.transferResultMessage(-1, '0', '"+
+	grid += "<script type=\"text/javascript\" language='javascript'> parent.transferResultMessage(-1, '0', '" +
 		strReplace([]string{"{{NUM}}"},
-		[]string{fmt.Sprintf("%d", affectedRows)},
-		T("{{NUM}} record(s) updated"))+"');\n"
+			[]string{fmt.Sprintf("%d", p.affectRows)},
+			T("{{NUM}} record(s) updated")) + "');\n"
 
 	match := regexp.MustCompile(`[\n\r]`)
 	grid += "parent.addCmdHistory(\"" + match.ReplaceAllString(query, "<br>") + "\");\n"
@@ -1193,16 +1190,16 @@ func (p *Process) Search() string {
 }
 
 // Indexes 索引设置
-func (p *Process) Indexes() string  {
+func (p *Process) Indexes() string {
 	return "索引设置"
 }
 
 // Enginetype 存储引擎切换
-func (p *Process) Enginetype() string  {
+func (p *Process) Enginetype() string {
 	return "存储引擎"
 }
 
-func (p *Process) Altertbl() string  {
+func (p *Process) Altertbl() string {
 	return "修改结构"
 }
 
@@ -1261,8 +1258,8 @@ func (p *Process) Truncate() string {
 	if ret, err := p.db.Exec(p.lastSQL); err != nil {
 		return p.createErrorGrid(p.lastSQL, err)
 	} else {
-		row, _ := ret.RowsAffected()
-		return p.createDbInfoGrid(p.lastSQL, 1, int(row))
+		p.affectRows, _ = ret.RowsAffected()
+		return p.createDbInfoGrid(p.lastSQL, 1)
 	}
 }
 
@@ -1275,7 +1272,7 @@ func (p *Process) Drop() string {
 		return p.createErrorGrid(p.lastSQL, err)
 	}
 	p.Session().Set("db.altered", "true")
-	return p.createDbInfoGrid(p.lastSQL, 1, 1)
+	return p.createDbInfoGrid(p.lastSQL, 1)
 }
 
 // Rename 重命名
@@ -1286,8 +1283,30 @@ func (p *Process) Rename() string {
 		return p.createErrorGrid("", errors.New("缺少参数"))
 	}
 
+	if err := p.renameObject(newName); err != nil {
+		return p.createErrorGrid(p.lastSQL, err)
+	}
+	p.Session().Set("db.altered", "true")
+	numQueries := 1
+	if p.formData.id == "table" {
+		numQueries = 2
+	}
+	return p.createDbInfoGrid(p.lastSQL, numQueries)
+}
 
-	return "未完成重命名"
+func (p *Process) renameObject(newName string) error {
+	if p.formData.id == "table" {
+		p.lastSQL = "rename table `"+p.formData.name+"` to `"+newName+"`"
+		if rows, err := p.db.Exec(p.lastSQL); err == nil {
+			p.affectRows,_ = rows.RowsAffected()
+		} else {
+			return err
+		}
+	} else {
+		//cmd := p.getCreateCommand(p.formData.id, p.formData.name)
+		//search := ""	// TODO 忽略大小写匹配
+	}
+	return nil
 }
 
 // Dbrepair 修复表
@@ -1422,7 +1441,7 @@ func (p *Process) Copy() string {
 		if p.formData.id == "table" {
 			numQueries = 2
 		}
-		return p.createDbInfoGrid(p.lastSQL, numQueries, -1)
+		return p.createDbInfoGrid(p.lastSQL, numQueries)
 	}
 }
 
@@ -1430,12 +1449,12 @@ func (p *Process) copyObject(newName string) error {
 	var query string
 	var err error
 	if p.formData.id == "table" {
-		query = "CREATE table `"+newName+"` LIKE `"+p.formData.name+"`"
+		query = "CREATE table `" + newName + "` LIKE `" + p.formData.name + "`"
 		p.lastSQL = query
 		if _, err = p.db.Exec(query); err != nil {
 			return err
 		}
-		query = "INSERT INTO `"+newName+"` SELECT * FROM `"+p.formData.name+"`"
+		query = "INSERT INTO `" + newName + "` SELECT * FROM `" + p.formData.name + "`"
 		p.lastSQL = query
 		if _, err = p.db.Exec(query); err != nil {
 			return err
@@ -1543,8 +1562,16 @@ func (p *Process) Help() string {
 	if _, ok := pages[page]; !ok {
 		page = "queries"
 	}
+
+	msg := strReplace([]string{"{{LINK}}"}, []string{""}, T("To see most up-to-date help contents, please visit {{LINK}}"))
+
 	contents := p.Render("help/"+page, nil)
-	return string(p.Render("help", pine.H{"pages": pages, "page": page, "contents": contents}))
+	return string(p.Render("help", pine.H{
+		"indexs": [7]string{"queries", "results", "keyboard", "prefs", "misc", "credits", "about"},
+		"pages": pages,
+		"MSG": msg,
+		"PROJECT_SITEURL": template.HTML(PROJECT_SITEURL),
+		"page": page, "contents": template.HTML(contents)}))
 }
 
 // Createtbl 创建表

@@ -3,22 +3,21 @@
 <div id="popup_wrapper">
 
 	<div class="docinfo">
-		<?php echo str_replace('<%= LINK %>', '', __('To see most up-to-date help contents, please visit <%= LINK %>')); ?>
+	    <%= MSG %>
 		<a target="_blank" href="<%= PROJECT_SITEURL %>/docs">MyWebSQL Online Documentation</a>
 	</div>
 
 	<ul class="links">
-	<?php
-	foreach($data['pages'] as $x=>$y) {
-			if ($data['page'] == $x)
-				echo "<li class=\"current\"><img border=\"0\" align=\"absmiddle\" src='img/help/t_$x".".gif' alt=\"\" />$y</li>";
-			else
-				echo "<li><a href=\"#$x\"><img border=\"0\" align=\"absmiddle\" src='img/help/t_$x".".gif' alt=\"\" />$y</a></li>";
-		}
-	?>
+	<%= for (x, y) in indexs { %>
+	    <%= if (y == page) { %>
+	         <li class="current"><img border="0" align="absmiddle" src='/mywebsql/img/help/t_<%= y %>.gif' alt="" /><%= pages[y] %></li>
+	    <% } else { %>
+	    	 <li><a href="#<%= y %>"><img border="0" align="absmiddle" src='/mywebsql/img/help/t_<%= y %>.gif' alt="" /><%= pages[y] %></a></li>
+	    <% } %>
+	<% } %>
 	</ul>
 	<div class="content">
-	<%= CONTENT %>
+	<%= contents %>
 	</div>
 
 </div>

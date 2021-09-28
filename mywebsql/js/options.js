@@ -227,8 +227,8 @@ function repairTables() {
 /* ------------------------------- */
 function helpShowAll() { taskbar.openDialog('help', "?q=wrkfrm&type=help", 680, 440); }
 function helpQuickTutorial() {
-	$('<link id="ehelp_css">').appendTo('head').attr({ rel:  "stylesheet", type: "text/css", href: "img/ehelp.css" });
-	$.getScript('cache.php?script=ehelp', function() {
+	$('<link id="ehelp_css">').appendTo('head').attr({ rel:  "stylesheet", type: "text/css", href: "/mywebsql/img/ehelp.css" });
+	$.getScript('/mywebsql/cache?script=ehelp', function() {
 		taskbar.minimizeAll();
 		showEHelp();
 	});
