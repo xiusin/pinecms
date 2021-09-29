@@ -2,12 +2,13 @@ package manager
 
 import (
 	"fmt"
-	"github.com/xiusin/pinecms/src/application/plugins/task/table"
 	"os"
 	"path/filepath"
 	"reflect"
 	"sync"
 	"time"
+
+	"github.com/xiusin/pinecms/src/application/plugins/task/table"
 
 	"github.com/go-xorm/xorm"
 	"github.com/robfig/cron/v3"
@@ -26,22 +27,24 @@ type taskManager struct {
 	sync.Once
 	sync.Mutex
 
-	pool       map[int64]TaskFunc
-	orm        *xorm.Engine
-	logger     cron.Logger
-	cron       *cron.Cron
-	scriptPath string
-	ExecFn     string
+	pool              map[int64]TaskFunc
+	loadedScriptMTime map[string]time.Time // 记录脚本的修改时间
+	orm               *xorm.Engine
+	logger            cron.Logger
+	cron              *cron.Cron
+	scriptPath        string
+	ExecFn            string
 }
 
 func TaskManager() *taskManager {
 	if tm == nil {
 		tm = &taskManager{
-			logger:     &logger{pine.Logger()},
-			orm:        di.MustGet(&xorm.Engine{}).(*xorm.Engine),
-			scriptPath: "tasks",
-			pool:       map[int64]TaskFunc{},
-			ExecFn:     "tasks.Run",
+			logger:            &logger{pine.Logger()},
+			orm:               di.MustGet(&xorm.Engine{}).(*xorm.Engine),
+			scriptPath:        "tasks",
+			pool:              map[int64]TaskFunc{},
+			loadedScriptMTime: map[string]time.Time{},
+			ExecFn:            "tasks.Run",
 		}
 		_ = os.Mkdir(tm.scriptPath, os.ModePerm)
 	}
@@ -61,10 +64,11 @@ func (tm *taskManager) initYaegi() (i *interp.Interpreter, err error) {
 	i = interp.New(interp.Options{})
 	err = i.Use(stdlib.Symbols)
 	tm.CheckErr(err, "导入标准库失败", false)
+	builder := di.GetDefaultDI()
 	err = i.Use(interp.Exports{
 		"pinecms/pinecms": {
-			"DB": reflect.ValueOf(xorm.Engine{}), //
-			//"Table"
+			"DI": reflect.ValueOf(builder),
+			"DB": reflect.ValueOf(xorm.Engine{}),
 		},
 	})
 	tm.CheckErr(err, "导出自定义包异常", false)
@@ -133,7 +137,7 @@ func TaskJobFunc(info *table.TaskInfo) func() {
 				_, _ = tm.orm.InsertOne(&table.TaskLog{
 					TaskId:   id,
 					Status:   false,
-					Detail: fmt.Sprintf("%s", err),
+					Detail:   fmt.Sprintf("%s", err),
 					ExecTime: dur.Milliseconds(),
 				})
 			}
@@ -165,34 +169,41 @@ func TaskJobFunc(info *table.TaskInfo) func() {
 			return
 		}
 
-		entity := tm.cron.Entry(cron.EntryID(id))
-
-		go func() {
-			_, _ = tm.orm.Where("id = ?", id).Update(&table.TaskInfo{
-				NextRunTime: &entity.Next,
-			})
-		}()
+		start := time.Now()
+		taskSh := taskScript(info.Service)
+		finfo, err := os.Stat(taskSh)
+		tm.CheckErr(err, taskSh+"脚本状态异常", true)
 		tm.Lock()
 		defer tm.Unlock()
-		start := time.Now()
+		if mtime, exist := tm.loadedScriptMTime[taskSh]; exist {
+			if finfo.ModTime().After(mtime) { // 有改动
+				delete(tm.loadedScriptMTime, taskSh)
+			}
+		}
 
-		taskSh := taskScript(info.Service)
 		var fn TaskFunc
-		if fn, exist = tm.pool[info.Id]; !exist { // todo 动态载入脚本修改 (是否需要一个延迟)
+		if fn, exist = tm.pool[info.Id]; !exist {
 			if engine, err := tm.initYaegi(); err != nil {
 				panic(err)
 			} else {
+				// 允许直接使用真实路径, 解析脚本时替换为映射包路径 如 xorm.io/engine => pinecms/engine
 				_, err = engine.EvalPath(taskSh)
 				tm.CheckErr(err, "脚本语法错误", true)
 				v, err := engine.Eval(tm.ExecFn)
 				tm.CheckErr(err, "执行脚本错误", true)
 				tm.pool[info.Id] = v.Interface().(func(*xorm.Engine) (string, error))
+				tm.loadedScriptMTime[taskSh] = finfo.ModTime()
 			}
 		}
+
 		msg, err := fn(tm.orm)
 		tm.CheckErr(err, "脚本结果异常", true)
-		dur = time.Now().Sub(start)
+		dur = time.Since(start)
 		go func() {
+			entity := tm.cron.Entry(cron.EntryID(id))
+			_, _ = tm.orm.Where("id = ?", id).Update(&table.TaskInfo{
+				NextRunTime: &entity.Next,
+			})
 			_, err = tm.orm.InsertOne(&table.TaskLog{
 				TaskId:   id,
 				Status:   true,

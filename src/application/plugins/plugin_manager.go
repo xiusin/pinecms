@@ -23,10 +23,6 @@ import (
 	"time"
 )
 
-//https://github.com/GoAdminGroup/go-admin/blob/master/plugins/plugins.go
-// TODO 废除JSON配置读取, 命令行注入不在此提供, 使用api处理
-// 		允许注入到task任务管理, 使用脚本处理
-
 const ext = ".so"
 
 const exportedVarSuffix = "Plugin"
@@ -212,6 +208,7 @@ func (p *pluginManager) Uninstall(name string) {
 
 func Init() {
 	if runtime.GOOS == "windows" {
+		pine.Logger().Warning("windows 不支持plugin功能")
 		return
 	}
 	pluginPath := config.AppConfig().PluginPath

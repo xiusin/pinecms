@@ -162,18 +162,12 @@
 	var commandEditor = null;
 	var commandEditor2 = null;
 	var commandEditor3 = null;
-// <?php
-//
-// 	if (Session::get('db', 'changed')) {
-// 		echo 'document.getElementById("messageContainer").innerHTML = "Database changed to: '.htmlspecialchars(Session::get('db', 'name')).'";';
-// 		Session::del('db', 'changed');
-// 	}
-// 	else
-// 		echo 'document.getElementById("messageContainer").innerHTML = "Connected to: '.htmlspecialchars(DB_HOST).' as '.htmlspecialchars(DB_USER).'";';
-// ?>
+	<%= DBCHANGE %>
 </script>
 <script type="text/javascript" language="javascript" src="/mywebsql/cache?script=layout,ui,dialogs,context,alerts,cookies,select,interface,options,treeview,common,taskbar,settings,query,tables,clipboard"></script>
 <%= contextMenusHTML %>
 <%= UpdateSqlEditor %>
 <%= HotkeysHTML %>
+<%= GetGeneratedJS %>
+
 </body></html>

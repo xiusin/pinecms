@@ -3,9 +3,6 @@ package mywebsql
 import (
 	"fmt"
 	"html/template"
-	"strings"
-	"sync"
-	"sync/atomic"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/mywebsql/common"
@@ -17,21 +14,12 @@ type IndexController struct {
 	MyWebSql
 	hasError     string
 	ShareVisitor *int
-	ShareAtomic  *atomic.Value
-	ShareLocker  *sync.Mutex
 }
 
 var AjaxResponse = []byte(`<div id="results">1</div>`)
 
+// GetIndex 总入口
 func (c *IndexController) GetIndex() {
-	fmt.Println("c.ShareVisitor", *c.ShareVisitor)
-	fmt.Println("c.ShareLocker", c.ShareLocker)
-	fmt.Println("c.ShareAtomic", c.ShareAtomic)
-
-	c.ShareLocker.Lock()
-	*c.ShareVisitor++
-	c.ShareLocker.Unlock()
-
 	if theme := c.Ctx().GetString("theme"); len(theme) > 0 {
 		c.Render().ViewData("THEME_PATH", theme)
 		c.Ctx().SetCookie("theme", theme, common.COOKIE_LIFETIME*60*60)
@@ -129,17 +117,25 @@ func (c *IndexController) GetIndex() {
 		c.ViewData("contextMenusHTML", template.HTML(common.GetContextMenusHTML()))
 		c.ViewData("HotkeysHTML", template.HTML(common.GetHotkeysHTML()))
 		c.ViewData("UpdateSqlEditor", template.HTML(common.UpdateSqlEditor()))
-		c.ViewData("KEYCODE_SETNULL", strings.Replace(common.T("Press {{KEY}} to set NULL"), "{{KEY}}", common.KEY_CODES["KEYCODE_SETNULL"][1], 1))
-		c.ViewData("LoginUser", strings.Replace(common.T("Logged in as: {{USER}}"), "{{USER}}", auth.User, 1))
+		c.ViewData("GetGeneratedJS", template.HTML(common.GetGeneratedJS()))
+		c.ViewData("KEYCODE_SETNULL", common.T("Press {{KEY}} to set NULL", common.KEY_CODES["KEYCODE_SETNULL"][1]))
+		c.ViewData("LoginUser", common.T("Logged in as: {{USER}}", auth.User))
 		c.ViewData("dialogs", template.HTML(dialogs))
+
+		if c.Session().Get("db.change") == "true" {
+			c.ViewData("DBCHANGE", template.HTML("document.getElementById(\"messageContainer\").innerHTML = \"Database changed to: "+c.Session().Get("db.name")+"\";"))
+			c.Session().Remove("db.change")
+		} else {
+			c.ViewData("DBCHANGE", template.HTML("document.getElementById(\"messageContainer\").innerHTML = \"Connected to: "+auth.Host+" as "+auth.User+"\";"))
+		}
 
 		c.Render().HTML("index.php")
 	}
 
 }
 
+// PostIndex 登录提交
 func (c *IndexController) PostIndex() {
-
 	authUser := c.Ctx().PostValue("auth_user")
 	authPwd := c.Ctx().PostValue("auth_pwd")
 	server := c.Ctx().PostValue("server")

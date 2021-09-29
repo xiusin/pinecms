@@ -27,6 +27,7 @@ type Process struct {
 	dbname     string
 	lastSQL    string
 	affectRows int64
+	hasResult  bool
 	formData   struct {
 		id    string
 		page  int
@@ -58,7 +59,6 @@ func InitProcess(db *sqlx.DB, ctx *pine.Context) *Process {
 	if match, _ := regexp.MatchString(`^\d+$`, p.formData.table); match || p.formData.table == "" {
 		p.formData.page, _ = strconv.Atoi(p.formData.table)
 		p.formData.table = strings.Trim(p.FormValue("query"), trimChar)
-		p.formData.query = ""
 	}
 
 	return p
@@ -277,8 +277,12 @@ func (p *Process) Query() string {
 	var html string
 
 	p.loadDbVars()
-	// TODO 区分查询是否需要返回执行结果
-	if strings.ToLower(querySql[:6]) == "select" {
+
+	//  * For successful SELECT, SHOW, DESCRIBE or EXPLAIN queries, mysqli_query() will return a mysqli_result object.
+	//  * For other successful queries mysqli_query() will return TRUE.
+	if strings.ToLower(querySql[:6]) == "select" || strings.ToLower(querySql[:4]) == "show" ||
+		strings.ToLower(querySql[:8]) == "describe" || strings.ToLower(querySql[:7]) == "explain" {
+
 		queryType := p.getQueryType(querySql)
 		pine.Logger().Debug(queryType["can_limit"])
 		if queryType["can_limit"] {
@@ -287,13 +291,53 @@ func (p *Process) Query() string {
 			html = p.createSimpleGrid(T("Query")+": "+querySql, querySql)
 		}
 	} else {
+		ret, err := p.db.Exec(querySql)
+		if err != nil {
+			return p.createErrorGrid(querySql, err)
+		}
 
+		info := p.getCommandInfo(querySql)
+		if info["dbAltered"].(bool) {
+			p.Session().Set("db.altered", "true")
+		} else if info["setvar"].(bool) && info["variable"].(string) != "" && info["value"].(string) != "" {
+			p.setDbVar(info["variable"].(string), info["value"].(string))
+		}
+		rn, _ := ret.RowsAffected()
+		html = p.createDbInfoGrid(querySql, int(rn))
 	}
 
 	return html
 
 }
 
+func (p *Process) getCommandInfo(sql string) map[string]interface{} {
+	info := map[string]interface{}{
+		"db":        "",
+		"dbChanged": false,
+		"dbAltered": false,
+		"setvar":    false,
+		"variable":  "",
+		"value":     "",
+	}
+	dbMatch := regexp.MustCompile(`(?i)^[\s]*USE[[:space:]]*([\S]+)`)
+	alterMatch := regexp.MustCompile(`(?i)^(CREATE|ALTER|DROP)\s+`)
+	setMatch := regexp.MustCompile("(?i)^SET[\\s]+@([a-zA-z0-9_]+|`.*`|\\'.*\\'|\".*\")[\\s]?=[\\s]?(.*)")
+	if dbMatch.MatchString(sql) {
+		strs := dbMatch.FindAllStringSubmatch(sql, -1)
+		info["db"] = strings.Trim(strs[0][1], " ;")
+		info["dbChanged"] = true
+	} else if alterMatch.MatchString(sql) {
+		info["dbAltered"] = true
+	} else if setMatch.MatchString(sql) {
+		strs := dbMatch.FindAllStringSubmatch(sql, -1)
+		info["variable"] = strs[0][1]
+		info["value"] = strs[0][2]
+		info["setvar"] = true
+	}
+	return info
+}
+
+// loadDbVars 载入会话修改过的变量
 func (p *Process) loadDbVars() {
 	varByts := []byte(p.Session().Get("vars"))
 	var vars = map[string]string{}
@@ -507,9 +551,7 @@ func (p *Process) createErrorGrid(query string, err error, params ...int) string
 		grid += msg + "</div>"
 	}
 
-	match := regexp.MustCompile("[\\n|\\r]?[\\n]+")
-
-	formattedQuery := match.ReplaceAllString(query, "<br>")
+	formattedQuery := regexp.MustCompile(`[\n|\r]?[\n]+`).ReplaceAllString(query, "<br>")
 
 	grid += "<div class=\"message ui-state-error\">" + T("Error occurred while executing the query") +
 		":</div><div class=\"message ui-state-highlight\">" + err.Error() +
@@ -517,7 +559,7 @@ func (p *Process) createErrorGrid(query string, err error, params ...int) string
 
 	grid += "</div>"
 	grid += "<script type=\"text/javascript\" language='javascript'> parent.transferResultMessage(-1, '&nbsp;', '" + T("Error occurred while executing the query") + "');\n"
-	grid += "parent.addCmdHistory(\"" + strings.ReplaceAll(p.Session().Get("select.query"), "\r\n", "<br/>") + "\");\n"
+	grid += "parent.addCmdHistory(\"" + formattedQuery + "\");\n"
 	grid += "parent.resetFrame();\n"
 	grid += "</script>\n"
 
@@ -569,7 +611,6 @@ func (p *Process) Infoserver() string {
 }
 
 func (p *Process) createSimpleGrid(message string, query string) string {
-	pine.Logger().Debug("createSimpleGrid")
 	grid := "<div id='results'>"
 	grid += "<div class='message ui-state-default'>" + message + "<span style='float:right'>" + T("Quick Search") +
 		"&nbsp;<input type=\"text\" id=\"quick-info-search\" maxlength=\"50\" /></div>"
@@ -639,7 +680,6 @@ func (p *Process) createSimpleGrid(message string, query string) string {
 
 			}
 
-			// TODO 确认blob类型以及数字类型. 后续碰到补充
 			grid += "<td nowrap=\"nowrap\" id=\"r" + p.n2s(j) + "f" + p.n2s(i) + "\" class=\"" + class + "\">" + data + "</td>"
 		}
 		grid += "</tr>\n"
@@ -672,9 +712,33 @@ func (p *Process) createResultGrid(query string) string {
 	grid += "<div id='results'>"
 	grid += "<table cellspacing=\"0\" width='100%' border=\"0\" class='results' id=\"dataTable\"><thead>\n"
 
+	// 遍历数据
+	rows, err := p.db.Query(query)
+
+	if err != nil {
+		pine.Logger().Warning("查询异常", query, err)
+		return p.createErrorGrid(query, err)
+	}
+
+	// TODO 根据查询类型确定查询表字段, 如编辑器查询可能就没有table名称, 需要自己解析出来 目前GO没有此类方法识别字段所属表
 	f := p.getFieldInfo()
 
-	if p.Session().Get("select.can_limit") == "true" && len(f) > 0 {
+	isUniqueTable := len(f) > 0 // TODO 非同表不允许添加修改数据
+
+	if len(f) == 0 {
+		cts, _ := rows.ColumnTypes()
+		for _, ct := range cts {
+			nn, _ := ct.Nullable()
+			nic, _ := helper.InArray(ct.DatabaseTypeName(), []interface{}{"DECIMAL", "INT", "BIGINT", "TINYINT", "FLOAT", "DOUBLE"})
+			f = append(f, &Column{
+				ColumnName: ct.Name(),
+				NotNull:    nn,
+				Numeric:    nic,
+			})
+		}
+	}
+
+	if p.Session().Get("select.can_limit") == "true" && isUniqueTable {
 		p.Session().Set("select.unique_table", f[0].TableName)
 	}
 
@@ -723,14 +787,8 @@ func (p *Process) createResultGrid(query string) string {
 
 	grid += "</tr></thead><tbody>\n"
 
-	// 遍历数据
-	rows, err := p.db.Query(query)
-	if err != nil {
-		pine.Logger().Warning("查询异常", query, err)
-		return p.createErrorGrid(query, err)
-	}
-
 	datas, err := p.row2arrMap(rows)
+
 	if err != nil {
 		pine.Logger().Warning("转换数据类型异常", query, err)
 		return p.createErrorGrid(query, err)
@@ -786,7 +844,7 @@ func (p *Process) createResultGrid(query string) string {
 
 	gridTitle := T("Query Results")
 	if editTableName != "" {
-		gridTitle = strings.Replace(T("Data for {{TABLE}}"), "{{TABLE}}", gridTitle, 1)
+		gridTitle = T("Data for {{TABLE}}", gridTitle)
 	}
 
 	grid += "<div id=\"title\">" + gridTitle + "</div>"
@@ -801,13 +859,13 @@ func (p *Process) createResultGrid(query string) string {
 			current_page = p.selectSessionInt("page")
 			from := (current_page-1)*recordLimitInt + 1
 			to := from + numRows - 1
-			message = "<div class='numrec'>" + strReplace([]string{"{{START}}", "{{END}}"}, []string{p.n2s(from), p.n2s(to)}, T("Showing records {{START}} - {{END}}")) + "</div>"
+			message = "<div class='numrec'>" + T("Showing records {{START}} - {{END}}", p.n2s(from), p.n2s(to)) + "</div>"
 		} else {
 			total_records = numRows
 			total_pages = 1
 			current_page = 1
 			if recordLimitInt > 0 && total_records > recordLimitInt {
-				message = "<div class='numrec'>" + strReplace([]string{"{{MAX}}"}, []string{p.n2s(recordLimitInt)}, T("Showing first {{MAX}} records only")) + "!</div>"
+				message = "<div class='numrec'>" + T("Showing first {{MAX}} records only", p.n2s(recordLimitInt)) + "!</div>"
 			}
 		}
 	} else {
@@ -1081,8 +1139,15 @@ func (p *Process) createDbInfoGrid(query string, numQueries int) string {
 	return grid
 }
 
-func (p *Process) getFieldInfo() []*Column {
-	query := "SELECT * FROM information_schema.columns WHERE table_schema = '" + p.dbname + "' AND table_name = '" + p.formData.table + "'"
+func (p *Process) getFieldInfo(table ...string) []*Column {
+	if p.dbname == "" {
+		panic(errors.New("请选择数据库后再进行操作"))
+	}
+	tbl := p.formData.table
+	if len(table) > 0 {
+		tbl = table[0]
+	}
+	query := "SELECT * FROM information_schema.columns WHERE table_schema = '" + p.dbname + "' AND table_name = '" + tbl + "'"
 	var columns []*Column
 	if err := p.db.Select(&columns, query); err != nil {
 		pine.Logger().Warning("获取表字段信息失败", err)
@@ -1249,10 +1314,9 @@ func (p *Process) Options() string {
 
 }
 
-// Queryall
+// Queryall 执行语句, 如插入数据, 提交数据,
 func (p *Process) Queryall() string {
 	return ""
-
 }
 
 // Truncate 截断数据表

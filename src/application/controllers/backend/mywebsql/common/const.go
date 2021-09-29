@@ -165,7 +165,7 @@ type Table struct {
 	UpdateTime    *sql.NullTime   `json:"update_time" db:"Update_time"`
 	CheckTime     *sql.NullTime   `json:"check_time" db:"Check_time"`
 	Collation     *sql.NullString `json:"collation" db:"Collation"`
-	CheckSum      *sql.NullString  `json:"check_sum" db:"Checksum"`
+	CheckSum      *sql.NullString `json:"check_sum" db:"Checksum"`
 	CreateOptions *sql.NullString `json:"create_options" db:"Create_options"`
 	Comment       string          `json:"comment" db:"Comment"`
 }

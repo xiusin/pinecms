@@ -45,7 +45,7 @@ func (c *MyWebSql) Construct() {
 	c.ViewData("MAX_TEXT_LENGTH_DISPLAY", common.MAX_TEXT_LENGTH_DISPLAY)
 	c.ViewData("APP_VERSION", common.APP_VERSION)
 	c.ViewData("EXTERNAL_PATH", "/mywebsql/")
-	c.ViewData("PRODUCT_URL", "https://github.com/xiusin/mywebsql/")
+	c.ViewData("PRODUCT_URL", "https://github.com/xiusin/db-web-manager.git")
 
 	c.plush = di.MustGet(common.RenderService).(*render.Plush)
 
@@ -76,6 +76,6 @@ func (c *MyWebSql) GetSQLX() *sqlx.DB {
 	}
 
 	json.Unmarshal([]byte(sess), &serve)
-	db, _ := sqlx.Open(serve.Driver, fmt.Sprintf("%s:%s@tcp(%s:%s)/?charset=utf8&parseTime=true", serve.User, serve.Password, serve.Host, serve.Port))
+	db, _ := sqlx.Open(serve.Driver, fmt.Sprintf("%s:%s@tcp(%s:%s)/?charset=utf8&parseTime=true&loc=Local", serve.User, serve.Password, serve.Host, serve.Port))
 	return db
 }

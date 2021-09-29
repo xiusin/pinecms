@@ -8,7 +8,7 @@ import (
 	"github.com/xiusin/pinecms/src/common/helper"
 )
 
-// TableChecker 数据库检查
+// TableChecker 表检查
 type TableChecker struct {
 	*sqlx.DB
 	Db         string

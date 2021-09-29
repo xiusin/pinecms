@@ -3,11 +3,12 @@ package mywebsql
 import (
 	"bytes"
 	"fmt"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pinecms/src/common/helper"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 func Cache(ctx *pine.Context) {
@@ -49,15 +50,15 @@ func Cache(ctx *pine.Context) {
 				byts.Write(data)
 				byts.WriteByte('\n')
 				byts.WriteByte('\n')
-			}else {
+			} else {
 				fmt.Println("无法找到文件", fullPath)
 			}
-			fullPath = helper.GetRootPath("mywebsql/themes/"+themePath+"/" + s + ".css")
+			fullPath = helper.GetRootPath("mywebsql/themes/" + themePath + "/" + s + ".css")
 			if data, err := os.ReadFile(fullPath); err == nil {
 				byts.Write(data)
 				byts.WriteByte('\n')
 				byts.WriteByte('\n')
-			}else {
+			} else {
 				fmt.Println("无法找到文件", fullPath)
 			}
 		}

@@ -16,7 +16,6 @@ const ServiceUploader = "pinecms.uploader"
 
 const ServiceUploaderEngine = "pinecms.uploader.%s"
 
-
 const ServiceApplication = "pinecms.application"
 
 const ServiceBackendRouter = "pinecms.router.backend"
