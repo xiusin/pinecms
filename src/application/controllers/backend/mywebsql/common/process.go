@@ -551,15 +551,16 @@ func (p *Process) createErrorGrid(query string, err error, params ...int) string
 		grid += msg + "</div>"
 	}
 
-	formattedQuery := regexp.MustCompile(`[\n|\r]?[\n]+`).ReplaceAllString(query, "<br>")
+	formattedQuery := regexp.MustCompile(`[\n|\r]?[\n]+`).ReplaceAllString(query, "<br />")
 
 	grid += "<div class=\"message ui-state-error\">" + T("Error occurred while executing the query") +
 		":</div><div class=\"message ui-state-highlight\">" + err.Error() +
 		"</div><div class=\"sql-text ui-state-error\">" + formattedQuery + "</div>"
 
 	grid += "</div>"
-	grid += "<script type=\"text/javascript\" language='javascript'> parent.transferResultMessage(-1, '&nbsp;', '" + T("Error occurred while executing the query") + "');\n"
-	grid += "parent.addCmdHistory(\"" + formattedQuery + "\");\n"
+	grid += "<script type=\"text/javascript\" language='javascript'> parent.transferResultMessage(-1, '&nbsp;', '"
+	grid += T("Error occurred while executing the query") + "');\n"
+	grid += "parent.addCmdHistory(\"" + template.HTMLEscapeString(formattedQuery) + "\");\n"
 	grid += "parent.resetFrame();\n"
 	grid += "</script>\n"
 
@@ -896,7 +897,7 @@ func (p *Process) createResultGrid(query string) string {
 		js += "parent.queryType = \"query\";\n"
 	}
 	js += "parent.transferResultGrid(" + p.n2s(numRows) + ", '0', \"" + message + "\");\n"
-	js += "parent.addCmdHistory(\"" + strings.ReplaceAll(p.selectSession("query"), "\\n\\r", "<br/>") + "\", 1);\n"
+	js += "parent.addCmdHistory(\"" + strings.ReplaceAll(template.HTMLEscapeString(p.selectSession("query")), "\\n\\r", "<br/>") + "\", 1);\n"
 	js += "parent.resetFrame();\n"
 	js += "</script>\n"
 
@@ -1102,9 +1103,11 @@ func (p *Process) createDbInfoGrid(query string, numQueries int) string {
 	}
 
 	grid += msg + ".</div>"
-	grid += "<div class=\"message ui-state-highlight\">"
-	grid += strReplace([]string{"{{NUM}}"}, []string{fmt.Sprintf("%d", p.affectRows)}, T("{{NUM}} record(s) were affected"))
-	grid += "</div>"
+	if p.affectRows > 0 {
+		grid += "<div class=\"message ui-state-highlight\">"
+		grid += strReplace([]string{"{{NUM}}"}, []string{fmt.Sprintf("%d", p.affectRows)}, T("{{NUM}} record(s) were affected"))
+		grid += "</div>"
+	}
 
 	if numQueries == 1 {
 		match := regexp.MustCompile("[\\n|\\r]?[\\n]+")
@@ -1122,9 +1125,7 @@ func (p *Process) createDbInfoGrid(query string, numQueries int) string {
 	}
 	grid += "</div>"
 	grid += "<script type=\"text/javascript\" language='javascript'> parent.transferResultMessage(-1, '0', '" +
-		strReplace([]string{"{{NUM}}"},
-			[]string{fmt.Sprintf("%d", p.affectRows)},
-			T("{{NUM}} record(s) updated")) + "');\n"
+		T("{{NUM}} record(s) updated", fmt.Sprintf("%d", p.affectRows)) + "');\n"
 
 	match := regexp.MustCompile(`[\n\r]`)
 	grid += "parent.addCmdHistory(\"" + match.ReplaceAllString(query, "<br>") + "\");\n"
@@ -1193,16 +1194,17 @@ func (p *Process) getCreateCommand(typo, name string) string {
 }
 
 func (p *Process) GetDropCommand(table string) string {
-	return "drop table if exists '" + table + "'"
+	return "drop table if exists `" + table + "`"
 }
 
 func (p *Process) GetTruncateCommand(table string) string {
-	return "truncate table '" + table + "'"
+	return "truncate table `" + table + "`"
 }
 
+// GetEngines 获取数据库支持的引擎
 func (p *Process) GetEngines() []string {
 	var engines []Engine
-	if err := p.db.Select(&engines, "show engines"); err != nil {
+	if err := p.db.Select(&engines, "SHOW ENGINES"); err != nil {
 		pine.Logger().Warning("获取存储引擎失败", err)
 	}
 	var ret []string
@@ -1324,7 +1326,7 @@ func (p *Process) Truncate() string {
 	if p.formData.name == "" {
 		return p.createErrorGrid("", errors.New("参数错误"))
 	}
-	p.lastSQL = "TRUNCATE TABLE " + p.formData.name
+	p.lastSQL = p.GetTruncateCommand(p.formData.name)
 	if ret, err := p.db.Exec(p.lastSQL); err != nil {
 		return p.createErrorGrid(p.lastSQL, err)
 	} else {

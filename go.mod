@@ -77,5 +77,3 @@ require (
 	xorm.io/builder v0.3.9
 	xorm.io/core v0.7.3
 )
-
-replace github.com/xiusin/pine => ../pine
