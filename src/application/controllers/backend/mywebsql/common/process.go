@@ -27,7 +27,6 @@ type Process struct {
 	dbname     string
 	lastSQL    string
 	affectRows int64
-	hasResult  bool
 	formData   struct {
 		id    string
 		page  int
@@ -458,9 +457,9 @@ func (p *Process) sortQuery(query, field string) string {
 		sortType = "DESC"
 	}
 	// 匹配LIMIT语句
-	matches := regexp.MustCompile(LIMIT_REGEXP).FindStringSubmatch(query)
+	// matches := regexp.MustCompile(LIMIT_REGEXP).FindStringSubmatch(query)
 	// 匹配sort语句
-	matches = regexp.MustCompile(SORT_REGEXP).FindStringSubmatch(query)
+	matches := regexp.MustCompile(SORT_REGEXP).FindStringSubmatch(query)
 	pine.Logger().Debug("matches", matches)
 
 	p.Session().Set("select.sortcol", field)
@@ -565,14 +564,6 @@ func (p *Process) createErrorGrid(query string, err error, params ...int) string
 	grid += "</script>\n"
 
 	return grid
-}
-
-func (p *Process) getTemplateSQL(templateName string) string {
-	content, err := GetPlush().Exec("template/"+templateName, nil)
-	if err != nil {
-		return ""
-	}
-	return string(content)
 }
 
 func (p *Process) Infoserver() string {
@@ -1036,7 +1027,6 @@ func (p *Process) showDbInfoGrid(message string) string {
 						} else if v, ok := val.(int32); ok {
 							data = fmt.Sprintf("%d", v)
 						} else if v, ok := val.(float64); ok {
-							data = strconv.FormatFloat(v, 'f', 6, 10)
 							data = strconv.FormatFloat(v, 'f', 6, 64)
 						} else if v, ok := val.(bool); ok {
 							data = strconv.FormatBool(v)
@@ -1056,26 +1046,6 @@ func (p *Process) showDbInfoGrid(message string) string {
 		}
 		grid += "</tr>\n"
 	}
-
-	//$j = 0;
-	//while($r = $db->fetchRow(0, 'num')) {
-	//	$i = 0;
-	//	print "<tr id=\"rc$j\" class=\"row\">";
-	//	print "<td class=\"tj\">".($j+1)."</td>";
-	//
-	//	foreach($r as $rs) {
-	//		$class = ($rs === NULL) ? "tnl" : ($f[$i]->numeric == 1 ? "tr" : "tl");
-	//if ($f[$i]->blob)
-	//$class .= $f[$i]->type == 'binary' ? ' blob' : ' text';
-	//
-	//$data = ($rs === NULL) ? "NULL" : (($rs === "") ? "&nbsp;" : htmlspecialchars($rs));
-	//
-	//print "<td nowrap=\"nowrap\" id=\"r$j"."f$i\" class=\"$class\">$data</td>";
-	//$i++;
-	//}
-	//print "</tr>\n";
-	//$j++;
-	//}
 
 	grid += "</tbody></table>"
 	grid += "</div>"
@@ -1128,7 +1098,7 @@ func (p *Process) createDbInfoGrid(query string, numQueries int) string {
 		T("{{NUM}} record(s) updated", fmt.Sprintf("%d", p.affectRows)) + "');\n"
 
 	match := regexp.MustCompile(`[\n\r]`)
-	grid += "parent.addCmdHistory(\"" + match.ReplaceAllString(query, "<br>") + "\");\n"
+	grid += "parent.addCmdHistory(\"" + template.HTMLEscapeString(match.ReplaceAllString(query, "<br>")) + "\");\n"
 
 	if p.Session().Get("db.altered") == "true" {
 		p.Session().Remove("db.altered")
@@ -1218,7 +1188,7 @@ func (p *Process) GetEngines() []string {
 
 func (p *Process) GetCharsets() []string {
 	var ret []string
-	if rows, err := p.db.Queryx("show character set"); err != nil {
+	if rows, err := p.db.Queryx("SHOW CHARACTER SET"); err != nil {
 		pine.Logger().Warning("获取字符集失败", err)
 	} else {
 		for rows.Next() {
@@ -1259,7 +1229,52 @@ func (p *Process) Search() string {
 
 // Indexes 索引设置
 func (p *Process) Indexes() string {
-	return "索引设置"
+	return string(p.displayIndexesForm())
+}
+
+func (p *Process) displayIndexesForm() []byte {
+	indexes := p.getIndexes()
+	fields := p.getFields()
+
+	return p.Render("indexes", pine.H{
+		"ID":         p.formData.id,
+		"MESSAGE":    T("Changes are not saved until you press [Save All Changes]"),
+		"INDEXES":    template.HTML(jsonEncode(&indexes)),
+		"FIELDS":     template.HTML(jsonEncode(&fields)),
+		"TABLE_NAME": p.formData.name,
+	})
+}
+
+func (p *Process) getIndexes() map[string][]Index {
+	sql := "show indexes from `" + p.formData.name + "`"
+	var indexes []Index
+	p.lastSQL = sql
+	if err := p.db.Select(&indexes, sql); err != nil {
+		pine.Logger().Warning("获取"+p.formData.name+"索引失败", err)
+	}
+	var indexMap = map[string][]Index{}
+	for k := range indexes {
+		im := indexMap[indexes[k].KeyName]
+		im = append(im, indexes[k])
+		indexMap[indexes[k].KeyName] = im
+	}
+
+	return indexMap
+}
+
+func (p *Process) getFields() []*Field {
+	sql := "show fields from `" + p.formData.name + "`"
+	var ff []*Field
+	p.lastSQL = sql
+
+	if err := p.db.Select(&ff, sql); err != nil {
+		pine.Logger().Warning("获取"+p.formData.name+"字段列表失败", err)
+	}
+
+	for _, field := range ff {
+		field.fetchFieldInfo()
+	}
+	return ff
 }
 
 // Enginetype 存储引擎切换
@@ -1316,9 +1331,28 @@ func (p *Process) Options() string {
 
 }
 
-// Queryall 执行语句, 如插入数据, 提交数据,
+// Queryall 执行语句, 如插入数据, 提交数据 此方法不支持限制表格, 查询要使用query
 func (p *Process) Queryall() string {
-	return ""
+	// 按照每行以;换行为一个执行语句
+	qs := strings.Split(strings.Trim(p.formData.query, trimChar)+";", ";\r\n")
+
+	var success int64  // 影响行数
+	var sqlSuccess int // 执行成功数
+
+	for _, query := range qs {
+		query = strings.Trim(query, trimChar)
+		if len(query) > 0 {
+			if ret, err := p.db.Exec(query); err != nil {
+				return p.createErrorGrid(query, err, sqlSuccess, int(success))
+			} else {
+				row, _ := ret.RowsAffected()
+				success += row
+				sqlSuccess++
+			}
+		}
+	}
+	p.affectRows = success
+	return p.createDbInfoGrid(p.formData.name, sqlSuccess)
 }
 
 // Truncate 截断数据表

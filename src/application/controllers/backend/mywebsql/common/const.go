@@ -285,3 +285,66 @@ type Collation struct {
 	Compiled  string `db:"Compiled"`
 	Sortlen   int64  `db:"Sortlen"`
 }
+
+type Index struct {
+	Table        string      `db:"Table"`
+	NonUnique    int         `db:"Non_unique" json:"unique"`
+	KeyName      string      `db:"Key_name"`
+	SeqInIndex   int         `db:"Seq_in_index" json:"order"`
+	ColumnName   string      `db:"Column_name" json:"column"`
+	Collation    string      `db:"Collation"`
+	Cardinality  int         `db:"Cardinality"`
+	SubPart      interface{} `db:"Sub_part"`
+	Packed       interface{} `db:"Packed"`
+	Null         interface{} `db:"Null"`
+	IndexType    string      `db:"Index_type"`
+	Comment      string      `db:"Comment"`
+	IndexComment string      `db:"Index_comment"`
+	Visible      string      `db:"Visible"`
+	Expression   interface{} `db:"Expression"`
+}
+
+type Field struct {
+	Field   string          `db:"Field"`
+	Type    string          `db:"Type"`
+	Null    string          `db:"Null"`
+	Key     string          `db:"Key"`
+	Default *sql.NullString `db:"Default"`
+	Extra   string          `db:"Extra"`
+
+	Fname string `json:"fname"`
+	Ftype string `json:"ftype"`
+	Flen  string `json:"flen"`
+	Flist string `json:"flist"`
+	Fval  string `json:"fval"`
+	Fsign bool   `json:"fsign"`
+	Fzero bool   `json:"fzero"`
+	Fpkey bool   `json:"fpkey"`
+	Fauto bool   `json:"fauto"`
+	Fnull bool   `json:"fnull"`
+}
+
+func (f *Field) fetchFieldInfo() {
+	f.Fname = f.Field
+	start := strings.Index(f.Type, "(")
+	if start == -1 {
+		f.Ftype = f.Type
+	} else {
+		f.Ftype = f.Type[:start]
+
+		if f.Ftype == "enum" || f.Ftype == "set" {
+			f.Flen = ""
+		} else {
+			f.Flen = f.Type[start+1 : strings.Index(f.Type, ")")]
+		}
+	}
+	if f.Default != nil {
+		f.Fval = f.Default.String
+	}
+
+	f.Fsign = strings.Contains(f.Type, "unsigned")
+	f.Fzero = strings.Contains(f.Ftype, "zerofill")
+	f.Fpkey = f.Key == "PRI"
+	f.Fauto = strings.Contains(f.Extra, "auto_increment")
+	f.Fnull = f.Null == "NO"
+}
