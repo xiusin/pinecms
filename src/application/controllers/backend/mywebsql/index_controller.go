@@ -23,6 +23,7 @@ func (c *IndexController) GetIndex() {
 	if theme := c.Ctx().GetString("theme"); len(theme) > 0 {
 		c.Render().ViewData("THEME_PATH", theme)
 		c.Ctx().SetCookie("theme", theme, common.COOKIE_LIFETIME*60*60)
+		c.Ctx().Session().Set("theme_path", theme)
 		c.Ctx().Write(AjaxResponse)
 		return
 	} else {
@@ -87,6 +88,7 @@ func (c *IndexController) GetIndex() {
 			}
 			return
 		}
+
 		dbname := c.Ctx().GetString("db")
 		if dbname != "" && dbname != c.Session().Get("db.name") {
 			c.Session().Set("db.change", "1")
@@ -95,7 +97,7 @@ func (c *IndexController) GetIndex() {
 				c.Ctx().Response.Header.SetContentType(pine.ContentTypeHTML)
 				c.Ctx().Write(AjaxResponse)
 			} else {
-				c.Ctx().Redirect("http://localhost:2019/mywebsql/index/index", 302)
+				c.Ctx().Redirect("/mywebsql/index/index", 302)
 			}
 			return
 		}
@@ -108,7 +110,7 @@ func (c *IndexController) GetIndex() {
 
 		c.ViewData("auth", auth)
 		c.ViewData("KEY_CODES", common.KEY_CODES)
-		c.ViewData("MenuBarHTML", template.HTML(common.GetMenuBarHTML()))
+		c.ViewData("MenuBarHTML", template.HTML(common.GetMenuBarHTML(c.Session().Get("theme_path"))))
 		c.ViewData("version", c.Session().Get("db.version"))
 		c.ViewData("version_full", c.Session().Get("db.version_full"))
 		c.ViewData("version_comment", c.Session().Get("db.version_comment"))
@@ -161,9 +163,10 @@ func (c *IndexController) PostIndex() {
 			c.GetIndex()
 			return
 		}
-		db.Close()
+		defer db.Close()
 		c.saveAuthSession(serve)
-		c.Ctx().Redirect("http://localhost:2019/mywebsql/index/index", 302)
+		common.InitProcess(db, c.Ctx())
+		c.Ctx().Redirect("/mywebsql/index/index", 302)
 	}
 
 }

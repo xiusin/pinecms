@@ -315,7 +315,7 @@ function transferResultGrid(num, tm, msg) {
 	if (num == -1)
 		document.getElementById("recordCounter").innerHTML = "&nbsp;";
 	else
-		document.getElementById("recordCounter").innerHTML = totalRecords + " record(s)";
+		document.getElementById("recordCounter").innerHTML = totalRecords + " 条记录";
 	document.getElementById("timeCounter").innerHTML = tm;
 	document.getElementById("messageContainer").innerHTML = msg;
 

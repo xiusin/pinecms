@@ -86,7 +86,7 @@ const HOTKEYS_ENABLED = true
 
 const DEFAULT_EDITOR = "codemirror"
 
-var DEFAULT_THEME = "default"
+var DEFAULT_THEME = "bootstrap"
 
 const DEFAULT_LANGUAGE = "zh"
 
@@ -259,6 +259,13 @@ type Variable struct {
 type CreateCommand struct {
 	Table       string `db:"Table"`
 	CreateTable string `db:"Create Table"`
+}
+
+type CreateViewCommand struct {
+	View                string `db:"View"`
+	CreateView          string `db:"Create View"`
+	CharacterSetClient  string `db:"character_set_client"`
+	CollationConnection string `db:"collation_connection"`
 }
 
 type Engine struct {

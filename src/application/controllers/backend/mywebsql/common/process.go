@@ -89,6 +89,7 @@ func (p *Process) Showinfo() string {
 			"TYPE":    p.formData.id,
 			"NAME":    p.formData.table,
 			"COMMAND": cmd,
+			"SQL":     p.lastSQL,
 		}))
 	}
 
@@ -281,9 +282,7 @@ func (p *Process) Query() string {
 	//  * For other successful queries mysqli_query() will return TRUE.
 	if strings.ToLower(querySql[:6]) == "select" || strings.ToLower(querySql[:4]) == "show" ||
 		strings.ToLower(querySql[:8]) == "describe" || strings.ToLower(querySql[:7]) == "explain" {
-
 		queryType := p.getQueryType(querySql)
-		pine.Logger().Debug(queryType["can_limit"])
 		if queryType["can_limit"] {
 			html = p.createResultGrid(querySql)
 		} else {
@@ -943,8 +942,13 @@ func (p *Process) getBlobDisplay(rs interface{}, info *Column, numRecord int, ed
 		//$span .= "<span title=\"" . str_replace('{{NUM}}', $length, __('Click to view/edit column data [{{NUM}} Bytes]')). "\" class=\"blob $btype\" $extra>&nbsp;</span>";
 		//return $span;
 	}
-
-	span += "<span class=\"d\" style=\"display:none\">" + string(rs.([]byte)) + "</span>"
+	data := ""
+	if rs != nil {
+		data = string(rs.([]byte))
+	} else {
+		rs = "NULL"
+	}
+	span += "<span class=\"d\" style=\"display:none\">" + data + "</span>"
 
 	if !editable && rs != nil && MAX_TEXT_LENGTH_DISPLAY < length {
 		extra = `onclick="vwTxt(this, &quot;` + size + `&quot;, '` + btype + `')"`
@@ -1131,7 +1135,10 @@ func (p *Process) getFieldInfo(table ...string) []*Column {
 
 func (p *Process) SelectVersion() {
 	var variables []Variable
-	p.db.Select(&variables, "SHOW VARIABLES LIKE 'version%'")
+
+	if err := p.db.Select(&variables, "SHOW VARIABLES LIKE 'version%'"); err != nil {
+		pine.Logger().Warning("获取版本信息失败", err)
+	}
 	if len(variables) > 0 {
 		for _, variable := range variables {
 			if variable.VariableName == "version" {
@@ -1147,18 +1154,29 @@ func (p *Process) SelectVersion() {
 // 获取创建命令语句
 func (p *Process) getCreateCommand(typo, name string) string {
 	sql, cmd := "", ""
+
+	var createCommand interface{}
+
 	if typo == "trigger" {
 		sql = "show triggers where `trigger` = '" + name + "'"
 	} else {
+		if typo == "oview" {
+			typo = "view"
+			createCommand = &CreateViewCommand{}
+		}
+		if typo =="table" {
+			createCommand = &CreateCommand{}
+		}
 		sql = "show create " + typo + " `" + name + "`"
 	}
-	var createCommand []CreateCommand
-	if err := p.db.Select(&createCommand, sql); err != nil {
+	if err := p.db.Get(createCommand, sql); err != nil {
 		pine.Logger().Warning("查询创建语句异常", err)
 	}
 	p.lastSQL = sql
-	if len(createCommand) > 0 && createCommand[0].CreateTable != "" {
-		cmd = createCommand[0].CreateTable
+	if typo == "view" {
+		cmd = createCommand.(*CreateViewCommand).CreateView
+	} else if typo == "table" {
+		cmd = createCommand.(*CreateCommand).CreateTable
 	}
 	return cmd
 }
@@ -1203,7 +1221,7 @@ func (p *Process) GetCharsets() []string {
 
 func (p *Process) GetCollations() []string {
 	var collations []Collation
-	p.db.Select(&collations, "show collation")
+	p.db.Select(&collations, "SHOW COLLATION")
 	var ret []string
 	for _, collation := range collations {
 		ret = append(ret, collation.Collation)
@@ -1229,6 +1247,12 @@ func (p *Process) Search() string {
 
 // Indexes 索引设置
 func (p *Process) Indexes() string {
+	if p.formData.id == "alter" {
+
+
+
+		return ""
+	}
 	return string(p.displayIndexesForm())
 }
 

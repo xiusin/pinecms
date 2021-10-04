@@ -4,7 +4,7 @@
 
 	<div class="docinfo">
 	    <%= MSG %>
-		<a target="_blank" href="<%= PROJECT_SITEURL %>/docs">MyWebSQL Online Documentation</a>
+		<a target="_blank" href="//gowebdb.xiusin.cn/docs/">MyWebSQL Online Documentation</a>
 	</div>
 
 	<ul class="links">
