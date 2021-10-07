@@ -11,6 +11,7 @@ require (
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.2
 	github.com/alibabacloud-go/tea v1.1.15
 	github.com/aliyun/aliyun-oss-go-sdk v2.1.9+incompatible
+	github.com/allegro/bigcache/v3 v3.0.1
 	github.com/arl/statsviz v0.4.0
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
 	github.com/c2fo/testify v0.0.0-20150827203832-fba96363964a // indirect
@@ -31,7 +32,6 @@ require (
 	github.com/gobuffalo/helpers v0.6.2 // indirect
 	github.com/gobuffalo/plush v3.8.3+incompatible
 	github.com/gobuffalo/tags v2.1.7+incompatible // indirect
-	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/gookit/color v1.4.2
 	github.com/gorilla/securecookie v1.1.1
 	github.com/jmoiron/sqlx v1.3.4
@@ -77,3 +77,5 @@ require (
 	xorm.io/builder v0.3.9
 	xorm.io/core v0.7.3
 )
+
+replace github.com/xiusin/pine => D:\projects\src\pine

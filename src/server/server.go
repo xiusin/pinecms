@@ -8,8 +8,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/gomodule/redigo/redis"
-	pine_redis "github.com/xiusin/pine/cache/providers/redis"
+	"github.com/allegro/bigcache/v3"
+	pine_bigcache "github.com/xiusin/pine/cache/providers/pine-bigcache"
+
 	"github.com/xiusin/pine/sessions"
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/mywebsql"
@@ -28,7 +29,6 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/taglibs"
 	"github.com/xiusin/pinecms/src/application/controllers/tplfun"
-	"github.com/xiusin/pinecms/src/application/models/tables"
 
 	"github.com/xiusin/pinecms/src/config"
 	"github.com/xiusin/pinecms/src/router"
@@ -80,38 +80,6 @@ func InitDB() {
 	di.Set(controllers.ServiceXorm, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return XOrmEngine, nil
 	}, true)
-	if config.AppConfig().Debug {
-		go func() {
-			err := XOrmEngine.Sync2(
-				&tables.Dict{},
-				&tables.DocumentModelDsl{},
-				&tables.DocumentModelField{},
-				&tables.DictCategory{},
-				&tables.Category{},
-				&tables.Page{},
-				&tables.AdminRole{},
-				&tables.Member{},
-				&tables.MemberGroup{},
-				&tables.Attachments{},
-				&tables.AttachmentType{},
-				&tables.Department{},
-				&tables.Position{},
-				&tables.Log{},
-				&tables.RequestLog{},
-				&tables.Plugin{},
-				&tables.Tags{},
-				&tables.WechatMember{},
-				&tables.WechatAccount{},
-				&tables.WechatLog{},
-				&tables.WechatMsgReplyRule{},
-				&tables.WechatMaterial{},
-				&tables.WechatMsgTemplate{},
-				&tables.WechatQrcode{})
-			if err != nil {
-				pine.Logger().Error("同步表结构失败", err)
-			}
-		}()
-	}
 }
 
 func Server() {
@@ -190,7 +158,7 @@ func registerV2BackendRoutes() {
 }
 
 func runServe() {
-	app.SetRecoverHandler(func(ctx *pine.Context) {
+	pine.RegisterErrorCodeHandler(http.StatusInternalServerError, func(ctx *pine.Context) {
 		if ctx.IsAjax() {
 			_ = ctx.WriteJSON(pine.H{"code": http.StatusInternalServerError, "message": ctx.Msg})
 		} else {
@@ -202,42 +170,14 @@ func runServe() {
 	app.Run(
 		pine.Addr(fmt.Sprintf(":%d", conf.Port)),
 		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))),
-		pine.WithoutStartupLog(false),
+		pine.WithoutStartupLog(true),
 		pine.WithServerName("xiusin/pinecms"),
 		pine.WithCookie(true),
 	)
 }
 
 func InitCache() {
-	//cacheHandler = bitcask.New(int(conf.Session.Expires), conf.CacheDb, time.Minute*10)
-	pool := &redis.Pool{
-		MaxIdle:     dc.Redis.MaxIdle,
-		IdleTimeout: time.Duration(dc.Redis.IdleTimeout) * time.Second,
-		MaxActive:   dc.Redis.MaxActive,
-		Wait:        true,
-		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", fmt.Sprintf("%s:%d", dc.Redis.Host, dc.Redis.Port))
-			if err != nil {
-				pine.Logger().Errorf("Redis.Dial: %v", err)
-				return nil, err
-			}
-			if len(dc.Redis.Password) > 0 {
-				if _, err := c.Do("AUTH", dc.Redis.Password); err != nil {
-					c.Close()
-					pine.Logger().Errorf("Redis.AUTH: %v", err)
-					return nil, err
-				}
-			}
-			if _, err := c.Do("SELECT", dc.Redis.Index); err != nil {
-				c.Close()
-				pine.Logger().Errorf("Redis.SELECT: %v", err)
-				return nil, err
-			}
-			return c, nil
-		},
-	}
-
-	cacheHandler = pine_redis.New(pool, 1800)
+	cacheHandler = pine_bigcache.New(bigcache.DefaultConfig(24 * time.Hour))
 
 	theme, _ := cacheHandler.Get(controllers.CacheTheme)
 	if len(theme) > 0 {

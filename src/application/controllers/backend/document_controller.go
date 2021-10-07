@@ -1,18 +1,18 @@
 package backend
 
-import "C"
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"regexp"
+	"strings"
+	"time"
+
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"regexp"
-	"strings"
-	"time"
 )
 
 type DocumentController struct {
@@ -22,9 +22,9 @@ type DocumentController struct {
 }
 
 type table struct {
-	Columns      []column       `json:"columns"`
-	Props        interface{}    `json:"props"`
-	UpsetComps   []interface{}  `json:"upset_comps"`
+	Columns      []column      `json:"columns"`
+	Props        interface{}   `json:"props"`
+	UpsetComps   []interface{} `json:"upset_comps"`
 	SearchFields []interface{} `json:"search_fields"`
 }
 
@@ -276,7 +276,7 @@ func (c *DocumentController) GetTable() {
 	}
 
 	var fields tables.ModelDslFields
-	c.Orm.Where("mid = ?", mid). //Where("list_visible = 1").
+	c.Orm.Where("mid = ?", mid).
 		Asc("listorder").Find(&fields)
 	// TODO 允许搜索字段构建
 	table := table{Props: nil, Columns: []column{}, UpsetComps: []interface{}{}}
@@ -301,7 +301,6 @@ func (c *DocumentController) GetTable() {
 		if len(field.Datasource) > 0 {
 
 		}
-
 		if len(field.Component) > 0 {
 			var component = map[string]interface{}{}
 			if err := json.Unmarshal([]byte(field.Component), &component); err == nil {
@@ -309,6 +308,8 @@ func (c *DocumentController) GetTable() {
 			} else {
 				listColumn.Component = field.Component
 			}
+		} else if len(fieldDefineMap[field.FieldType].ListComp) > 0 {
+			listColumn.Component = fieldDefineMap[field.FieldType].ListComp
 		}
 
 		table.Columns = append(table.Columns, listColumn)

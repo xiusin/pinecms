@@ -1,1 +1,0 @@
-Default color theme for MyWebSQL

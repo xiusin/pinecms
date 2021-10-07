@@ -1,1 +1,0 @@
-Presence of a file called 'minify.txt' in this folder will signal the application to use minified scripts.
