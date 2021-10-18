@@ -43,6 +43,8 @@ export default class BaseService {
 			}
 		}
 
+		console.log("ns", ns, "baseUrl", baseUrl, "proxy", this.proxy, "isDev", isDev, "this.namespace", this.namespace);
+
 		// 拼接前缀
 		if (this.namespace) {
 			ns += "/" + this.namespace;

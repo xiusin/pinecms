@@ -195,7 +195,6 @@ func InitCache() {
 }
 
 func diConfig() {
-
 	di.Set(controllers.ServiceConfig, func(builder di.AbstractBuilder) (i interface{}, e error) {
 		return conf, nil
 	}, true)
@@ -222,12 +221,6 @@ func diConfig() {
 	di.Set(controllers.ServiceTablePrefix, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return dc.Db.DbPrefix, nil
 	}, true)
-
-	app.Use(func(ctx *pine.Context) {
-		ctx.Set("cache", cacheHandler)
-		ctx.Set("orm", XOrmEngine)
-		ctx.Next()
-	})
 }
 
 func getJetEngine() *jet.PineJet {

@@ -7,7 +7,6 @@ const routerMode: String = "hash";
 
 // 开发模式
 const isDev: Boolean = import.meta.env.MODE === "development";
-
 // Host
 const host: String = "";
 
@@ -20,7 +19,6 @@ const baseUrl: String = (function () {
 	} else {
 		proxy = store.get("proxy") || "dev";
 	}
-
 	return isDev ? `/${proxy}` : `/v2`; //${host} 可以填写/pro或/v2
 })();
 
