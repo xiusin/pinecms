@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
@@ -11,7 +13,6 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"strings"
 )
 
 type TableController struct {
@@ -45,7 +46,8 @@ func (c TableController) GetFields() {
 func (c *TableController) before(act int, params interface{}) error {
 	if OpList == act {
 		params.(*xorm.Session).Unscoped().Where("mid <> ?", 0)
-		if v := c.Input().GetInt64("mid"); v != 0 {
+		v, _ := c.Input().GetInt64("mid")
+		if  v != 0 {
 			params.(*xorm.Session).Where("mid = ?", v)
 		}
 	} else if OpAdd == act || OpEdit == act {
@@ -84,7 +86,8 @@ func (c *TableController) after(act int, params interface{}) {
 		if act == OpDel {
 			cacher.Delete(fmt.Sprintf(controllers.CacheModelTablePrefix, params.(*idParams).Id))
 		} else {
-			cacher.Delete(fmt.Sprintf(controllers.CacheModelTablePrefix, c.Input().GetInt("mid")))
+			mid, _ := c.Input().GetInt("mid")
+			cacher.Delete(fmt.Sprintf(controllers.CacheModelTablePrefix, mid))
 		}
 	}
 }

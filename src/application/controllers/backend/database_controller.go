@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+
 	"xorm.io/core"
 
 	"github.com/alexmullins/zip"
@@ -56,15 +57,15 @@ func (c *DatabaseController) Manager(orm *xorm.Engine) {
 }
 
 func (c *DatabaseController) Repair(orm *xorm.Engine) {
-	tables := c.Input().GetArray("tables")
+	tables := c.Input().GetFormStrings("tables")
 	if len(tables) == 0 {
 		helper.Ajax("请选择要修复的表", 1, c.Ctx())
 		return
 	}
 	for _, table := range tables {
-		_, err := orm.Exec("REPAIR TABLE `" + table.String() + "`")
+		_, err := orm.Exec("REPAIR TABLE `" + table + "`")
 		if err != nil {
-			helper.Ajax("修复错误："+table.String()+": "+err.Error(), 1, c.Ctx())
+			helper.Ajax("修复错误："+table+": "+err.Error(), 1, c.Ctx())
 			return
 		}
 	}
@@ -72,16 +73,16 @@ func (c *DatabaseController) Repair(orm *xorm.Engine) {
 }
 
 func (c *DatabaseController) Optimize(orm *xorm.Engine) {
-	tables := c.Input().GetArray("tables")
+	tables := c.Input().GetFormStrings("tables")
 	if len(tables) == 0 {
 		helper.Ajax("请选择要优化的表", 1, c.Ctx())
 		return
 	}
 
 	for _, table := range tables {
-		_, err := orm.Exec("OPTIMIZE TABLE `" + table.String() + "`")
+		_, err := orm.Exec("OPTIMIZE TABLE `" + table + "`")
 		if err != nil {
-			helper.Ajax("优化错误："+table.String()+": "+err.Error(), 1, c.Ctx())
+			helper.Ajax("优化错误："+table+": "+err.Error(), 1, c.Ctx())
 			return
 		}
 	}

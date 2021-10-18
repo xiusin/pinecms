@@ -31,7 +31,7 @@ func (c *ContentController) Construct() {
 }
 
 func (c *ContentController) PostList() {
-	var catid = c.Input().GetInt64("cid")
+	catid, _ := c.Input().GetInt64("cid")
 	var category tables.Category
 	_, _ = c.Orm.Where("id = ?", catid).Get(&category)
 	if category.Catid == 0 {
@@ -95,9 +95,9 @@ func (c *ContentController) PostList() {
 
 // PostEdit 编辑内容
 func (c *ContentController) PostEdit() {
-	id := c.Input().GetInt("id")
-	mid := c.Input().GetInt("mid")
-	catid := c.Input().GetInt("catid")
+	id, _ := c.Input().GetInt("id")
+	mid, _ := c.Input().GetInt("mid")
+	catid, _ := c.Input().GetInt("catid")
 	if mid < 1 || catid < 1 || id < 1 {
 		helper.Ajax("缺少关键参数", 1, c.Ctx())
 		return
@@ -157,7 +157,7 @@ func (c *ContentController) PostDelete() {
 		helper.Ajax("参数错误: "+err.Error(), 1, c.Ctx())
 		return
 	}
-	mid := c.Input().GetInt("mid")
+	mid, _ := c.Input().GetInt("mid")
 	if mid < 1 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return

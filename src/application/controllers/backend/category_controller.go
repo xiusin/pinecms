@@ -3,12 +3,13 @@ package backend
 import (
 	"errors"
 	"fmt"
+	"regexp"
+
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"regexp"
 )
 
 type CategoryController struct {
@@ -30,7 +31,7 @@ func (c *CategoryController) Construct() {
 
 func (c *CategoryController) before(act int, params interface{}) error {
 	if act == OpList {
-		typ := string(c.Input().GetStringBytes("type"))
+		typ, _ := c.Input().GetString("type")
 		if typ == "content" {
 			params.(*xorm.Session).Where("`type` <> ?", 2)
 		}

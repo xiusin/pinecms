@@ -69,7 +69,7 @@ func (c *PluginController) after(act int, _ interface{}) error {
 }
 
 func (c *PluginController) PostInstall() {
-	path := string(c.Input().GetStringBytes("path"))
+	path, _ := c.Input().GetString("path")
 	if len(path) == 0 {
 		helper.Ajax("请传入要安装的插件地址", 1, c.Ctx())
 		return
@@ -121,12 +121,12 @@ func (c *PluginController) PostInstall() {
 }
 
 func (c *PluginController) PostEnable() {
-	path := c.Input().GetStringBytes("path")
+	path, _ := c.Input().GetBytes("path")
 	if path == nil || len(path) == 0 {
 		helper.Ajax("请传入插件路径", 1, c.Ctx())
 		return
 	}
-	enable := c.Input().GetBool("enable")
+	enable,_ := c.Input().GetBool("enable")
 	ret, _ := c.Orm.Where("path = ?", string(path)).Cols("enable").Update(&tables.Plugin{
 		Enable:    enable,
 		UpdatedAt: tables.LocalTime(time.Now()),
@@ -140,7 +140,8 @@ func (c *PluginController) PostEnable() {
 
 func (c *PluginController) GetConfig() {
 	plugin := &tables.Plugin{}
-	c.Orm.Where("path = ?", c.Ctx().GetString("path")).Get(plugin)
+	path, _ := c.Ctx().GetString("path")
+	c.Orm.Where("path = ?", path).Get(plugin)
 	helper.Ajax(plugin.Config, 0, c.Ctx())
 }
 

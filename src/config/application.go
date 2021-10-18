@@ -1,12 +1,13 @@
 package config
 
 import (
-	"github.com/xiusin/pinecms/src/common/helper"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/xiusin/pinecms/src/common/helper"
 
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -73,23 +74,22 @@ func AppConfig() *Config {
 func parseConfig(path string, out interface{}) {
 	absPath, err := filepath.Abs(path)
 	if err != nil {
-		panic(err.Error())
+		panic(err)
 	}
 	fileContent, err := ioutil.ReadFile(absPath)
 	if err != nil {
-		panic(err.Error())
+		panic(err)
 	}
 	err = yaml.Unmarshal(fileContent, out)
 	if err != nil {
-		panic(err.Error())
+		panic(err)
 	}
 }
 
 func SiteConfig() (map[string]string, error) {
 	xorm, cache := helper.XormEngine(), helper.AbstractCache()
 	var settingData = map[string]string{}
-	err := cache.GetWithUnmarshal(controllers.CacheSetting, &settingData)
-	if err != nil {
+	if err := cache.GetWithUnmarshal(controllers.CacheSetting, &settingData); err != nil {
 		var settings []tables.Setting
 		err := xorm.Find(&settings)
 		if err != nil {

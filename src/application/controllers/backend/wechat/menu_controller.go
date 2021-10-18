@@ -34,7 +34,7 @@ func (c *WechatMenuController) PostEdit() {
 }
 
 func (c *WechatMenuController) GetInfo(cacher cache.AbstractCache) {
-	appid := c.Ctx().GetString("appid")
+	appid, _ := c.Ctx().GetString("appid")
 	if len(appid) == 0 {
 		helper.Ajax("请选择公众号", 1, c.Ctx())
 		return

@@ -1,6 +1,5 @@
 <template>
 	<div>
-
 		<cl-crud :ref="setRefs('crud')" @load="onLoad">
 			<el-row type="flex">
 				<cl-add-btn />
@@ -16,22 +15,22 @@
 							{{ buildURL(scope.row.appid) }}
 						</el-button>
 					</template>
-					<template #slot-map="{scope}">
+					<template #slot-map="{ scope }">
 						<el-button size="mini" type="text" @click="showMapData(scope.row.appid)">
 							会员概况
 						</el-button>
 					</template>
 					<template #column-important="{ scope }">
 						<el-dropdown size="mini" type="success" trigger="click">
-						<span class="el-dropdown-link" style="font-size: 12px">
-							操作<i class="el-icon-arrow-down el-icon--right"></i>
-						</span>
+							<span class="el-dropdown-link" style="font-size: 12px">
+								操作<i class="el-icon-arrow-down el-icon--right"></i>
+							</span>
 							<template #dropdown>
 								<el-dropdown-menu>
 									<el-dropdown-item
 										icon="el-icon-tip"
 										@click="clearQuota(scope.row.appid)"
-									>重置调用频次限制</el-dropdown-item
+										>重置调用频次限制</el-dropdown-item
 									>
 								</el-dropdown-menu>
 							</template>
@@ -53,15 +52,12 @@
 				<el-col :span="16">
 					<v-chart
 						:option="mapOptions"
-						:init-options="{height: 700, renderer: 'canvas'}"
+						:init-options="{ height: 700, renderer: 'canvas' }"
 						autoresize
 					/>
 				</el-col>
 				<el-col :span="8">
-					<v-chart
-						:option="userChartsOptions"
-						autoresize
-					/>
+					<v-chart :option="userChartsOptions" autoresize />
 				</el-col>
 			</el-row>
 		</cl-dialog>
@@ -74,12 +70,11 @@ import { useRefs } from "/@/core";
 import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
 import { ElMessage, ElMessageBox } from "element-plus";
 
-import chinaMap from "../../../../../public/china.json"
+import chinaMap from "/public/china.json";
 
-import {registerMap} from "echarts/core";
+import { registerMap } from "echarts/core";
 
 registerMap("china", chinaMap);
-
 
 export default defineComponent({
 	name: "wechat-account",
@@ -273,7 +268,7 @@ export default defineComponent({
 				{
 					type: "op",
 					width: 170,
-					buttons: ["slot-map","edit", "delete"]
+					buttons: ["slot-map", "edit", "delete"]
 				}
 			]
 		});
@@ -548,7 +543,7 @@ export default defineComponent({
 					type: "scatter",
 					coordinateSystem: "geo",
 					data: [],
-					symbolSize: val => val[2] / 10,
+					symbolSize: (val) => val[2] / 10,
 					tooltip: {
 						formatter: function (val) {
 							return val.name + ": " + val.value[2];
@@ -563,7 +558,7 @@ export default defineComponent({
 					type: "effectScatter",
 					coordinateSystem: "geo",
 					data: [],
-					symbolSize: val => val[2] / 10,
+					symbolSize: (val) => val[2] / 10,
 					showEffectOn: "render",
 					rippleEffect: {
 						brushType: "stroke"
@@ -593,60 +588,70 @@ export default defineComponent({
 
 		const userChartsOptions = ref({
 			title: {
-				text: '会员地域分布饼图',
-				left: 'center'
+				text: "会员地域分布饼图",
+				left: "center"
 			},
 			tooltip: {
-				trigger: 'item'
+				trigger: "item"
 			},
 			legend: {
-				orient: 'vertical',
-				left: 'left',
+				orient: "vertical",
+				left: "left"
 			},
 			series: [
 				{
-					name: '地域分布',
-					type: 'pie',
-					radius: '50%',
+					name: "地域分布",
+					type: "pie",
+					radius: "50%",
 					data: [],
 					emphasis: {
 						itemStyle: {
 							shadowBlur: 10,
 							shadowOffsetX: 0,
-							shadowColor: 'rgba(0, 0, 0, 0.5)'
+							shadowColor: "rgba(0, 0, 0, 0.5)"
 						}
 					}
 				}
 			]
-		})
+		});
 
-		function showMapData (appid) {
-			showMap.value = true
-			service.wechat.account.distribution({"appid": appid, type: 1}).then((data: any) => {
-				let dd = [];
-				for (const key in data) {
-					if (data[key]["province"] == "") {
-						data[key]["province"] = "未知区域"
+		function showMapData(appid) {
+			showMap.value = true;
+			service.wechat.account
+				.distribution({ appid: appid, type: 1 })
+				.then((data: any) => {
+					let dd = [];
+					for (const key in data) {
+						if (data[key]["province"] == "") {
+							data[key]["province"] = "未知区域";
+						}
+						dd.push({
+							name: data[key]["province"],
+							value: parseInt(data[key]["total"])
+						});
 					}
-					dd.push({"name": data[key]["province"], "value": parseInt(data[key]["total"])})
-				}
-				userChartsOptions.value.series[0].data = dd;
-			}).catch((e) => {
-				ElMessage.error(e)
-			})
+					userChartsOptions.value.series[0].data = dd;
+				})
+				.catch((e) => {
+					ElMessage.error(e);
+				});
 
-			service.wechat.account.distribution({"appid": appid, type: 2}).then((data: any) => {
-				let dd = [];
-				for (const key in data) {
-					dd.push({"name": data[key]["city"], "value": parseInt(data[key]["total"])})
-				}
-				mapOptions.value.series[0].data = convertData(dd);
-				mapOptions.value.series[1].data = convertData(dd.sort((a, b) => b.value - a.value).slice(0, 6));
-			}).catch((e) => {
-				ElMessage.error(e)
-			})
+			service.wechat.account
+				.distribution({ appid: appid, type: 2 })
+				.then((data: any) => {
+					let dd = [];
+					for (const key in data) {
+						dd.push({ name: data[key]["city"], value: parseInt(data[key]["total"]) });
+					}
+					mapOptions.value.series[0].data = convertData(dd);
+					mapOptions.value.series[1].data = convertData(
+						dd.sort((a, b) => b.value - a.value).slice(0, 6)
+					);
+				})
+				.catch((e) => {
+					ElMessage.error(e);
+				});
 		}
-
 
 		return {
 			service,

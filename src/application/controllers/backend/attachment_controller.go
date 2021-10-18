@@ -30,7 +30,7 @@ func (c *AttachmentController) Construct() {
 
 func (c *AttachmentController) before(act int, params interface{}) error {
 	if act == OpList {
-		cid := c.Input().GetInt64("classifyId")
+		cid, _ := c.Input().GetInt64("classifyId")
 		if cid > 0 {
 			params.(*xorm.Session).Where("classify_id = ?", cid)
 		}

@@ -10,7 +10,7 @@ func getConfig(ctx *pine.Context) {
 }
 
 func getApiData(ctx *pine.Context) {
-	appKey := ctx.GetString("appKey", "")
+	appKey, _ := ctx.GetString("appKey", "")
 	if appKey == "" {
 		_ = ctx.WriteJSON(pine.H{"code": 1, "msg": "参数错误"})
 		return
@@ -61,7 +61,7 @@ func getApiData(ctx *pine.Context) {
 }
 
 func saveApiData(ctx *pine.Context) {
-	typ := ctx.GetString("type")
+	typ, _ := ctx.GetString("type")
 	switch typ {
 	case "request":
 		saveRequestData(ctx)
@@ -77,7 +77,7 @@ func saveRequestData(ctx *pine.Context) {
 		helper.Ajax(err.Error(), 1, ctx)
 		return
 	}
-	entity.MenuKey = ctx.GetString("menu_key")
+	entity.MenuKey, _ = ctx.GetString("menu_key")
 	err := simdbDriver.Open(&entity).Where("menu_key", "=", entity.MenuKey).First().AsEntity(&entity)
 	if err != nil {
 		helper.Ajax(err.Error(), 1, ctx)

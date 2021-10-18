@@ -131,6 +131,7 @@
 							:ref="setRefs('upsert')"
 							:items="upsert.items"
 							:on-info="onInfo"
+							:dialog="{ props: { fullscreen: true }, controls: ['close'] }"
 						/>
 					</cl-crud>
 					<template v-if="catType === 1">
@@ -161,14 +162,14 @@ export default defineComponent({
 	name: "sys-content",
 	setup() {
 		//todo 通过配置文件注入变量. 引用
-		const $ueditorConf = {
-			serverUrl: "/api/web/upload/ueditor",
-			UEDITOR_HOME_URL: "/UEditor/",
-			autoHeightEnabled: false,
-			initialFrameHeight: 400,
-			initialFrameWidth: "100%",
-			enableAutoSave: false
-		};
+		// const $ueditorConf = {
+		// 	serverUrl: "/api/web/upload/ueditor",
+		// 	UEDITOR_HOME_URL: "/UEditor/",
+		// 	autoHeightEnabled: false,
+		// 	initialFrameHeight: 400,
+		// 	initialFrameWidth: "100%",
+		// 	enableAutoSave: false
+		// };
 
 		const service = inject<any>("service");
 
@@ -281,7 +282,7 @@ export default defineComponent({
 		const catKey = ref<string>("");
 
 		onBeforeMount(async function () {
-			const ret = await service.system.category.list({type: "content"});
+			const ret = await service.system.category.list({ type: "content" });
 			menuList.value = ret.list.filter((e: any) => e.type != 2);
 			catId.value = menuList.value[0].id;
 
@@ -296,11 +297,6 @@ export default defineComponent({
 		const list = ref<QueryList[]>([]);
 
 		const upsert = reactive<Upsert>({
-			dialog: {
-				props: {
-					fullscreen: true
-				}
-			},
 			items: []
 		});
 

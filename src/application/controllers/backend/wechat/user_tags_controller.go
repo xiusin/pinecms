@@ -21,7 +21,7 @@ func (c *WechatUserTagsController) Construct() {
 }
 
 func (c *WechatUserTagsController) PostList(cacher cache.AbstractCache) {
-	appid := string(c.Input().GetStringBytes("appid"))
+	appid, _ := c.Input().GetString("appid")
 	var tags = []*user.TagInfo{}
 	if appid == "" {
 		helper.Ajax("请输入公众号ID", 1, c.Ctx())
@@ -40,8 +40,8 @@ func (c *WechatUserTagsController) PostList(cacher cache.AbstractCache) {
 }
 
 func (c *WechatUserTagsController) PostDelete(cacher cache.AbstractCache) {
-	appid := string(c.Input().GetStringBytes("appid"))
-	id, _ := c.Input().Get("id").Int64()
+	appid, _ := c.Input().GetString("appid")
+	id, _ := c.Input().GetInt64("id")
 	cacheKey := fmt.Sprintf(CacheKeyWechatUserTags, appid)
 	var tags []*user.TagInfo
 	err := cacher.GetWithUnmarshal(cacheKey, &tags)

@@ -33,3 +33,5 @@ tests/*.h
 .lh
 /plugins/
 /mywebsql_images
+./pinecms
+pinecms

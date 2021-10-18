@@ -9,11 +9,10 @@ import (
 	"time"
 
 	"github.com/allegro/bigcache/v3"
-	pine_bigcache "github.com/xiusin/pine/cache/providers/pine-bigcache"
+	pine_bigcache "github.com/xiusin/pine/cache/providers/bigcache"
 
 	"github.com/xiusin/pine/sessions"
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
-	"github.com/xiusin/pinecms/src/application/controllers/backend/mywebsql"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/wechat"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/application/plugins"
@@ -147,7 +146,6 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.DatabaseBackupController))
 
 	wechat.InitRouter(app, g)
-	mywebsql.InitRouter(app, g)
 
 	app.Group("/v2/public").Handle(new(backend.PublicController))
 	app.Group("/v2/api").Handle(new(backend.PublicController))
@@ -204,7 +202,6 @@ func diConfig() {
 
 	di.Set(di.ServicePineLogger, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		loggers := logger.New()
-		logger.DisableColor = true
 		writer := logger2.NewPineCmsLogger(XOrmEngine, 10)
 		pine.RegisterOnInterrupt(func() {
 			writer.Close()

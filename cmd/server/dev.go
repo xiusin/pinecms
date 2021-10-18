@@ -6,9 +6,11 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"sync/atomic"
+	"syscall"
 	"time"
 
 	"github.com/xiusin/logger"
@@ -27,7 +29,7 @@ var (
 	rebuildNotifier   = make(chan struct{})
 	types, ignoreDirs []string
 	rootDir           string
-	buildName         = "pinecms-dev-build"
+	buildName         = "runtime/pinecms-dev-build"
 	delay, limit      int32
 	watcher           *fsnotify.Watcher
 	counter           int32
@@ -50,11 +52,12 @@ func init() {
 }
 
 func devCommand(cmd *cobra.Command, args []string) error {
-	closeCh := make(chan os.Signal)
-	signal.Notify(closeCh, os.Interrupt, os.Kill)
+	closeCh := make(chan os.Signal, 1)
+	signal.Notify(closeCh, os.Interrupt, syscall.SIGTERM)
 	if runtime.GOOS == "windows" {
 		buildName += winExt
 	}
+	os.MkdirAll(filepath.Dir(buildName), os.ModePerm)
 	_ = os.Remove(buildName)
 	defer func() { _ = watcher.Close() }()
 	if err := getCommandFlags(cmd); err != nil {
@@ -84,6 +87,7 @@ func serve() {
 		ctx, cancel := context.WithCancel(context.Background())
 		globalCancel = cancel
 		process := exec.CommandContext(ctx, fmt.Sprintf("./%s", buildName), "serve", "run")
+		process.Dir = util.AppPath()
 		process.Stdout = os.Stdout
 		process.Stderr = os.Stdout
 		go func() {
@@ -102,7 +106,6 @@ func serve() {
 }
 func build() error {
 	// TODO 自动安装下载golangAnnotations
-
 	start := time.Now()
 	cmd := exec.Command("go", "build", "-o", buildName)
 	cmd.Stdout = os.Stdout
@@ -114,7 +117,7 @@ func build() error {
 		return err
 	}
 
-	logger.Printf("构建耗时: %.2fs", time.Now().Sub(start).Seconds())
+	logger.Printf("构建耗时: %.2fs", time.Since(start).Seconds())
 
 	return nil
 }
@@ -157,11 +160,11 @@ func eventNotify() {
 	var building = false
 	for {
 		select {
-		case event, _ := <-watcher.Events:
+		case event := <-watcher.Events:
 			if isIgnoreAction(&event) {
 				continue
 			}
-			if time.Now().Sub(lockerTimestamp) > time.Second*time.Duration(delay) && !building {
+			if time.Since(lockerTimestamp) > time.Second*time.Duration(delay) && !building {
 				name := util.Replace(event.Name, util.AppPath(), "")
 				fileInfo := strings.Split(name, ".")
 				if !util.InSlice(".*", types) && !util.InSlice("."+strings.TrimRight(fileInfo[len(fileInfo)-1], "~"), types) {

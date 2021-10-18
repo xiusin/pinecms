@@ -1,11 +1,12 @@
 package server
 
 import (
-	"github.com/takama/daemon"
-	config "github.com/xiusin/pinecms/src/server"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/takama/daemon"
+	config "github.com/xiusin/pinecms/src/server"
 )
 
 type Service struct{ daemon.Daemon }
@@ -31,20 +32,16 @@ func (service *Service) Manage(args []string, usage string) (string, error) {
 	}
 
 	interrupt := make(chan os.Signal, 1)
-	signal.Notify(interrupt, os.Interrupt, os.Kill, syscall.SIGTERM)
+	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 
 	go func() {
 		config.InitDB()
 		config.Server()
 	}()
 
-	for {
-		select {
-		case killSignal := <-interrupt:
-			if killSignal == os.Interrupt {
-				return "Daemon was interrupted by system signal", nil
-			}
-			return "Daemon was killed", nil
-		}
+	killSignal := <-interrupt
+	if killSignal == os.Interrupt {
+		return "Daemon was interrupted by system signal", nil
 	}
+	return "Daemon was killed", nil
 }

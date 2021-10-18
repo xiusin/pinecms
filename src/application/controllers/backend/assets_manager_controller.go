@@ -146,7 +146,7 @@ func (c *AssetsManagerController) PostTheme(cache cache.AbstractCache) {
 }
 
 func (c *AssetsManagerController) GetInfo() {
-	fullPath := c.Ctx().GetString("path")
+	fullPath, _ := c.Ctx().GetString("path")
 	if fullPath == "" {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
@@ -169,12 +169,12 @@ func (c *AssetsManagerController) GetInfo() {
 
 func (c *AssetsManagerController) PostAdd(orm *xorm.Engine) {
 	if c.Ctx().IsPost() {
-		name := c.Ctx().PostValue("name")
+		name, _ := c.Ctx().GetString("name")
 		if !strings.HasSuffix(name, ".jet") {
 			helper.Ajax("模板文件请以'.jet'为后缀", 1, c.Ctx())
 			return
 		}
-		content := c.Ctx().PostValue("content")
+		content, _ := c.Ctx().GetString("content")
 		f := filepath.Join(c.conf.View.FeDirname, c.conf.View.Theme, name)
 		_, err := os.Stat(f)
 		if err == nil {
@@ -192,7 +192,7 @@ func (c *AssetsManagerController) PostAdd(orm *xorm.Engine) {
 }
 
 func (c *AssetsManagerController) GetThumb() {
-	themeName := c.Ctx().GetString("id")
+	themeName, _ := c.Ctx().GetString("id")
 	dirName := filepath.Join(c.conf.View.FeDirname, themeName, "thumb.png")
 	c.Ctx().SetContentType("img/png")
 	c.Ctx().SendFile(dirName)

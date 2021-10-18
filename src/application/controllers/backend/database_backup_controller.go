@@ -33,7 +33,7 @@ func (c *DatabaseBackupController) BackupList() {
 
 func (c *DatabaseBackupController) BackupDownload() {
 	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
-	name := strings.Trim(c.Input().Get("name").String(), `"`)
+	name, _ := c.Input().GetString("name")
 	if len(name) == 0 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
@@ -50,12 +50,12 @@ func (c *DatabaseBackupController) BackupDownload() {
 
 func (c *DatabaseBackupController) BackupDelete() {
 	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
-	names := c.Input().GetArray("ids")
+	names := c.Input().GetFormStrings("ids")
 	if len(names) == 0 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	relName := filepath.Join(baseBackupDir, strings.Trim(names[0].String(), `"`))
+	relName := filepath.Join(baseBackupDir, strings.Trim(names[0], `"`))
 	uploader := getStorageEngine(settingData)
 	if err := uploader.Remove(relName); err != nil {
 		helper.Ajax("删除文件错误: "+err.Error(), 1, c.Ctx())

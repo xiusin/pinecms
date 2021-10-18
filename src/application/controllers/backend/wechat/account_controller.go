@@ -18,7 +18,8 @@ func (c *WechatAccountController) Construct() {
 }
 
 func (c *WechatAccountController) PostClear() {
-	account, _ := GetOfficialAccount(*helper.Bytes2String(c.Input().GetStringBytes("appid")))
+	appid, _ := c.Input().GetString("appid")
+	account, _ := GetOfficialAccount(appid)
 
 	if err := account.GetBasic().ClearQuota(); err != nil {
 		helper.Ajax(err, 1, c.Ctx())
@@ -42,13 +43,13 @@ func (c *WechatAccountController) PostSelect() {
 
 // PostDistribution 会员分布
 func (c *WechatAccountController) PostDistribution() {
-	appid := string(c.Input().GetStringBytes("appid"))
+	appid, _ := c.Input().GetString("appid")
 	if len(appid) == 0 {
 		helper.Ajax("请选择公众号", 1, c.Ctx())
 		return
 	}
 
-	typ := c.Input().GetInt("type")
+	typ, _ := c.Input().GetInt("type")
 	field := "province"
 	if typ == 2 {
 		field = "city"

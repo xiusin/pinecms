@@ -2,6 +2,7 @@ package backend
 
 import (
 	"fmt"
+
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
@@ -40,7 +41,11 @@ func (c *SettingController) Construct() {
 
 func (c *SettingController) before(act int, params interface{}) error {
 	if act == OpList {
-		params.(*xorm.Session).Where("`group` = ?", string(c.Input().Get("params").GetStringBytes("group")))
+		pars := c.Input().Get("params")
+		if pars == nil {
+			panic("必须选择分组")
+		}
+		params.(*xorm.Session).Where("`group` = ?", pars.(map[string]interface{})["group"])
 	}
 	return nil
 }
@@ -67,9 +72,9 @@ func (c *SettingController) PostGroups() {
 }
 
 func (c *SettingController) PostTest() {
-	email := string(c.Input().GetStringBytes("email"))
-	title := string(c.Input().GetStringBytes("title"))
-	content := string(c.Input().GetStringBytes("content"))
+	email, _ := c.Input().GetString("email")
+	title, _ := c.Input().GetString("title")
+	content, _ := c.Input().GetString("content")
 
 	emailMessage := &message.EmailMessage{}
 	if err := emailMessage.Init(); err != nil {

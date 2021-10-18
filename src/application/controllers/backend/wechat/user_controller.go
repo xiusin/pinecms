@@ -34,7 +34,7 @@ func (c *WechatUserController) Construct() {
 
 func (c *WechatUserController) Before(act int, params interface{}) error {
 	if act == backend.OpList {
-		appid := string(c.Input().GetStringBytes("appid"))
+		appid, _ := c.Input().GetString("appid")
 		if len(appid) > 0 {
 			(params.(*xorm.Session)).Where("appid = ?", appid)
 		}
