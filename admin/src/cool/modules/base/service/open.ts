@@ -1,6 +1,6 @@
 import { BaseService, Service } from "/@/core";
 
-@Service("") // base/open
+@Service("")
 class Open extends BaseService {
 	/**
 	 * 用户登录

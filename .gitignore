@@ -35,3 +35,4 @@ tests/*.h
 /mywebsql_images
 ./pinecms
 pinecms
+admin/.yarnclean

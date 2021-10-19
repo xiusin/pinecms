@@ -22,7 +22,6 @@ export function Service(value: any) {
 		if (typeof value == "string") {
 			target.prototype.namespace = value;
 		}
-
 		// 复杂项
 		if (isObject(value)) {
 			const { proxy, namespace, url, mock } = value;

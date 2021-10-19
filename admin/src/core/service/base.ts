@@ -9,6 +9,11 @@ export default class BaseService {
 	mock: any;
 
 	constructor() {
+		// @ts-ignore
+		if (!this.namespace && typeof this.__proto__) {
+			// @ts-ignore
+			this.namespace = this.__proto__.namespace;
+		}
 		const crud: any = {
 			page: "page",
 			list: "list",
@@ -30,6 +35,7 @@ export default class BaseService {
 	}
 
 	request(options: any = {}) {
+		console.log(this);
 		if (!options.params) options.params = {};
 
 		let ns = "";
@@ -42,8 +48,6 @@ export default class BaseService {
 				ns = this.proxy ? this.url : baseUrl;
 			}
 		}
-
-		console.log("ns", ns, "baseUrl", baseUrl, "proxy", this.proxy, "isDev", isDev, "this.namespace", this.namespace);
 
 		// 拼接前缀
 		if (this.namespace) {

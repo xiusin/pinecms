@@ -129,7 +129,7 @@ export default defineComponent({
 				await store.dispatch("userLogin", form);
 
 				// 用户信息
-				// await store.dispatch("userInfo");
+				await store.dispatch("userInfo");
 
 				// 权限菜单
 				const [first] = await store.dispatch("permMenu");
