@@ -69,15 +69,15 @@ export default defineComponent({
 						}
 					}
 				},
-				// {
-				// 	prop: "listorder",
-				// 	label: "排序值",
-				// 	span: 24,
-				// 	component: {
-				// 		name: "el-input",
-				// 		type: "number"
-				// 	}
-				// },
+				{
+					prop: "listorder",
+					label: "排序值",
+					span: 24,
+					component: {
+						name: "el-input",
+						type: "number"
+					}
+				},
 				{
 					label: "功能权限",
 					prop: "menuIdList",
@@ -85,7 +85,15 @@ export default defineComponent({
 					component: {
 						name: "cl-role-perms"
 					}
-				}
+				},
+				// {
+				// 	label: "数据权限",
+				// 	prop: "departmentIdList",
+				// 	value: [],
+				// 	component: {
+				// 		name: "cl-dept-check"
+				// 	}
+				// }
 			]
 		});
 

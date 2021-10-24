@@ -33,6 +33,13 @@ func (c *MenuController) Construct() {
 }
 
 func (c *MenuController) PostList() {
-	c.Orm.Find(c.Entries)
+	if err := c.Orm.Find(c.Entries); err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
+	}
+	menus := c.Entries.(*[]tables.Menu)
+	for k, menu := range *menus {
+		(*menus)[k].Perms = menu.C + ":" + menu.A
+	}
 	helper.Ajax(c.Entries, 0, c.Ctx())
 }

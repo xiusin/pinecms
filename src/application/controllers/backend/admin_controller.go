@@ -1,4 +1,5 @@
 package backend
+
 //
 //import (
 //	"github.com/go-xorm/xorm"
@@ -178,7 +179,7 @@ package backend
 //func (c *AdminController) PubicCheckName() {
 //	info := &tables.Admin{Username: c.Ctx().FormValue("name")}
 //	uid, _ := c.Ctx().GetInt64("id")
-//	has, _ := c.Ctx().Value("orm").(*xorm.Engine).Get(info)
+//	has, _ := di.MustGet(&xorm.Engine{}).(*xorm.Engine).Get(info)
 //	if !has || info.Userid == uid {
 //		helper.Ajax("没有相同的用户名", 0, c.Ctx())
 //	} else {
@@ -270,7 +271,7 @@ package backend
 //	if c.Ctx().FormValue("password") != "" {
 //		info.Password = helper.Password(c.Ctx().PostValue("password"), info.Encrypt)
 //	}
-//	res, err := c.Ctx().Value("orm").(*xorm.Engine).Where("userid = ?", info.Userid).Update(info)
+//	res, err := di.MustGet(&xorm.Engine{}).(*xorm.Engine).Where("userid = ?", info.Userid).Update(info)
 //	if err != nil {
 //		helper.Ajax(err.Error(), 0, c.Ctx())
 //		return
@@ -294,7 +295,7 @@ package backend
 //		return
 //	}
 //	deleteAdmin := &tables.Admin{Userid: int64(id)}
-//	res, err := c.Ctx().Value("orm").(*xorm.Engine).Delete(deleteAdmin)
+//	res, err := di.MustGet(&xorm.Engine{}).(*xorm.Engine).Delete(deleteAdmin)
 //	if err != nil || helper.IsFalse(res) {
 //		helper.Ajax("删除失败", 1, c.Ctx())
 //		return

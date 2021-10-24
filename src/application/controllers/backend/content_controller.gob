@@ -223,7 +223,7 @@ func (c *ContentController) AddContent(orm *xorm.Engine) {
 
 		params := append([]interface{}{fmt.Sprintf("INSERT INTO `%s` (%s) VALUES (%s)", controllers.GetTableName(model.Table), strings.Join(fields, ","), strings.TrimRight(strings.Repeat("?,", len(values)), ","))}, values...)
 		// 先直接入库对应表内
-		insertID, err := c.Ctx().Value("orm").(*xorm.Engine).Exec(params...)
+		insertID, err := di.MustGet(&xorm.Engine{}).(*xorm.Engine).Exec(params...)
 		if err != nil {
 			glog.Error(err)
 			helper.Ajax("添加失败:"+err.Error(), 1, c.Ctx())
@@ -338,7 +338,7 @@ func (c *ContentController) EditContent(orm *xorm.Engine) {
 
 		values = append(values, id, catid)
 		params := append([]interface{}{fmt.Sprintf("UPDATE `%s` SET %s WHERE id=? and catid=?", controllers.GetTableName(relationDocumentModel.Table), strings.Join(sets, ", "))}, values...)
-		insertID, err := c.Ctx().Value("orm").(*xorm.Engine).Exec(params...)
+		insertID, err := di.MustGet(&xorm.Engine{}).(*xorm.Engine).Exec(params...)
 		if err != nil {
 			glog.Error(err)
 			helper.Ajax("修改失败:"+err.Error(), 1, c.Ctx())

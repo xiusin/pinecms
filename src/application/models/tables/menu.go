@@ -11,10 +11,11 @@ type Menu struct {
 	IsSystem  uint64 `json:"is_system" form:"is_system" api:"remark:是否为系统菜单"`
 	Listorder int64  `json:"orderNum" form:"listorder" api:"remark:排序号"`
 	Display   bool   `json:"isShow" form:"display" api:"remark:是否显示"`
-	Type      int64  `json:"type" api:"remark:菜单类型"`
+	Type      int64  `json:"type" api:"remark:菜单类型" xorm:"comment('类型 0：目录 1：菜单 2：按钮')"`
 	Children  []Menu `json:"children" xorm:"-" form:"-"`
 	Icon      string `json:"icon" api:"remark:图标"`
 	ViewPath  string `json:"viewPath" api:"remark:视图路径"`
 	KeepAlive bool   `json:"keepAlive" api:"remark:路由缓存"`
 	Router    string `json:"router" api:"remark:路由地址"`
+	Perms     string `json:"perms"  xorm:"comment('权限标识')"`
 }

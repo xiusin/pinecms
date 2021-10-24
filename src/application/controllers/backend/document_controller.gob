@@ -568,12 +568,12 @@ func (c *DocumentController) GenSQL(orm *xorm.Engine) {
 	}
 	querySQL = regexp.MustCompile(" +").ReplaceAllString(querySQL, " ")
 	if exec && querySQL != "" {
-		_, err := c.Ctx().Value("orm").(*xorm.Engine).Exec(querySQL)
+		_, err := di.MustGet(&xorm.Engine{}).(*xorm.Engine).Exec(querySQL)
 		if err != nil {
 			helper.Ajax(err.Error(), 1, c.Ctx())
 			return
 		}
-		af, err := c.Ctx().Value("orm").(*xorm.Engine).ID(modelID).Table(&tables.DocumentModel{}).Update(map[string]interface{}{"execed": 1})
+		af, err := di.MustGet(&xorm.Engine{}).(*xorm.Engine).ID(modelID).Table(&tables.DocumentModel{}).Update(map[string]interface{}{"execed": 1})
 		if af > 0 {
 			helper.Ajax("执行SQL成功", 0, c.Ctx())
 			return

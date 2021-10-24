@@ -16,6 +16,8 @@ require (
 	github.com/arl/statsviz v0.4.0
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
 	github.com/c2fo/testify v0.0.0-20150827203832-fba96363964a // indirect
+	github.com/casbin/casbin v1.9.1 // indirect
+	github.com/casbin/xorm-adapter v1.0.0 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc // indirect
 	github.com/doug-martin/goqu v5.0.0+incompatible
 	github.com/fasthttp/websocket v1.4.3-rc.9
@@ -29,24 +31,20 @@ require (
 	github.com/go-playground/validator/v10 v10.7.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/go-xorm/xorm v0.7.9
-	github.com/gobuffalo/helpers v0.6.2 // indirect
-	github.com/gobuffalo/plush v3.8.3+incompatible
-	github.com/gobuffalo/tags v2.1.7+incompatible // indirect
 	github.com/gookit/color v1.5.0
 	github.com/gorilla/securecookie v1.1.1
-	github.com/jmoiron/sqlx v1.3.4
 	github.com/kataras/go-mailer v0.1.0
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.7.0 // indirect
 	github.com/magefile/mage v1.11.0 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/mojocn/base64Captcha v1.3.5
-	github.com/prologic/bitcask v0.3.11-0.20210601204730-e7c649076233 // indirect
 	github.com/rivo/tview v0.0.0-20210624165335-29d673af0ce2
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/russross/blackfriday v1.6.0
 	github.com/satori/go.uuid v1.2.0
 	github.com/schollz/progressbar v1.0.0
+	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/shirou/gopsutil v3.21.6+incompatible
 	github.com/silenceper/wechat/v2 v2.0.6
 	github.com/sonyarouje/simdb v0.1.0

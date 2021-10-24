@@ -111,7 +111,7 @@ func (c *PublicController) Upload() {
 	//	"errcode":      "0",
 	//	"value":        path, // 给amsi使用
 	//}
-	//if id, _ := c.Ctx().Value("orm").(*xorm.Engine).InsertOne(&tables.Attachments{
+	//if id, _ := di.MustGet(&xorm.Engine{}).(*xorm.Engine).InsertOne(&tables.Attachments{
 	//	Name:       filename,
 	//	Url:        path,
 	//	OriginName: fname,
@@ -231,7 +231,7 @@ func (c *PublicController) Attachments(attachmentType string) {
 		start = 0
 	}
 	var data []*tables.Attachments
-	cnt, _ := c.Ctx().Value("orm").(*xorm.Engine).Limit(30, int(start)).Where("`type` = ?", attachmentType).FindAndCount(&data)
+	cnt, _ := di.MustGet(&xorm.Engine{}).(*xorm.Engine).Limit(30, int(start)).Where("`type` = ?", attachmentType).FindAndCount(&data)
 	c.Ctx().Render().JSON(map[string]interface{}{
 		"state":   "SUCCESS",
 		"list":    data,

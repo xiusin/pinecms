@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/xiusin/pine/di"
 	"regexp"
 	"strings"
 	"time"
@@ -241,7 +242,7 @@ func (c *DocumentController) GetSql(orm *xorm.Engine) {
 	}
 	querySQL = regexp.MustCompile(" +").ReplaceAllString(querySQL, " ")
 	if exec && querySQL != "" {
-		_, err := c.Ctx().Value("orm").(*xorm.Engine).Exec(querySQL)
+		_, err := di.MustGet(&xorm.Engine{}).(*xorm.Engine).Exec(querySQL)
 		if err != nil {
 			helper.Ajax(err.Error(), 1, c.Ctx())
 			return

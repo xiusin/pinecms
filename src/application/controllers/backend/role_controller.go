@@ -2,8 +2,10 @@ package backend
 
 import (
 	"errors"
+	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -70,21 +72,11 @@ func (c *AdminRoleController) PostEdit() {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
 	}
-	if _, err := c.Orm.Transaction(func(session *xorm.Session) (interface{}, error) {
-		if !c.edit() {
-			return nil, errors.New("修改菜单数据失败")
-		}
-		t := c.Table.(*tables.AdminRole)
-		id := t.Id
-		if err := c.perm(id, t.MenuIdList); err != nil {
-			return nil, err
-		}
-		return nil, nil
-	}); err == nil {
-		helper.Ajax("修改数据成功", 0, c.Ctx())
-	} else {
-		helper.Ajax(err, 1, c.Ctx())
-	}
+	c.edit()
+	t := c.Table.(*tables.AdminRole)
+	id := t.Id
+	c.perm(id, t.MenuIdList)
+	helper.Ajax("修改数据成功", 0, c.Ctx())
 }
 
 func (c *AdminRoleController) after(opType int, param interface{}) error {
@@ -117,11 +109,15 @@ func (c *AdminRoleController) perm(roleid int64, menuIds []int64) error {
 	}
 	var inserts []tables.AdminRolePriv
 	for _, v := range menuIds {
+		if v == 0 {
+			continue
+		}
 		menu := tables.Menu{Id: v}
-		exist, err := c.Ctx().Value("orm").(*xorm.Engine).Get(&menu)
+		exist, err := di.MustGet(&xorm.Engine{}).(*xorm.Engine).Get(&menu)
 		if err != nil || !exist {
 			continue
 		}
+
 		inserts = append(inserts, tables.AdminRolePriv{
 			Roleid: roleid,
 			A:      menu.A,
@@ -131,7 +127,7 @@ func (c *AdminRoleController) perm(roleid int64, menuIds []int64) error {
 	}
 	res, err := c.Orm.Insert(inserts)
 	if int(res) != len(menuIds) {
-		return errors.New("更新权限错误")
+		return fmt.Errorf("更新权限错误: 更新%d,成功%d", len(menuIds), res)
 	}
 	return nil
 }

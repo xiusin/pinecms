@@ -5,6 +5,7 @@ import (
 	"github.com/gbrlsnchs/jwt/v3"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/config"
@@ -27,13 +28,14 @@ func VerifyJwtToken() pine.Handler {
 				_ = ctx.Render().JSON(pine.H{"code": 1, "msg": "授权失败, 请重新登录"})
 				return
 			}
-			ctx.Set("roleid", pl.RoleID)
-			ctx.Set("adminid", pl.AdminId)
+
+			ctx.SetUserValue("adminid", pl.AdminId)
+
 			if strings.Contains(uri, "user/info") {
 				ctx.QueryArgs().Set("id", fmt.Sprintf("%d", pl.AdminId))
 			}
 			if !strings.Contains(uri, "/log/list") {
-				_, _ = ctx.Value("orm").(*xorm.Engine).Insert(&tables.RequestLog{
+				_, _ = di.MustGet(&xorm.Engine{}).(*xorm.Engine).Insert(&tables.RequestLog{
 					Uri:      string(ctx.RequestURI()),
 					Userid:   pl.AdminId,
 					Params:   string(ctx.PostBody()),

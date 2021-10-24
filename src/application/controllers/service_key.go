@@ -12,6 +12,8 @@ const ServiceJetEngine = "pinecms.jet"
 
 const ServiceXorm = "*xorm.Engine"
 
+const ServiceCasbinEnforcer = "pinecms.casbin.enforcer"
+
 const ServiceUploader = "pinecms.uploader"
 
 const ServiceUploaderEngine = "pinecms.uploader.%s"

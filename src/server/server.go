@@ -109,7 +109,7 @@ func registerV2BackendRoutes() {
 		middleware.StatesViz(app),
 	)
 
-	g := app.Group("/v2", middleware.VerifyJwtToken())
+	g := app.Group("/v2", middleware.VerifyJwtToken(), middleware.Casbin(config.InitDB(nil)))
 
 	router.InitModuleRouter(g, app)
 
@@ -164,7 +164,6 @@ func runServe() {
 		}
 	})
 	go plugins.Init()
-
 	app.Run(
 		pine.Addr(fmt.Sprintf(":%d", conf.Port)),
 		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))),
