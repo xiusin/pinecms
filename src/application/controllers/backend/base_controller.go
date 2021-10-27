@@ -336,7 +336,6 @@ func (c *BaseController) PostDelete() {
 }
 
 func (c *BaseController) GetInfo() {
-	fmt.Println(c.Ctx().Input().Get("id"))
 	id, _ := c.Ctx().GetInt("id", 0)
 	if id < 1 {
 		helper.Ajax("id参数范围错误", 1, c.Ctx())

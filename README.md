@@ -1,5 +1,5 @@
 # 项目描述 #
-PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内以制作模板的方式搭建出来一个网站, 非开发者也能快速愉悦的使用系统. 
+PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内以制作模板的方式搭建出来一个网站, 非开发者也能快速愉悦地使用系统. 
 简单使用情况下无需关注代码逻辑. 
 
 
@@ -62,6 +62,7 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 15. 会员管理：对各终端注册的会员进行统一的查询与管理的模块。
 16. CMS管理: 可以系统设置不同的模型数据并添加不同的逻辑。
 17. 插件管理: 可以扩展/下载第三方开发的软件包。
+18. 微信管理: 可以管理素材，会员，信息，自动回复等。
 
 # 文档 #
 [doc.xiusin.cn](http://doc.xiusin.cn/)
@@ -146,15 +147,12 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - redis manager管理插件
     
 # TODO  
+
 - github.com/gokeeptech/gktemplate
 - Bleve 全文检索 （插件提供）
-- hook方式支持插件钩子注入信息
-- http://8.140.114.57:7000/opsli-boot/doc.html#/opsli%202.X/%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8-%E6%97%A5%E5%BF%97/createUsingGET
 - https://github.com/lljj-x/vue-json-schema-form
 - http://goframe.ele.rxthink.cn/tool/generate
-- https://gitee.com/unifig/unifig-admin?_from=gitee_search
-- https://github.com/timshannon/bolthold
-
+- https://github.com/antonmedv/codejar#getting-started
 
 
 # 注解路由开发
@@ -184,4 +182,3 @@ func (a *AnnoController) List() {
 # 关于权限系统
 - 将XORM的注入时机提升到初始化项目时， 可以供给casbin使用.
 - 菜单表增加perms字段， 可以配置权限标识，可以配置节点类型为权限。
-- 

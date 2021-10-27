@@ -69,6 +69,14 @@ func (c *UserController) before(opType int, param interface{}) error {
 			return errors.New("用户名或邮箱已存在")
 		}
 	}
+	if opType == OpDel { // 删除权限控制
+		p := param.(*idParams)
+		for _, id := range p.Ids {
+			if 1 == id {
+				return errors.New("无法删除内置超级管理员")
+			}
+		}
+	}
 	return nil
 }
 
@@ -87,6 +95,7 @@ func (c *UserController) after(opType int, param interface{}) error {
 	}
 	return nil
 }
+
 
 func (c *UserController) PostLogout() {
 	helper.Ajax("退出成功", 0, c.Ctx())

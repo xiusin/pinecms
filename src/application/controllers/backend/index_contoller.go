@@ -2,7 +2,6 @@ package backend
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
@@ -13,8 +12,6 @@ import (
 	"time"
 
 	"github.com/xiusin/pinecms/src/application/controllers"
-	"github.com/xiusin/pinecms/src/application/models"
-
 	"github.com/xiusin/pinecms/src/common/helper"
 )
 
@@ -109,54 +106,4 @@ func (c *IndexController) collationFormatVisits(iCache cache.AbstractCache) {
 		i++
 	}
 	c.ViewData("refers", referStruct)
-}
-
-func (c *IndexController) GetMenus(iCache cache.AbstractCache) []MenuV2 {
-	roleid := c.Ctx().Value("roleid")
-	if roleid == nil {
-		roleid = interface{}(int64(0))
-	}
-	cacheKey := fmt.Sprintf(controllers.CacheAdminMenuByRoleIdAndMenuId, roleid, 1)
-	var menujs []MenuV2 //要返回json的对象
-	var data string
-	dataBytes, _ := iCache.Get(cacheKey)
-	data = string(dataBytes)
-	data = ""
-	if data == "" || json.Unmarshal([]byte(data), &menujs) != nil {
-		menus := models.NewMenuModel().GetMenu(0, roleid.(int64)) //获取menuid内容
-		for _, v := range menus {
-			menu := models.NewMenuModel().GetMenu(v.Id, roleid.(int64))
-			var sonmenu []MenuV2
-			for _, son := range menu {
-				sonmenu = append(sonmenu, MenuV2{
-					Label:           son.Name,
-					NodePath:        son.A,
-					SideVisible:     true,
-					Icon:            "fa fa-home",
-					PathToComponent: strFirstToUpper(son.C + "/" + son.A), // 指定要路由到的模块， 请注意横线问题
-				})
-			}
-			var menuv2 = MenuV2{
-				Label:       v.Name,
-				NodePath:    v.C,
-				SideVisible: true,
-				Icon:        "fa fa-home",
-			}
-			if len(sonmenu) == 0 {
-				menuv2.PathToComponent = strFirstToUpper("/" + v.C + "/" + v.A)
-				menuv2.Path = menuv2.PathToComponent
-				menuv2.NodePath = menuv2.PathToComponent
-			} else {
-				menuv2.Children = sonmenu
-			}
-
-			menujs = append(menujs, menuv2)
-
-		}
-		strs, _ := json.Marshal(&menujs)
-		if err := iCache.Set(cacheKey, strs); err != nil {
-			pine.Logger().Errorf("save cache %s failed: %s", cacheKey, err.Error())
-		}
-	}
-	return menujs
 }

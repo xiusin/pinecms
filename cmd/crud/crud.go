@@ -166,7 +166,7 @@ func genControllerFile(print bool, controllerName, tableName, controllerPath str
 		logger.Print("创建文件： " + color.Green.Sprint(controllerPath))
 	}
 	if print {
-		_ = quick.Highlight(logger.DefaultWriter(), content, "go", "terminal256", theme)
+		_ = quick.Highlight(os.Stdout, content, "go", "terminal256", theme)
 	}
 	return err
 }
@@ -254,7 +254,7 @@ func genTableFileAndFrontendFile(print bool, tableName, tablePath, frontendPath 
 		logger.Print("创建文件： " + color.Green.Sprint(tablePath))
 	}
 	if print {
-		_ = quick.Highlight(logger.DefaultWriter(), content, "go", "terminal256", theme)
+		_ = quick.Highlight(os.Stdout, content, "go", "terminal256", theme)
 	}
 	return err
 }

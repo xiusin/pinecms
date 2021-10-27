@@ -83,12 +83,12 @@ func (c *AdminRoleController) after(opType int, param interface{}) error {
 	switch opType {
 	case OpDel:
 		p := param.(*idParams)
-		_, err := c.Orm.In("roleid", p.Ids).Delete(&tables.AdminRolePriv{})
+		_, err := c.Orm.In("role_id", p.Ids).Delete(&tables.AdminRolePriv{})
 		return err
 	case OpInfo:
 		t := c.Table.(*tables.AdminRole)
 		var priv []tables.AdminRolePriv
-		c.Orm.Where("roleid = ?", t.Id).Find(&priv)
+		c.Orm.Where("role_id = ?", t.Id).Find(&priv)
 		var menuIds = make([]int64, len(priv))
 		for _, i2 := range priv {
 			menuIds = append(menuIds, i2.MenuId)
@@ -100,7 +100,7 @@ func (c *AdminRoleController) after(opType int, param interface{}) error {
 }
 
 func (c *AdminRoleController) perm(roleid int64, menuIds []int64) error {
-	_, err := c.Orm.Where("roleid=?", roleid).Delete(&tables.AdminRolePriv{})
+	_, err := c.Orm.Where("role_id=?", roleid).Delete(&tables.AdminRolePriv{})
 	if err != nil {
 		return err
 	}
@@ -118,12 +118,7 @@ func (c *AdminRoleController) perm(roleid int64, menuIds []int64) error {
 			continue
 		}
 
-		inserts = append(inserts, tables.AdminRolePriv{
-			Roleid: roleid,
-			A:      menu.A,
-			C:      menu.C,
-			MenuId: v,
-		})
+		inserts = append(inserts, tables.AdminRolePriv{RoleId: roleid, MenuId: v})
 	}
 	res, err := c.Orm.Insert(inserts)
 	if int(res) != len(menuIds) {

@@ -78,8 +78,7 @@ var menuCmd = &cobra.Command{
 				role := tables.Menu{}
 				role.Id = 0
 				role.Name = item.MenuName
-				role.C = table
-				role.A = item.A
+				role.Identification = table + ":" + item.A
 				if k == 0 {
 					role.Parentid = 0
 					role.Display = true

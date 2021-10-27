@@ -55,10 +55,10 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .login-captcha {
-	height: 36px;
+	height: 34px;
 	position: absolute;
-	top: 0;
-	right: 0;
+	top: 1px;
+	right: 1px;
 
 	cursor: pointer;
 
@@ -67,6 +67,7 @@ export default defineComponent({
 	}
 
 	.base64 {
+		border-radius: 3px;
 		height: 100%;
 	}
 }

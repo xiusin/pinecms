@@ -16,8 +16,8 @@ require (
 	github.com/arl/statsviz v0.4.0
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
 	github.com/c2fo/testify v0.0.0-20150827203832-fba96363964a // indirect
-	github.com/casbin/casbin v1.9.1 // indirect
-	github.com/casbin/xorm-adapter v1.0.0 // indirect
+	github.com/casbin/casbin v1.9.1
+	github.com/casbin/xorm-adapter v1.0.0
 	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc // indirect
 	github.com/doug-martin/goqu v5.0.0+incompatible
 	github.com/fasthttp/websocket v1.4.3-rc.9
@@ -56,13 +56,12 @@ require (
 	github.com/tklauser/go-sysconf v0.3.7 // indirect
 	github.com/traefik/yaegi v0.9.19
 	github.com/valyala/fasthttp v1.31.0
-	github.com/xiusin/logger v0.0.6-0.20210624030332-1618e61b92ce
-	github.com/xiusin/pine v0.0.0-20211018071103-de1ca9e664ec
+	github.com/xiusin/logger v0.0.9
+	github.com/xiusin/pine v0.0.0-20211025083355-029b770ec806
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
 	golang.org/x/net v0.0.0-20210924151903-3ad01bbaa167 // indirect
-	golang.org/x/sys v0.0.0-20211015200801-69063c4bb744 // indirect
 	golang.org/x/text v0.3.7
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0 // indirect

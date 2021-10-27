@@ -2,6 +2,8 @@ package config
 
 import (
 	"fmt"
+	request_log "github.com/xiusin/pine/middlewares/request-log"
+	"github.com/xiusin/pine/middlewares/traceid"
 	"io"
 	"net/http"
 	"os"
@@ -99,17 +101,18 @@ func registerV2BackendRoutes() {
 	if config.AppConfig().Debug {
 		app.Use(middleware.Demo())
 		app.Use(middleware.Cors())
+		app.Use(request_log.RequestRecorder(time.Millisecond * 200))
 	}
 
 	app.Use(
+		traceid.TraceId(),
 		middleware.Pprof(),
-		//request_log.RequestRecorder(),
 		middleware.SetGlobalConfigData(),
 		apidoc.New(app, nil),
 		middleware.StatesViz(app),
 	)
 
-	g := app.Group("/v2", middleware.VerifyJwtToken(), middleware.Casbin(config.InitDB(nil)))
+	g := app.Group("/v2", middleware.VerifyJwtToken(), middleware.Casbin(config.InitDB(nil), "resources/configs/rbac_models.conf"))
 
 	router.InitModuleRouter(g, app)
 
