@@ -14,6 +14,10 @@ const ServiceXorm = "*xorm.Engine"
 
 const ServiceCasbinEnforcer = "pinecms.casbin.enforcer"
 
+const ServiceCasbinClearPolicy = "pinecms.casbin.enforcer.policy.clear"
+
+const ServiceCasbinAddPolicy = "pinecms.casbin.enforcer.policy.add"
+
 const ServiceUploader = "pinecms.uploader"
 
 const ServiceUploaderEngine = "pinecms.uploader.%s"

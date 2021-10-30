@@ -35,7 +35,6 @@ export default class BaseService {
 	}
 
 	request(options: any = {}) {
-		console.log(this);
 		if (!options.params) options.params = {};
 
 		let ns = "";

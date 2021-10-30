@@ -88,6 +88,7 @@ func (tm *taskManager) Cron() {
 		for _, task := range tasks {
 			RegisterTask(task.Id, &task)
 		}
+		pine.Logger().Print("[plugin:task] 启动定时任务")
 		go tm.cron.Start()
 	})
 }

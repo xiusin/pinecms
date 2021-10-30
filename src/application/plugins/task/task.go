@@ -1,21 +1,22 @@
 package main
 
 import (
+	"sync"
+
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
-	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/plugins/task/controller"
 	"github.com/xiusin/pinecms/src/application/plugins/task/manager"
 	"github.com/xiusin/pinecms/src/application/plugins/task/table"
-	"sync"
 )
 
 type Task struct {
 	sync.Once
-	orm       *xorm.Engine
-	prefix    string
-	isInstall bool
+	orm        *xorm.Engine
+	isInstall  bool
+	status     bool
+	controller pine.IController
 }
 
 func (p *Task) Name() string {
@@ -24,6 +25,10 @@ func (p *Task) Name() string {
 
 func (p *Task) Sign() string {
 	return "77975e7f-de8b-4f26-be90-38c24fcd7c7d"
+}
+
+func (p *Task) Prefix() string {
+	return "/pinecms-task-manager"
 }
 
 func (p *Task) Menu(table interface{}, pluginId int) {
@@ -137,8 +142,22 @@ func (p *Task) View() string {
 ]`
 }
 
-func (p *Task) Uninstall() {
+func (p *Task) SetStatus(status bool) {
+	p.status = status
+}
 
+func (p *Task) IsInstall() bool {
+	return p.isInstall
+}
+
+func (p *Task) Status() bool {
+	return p.status
+}
+
+func (p *Task) Uninstall() {
+	p.isInstall = false // 卸载标注为false
+	p.status = false
+	// TODO 删除一些数据表和菜单相关
 }
 
 func (p *Task) Install() {
@@ -146,32 +165,26 @@ func (p *Task) Install() {
 		if err := p.orm.Sync2(&table.TaskInfo{}, &table.TaskLog{}); err != nil {
 			pine.Logger().Error("安装task插件数据库失败", err)
 		}
-		pine.Logger().Print("[plugin:task] 启动定时任务")
-
 		manager.TaskManager().Cron()
 	}
 	p.isInstall = true
 }
 
-func (p *Task) Prefix(prefix string) {
-	p.prefix = prefix
+func (p *Task) Upgrade() {
+
 }
 
-func (p *Task) Upgrade() {
+func (p *Task) GetController() pine.IController {
+	return p.controller
 }
 
 func (p *Task) Init(services di.AbstractBuilder) {
 	p.Do(func() {
-		p.orm = di.MustGet(&xorm.Engine{}).(*xorm.Engine)
+    p.status = true // 默认开启
+		p.orm = services.MustGet(&xorm.Engine{}).(*xorm.Engine)
 		p.Install()
-		if len(p.prefix) == 0 {
-			p.prefix = "/task"
-		}
-
-		_, _ = p.orm.Cols("entity_id", "error").Update(&table.TaskInfo{})
-
-		services.MustGet(controllers.ServiceBackendRouter).(*pine.Router).Handle(new(controller.TaskController), p.prefix)
-		pine.Logger().Print("[plugin:task] 注册路由成功")
+		_, _ = p.orm.Cols("entity_id", "error").Update(&table.TaskInfo{}) // 更新一些错误信息
+		p.controller = new(controller.TaskController)
 	})
 }
 

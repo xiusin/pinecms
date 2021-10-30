@@ -3,6 +3,10 @@ package backend
 import (
 	"errors"
 	"fmt"
+	"reflect"
+	"strconv"
+	"strings"
+
 	"github.com/go-playground/locales/en"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
@@ -12,17 +16,16 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"reflect"
-	"strconv"
-	"strings"
 )
 
 var validate = validator.New()
 var trans, _ = ut.New(zh.New(), en.New()).GetTranslator("zh")
 
 const (
-	BindTypeForm = "FORM"
-	OpList       = iota
+	BindTypeJson = iota
+	BindTypeForm
+
+	OpList = iota
 	OpAdd
 	OpEdit
 	OpDel
@@ -38,15 +41,13 @@ type SearchFieldDsl struct {
 
 type BaseController struct {
 	SearchFields   []SearchFieldDsl // 设置可以搜索的字段 接收或匹配params的字段
-	BindType       string           // 表单绑定类型
+	BindType       uint             // 表单绑定类型
 	KeywordsSearch []SearchFieldDsl // 关键字搜索字段 用于关键字匹配字段
 	Table          interface{}      // 传入Table结构体引用
 	Entries        interface{}      // 传入Table结构体的切片
 	Orm            *xorm.Engine
 	p              listParam
 	apiEntities    map[string]apidoc.Entity
-
-	Cols []string
 
 	TableKey       string // 表主键
 	TableStructKey string // 表结构体主键字段 主要用于更新逻辑反射数据
@@ -179,13 +180,13 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 			}
 			val, exists := c.p.Params[strings.ReplaceAll(v.Field, "`", "")]
 			if exists {
-				switch val.(type) {
+				switch val := val.(type) {
 				case string:
-					if len(val.(string)) == 0 {
+					if len(val) == 0 {
 						continue
 					}
 				case bool:
-					if !val.(bool) {
+					if !val {
 						continue
 					}
 				}

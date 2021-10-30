@@ -4,23 +4,27 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/go-xorm/xorm"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/di"
-	plugin2 "github.com/xiusin/pinecms/cmd/plugin"
-	"github.com/xiusin/pinecms/src/application/models/tables"
-	"github.com/xiusin/pinecms/src/common/helper"
-	"github.com/xiusin/pinecms/src/config"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"plugin"
 	"runtime"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/go-xorm/xorm"
+	"github.com/valyala/fasthttp"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/di"
+	plugin2 "github.com/xiusin/pinecms/cmd/plugin"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
+	"github.com/xiusin/pinecms/src/config"
 )
 
 const ext = ".so"
@@ -30,14 +34,18 @@ const exportedVarSuffix = "Plugin"
 const jsonName = "config.json"
 
 type PluginIntf interface {
-	Init(di.AbstractBuilder) // 初始化插件
-	Prefix(string)           // 路由前缀, 注册后修改需要重启程序
-	Sign() string            // 插件的唯一标识, 需要开发者搞一个独一无二如 uuid
-	View() string            // 配置视图json信息
-	Menu(interface{}, int)   // 安装插件位置
-	Install()                // 安装插件, 首次扫描后执行.
-	Uninstall()              // 卸载后禁止访问
-	Upgrade()                // 更新插件
+	Init(di.AbstractBuilder)         // 初始化插件
+	Sign() string                    // 插件的唯一标识, 需要开发者搞一个独一无二如 uuid
+	View() string                    // 配置视图json信息
+	Menu(interface{}, int)           // 安装插件位置
+	Install()                        // 安装插件, 首次扫描后执行.
+	IsInstall() bool                 // 安装状态
+	Uninstall()                      // 卸载后禁止访问
+	Upgrade()                        // 更新插件
+	SetStatus(bool)                  // 设置插件状态
+	Status() bool                    // 获取状态
+	GetController() pine.IController // 控制器返回
+	Prefix() string                  // 路由前缀
 }
 
 type Plug struct {
@@ -83,7 +91,7 @@ func (p *pluginManager) GetLocalPlugin() map[string]plugin2.Config {
 	p.Lock()
 	defer p.Unlock()
 	var scannedPlugins = map[string]plugin2.Config{}
-	for s, s2 := range p.scannedPlugins { // 复制一份
+	for s, s2 := range p.scannedPlugins {
 		scannedPlugins[s] = *s2
 	}
 	return scannedPlugins
@@ -103,9 +111,9 @@ func (p *pluginManager) loadPlugin() {
 	orm.Where("enable = ?", 1).Find(&ps)
 	for _, plug := range ps {
 		if _, err := p.Install(plug.Path); err != nil {
-			pine.Logger().Printf("安装插件%s失败: %s", plug.Path, err)
+			pine.Logger().Printf("启用插件%s失败 %s", plug.Name, err.Error())
 		} else {
-			pine.Logger().Print("安装插件成功 ", plug.Path)
+			pine.Logger().Print("启用插件成功", plug.Name)
 		}
 	}
 }
@@ -143,14 +151,37 @@ func (p *pluginManager) Install(filename string) (PluginIntf, error) {
 		return nil, err
 	}
 	pluginEntity, ok := pluginIntf.(PluginIntf)
+
 	if !ok {
 		delete(pluginMgr.scannedPlugins, filename)
-		return nil, errors.New(filename + "没有实现PluginIntf接口")
+		return nil, errors.New(filename + "插件未实现PluginIntf接口")
 	}
 	pluginEntity.Init(di.GetDefaultDI())
+	p.registerRouter(pluginEntity)
 	pluginMgr.plugins[filename] = &Plug{plug: plug, pi: pluginEntity}
-	pluginMgr.installPlugins[filename] = struct{}{} // 记录安装
+	pluginMgr.installPlugins[filename] = struct{}{}
 	return pluginEntity, nil
+}
+
+// registerRouter 注册路由, 添加中间件拦截非正常状态
+func (p *pluginManager) registerRouter(plug PluginIntf) {
+	group := di.MustGet(controllers.ServiceBackendRouter).(*pine.Router)
+	group.Use(func(ctx *pine.Context) {
+		if !plug.IsInstall() {
+			ctx.Abort(fasthttp.StatusNotFound)
+		} else if !plug.Status() {
+			disableMsg := "插件功能已禁用, 不可访问"
+			if ctx.IsAjax() {
+				helper.Ajax(disableMsg, 1, ctx)
+			} else {
+				ctx.Abort(fasthttp.StatusForbidden, disableMsg)
+			}
+		} else {
+			ctx.Next()
+		}
+	})
+	group.Handle(plug.GetController(), plug.Prefix())
+	pine.Logger().Print("[plugin:task] 注册路由分组:" + plug.Prefix() + "成功")
 }
 
 // Download 下载插件,系统,go版本,插件版本
@@ -170,8 +201,7 @@ func (p *pluginManager) Download(name string) {
 	}
 
 	go func() {
-		// 需要下载zip包
-		url := fmt.Sprintf("%s/%s/%s/%s%s", p.remoteDomain, runtime.GOOS, runtime.Version(), name, ".tar.gz")
+		url := fmt.Sprintf("%s/%s/%s/%s/%s%s", p.remoteDomain, runtime.GOOS, runtime.GOARCH, runtime.Version(), name, ".tar.gz")
 		client := &http.Client{}
 		client.Timeout = time.Second * 60 * 10
 		resp, err := client.Get(url)
@@ -180,15 +210,23 @@ func (p *pluginManager) Download(name string) {
 			return
 		}
 		defer resp.Body.Close()
-
 		_, err = io.Copy(f, resp.Body)
-
 		if err != nil {
-			pine.Logger().Error("保存插件"+pluginPath+"失败", err)
+			pine.Logger().Error("保存插件到"+pluginPath+"失败", err)
 		} else {
-			// todo 解压缩 .gzip
+			tarExecPath, err := exec.LookPath("tar")
+			if err != nil {
+				pine.Logger().Error("无法查找到tar命令, 请手动解压" + pluginPath)
+				return
+			}
+			cmd := exec.Command(tarExecPath, "-zxvf", pluginPath)
+			cmd.Dir = p.path
+			if err := cmd.Run(); err != nil {
+				pine.Logger().Error("解压" + pluginPath + "失败, 请手动解压")
+			} else {
+				pine.Logger().Print("解压" + pluginPath + "成功, 等待程序扫描加载")
+			}
 		}
-
 	}()
 }
 
@@ -199,7 +237,7 @@ func (p *pluginManager) Uninstall(name string) {
 	if !exist {
 		return
 	}
-	intf.pi.Uninstall() //TODO 先由插件内部阻止路由访问
+	intf.pi.Uninstall()
 	intf.plug = nil
 	intf.pi = nil
 
@@ -207,7 +245,7 @@ func (p *pluginManager) Uninstall(name string) {
 }
 
 func Init() {
-	if runtime.GOOS == "windows" {
+	if helper.IsWindows() {
 		pine.Logger().Warning("windows 不支持plugin功能")
 		return
 	}
@@ -227,17 +265,17 @@ func Init() {
 func scanPluginDir() {
 	if plugins, _ := filepath.Glob(filepath.Join(pluginMgr.path, pluginMgr.fileGlob)); len(plugins) > 0 {
 		for _, f := range plugins {
-			conf := &plugin2.Config{}
-			confJsonPath := filepath.Join(filepath.Dir(f), jsonName)
-			confContent, err := ioutil.ReadFile(confJsonPath)
+			conf := plugin2.Config{}
+			jsonPath := filepath.Join(filepath.Dir(f), jsonName)
+			content, err := ioutil.ReadFile(jsonPath)
 			if err == nil {
-				if err := json.Unmarshal(confContent, conf); err != nil {
-					pine.Logger().Print("解析描述文件失败", confJsonPath)
+				if err := json.Unmarshal(content, &conf); err != nil {
+					pine.Logger().Warning("解析文件"+jsonPath+"失败", err.Error())
 				} else {
-					pluginMgr.scannedPlugins[f] = conf
+					pluginMgr.scannedPlugins[f] = &conf
 				}
 			} else {
-				pine.Logger().Print("无法扫描到文件", confJsonPath)
+				pine.Logger().Warning("获取文件"+jsonPath+"内容异常", err.Error())
 			}
 		}
 	}

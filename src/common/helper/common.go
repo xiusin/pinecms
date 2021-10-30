@@ -4,9 +4,6 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
-	"github.com/go-xorm/xorm"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pinecms/src/application/controllers"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -22,11 +19,14 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/go-xorm/xorm"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/application/controllers"
+
 	"golang.org/x/image/bmp"
 
 	"github.com/kataras/go-mailer"
 )
-
 
 const TimeFormat = "2006-01-02 15:04:05"
 
@@ -142,7 +142,6 @@ func IsFalse(args ...interface{}) bool {
 	}
 	return true
 }
-
 
 type EmailOpt struct {
 	Title        string
@@ -309,4 +308,8 @@ func UcFirst(str string) string {
 
 func Bytes2String(b []byte) *string {
 	return (*string)(unsafe.Pointer(&b))
+}
+
+func IsWindows() bool {
+	return runtime.GOOS == "windows"
 }

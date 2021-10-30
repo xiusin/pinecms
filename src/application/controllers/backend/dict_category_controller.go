@@ -32,6 +32,9 @@ func (c *DictCategoryController) before(act int, param interface{}) error {
 	case OpAdd, OpEdit:
 		key := param.(*tables.DictCategory).Key
 		id := param.(*tables.DictCategory).Id
+		if len(key) == 0  {
+			return errors.New("字典分类标识不存在")
+		}
 		sess := c.Orm.Table(c.Table).Where("`key` = ?", key)
 		if OpEdit == act {
 			sess = sess.Where("id <> ?", id)

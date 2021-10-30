@@ -1,8 +1,9 @@
 package middleware
 
 import (
-	"github.com/xiusin/pine"
 	"strings"
+
+	"github.com/xiusin/pine"
 )
 
 func Cors() pine.Handler {
@@ -13,6 +14,8 @@ func Cors() pine.Handler {
 		ctx.Response.Header.Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		if !ctx.IsOptions() {
 			ctx.Next()
+		} else {
+			ctx.Stop()
 		}
 	}
 }

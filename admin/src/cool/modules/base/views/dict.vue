@@ -5,12 +5,12 @@
 				<div class="container">
 					<cl-crud :ref="setRefs('categoryCrud')" @load="onCategoryLoad">
 						<el-row type="flex">
-							<cl-refresh-btn />
 							<cl-add-btn />
 						</el-row>
 
 						<el-row>
 							<cl-table
+								class=""
 								:ref="setRefs('categoryTable')"
 								v-bind="categoryTable"
 								@selection-change="onSelectionChange"
@@ -44,10 +44,10 @@
 							<el-button size="small" v-if="catId > 0"
 								>当前分类: {{ catName }}({{ catKey }})</el-button
 							>
-							<cl-refresh-btn />
-							<cl-add-btn />
+							<cl-refresh-btn size="small" />
+							<cl-add-btn  size="small"  />
 							<cl-flex1 />
-							<cl-search-key />
+							<cl-search-key  size="small"  />
 						</el-row>
 
 						<el-row>
@@ -167,42 +167,24 @@ export default defineComponent({
 				}
 			]
 		});
-
 		const categoryTable = reactive<Table>({
+			"context-menu": false,
 			props: {
 				"default-sort": {
 					prop: "id",
 					order: "descending"
-				}
+				},
+				"highlight-current-row": true,
 			},
 			columns: [
 				{
+					prop: "id",
+					width: 70,
+				},
+				{
 					prop: "name",
 					label: "字典名称",
-					width: 150,
 					align: "left"
-				},
-				{
-					prop: "key",
-					label: "字典标识",
-					align: "left",
-				},
-				{
-					prop: "status",
-					label: "状态",
-					minWidth: 50,
-					dict: [
-						{
-							label: "正常",
-							value: true,
-							type: "success"
-						},
-						{
-							label: "禁用",
-							value: 0,
-							type: "danger"
-						}
-					]
 				},
 				{
 					type: "op",
@@ -417,6 +399,7 @@ export default defineComponent({
 
 		// 多选监听
 		function onSelectionChange(selection: any[]) {
+			console.log("selection", selection)
 			selects.ids = selection.map((e) => e.id);
 		}
 

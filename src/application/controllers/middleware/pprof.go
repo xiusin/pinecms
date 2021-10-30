@@ -12,6 +12,7 @@ func Pprof() pine.Handler {
 		if !strings.HasPrefix(ctx.Path(), "statsviz") && strings.HasPrefix(p, "/debug") {
 			pprofhandler.PprofHandler(ctx.RequestCtx)
 			ctx.Stop()
+			return
 		}
 		ctx.Next()
 	}

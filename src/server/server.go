@@ -64,7 +64,6 @@ func initApp() {
 	}, true)
 	diConfig()
 	registerV2BackendRoutes()
-	//app.Use(request_log.RequestRecorder())
 	var staticPathPrefix []string
 	for _, static := range conf.Statics {
 		staticPathPrefix = append(staticPathPrefix, static.Route)
@@ -104,13 +103,7 @@ func registerV2BackendRoutes() {
 		app.Use(request_log.RequestRecorder(time.Millisecond * 200))
 	}
 
-	app.Use(
-		traceid.TraceId(),
-		middleware.Pprof(),
-		middleware.SetGlobalConfigData(),
-		apidoc.New(app, nil),
-		middleware.StatesViz(app),
-	)
+	app.Use(traceid.TraceId(),	middleware.Pprof(),middleware.SetGlobalConfigData(),apidoc.New(app, nil),middleware.StatesViz(app))
 
 	g := app.Group("/v2", middleware.VerifyJwtToken(), middleware.Casbin(config.InitDB(nil), "resources/configs/rbac_models.conf"))
 
