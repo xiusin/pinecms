@@ -87,3 +87,8 @@ func (c *PublicController) GetStatsviz() {
 	baseHost := string(c.Ctx().URI().Scheme()) + "://" + string(c.Ctx().Host())
 	helper.Ajax(baseHost+"/debug/statsviz/", 0, c.Ctx())
 }
+
+func (c *PublicController) GetApidoc() {
+	baseHost := string(c.Ctx().URI().Scheme()) + "://" + string(c.Ctx().Host())
+	helper.Ajax(baseHost+"/debug/statsviz/", 0, c.Ctx())
+}

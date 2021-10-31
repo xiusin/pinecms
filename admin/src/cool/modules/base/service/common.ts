@@ -65,6 +65,13 @@ class Common extends BaseService {
 			url: "/statsviz"
 		});
 	}
+
+	apidoc() {
+		return this.request({
+			url: "/apidoc"
+		});
+	}
+
 }
 
 export default Common;

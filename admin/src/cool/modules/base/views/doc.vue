@@ -1,21 +1,24 @@
 <template>
-	<iframe
-		style="width: 100%; height: 100%"
-		src="//doc.xiusin.cn"
-		frameborder="0"
-		id="bdIframe"
-	>
-	</iframe>
+	<iframe style="width: 100%; height: 100%" :src="url" frameborder="0" id="bdIframe"> </iframe>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, inject, onMounted, ref } from "vue";
 
 export default defineComponent({
-	name: "sys-doc",
+	name: "sys-apidoc",
 
 	setup() {
-		return {};
+		const url = ref("");
+		const service = inject<any>("service");
+		onMounted(() => {
+			service.common.apidoc().then((data: any) => {
+				url.value = data;
+			});
+		});
+		return {
+			url
+		};
 	}
 });
 </script>

@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -258,89 +260,99 @@ func (c *DocumentController) GetSql(orm *xorm.Engine) {
 	}
 }
 
-func (c *DocumentController) GetTable() {
+func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 	mid, err := c.publicLogic()
 	if err != nil {
 		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
 
-	// 系统字段定义
-	var fieldDefines []*tables.DocumentModelField
-
-	var fieldDefineMap = map[int64]*tables.DocumentModelField{}
-
-	c.Orm.Find(&fieldDefines)
-
-	for _, define := range fieldDefines {
-		fieldDefineMap[define.Id] = define
-	}
-
-	var fields tables.ModelDslFields
-	c.Orm.Where("mid = ?", mid).
-		Asc("listorder").Find(&fields)
-	// TODO 允许搜索字段构建
 	table := table{Props: nil, Columns: []column{}, UpsetComps: []interface{}{}}
-	for _, field := range fields {
-		listColumn := column{
-			Prop:                field.TableField,
-			Label:               field.FormName,
-			Width:               field.FieldLen,
-			Dict:                nil,
-			Sortable:            field.Sortable,
-			ShowOverflowTooltip: true,
-			Align:               "left",
-			MinWidth:            80,
+
+	err = cacher.Remember("model_table_"+strconv.Itoa(mid), &table, func() (interface{}, error) {
+		// 系统字段定义
+		var fieldDefines []*tables.DocumentModelField
+		var fieldDefineMap = map[int64]*tables.DocumentModelField{}
+		if err := c.Orm.Find(&fieldDefines); err != nil {
+			return nil, err
 		}
-		if field.Center {
-			listColumn.Align = "center"
+		for _, define := range fieldDefines {
+			fieldDefineMap[define.Id] = define
 		}
-		if field.ListWidth > 80 {
-			listColumn.MinWidth = field.ListWidth
+		var fields tables.ModelDslFields
+
+		if err := c.Orm.Where("mid = ?", mid).Asc("listorder").Find(&fields); err != nil {
+			return nil, err
 		}
 
-		if len(field.Datasource) > 0 {
-
-		}
-		if len(field.Component) > 0 {
-			var component = map[string]interface{}{}
-			if err := json.Unmarshal([]byte(field.Component), &component); err == nil {
-				listColumn.Component = component
-			} else {
-				listColumn.Component = field.Component
+		// TODO 允许搜索字段构建
+		for _, field := range fields {
+			listColumn := column{
+				Prop:                field.TableField,
+				Label:               field.FormName,
+				Width:               field.FieldLen,
+				Dict:                nil,
+				Sortable:            field.Sortable,
+				ShowOverflowTooltip: true,
+				Align:               "left",
+				MinWidth:            80,
 			}
-		} else if len(fieldDefineMap[field.FieldType].ListComp) > 0 {
-			listColumn.Component = fieldDefineMap[field.FieldType].ListComp
-		}
-
-		table.Columns = append(table.Columns, listColumn)
-
-		var props = map[string]interface{}{}
-		_ = json.Unmarshal([]byte(fieldDefineMap[field.FieldType].Props), &props)
-		comp := map[string]interface{}{
-			"name":  fieldDefineMap[field.FieldType].FormComp,
-			"props": props,
-		}
-		if field.FieldLen == 0 {
-			field.FieldLen = 24
-		}
-
-		comp = map[string]interface{}{
-			"prop":      field.TableField,
-			"label":     field.FormName,
-			"span":      field.Span,
-			"component": comp,
-		}
-
-		if field.Required {
-			comp["rules"] = map[string]interface{}{
-				"required": true,
-				"message":  field.RequiredTips,
+			if field.Center {
+				listColumn.Align = "center"
 			}
+			if field.ListWidth > 80 {
+				listColumn.MinWidth = field.ListWidth
+			}
+
+			if len(field.Datasource) > 0 {
+
+			}
+			if len(field.Component) > 0 {
+				var component = map[string]interface{}{}
+				if err := json.Unmarshal([]byte(field.Component), &component); err == nil {
+					listColumn.Component = component
+				} else {
+					listColumn.Component = field.Component
+				}
+			} else if len(fieldDefineMap[field.FieldType].ListComp) > 0 {
+				listColumn.Component = fieldDefineMap[field.FieldType].ListComp
+			}
+
+			table.Columns = append(table.Columns, listColumn)
+
+			var props = map[string]interface{}{}
+			_ = json.Unmarshal([]byte(fieldDefineMap[field.FieldType].Props), &props)
+			comp := map[string]interface{}{
+				"name":  fieldDefineMap[field.FieldType].FormComp,
+				"props": props,
+			}
+			if field.FieldLen == 0 {
+				field.FieldLen = 24
+			}
+
+			comp = map[string]interface{}{
+				"prop":      field.TableField,
+				"label":     field.FormName,
+				"span":      field.Span,
+				"component": comp,
+			}
+
+			if field.Required {
+				comp["rules"] = map[string]interface{}{
+					"required": true,
+					"message":  field.RequiredTips,
+				}
+			}
+			table.UpsetComps = append(table.UpsetComps, comp)
 		}
-		table.UpsetComps = append(table.UpsetComps, comp)
+		table.SearchFields = fields.GetSearchableFields()
+		return table, nil
+	})
+	if err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
 	}
-	table.SearchFields = fields.GetSearchableFields()
+
 	helper.Ajax(table, 0, c.Ctx())
 }
 
