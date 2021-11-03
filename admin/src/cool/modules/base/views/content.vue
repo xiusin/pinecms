@@ -313,7 +313,6 @@ export default defineComponent({
 		async function onInfo(data, { done }) {
 			let info = await service.system.content.info({
 				id: data.id,
-				cid: data.cid,
 				mid: midRef.value
 			});
 			done(info);

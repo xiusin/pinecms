@@ -1,7 +1,7 @@
 # 安装
 
 ::: warning 注意
-如果需要使用`SQLITE`作为数据库， 需要安装gcc的命令。 这里推荐[TDM-GCC](https://sourceforge.net/projects/tdm-gcc/), 就此可以支持`CGO` 相关的包。
+当前系统仅支持`MYSQL`作为数据库。
 :::
 
 ## 下载编译
@@ -93,3 +93,7 @@ Server now listening on: http://0.0.0.0:2019/
 
 ### 其他
 这里并没有像其他CMS一样启动install 安装配置目录.
+
+### Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/xiusin/pinecms.svg)](https://starchart.cc/xiusin/pinecms)

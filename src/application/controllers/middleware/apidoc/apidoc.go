@@ -2,11 +2,12 @@ package apidoc
 
 import (
 	"fmt"
-	"github.com/sonyarouje/simdb"
-	"github.com/xiusin/pine"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/sonyarouje/simdb"
+	"github.com/xiusin/pine"
 )
 
 /**
@@ -21,11 +22,13 @@ func New(app *pine.Application, config *Config) pine.Handler {
 		config = DefaultConfig()
 	}
 	defaultConfig = config
-	err := os.Mkdir(config.DataPath, os.ModePerm)
-	simdbDriver, err = simdb.New(config.DataPath)
-	if err != nil {
+	os.Mkdir(config.DataPath, os.ModePerm)
+
+	var err error
+	if simdbDriver, err = simdb.New(config.DataPath); err != nil {
 		panic(err)
 	}
+
 	app.ANY(config.RoutePrefix+"/:action", func(ctx *pine.Context) {
 		if !config.Enable {
 			ctx.Next()
@@ -63,10 +66,7 @@ func New(app *pine.Application, config *Config) pine.Handler {
 
 		var existData apiEntity
 		exist := simdbDriver.Open(entity).Where("menu_key", "=", key).First().AsEntity(&existData)
-		if entity.Immutable == true && exist == nil { // 代码内传入不可变
-			return
-		}
-		if existData.Immutable == true { // 实体内传入不可变
+		if entity.Immutable && exist == nil { // 代码内传入不可变
 			return
 		}
 		entity.Author = defaultConfig.DefaultAuthor

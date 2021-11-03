@@ -1,10 +1,12 @@
 package backend
 
 import (
-	"github.com/xiusin/pinecms/src/application/models"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/xiusin/pinecms/src/application/models"
 
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -98,6 +100,7 @@ func (c *ContentController) PostEdit() {
 	id, _ := c.Input().GetInt("id")
 	mid, _ := c.Input().GetInt("mid")
 	catid, _ := c.Input().GetInt("catid")
+	fmt.Println(id, mid, catid)
 	if mid < 1 || catid < 1 || id < 1 {
 		helper.Ajax("缺少关键参数", 1, c.Ctx())
 		return
@@ -114,15 +117,12 @@ func (c *ContentController) PostEdit() {
 
 	var data = map[string]interface{}{}
 	c.Ctx().BindJSON(&data)
-
 	data["updated_time"] = helper.NowDate("Y-m-d H:i:s")
-
-	ret, _ := query.Where("id = ?", id).Where("mid = ?", mid).Where("catid = ?", catid).AllCols().Update(&data)
-
-	if ret > 0 {
+	_, err := query.Where("id = ?", id).Where("mid = ?", mid).Where("catid = ?", catid).AllCols().Update(&data)
+	if err == nil {
 		helper.Ajax("更新内容成功", 1, c.Ctx())
 	} else {
-		helper.Ajax("更新内容失败", 0, c.Ctx())
+		helper.Ajax("更新内容失败: "+err.Error(), 0, c.Ctx())
 	}
 }
 
@@ -137,15 +137,15 @@ func (c *ContentController) GetInfo() {
 	}
 	c.Table = controllers.GetTableName(document.Table) // 设置表名
 	query := c.Orm.Table(c.Table)
-	contents, err := query.ID(id).QueryInterface()
+	contents, err := query.Where("id = ?", id).QueryInterface()
 	if err != nil {
 		helper.Ajax("错误"+err.Error(), 1, c.Ctx())
 		return
 	}
 	for field, value := range contents[0] {
-		switch value.(type) {
+		switch value := value.(type) {
 		case []byte:
-			contents[0][field] = interface{}(helper.Bytes2String(value.([]byte)))
+			contents[0][field] = interface{}(helper.Bytes2String(value))
 		}
 	}
 	helper.Ajax(contents[0], 0, c.Ctx())
