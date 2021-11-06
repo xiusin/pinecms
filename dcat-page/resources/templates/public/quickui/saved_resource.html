@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<!-- saved from url=(22150)data:text/html;charset=utf-8, %3C%21DOCTYPE%20html%3E%0A%3Chtml%20lang%3D%22en%22%3E%0A%0A%3Chead%3E%0A%20%20%3Cmeta%20charset%3D%22utf-8%22%20/%3E%0A%20%20%3Cmeta%20name%3D%27viewport%27%20content%3D%27width%3Ddevice-width%2C%20initial-scale%3D1.0%2C%20maximum-scale%3D1.0%2C%20user-scalable%3D0%27%20/%3E%0A%20%20%3Cstyle%3E%0A%20%20%20%20html%20%7B%0A%20%20%20%20%20%20width%3A%20100%25%3B%0A%20%20%20%20%20%20height%3A%20100%25%3B%0A%20%20%20%20%7D%0A%20%20%20%20body%20%7B%0A%20%20%20%20%20%20overflow%3A%20hidden%3B%0A%20%20%20%20%20%20margin%3A%200%3B%0A%20%20%20%20%20%20width%3A%20100%25%3B%0A%20%20%20%20%20%20height%3A%20100%25%3B%0A%20%20%20%20%7D%0A%20%20%3C/style%3E%0A%20%20%3Clink%20href%3D%22chrome-extension%3A//odfonlkabodgbolnmmkdijkaeggofoop/assets/css/font-awesome.min.css%22%20rel%3D%22stylesheet%22%20/%3E%0A%20%20%3Clink%20href%3D%22chrome-extension%3A//odfonlkabodgbolnmmkdijkaeggofoop/pages/content/app.css%22%20rel%3D%22stylesheet%22%20/%3E%0A%20%20%3Ctextarea%20id%3D%22config%22%20style%3D%22display%3Anone%22%3E%7B%22theme%22%3A%22default%22%2C%22zoom%22%3A1%2C%22outline%22%3Atrue%2C%22themeDay%22%3A%22default%22%2C%22themeNight%22%3A%22gray%22%2C%22themeAuto%22%3Afalse%2C%22translateLang%22%3A%22zh-CN%22%2C%22clearly%22%3A%7B%22whitelist%22%3A%5B%22news.google.com/*%22%2C%22support.google.com/*%22%2C%22medium.com/*%22%2C%22www.jianshu.com/p/*%22%5D%2C%22blacklist%22%3A%5B%22www.youtube.com/*%22%2C%22www.google.*%22%2C%22chrome.google.com/*%22%2C%22translate.google.com/*%22%2C%22mail.google.com/*%22%2C%22drive.google.com/*%22%2C%22docs.google.com/*%22%5D%2C%22fonts%22%3A%5B%7B%22name%22%3A%22Lora%22%2C%22lang%22%3A%5B%22en%22%5D%2C%22default%22%3A%22en%22%2C%22system%22%3A%5B%22win%22%2C%22mac%22%5D%7D%2C%7B%22name%22%3A%22NotoSerif%22%2C%22lang%22%3A%5B%22en%22%5D%2C%22system%22%3A%5B%22win%22%2C%22mac%22%5D%7D%2C%7B%22name%22%3A%22Crimson%20Text%22%2C%22lang%22%3A%5B%22en%22%5D%2C%22system%22%3A%5B%22win%22%2C%22mac%22%5D%7D%2C%7B%22name%22%3A%22Georgia%22%2C%22lang%22%3A%5B%22en%22%5D%2C%22system%22%3A%5B%22win%22%2C%22mac%22%5D%7D%2C%7B%22name%22%3A%22Roboto%22%2C%22lang%22%3A%5B%22en%22%5D%2C%22system%22%3A%5B%22win%22%2C%22mac%22%5D%7D%2C%7B%22name%22%3A%22Kaiti%22%2C%22lang%22%3A%5B%22zh%22%5D%2C%22default%22%3A%22zh%22%2C%22system%22%3A%5B%22win%22%2C%22mac%22%5D%7D%2C%7B%22name%22%3A%22Songti%22%2C%22lang%22%3A%5B%22zh%22%5D%2C%22system%22%3A%5B%22win%22%2C%22mac%22%5D%7D%2C%7B%22name%22%3A%22System%22%2C%22lang%22%3A%5B%22zh%22%2C%22en%22%5D%2C%22system%22%3A%5B%22win%22%2C%22mac%22%5D%7D%5D%7D%2C%22lang%22%3A%22zh-CN%22%2C%22tabId%22%3A4435%7D%3C/textarea%3E%3Ctextarea%20id%3D%22env%22%20style%3D%22display%3Anone%22%3E%7B%22debug%22%3Afalse%7D%3C/textarea%3E%0A%3C/head%3E%0A%0A%3Cbody%20id%3D%22root%22%3E%0A%20%20%3Cdiv%20id%3D%22popshare%22%3E%0A%20%20%20%20%3Ccanvas%20id%3D%22popshare-image%22%3E%3C/canvas%3E%0A%20%20%3C/div%3E%0A%20%20%3Cdiv%20id%3D%22poptranslate%22%3E%0A%20%20%20%20%3Cdiv%20id%3D%22poptranslate-toolbox%22%3E%0A%20%20%20%20%3Cspan%3ETranslation%20language%3A%3C/span%3E%20%3Cselect%20id%3D%22poptranslate-lang%22%3E%3Coption%20value%3D%22af%22%3EAfrikaans%3C/option%3E%3Coption%20value%3D%22sq%22%3EAlbanian%3C/option%3E%3Coption%20value%3D%22am%22%3EAmharic%3C/option%3E%3Coption%20value%3D%22ar%22%3EArabic%3C/option%3E%3Coption%20value%3D%22hy%22%3EArmenian%3C/option%3E%3Coption%20value%3D%22az%22%3EAzerbaijani%3C/option%3E%3Coption%20value%3D%22eu%22%3EBasque%3C/option%3E%3Coption%20value%3D%22be%22%3EBelarusian%3C/option%3E%3Coption%20value%3D%22bn%22%3EBengali%3C/option%3E%3Coption%20value%3D%22bs%22%3EBosnian%3C/option%3E%3Coption%20value%3D%22bg%22%3EBulgarian%3C/option%3E%3Coption%20value%3D%22ca%22%3ECatalan%3C/option%3E%3Coption%20value%3D%22ceb%22%3ECebuano%3C/option%3E%3Coption%20value%3D%22ny%22%3EChichewa%3C/option%3E%3Coption%20value%3D%22zh-CN%22%3EChinese%20%28Simplified%29%3C/option%3E%3Coption%20value%3D%22zh-TW%22%3EChinese%20%28Traditional%29%3C/option%3E%3Coption%20value%3D%22co%22%3ECorsican%3C/option%3E%3Coption%20value%3D%22hr%22%3ECroatian%3C/option%3E%3Coption%20value%3D%22cs%22%3ECzech%3C/option%3E%3Coption%20value%3D%22da%22%3EDanish%3C/option%3E%3Coption%20value%3D%22nl%22%3EDutch%3C/option%3E%3Coption%20value%3D%22en%22%3EEnglish%3C/option%3E%3Coption%20value%3D%22eo%22%3EEsperanto%3C/option%3E%3Coption%20value%3D%22et%22%3EEstonian%3C/option%3E%3Coption%20value%3D%22tl%22%3EFilipino%3C/option%3E%3Coption%20value%3D%22fi%22%3EFinnish%3C/option%3E%3Coption%20value%3D%22fr%22%3EFrench%3C/option%3E%3Coption%20value%3D%22fy%22%3EFrisian%3C/option%3E%3Coption%20value%3D%22gl%22%3EGalician%3C/option%3E%3Coption%20value%3D%22ka%22%3EGeorgian%3C/option%3E%3Coption%20value%3D%22de%22%3EGerman%3C/option%3E%3Coption%20value%3D%22el%22%3EGreek%3C/option%3E%3Coption%20value%3D%22gu%22%3EGujarati%3C/option%3E%3Coption%20value%3D%22ht%22%3EHaitian%20Creole%3C/option%3E%3Coption%20value%3D%22ha%22%3EHausa%3C/option%3E%3Coption%20value%3D%22haw%22%3EHawaiian%3C/option%3E%3Coption%20value%3D%22iw%22%3EHebrew%3C/option%3E%3Coption%20value%3D%22hi%22%3EHindi%3C/option%3E%3Coption%20value%3D%22hmn%22%3EHmong%3C/option%3E%3Coption%20value%3D%22hu%22%3EHungarian%3C/option%3E%3Coption%20value%3D%22is%22%3EIcelandic%3C/option%3E%3Coption%20value%3D%22ig%22%3EIgbo%3C/option%3E%3Coption%20value%3D%22id%22%3EIndonesian%3C/option%3E%3Coption%20value%3D%22ga%22%3EIrish%3C/option%3E%3Coption%20value%3D%22it%22%3EItalian%3C/option%3E%3Coption%20value%3D%22ja%22%3EJapanese%3C/option%3E%3Coption%20value%3D%22jw%22%3EJavanese%3C/option%3E%3Coption%20value%3D%22kn%22%3EKannada%3C/option%3E%3Coption%20value%3D%22kk%22%3EKazakh%3C/option%3E%3Coption%20value%3D%22km%22%3EKhmer%3C/option%3E%3Coption%20value%3D%22ko%22%3EKorean%3C/option%3E%3Coption%20value%3D%22ku%22%3EKurdish%20%28Kurmanji%29%3C/option%3E%3Coption%20value%3D%22ky%22%3EKyrgyz%3C/option%3E%3Coption%20value%3D%22lo%22%3ELao%3C/option%3E%3Coption%20value%3D%22la%22%3ELatin%3C/option%3E%3Coption%20value%3D%22lv%22%3ELatvian%3C/option%3E%3Coption%20value%3D%22lt%22%3ELithuanian%3C/option%3E%3Coption%20value%3D%22lb%22%3ELuxembourgish%3C/option%3E%3Coption%20value%3D%22mk%22%3EMacedonian%3C/option%3E%3Coption%20value%3D%22mg%22%3EMalagasy%3C/option%3E%3Coption%20value%3D%22ms%22%3EMalay%3C/option%3E%3Coption%20value%3D%22ml%22%3EMalayalam%3C/option%3E%3Coption%20value%3D%22mt%22%3EMaltese%3C/option%3E%3Coption%20value%3D%22mi%22%3EMaori%3C/option%3E%3Coption%20value%3D%22mr%22%3EMarathi%3C/option%3E%3Coption%20value%3D%22mn%22%3EMongolian%3C/option%3E%3Coption%20value%3D%22my%22%3EMyanmar%20%28Burmese%29%3C/option%3E%3Coption%20value%3D%22ne%22%3ENepali%3C/option%3E%3Coption%20value%3D%22no%22%3ENorwegian%3C/option%3E%3Coption%20value%3D%22ps%22%3EPashto%3C/option%3E%3Coption%20value%3D%22fa%22%3EPersian%3C/option%3E%3Coption%20value%3D%22pl%22%3EPolish%3C/option%3E%3Coption%20value%3D%22pt%22%3EPortuguese%3C/option%3E%3Coption%20value%3D%22pa%22%3EPunjabi%3C/option%3E%3Coption%20value%3D%22ro%22%3ERomanian%3C/option%3E%3Coption%20value%3D%22ru%22%3ERussian%3C/option%3E%3Coption%20value%3D%22sm%22%3ESamoan%3C/option%3E%3Coption%20value%3D%22gd%22%3EScots%20Gaelic%3C/option%3E%3Coption%20value%3D%22sr%22%3ESerbian%3C/option%3E%3Coption%20value%3D%22st%22%3ESesotho%3C/option%3E%3Coption%20value%3D%22sn%22%3EShona%3C/option%3E%3Coption%20value%3D%22sd%22%3ESindhi%3C/option%3E%3Coption%20value%3D%22si%22%3ESinhala%3C/option%3E%3Coption%20value%3D%22sk%22%3ESlovak%3C/option%3E%3Coption%20value%3D%22sl%22%3ESlovenian%3C/option%3E%3Coption%20value%3D%22so%22%3ESomali%3C/option%3E%3Coption%20value%3D%22es%22%3ESpanish%3C/option%3E%3Coption%20value%3D%22su%22%3ESundanese%3C/option%3E%3Coption%20value%3D%22sw%22%3ESwahili%3C/option%3E%3Coption%20value%3D%22sv%22%3ESwedish%3C/option%3E%3Coption%20value%3D%22tg%22%3ETajik%3C/option%3E%3Coption%20value%3D%22ta%22%3ETamil%3C/option%3E%3Coption%20value%3D%22te%22%3ETelugu%3C/option%3E%3Coption%20value%3D%22th%22%3EThai%3C/option%3E%3Coption%20value%3D%22tr%22%3ETurkish%3C/option%3E%3Coption%20value%3D%22uk%22%3EUkrainian%3C/option%3E%3Coption%20value%3D%22ur%22%3EUrdu%3C/option%3E%3Coption%20value%3D%22uz%22%3EUzbek%3C/option%3E%3Coption%20value%3D%22vi%22%3EVietnamese%3C/option%3E%3Coption%20value%3D%22cy%22%3EWelsh%3C/option%3E%3Coption%20value%3D%22xh%22%3EXhosa%3C/option%3E%3Coption%20value%3D%22yi%22%3EYiddish%3C/option%3E%3Coption%20value%3D%22yo%22%3EYoruba%3C/option%3E%3Coption%20value%3D%22zu%22%3EZulu%3C/option%3E%3C/select%3E%0A%20%20%20%20%3C/div%3E%0A%20%20%20%20%3Cdiv%20id%3D%22poptranslate-content%22%3E%0A%20%20%20%20%20%20%3Cdiv%20id%3D%22poptranslate-word%22%3E%3C/div%3E%0A%20%20%20%20%20%20%3Cdiv%20id%3D%22poptranslate-voice%22%3E%0A%20%20%20%20%20%20%20%20%3Ci%20class%3D%22material-icons%22%20id%3D%22poptranslate-btn-speak%22%3Evolume_up%3C/i%3E%0A%20%20%20%20%20%20%20%20%3Cspan%3E%3C/span%3E%0A%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%3Cdiv%20id%3D%22poptranslate-explain%22%3E%3C/div%3E%0A%20%20%20%20%20%20%3Cdiv%20id%3D%22poptranslate-translit%22%3E%3C/div%3E%0A%20%20%20%20%20%20%3Cdiv%20id%3D%22poptranslate-dict%22%3E%3C/div%3E%0A%20%20%20%20%3C/div%3E%0A%20%20%3C/div%3E%0A%20%20%3Cdiv%20id%3D%22popmenu%22%3E%0A%20%20%20%20%3Cdiv%20id%3D%22popmenu-overlay%22%3E%3C/div%3E%0A%20%20%20%20%3Cdiv%20id%3D%22popmenu-container%22%3E%0A%20%20%20%20%20%20%3Cli%20id%3D%22popmenu-translate%22%20class%3D%22popmenu-item%22%20data-type%3D%22translate%22%3ETranslate%3C/li%3E%0A%20%20%20%20%20%20%3Cli%20id%3D%22popmenu-copy%22%20class%3D%22popmenu-item%22%20data-type%3D%22copy%22%3ECopy%3C/li%3E%0A%20%20%20%20%20%20%3Cli%20id%3D%22popmenu-search%22%20class%3D%22popmenu-item%22%20data-type%3D%22search%22%3ESearch%3C/li%3E%0A%20%20%20%20%20%20%3Cli%20id%3D%22popmenu-wiki%22%20class%3D%22popmenu-item%22%20data-type%3D%22wiki%22%3EWiki%3C/li%3E%0A%20%20%20%20%20%20%3C%21-%2D%20%3Cli%20id%3D%22popmenu-share%22%20class%3D%22popmenu-item%22%20data-type%3D%22share%22%3EShare%3C/li%3E%20-%2D%3E%0A%20%20%20%20%3C/div%3E%0A%20%20%20%20%3C%21-%2D%3Cli%20id%3D%22popmenu-share%22%3EShare%3C/li%3E-%2D%3E%0A%20%20%3C/div%3E%0A%20%20%3Cdiv%20id%3D%22outline%22%3E%3C/div%3E%0A%20%20%3Cdiv%20id%3D%22main%22%3E%0A%20%20%20%20%3Cdiv%20id%3D%22title%22%3E%3C/div%3E%0A%20%20%20%20%3Cdiv%20id%3D%22byline%22%3E%3C/div%3E%0A%20%20%20%20%3Cdiv%20id%3D%22content%22%3ENo%20Aritcle%3C/div%3E%0A%0A%20%20%20%20%3Cdiv%20id%3D%22footer%22%20data-html2canvas-ignore%3D%22true%22%3E%0A%20%20%20%20%20%20%3Cdiv%20id%3D%22share%22%20class%3D%22share%22%3E%0A%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22share-title%22%3EDoes%20Clearly%20works%20fine%3F%3C/span%3E%0A%20%20%20%20%20%20%20%20%3Cdiv%20id%3D%22share-default%22%20class%3D%22share-overlay%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Ci%20id%3D%22btn-thumb-up%22%20class%3D%22material-icons%20thumb%20thumb-up%22%3Ethumb_up%3C/i%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Ci%20id%3D%22btn-thumb-down%22%20class%3D%22material-icons%20thumb%20thumb-down%22%3Ethumb_down%3C/i%3E%0A%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%20%20%3Cdiv%20id%3D%22share-no%22%20class%3D%22share-overlay%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22share-letter%22%3EWe%20have%20received%20your%20feedback%3C/span%3E%0A%20%20%20%20%20%20%20%20%20%20%3Ca%20id%3D%22btn-cantact%22%20class%3D%22btn-cantact%22%20href%3D%22https%3A//clearlyreader.com/r/report%22%20target%3D%22_blank%22%3E%3Ci%20class%3D%22material-icons%22%3Email_outline%3C/i%3EContact%20us%3C/a%3E%0A%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%20%20%3Cdiv%20id%3D%22share-yes%22%20class%3D%22share-overlay%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22share-letter%22%3EHelp%20Clearly%20Reader%20to%20better%3F%3C/span%3E%0A%20%20%20%20%20%20%20%20%20%20%3Ca%20id%3D%22btn-comments%22%20href%3D%22https%3A//clearlyreader.com/r/reviews%22%20target%3D%22_blank%22%3E%3Ci%20class%3D%22material-icons%22%3Estar_border%3C/i%3EGive%20stars%3C/a%3E%0A%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%3C/div%3E%0A%0A%20%20%20%20%20%20%3Cdiv%20class%3D%22moretips%22%20%3E%0A%20%20%20%20%20%20%3Cspan%20class%3D%22shortcut%22%3E%3C%21-%2D%20Shortcuts%3A%20%3Cstrong%3ESHIFT+OPTION+C%3C/strong%3E%20to%20Toggle%2C%20%3Cstrong%3EESC%3C/strong%3E%20to%20Close.%20-%2D%3E%3C/span%3E%0A%20%20%20%20%20%20%3Ca%20class%3D%22feedback%22%20target%3D%22_blank%22%20href%3D%22https%3A//clearlyreader.com/r/subscribe%22%3E%3Ci%20class%3D%22material-icons%22%3Email%3C/i%3EJoin%20maillist%3C/a%3E%0A%20%20%20%20%20%20%3Ca%20target%3D%22_blank%22%20class%3D%22donate%22%20href%3D%22https%3A//clearlyreader.com/r/feedback%22%3EFeedback%3C/a%3E%0A%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%3C/div%3E%0A%0A%20%20%3C/div%3E%0A%20%20%3Cdiv%20id%3D%22tool%22%3E%0A%20%20%20%20%20%20%3C%21-%2D%0A%20%20%20%20%20%20%3Cdiv%20class%3D%22menu%22%3E%0A%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22form-group%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22btn%22%20id%3D%22translate-start%22%3E%u5F00%u59CB%3C/span%3E%0A%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20-%2D%3E%0A%0A%20%20%20%20%3Cdiv%20class%3D%22menu%22%3E%0A%20%20%20%20%20%20%3Cspan%20id%3D%22btn-close%22%3E%3Ci%20class%3D%22material-icons%22%3Ecancel%3C/i%3E%3C/span%3E%0A%20%20%20%20%3C/div%3E%0A%0A%20%20%20%20%3Cdiv%20class%3D%22menu%22%20menu-tooltip%3D%22THEME%20SETTING%22%3E%0A%20%20%20%20%20%20%3Cspan%20id%3D%22btn-style%22%3E%3C/span%3E%0A%20%20%20%20%3C/div%3E%0A%0A%20%20%20%20%3Cdiv%20class%3D%22menu%22%20id%3D%22menu-speak%22%20menu-tooltip%3D%22SPEAK%22%3E%0A%20%20%20%20%20%20%3Cspan%20id%3D%22btn-speak%22%3E%3Ci%20class%3D%22material-icons%22%20id%3D%22menu-speak-icon%22%3Evolume_up%3C/i%3E%3C/span%3E%0A%20%20%20%20%3C/div%3E%0A%0A%20%20%20%20%3C%21-%2D%20%3Cdiv%20class%3D%22menu%22%20menu-tooltip%3D%22SAVE%20AS%20PDF%22%3E%0A%20%20%20%20%20%20%3Cspan%20id%3D%22btn-pdf%22%3E%3Ci%20class%3D%22material-icons%22%20id%3D%22picture_as_pdf%22%3Epicture_as_pdf%3C/i%3E%3C/span%3E%0A%20%20%20%20%3C/div%3E%20-%2D%3E%0A%0A%20%20%20%20%3Cdiv%20class%3D%22menu%22%20id%3D%22menu-print%22%20menu-tooltip%3D%22PRINT%22%3E%0A%20%20%20%20%20%20%3Cspan%20id%3D%22btn-print%22%3E%3Ci%20class%3D%22material-icons%22%20id%3D%22print%22%3Eprint%3C/i%3E%3C/span%3E%0A%20%20%20%20%3C/div%3E%0A%0A%20%20%20%20%3Cdiv%20class%3D%22menu%22%20id%3D%22menu-fullscreen%22%20menu-tooltip%3D%22FULLSCREEN%22%3E%0A%20%20%20%20%20%20%3Cspan%3E%3Ci%20class%3D%22material-icons%22%20id%3D%22menu-fullscreen-icon%22%3Efullscreen%3C/i%3E%3C/span%3E%0A%20%20%20%20%3C/div%3E%0A%0A%20%20%20%20%3Cdiv%20class%3D%22menu%22%20menu-tooltip%3D%22REPORT%20BUG%22%20id%3D%22btn-report%22%3E%0A%20%20%20%20%20%20%3Cspan%3E%3Ci%20class%3D%22material-icons%22%3Ebug_report%3C/i%3E%3C/span%3E%0A%20%20%20%20%3C/div%3E%0A%0A%20%20%20%20%3Cdiv%20class%3D%22dialog%22%20id%3D%22dialog-style%22%3E%0A%20%20%20%20%20%20%20%3Cdiv%20class%3D%22overlay-backdrop%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22setting%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22dialog-title%22%3ESTYLE%20SETTING%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22dialog-btn-close%22%3E%3Ci%20class%3D%22material-icons%22%3Eclose%3C/i%3E%3C/div%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22tcell%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22form-label%22%3E%3Cspan%20id%3D%22value-zoom%22%20class%3D%22form-value%22%3E%3C/span%3EFont%20size%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22form-group%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22btn-letter%22%20id%3D%22btn-zoomin%22%3EA%3C/span%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22btn-letter%22%20id%3D%22btn-zoomout%22%3EA%3C/span%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22tcell%22%20id%3D%22themes%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22form-label%22%3ETheme%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22form-group%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22btn%20btn-theme-default%22%3E%3C/span%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22btn%20btn-theme-yellow%22%3E%3C/span%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22btn%20btn-theme-gray%22%3E%3C/span%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22btn%20btn-theme-black%22%3E%3C/span%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22tcell%22%20id%3D%22themes-auto%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22form-label%22%3EAuto%20Theme%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22form-group%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20id%3D%22switch-theme%22%20class%3D%22switch%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22slider%22%3E%3C/span%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22tcell%22%20id%3D%22themes-day%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22form-label%22%3EDay%20Theme%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22form-group%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22btn%20btn-theme-default%22%3E%3C/span%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22btn%20btn-theme-yellow%22%3E%3C/span%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22tcell%22%20id%3D%22themes-night%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22form-label%22%3ENight%20Theme%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22form-group%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22btn%20btn-theme-gray%22%3E%3C/span%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22btn%20btn-theme-black%22%3E%3C/span%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22tcell%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22form-label%22%3EFonts%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20id%3D%22font-select-style%22%20class%3D%22form-group%22%3E%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22tcell%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22form-label%22%3EOutline%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22form-group%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20id%3D%22switch-outline%22%20class%3D%22switch%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22slider%22%3E%3C/span%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%3C/div%3E%0A%0A%0A%20%20%20%20%3C%21-%2Ddiv%20class%3D%22menu%22%20id%3D%22menu-translate%22%20menu-tooltip%3D%22TRANSLATE%22%3E%0A%20%20%20%20%20%20%20%20%3Cspan%3E%3Ci%20class%3D%22material-icons%22%20id%3D%22menu-translate-icon%22%3Etranslate%3C/i%3E%3C/span%3E%0A%20%20%20%20%3C/div-%2D%3E%0A%0A%20%20%20%20%3C%21-%2D%20%3Cdiv%20class%3D%22menu%22%20id%3D%22menu-speak%22%20menu-tooltip%3D%22AUDIO%22%3E%0A%20%20%20%20%20%20%20%20%3Cspan%3E%3Ci%20class%3D%22material-icons%22%20id%3D%22menu-speak-icon%22%3Evolume_down%3C/i%3E%3C/span%3E%20-%2D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%21-%2D%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22btn%22%20id%3D%22btn-speak-pause%22%20style%3D%22display%3Anone%22%3E%3Ci%20class%3D%22fa%20fa-pause%22%3E%3C/i%3E%3C/span%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22btn%22%20id%3D%22btn-speak-resume%22%20style%3D%22display%3Anone%22%3E%3Ci%20class%3D%22fa%20fa-play%22%3E%3C/i%3E%3C/span%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22btn%22%20id%3D%22btn-speak-stop%22%20style%3D%22display%3Anone%22%3E%3Ci%20class%3D%22fa%20fa-stop%22%3E%3C/i%3E%3C/span%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20-%2D%3E%0A%20%20%20%20%3C%21-%2D%20%3C/div%3E%20-%2D%3E%0A%3C/div%3E%0A%3Cscript%20src%3D%22chrome-extension%3A//odfonlkabodgbolnmmkdijkaeggofoop/pages/content/jquery.min-v3.3.1.js%22%20type%3D%22text/javascript%22%3E%3C/script%3E%0A%3Cscript%20src%3D%22chrome-extension%3A//odfonlkabodgbolnmmkdijkaeggofoop/pages/content/purify.min-v2.0.js%22%20type%3D%22text/javascript%22%3E%3C/script%3E%0A%3Cscript%20src%3D%22chrome-extension%3A//odfonlkabodgbolnmmkdijkaeggofoop/pages/content/app.js%22%20type%3D%22text/javascript%22%3E%3C/script%3E%0A%3C/body%3E%0A%3C/html%3E%0A -->
+<html lang="en" class="theme-default"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <style>
+    html {
+      width: 100%;
+      height: 100%;
+    }
+    body {
+      overflow: hidden;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <link href="chrome-extension://odfonlkabodgbolnmmkdijkaeggofoop/assets/css/font-awesome.min.css" rel="stylesheet">
+  <link href="chrome-extension://odfonlkabodgbolnmmkdijkaeggofoop/pages/content/app.css" rel="stylesheet">
+  </head><body id="root"><textarea id="config" style="display:none">{"theme":"default","zoom":1,"outline":true,"themeDay":"default","themeNight":"gray","themeAuto":false,"translateLang":"zh-CN","clearly":{"whitelist":["news.google.com/*","support.google.com/*","medium.com/*","www.jianshu.com/p/*"],"blacklist":["www.youtube.com/*","www.google.*","chrome.google.com/*","translate.google.com/*","mail.google.com/*","drive.google.com/*","docs.google.com/*"],"fonts":[{"name":"Lora","lang":["en"],"default":"en","system":["win","mac"]},{"name":"NotoSerif","lang":["en"],"system":["win","mac"]},{"name":"Crimson Text","lang":["en"],"system":["win","mac"]},{"name":"Georgia","lang":["en"],"system":["win","mac"]},{"name":"Roboto","lang":["en"],"system":["win","mac"]},{"name":"Kaiti","lang":["zh"],"default":"zh","system":["win","mac"]},{"name":"Songti","lang":["zh"],"system":["win","mac"]},{"name":"System","lang":["zh","en"],"system":["win","mac"]}]},"lang":"zh-CN","tabId":4435}</textarea><textarea id="env" style="display:none">{"debug":false}</textarea>
+
+
+
+  <div id="popshare">
+    <canvas id="popshare-image"></canvas>
+  </div>
+  <div id="poptranslate">
+    <div id="poptranslate-toolbox">
+    <span>Translation language:</span> <select id="poptranslate-lang"><option value="af">Afrikaans</option><option value="sq">Albanian</option><option value="am">Amharic</option><option value="ar">Arabic</option><option value="hy">Armenian</option><option value="az">Azerbaijani</option><option value="eu">Basque</option><option value="be">Belarusian</option><option value="bn">Bengali</option><option value="bs">Bosnian</option><option value="bg">Bulgarian</option><option value="ca">Catalan</option><option value="ceb">Cebuano</option><option value="ny">Chichewa</option><option value="zh-CN">Chinese (Simplified)</option><option value="zh-TW">Chinese (Traditional)</option><option value="co">Corsican</option><option value="hr">Croatian</option><option value="cs">Czech</option><option value="da">Danish</option><option value="nl">Dutch</option><option value="en">English</option><option value="eo">Esperanto</option><option value="et">Estonian</option><option value="tl">Filipino</option><option value="fi">Finnish</option><option value="fr">French</option><option value="fy">Frisian</option><option value="gl">Galician</option><option value="ka">Georgian</option><option value="de">German</option><option value="el">Greek</option><option value="gu">Gujarati</option><option value="ht">Haitian Creole</option><option value="ha">Hausa</option><option value="haw">Hawaiian</option><option value="iw">Hebrew</option><option value="hi">Hindi</option><option value="hmn">Hmong</option><option value="hu">Hungarian</option><option value="is">Icelandic</option><option value="ig">Igbo</option><option value="id">Indonesian</option><option value="ga">Irish</option><option value="it">Italian</option><option value="ja">Japanese</option><option value="jw">Javanese</option><option value="kn">Kannada</option><option value="kk">Kazakh</option><option value="km">Khmer</option><option value="ko">Korean</option><option value="ku">Kurdish (Kurmanji)</option><option value="ky">Kyrgyz</option><option value="lo">Lao</option><option value="la">Latin</option><option value="lv">Latvian</option><option value="lt">Lithuanian</option><option value="lb">Luxembourgish</option><option value="mk">Macedonian</option><option value="mg">Malagasy</option><option value="ms">Malay</option><option value="ml">Malayalam</option><option value="mt">Maltese</option><option value="mi">Maori</option><option value="mr">Marathi</option><option value="mn">Mongolian</option><option value="my">Myanmar (Burmese)</option><option value="ne">Nepali</option><option value="no">Norwegian</option><option value="ps">Pashto</option><option value="fa">Persian</option><option value="pl">Polish</option><option value="pt">Portuguese</option><option value="pa">Punjabi</option><option value="ro">Romanian</option><option value="ru">Russian</option><option value="sm">Samoan</option><option value="gd">Scots Gaelic</option><option value="sr">Serbian</option><option value="st">Sesotho</option><option value="sn">Shona</option><option value="sd">Sindhi</option><option value="si">Sinhala</option><option value="sk">Slovak</option><option value="sl">Slovenian</option><option value="so">Somali</option><option value="es">Spanish</option><option value="su">Sundanese</option><option value="sw">Swahili</option><option value="sv">Swedish</option><option value="tg">Tajik</option><option value="ta">Tamil</option><option value="te">Telugu</option><option value="th">Thai</option><option value="tr">Turkish</option><option value="uk">Ukrainian</option><option value="ur">Urdu</option><option value="uz">Uzbek</option><option value="vi">Vietnamese</option><option value="cy">Welsh</option><option value="xh">Xhosa</option><option value="yi">Yiddish</option><option value="yo">Yoruba</option><option value="zu">Zulu</option></select>
+    </div>
+    <div id="poptranslate-content">
+      <div id="poptranslate-word"></div>
+      <div id="poptranslate-voice">
+        <i class="material-icons" id="poptranslate-btn-speak">volume_up</i>
+        <span></span>
+      </div>
+      <div id="poptranslate-explain"></div>
+      <div id="poptranslate-translit"></div>
+      <div id="poptranslate-dict"></div>
+    </div>
+  </div>
+  <div id="popmenu">
+    <div id="popmenu-overlay"></div>
+    <div id="popmenu-container">
+      <li id="popmenu-translate" class="popmenu-item" data-type="translate">Translate</li>
+      <li id="popmenu-copy" class="popmenu-item" data-type="copy">Copy</li>
+      <li id="popmenu-search" class="popmenu-item" data-type="search">Search</li>
+      <li id="popmenu-wiki" class="popmenu-item" data-type="wiki">Wiki</li>
+      <!-- <li id="popmenu-share" class="popmenu-item" data-type="share">Share</li> -->
+    </div>
+    <!--<li id="popmenu-share">Share</li>-->
+  </div>
+  <div id="outline"><div class="outline-section outline-h1"><a data-id="#">QUICK UI 文档 - 快速上手</a></div>
+<div class="outline-section outline-h4"><a data-id="#ros-0">快速上手</a></div>
+<div class="outline-section outline-h5"><a data-id="#ros-1">使用之前</a></div>
+<div class="outline-section outline-h5"><a data-id="#ros-2">运行HTML示例工程</a></div>
+<div class="outline-section outline-h5"><a data-id="#ros-3">使用QUICK UI皮肤包</a></div>
+<div class="outline-section outline-h5"><a data-id="#ros-4">搭建工程开发</a></div></div>
+  <div id="main">
+    <div id="title">QUICK UI 文档 - 快速上手</div>
+    <div id="byline"></div>
+    <div id="content" style="zoom: 1;"><div><div>                 <h4 id="ros-0">快速上手</h4>
+<hr>
+<h5 id="ros-1">使用之前</h5>
+<p>​    QUICK UI 4.0是基于jquery1.9开发。在开始使用 QUICK UI 之前，有必要先了解jquery的基础知识。我们假定您已经基本掌握QUIERY的用法，包括初始化函数、使用选择器选择DOM节点和设置与读取自定义属性等知识。</p>
+<h5 id="ros-2">运行HTML示例工程</h5>
+<p>​    你需要架设服务器，通过http的方式访问demo工程。比如tomcat等。</p>
+<p>​    当你拿到QUICK UI的试用版或者购买了正式版后，从软件包中找到“组件示例工程”文件夹，把里面的quickui目录拷贝到服务器相应目录，然后通过http的方式访问quickui/system/main_html/main.html</p>
+<p><img alt="grid_1" src="./guide_1.png"></p>
+<p>​    如果你的开发编辑器本身就有http预览环境（比如Hbuilder），也可以直接把quickui目录拖到编辑器中，直接运行quickui/system/main_html/main.html</p>
+<h5 id="ros-3">使用QUICK UI皮肤包</h5>
+<p>​    QUICK UI有皮肤包的概念，每一套皮肤包都有独立的主页文件、导航处理和CSS样式等，所有的皮肤包共用组件库资源，来实现QUICK UI风格样式的千变万化。关于皮肤包详细内容见“框架”栏目的皮肤相关章节。</p>
+<p>​    皮肤包使用方式：将皮肤包文件夹放到quickui/system目录下，像访问示例工程主页文件一样访问皮肤包里面的main.html</p>
+<p><img alt="grid_1" src="./guide_2.png"></p>
+<h5 id="ros-4">搭建工程开发</h5>
+<p>​    你需要先选择一套适合你的框架皮肤包作为项目入口。选择皮肤包可以访问官网预览效果，官网的每一套皮肤中会显示皮肤名称，该名称与皮肤包文件夹名字保持一致。也可以通过在本地访问皮肤包的方式一个个查看。</p>
+<p>​    当创建了工程后，在工程根目录新建system目录，皮肤包放到system目录中。从“组件示例工程”文件夹中找到libs文件夹。libs是QUICK UI组件库，也同样放到你的工程根目录。然后访问该皮肤的主页文件作为你的项目主页。</p>
+<p><img alt="grid_1" src="./guide_3.png"></p>
+<p>​    如果希望更改皮肤包名称，或者更改目录结构，需要修改皮肤主页的配置参数。如果你无法正常访问皮肤包主页，说明路径出了问题，同样需要修改皮肤主页的配置参数。详细内容见“框架”栏目的皮肤相关章节。</p>
+             </div></div></div>
+
+    <div id="footer" data-html2canvas-ignore="true">
+      <div id="share" class="share">
+        <span class="share-title">Does Clearly works fine?</span>
+        <div id="share-default" class="share-overlay" style="display: block;">
+            <i id="btn-thumb-up" class="material-icons thumb thumb-up">thumb_up</i>
+            <i id="btn-thumb-down" class="material-icons thumb thumb-down">thumb_down</i>
+        </div>
+        <div id="share-no" class="share-overlay" style="display: none;">
+          <span class="share-letter">We have received your feedback</span>
+          <a id="btn-cantact" class="btn-cantact" href="https://clearlyreader.com/r/report?url=undefined" target="_blank"><i class="material-icons">mail_outline</i>Contact us</a>
+        </div>
+        <div id="share-yes" class="share-overlay" style="display: none;">
+          <span class="share-letter">Help Clearly Reader to better?</span>
+          <a id="btn-comments" href="https://clearlyreader.com/r/reviews" target="_blank"><i class="material-icons">star_border</i>Give stars</a>
+        </div>
+      </div>
+
+      <div class="moretips">
+      <span class="shortcut"><!-- Shortcuts: <strong>SHIFT+OPTION+C</strong> to Toggle, <strong>ESC</strong> to Close. --></span>
+      <a class="feedback" target="_blank" href="https://clearlyreader.com/r/subscribe"><i class="material-icons">mail</i>Join maillist</a>
+      <a target="_blank" class="donate" href="https://clearlyreader.com/r/feedback">Feedback</a>
+      </div>
+    </div>
+
+  </div>
+  <div id="tool">
+      <!--
+      <div class="menu">
+        <div class="form-group">
+          <span class="btn" id="translate-start">%u5F00%u59CB</span>
+        </div>
+      </div>
+      -->
+
+    <div class="menu">
+      <span id="btn-close"><i class="material-icons">cancel</i></span>
+    </div>
+
+    <div class="menu" menu-tooltip="THEME SETTING">
+      <span id="btn-style"></span>
+    </div>
+
+    <div class="menu" id="menu-speak" menu-tooltip="SPEAK">
+      <span id="btn-speak"><i class="material-icons" id="menu-speak-icon">volume_down</i></span>
+    </div>
+
+    <!-- <div class="menu" menu-tooltip="SAVE AS PDF">
+      <span id="btn-pdf"><i class="material-icons" id="picture_as_pdf">picture_as_pdf</i></span>
+    </div> -->
+
+    <div class="menu" id="menu-print" menu-tooltip="PRINT">
+      <span id="btn-print"><i class="material-icons" id="print">print</i></span>
+    </div>
+
+    <div class="menu" id="menu-fullscreen" menu-tooltip="FULLSCREEN">
+      <span><i class="material-icons" id="menu-fullscreen-icon">fullscreen</i></span>
+    </div>
+
+    <div class="menu" menu-tooltip="REPORT BUG" id="btn-report">
+      <span><i class="material-icons">bug_report</i></span>
+    </div>
+
+    <div class="dialog" id="dialog-style">
+       <div class="overlay-backdrop">
+            <div class="setting">
+                <div class="dialog-title">STYLE SETTING</div>
+                <div class="dialog-btn-close"><i class="material-icons">close</i></div>
+
+                <div class="tcell">
+                  <div class="form-label"><span id="value-zoom" class="form-value">100%</span>Font size</div>
+                  <div class="form-group">
+                    <span class="btn-letter" id="btn-zoomin">A</span>
+                    <span class="btn-letter" id="btn-zoomout">A</span>
+                  </div>
+                </div>
+
+                <div class="tcell" id="themes">
+                  <div class="form-label">Theme</div>
+                  <div class="form-group">
+                    <span class="btn btn-theme-default btn-selected"></span>
+                    <span class="btn btn-theme-yellow"></span>
+                    <span class="btn btn-theme-gray"></span>
+                    <span class="btn btn-theme-black"></span>
+                  </div>
+                </div>
+
+                <div class="tcell" id="themes-auto">
+                  <div class="form-label">Auto Theme</div>
+                  <div class="form-group">
+                    <div id="switch-theme" class="switch s-off">
+                        <span class="slider"></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="tcell" id="themes-day" style="display: none;">
+                  <div class="form-label">Day Theme</div>
+                  <div class="form-group">
+                    <span class="btn btn-theme-default btn-selected"></span>
+                    <span class="btn btn-theme-yellow"></span>
+                  </div>
+                </div>
+
+                <div class="tcell" id="themes-night" style="display: none;">
+                  <div class="form-label">Night Theme</div>
+                  <div class="form-group">
+                    <span class="btn btn-theme-gray btn-selected"></span>
+                    <span class="btn btn-theme-black"></span>
+                  </div>
+                </div>
+
+                <div class="tcell">
+                  <div class="form-label">Fonts</div>
+                  <div id="font-select-style" class="form-group"><span class="font-lora" data-font="lora">Lora</span><span class="font-notoserif" data-font="notoserif">NotoSerif</span><span class="font-crimsontext" data-font="crimsontext">Crimson Text</span><span class="font-georgia" data-font="georgia">Georgia</span><span class="font-roboto" data-font="roboto">Roboto</span><span class="font-kaiti" data-font="kaiti">Kaiti</span><span class="font-songti" data-font="songti">Songti</span><span class="font-system" data-font="system">System</span></div>
+                </div>
+
+                <div class="tcell">
+                  <div class="form-label">Outline</div>
+                  <div class="form-group">
+                    <div id="switch-outline" class="switch s-on">
+                        <span class="slider"></span>
+                    </div>
+                  </div>
+                </div>
+            </div>
+         </div>
+      </div>
+
+
+    <!--div class="menu" id="menu-translate" menu-tooltip="TRANSLATE">
+        <span><i class="material-icons" id="menu-translate-icon">translate</i></span>
+    </div-->
+
+    <!-- <div class="menu" id="menu-speak" menu-tooltip="AUDIO">
+        <span><i class="material-icons" id="menu-speak-icon">volume_down</i></span> -->
+            <!--
+            <span class="btn" id="btn-speak-pause" style="display:none"><i class="fa fa-pause"></i></span>
+            <span class="btn" id="btn-speak-resume" style="display:none"><i class="fa fa-play"></i></span>
+            <span class="btn" id="btn-speak-stop" style="display:none"><i class="fa fa-stop"></i></span>
+            -->
+    <!-- </div> -->
+</div>
+<script src="chrome-extension://odfonlkabodgbolnmmkdijkaeggofoop/pages/content/jquery.min-v3.3.1.js" type="text/javascript"></script>
+<script src="chrome-extension://odfonlkabodgbolnmmkdijkaeggofoop/pages/content/purify.min-v2.0.js" type="text/javascript"></script>
+<script src="chrome-extension://odfonlkabodgbolnmmkdijkaeggofoop/pages/content/app.js" type="text/javascript"></script>
+
+
+</body></html>

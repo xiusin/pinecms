@@ -1,18 +1,23 @@
-package wechat
+package markdown
 
 import (
 	"github.com/xiusin/pine"
 )
 
+var urlPrefix = "/markdown"
+var viewsDir = "dcat-page/resources/templates/public/"
+var docsDir = "dcat-page/resources/templates/docs"
+var configFilePath = "dcat-page/resources/templates/config.json"
+
+const DocMiss = `<div class="the-404">
+<div class="contain">
+	<div class="content pl-6">
+		<h3>You seem to have upset the delicate internal balance of my housekeeper.</h3>
+	</div>
+</div>
+</div>`
+
 func InitRouter(app *pine.Application, router *pine.Router) {
-	app.ANY("/api/wechat/msg/:appid", msgHandler)
-	router.Handle(new(WechatAccountController), "/wechat/account")
-	router.Handle(new(WechatUserController), "/wechat/user")
-	router.Handle(new(WechatMagController), "/wechat/msg")
-	router.Handle(new(WechatQrcodeController), "/wechat/qrcode")
-	router.Handle(new(WechatRuleController), "/wechat/rule")
-	router.Handle(new(WechatMaterialController), "/wechat/material")
-	router.Handle(new(WechatMsgTemplateController), "/wechat/template")
-	router.Handle(new(WechatUserTagsController), "/wechat/user/tags")
-	router.Handle(new(WechatMenuController), "/wechat/menu")
+	app.GET(urlPrefix+"/docs/*version", Docs, InjectVar())
+	app.GET(urlPrefix+"/*view", Views, InjectVar())
 }

@@ -1,0 +1,38 @@
+{
+    "authors": {
+        "name": "xiusin",
+        "email": "xiusin.chen@gmail.com"
+    },
+    "homepage": "http://localhost:2019",
+    "description": "PineCMS系统说明文档",
+    "website": {
+        "title": "PineCMS文档",
+        "keywords": "PineCMS|Pine|Go|CMS|内容管理系统",
+        "description": "PineCMS是一个简单易用, 支持插件化的系统."
+    },
+    "doc": {
+        "default": "installation.md",
+        "index": "documentation.md",
+        "version": "master",
+        "ignore": []
+    },
+    "comment": {
+        "enable": true,
+        "client_id": "xxx",
+        "client_secret": "xxx",
+        "repo": "xxx",
+        "owner": "xxx",
+        "admin": [
+            "xxx"
+        ],
+        "language": "zh-CN",
+        "perPage": 15,
+        "pagerDirection": "first"
+    },
+    "edit_config": {
+        "label": "<i class=\"fa fa-github\"><\/i> 编辑此页",
+        "values": {
+            "installation": "https:\/\/github.com\/xxx\/xxx\/edit\/master\/installation.md"
+        }
+    }
+}

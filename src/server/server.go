@@ -4,6 +4,7 @@ import (
 	"fmt"
 	request_log "github.com/xiusin/pine/middlewares/request-log"
 	"github.com/xiusin/pine/middlewares/traceid"
+	"github.com/xiusin/pinecms/src/application/controllers/backend/markdown"
 	"io"
 	"net/http"
 	"os"
@@ -142,6 +143,7 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.DatabaseBackupController))
 
 	wechat.InitRouter(app, g)
+	markdown.InitRouter(app, g)
 
 	app.Group("/v2/public").Handle(new(backend.PublicController))
 	app.Group("/v2/api").Handle(new(backend.PublicController))

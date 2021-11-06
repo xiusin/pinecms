@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="zh" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]> <html lang="zh" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="zh">
+<!--<![endif]-->
+
+<head>
+	<meta charset="utf-8" />
+	<title>JsTreeNoteBook模板</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
+	<!-- <link rel="stylesheet" href="assets/jstree/plugins/bootstrap-3.3.7-dist/css/bootstrap.min.css" /> -->
+	<link rel="stylesheet" href="assets/jstree/plugins/jstree/dist/themes/default/style.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor/dist/index.css" />
+	<script src="https://cdn.jsdelivr.net/npm/vditor/dist/index.min.js"></script>
+	<style type="text/css">
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		.contriner {
+			width: 100%;
+			height: 100%;
+			position: relative;
+		}
+
+		.asids {
+			float: left;
+			width: 260px;
+		}
+
+		.view {
+			margin-left: 260px;
+			margin-bottom: 20px;
+			overflow-y: auto;
+		}
+
+		.content {
+			width: 100%;
+			height: 1000px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="contriner">
+		<div class="asids">
+			<div id="DivTree"></div>
+		</div>
+		<div class="view">
+			<div id="content"></div>
+		</div>
+	</div>
+	<!--[if lt IE 9]>
+	    <script src="assets/jstree/plugins/respond.min.js"></script>
+        <script src="assets/jstree/plugins/excanvas.min.js"></script>
+        <script src="assets/jstree/plugins/ie8.fix.min.js"></script>
+        <![endif]-->
+	<script type="text/javascript" src="assets/jstree/plugins/jquery-1.12.4/dist/jquery.min.js"></script>
+	<script type="text/javascript" src="assets/jstree/plugins/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="assets/jstree/plugins/jstree/dist/jstree.min.js"></script>
+	<script type="text/javascript">
+		$(function () {
+			initTree();
+		});
+
+		function initTree() {
+			//$.jstree.destroy();
+			$('#DivTree').jstree("destroy");
+			$.ajax({
+				url: "assets/jstree/data/root.json", //json文件位置
+				type: "GET", //请求方式为get
+				dataType: "json", //返回数据格式为json
+				success: function (data) { //请求成功完成后要执行的方法 
+					$('#DivTree').jstree({
+						'core': {
+							'data': data, // 绑定JsTree数据
+							"multiple": false, // 是否多选
+							"themes": {
+								"responseive": true
+							},
+							"check_callback": true
+						},
+						"plugins": ["contextmenu", "dnd", "state", "types", "wholerow"], // 配置信息
+						"contextmenu": {
+							select_node: false,
+							show_at_node: true,
+							items: function (o, cb) {
+								var actions = {};
+								actions.create = {
+									"separator_before": false,
+									"separator_after": true,
+									"_disabled": false,
+									"icon": "glyphicon glyphicon-plus",
+									"label": "新增",
+									"action": function (data) {
+										var inst = $.jstree.reference(data.reference);
+										var obj = inst.get_node(data.reference);
+										inst.create_node(obj, {}, "last", function (new_node) {
+											setTimeout(function () {
+												inst.edit(new_node);
+											}, 0);
+										});
+									}
+								}
+
+								if (o.id !== "1") {
+									actions.rename = {
+										"separator_before": false,
+										"separator_after": false,
+										"_disabled": false,
+										"icon": "glyphicon glyphicon-leaf",
+										"label": "重命名",
+										"action": function (data) {
+											var inst = $.jstree.reference(data.reference);
+											var obj = inst.get_node(data.reference);
+											inst.edit(obj);
+										}
+									}
+									actions.delete = {
+										"separator_before": false,
+										"icon": "glyphicon glyphicon-remove",
+										"separator_after": false,
+										"_disabled": false,
+										"label": "删除",
+										"action": function (data) {
+											var inst = $.jstree.reference(data.reference);
+											var obj = inst.get_node(data.reference);
+											if (inst.is_selected(obj)) {
+												inst.delete_node(inst.get_selected());
+											} else {
+												inst.delete_node(obj);
+											}
+										}
+									};
+								}
+								return actions;
+							}
+						}
+					});
+					$("#DivTree").on("ready.jstree", function (e, data) { // 树创建完成事件
+						data.instance.open_all(); // 展开所有节点
+					});
+					$("#DivTree").on('changed.jstree', function (e, data) { // 选中节点改变事件
+						var node = data.instance.get_node(data.selected[0]); // 获取选中的节点
+						if (node) {
+							console.log(node.id);
+						};
+					});
+					$("#DivTree").on('delete_node.jstree', function (e, data) {
+						var id = data.node.id;
+						console.log(id);
+					});
+					$("#DivTree").on('move_node.jstree', function (e, data) {
+					});
+					console.log(data);
+					$("#DivTree").on('rename_node.jstree', function (e, data) {
+						if (data.node.text != data.node.old) {
+							console.log(data);
+						}
+					});
+				}
+			})
+		}
+	</script>
+	<script>
+		new Vditor('content', {
+			cache: {
+				enable: false,
+			},
+			preview: {
+				hljs: true,
+				lineNumber: true
+			},
+			theme: "dark 2",
+			value: '',
+		})
+	</script>
+</body>
+
+</html>

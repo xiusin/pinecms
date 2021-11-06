@@ -28,6 +28,7 @@ upload:
 plugin_path: "plugins"
 
 statics:
-  - {route: "/assets", path: "./dist/assets"}
+  - {route: "/assets", path: "dcat-page/resources/templates/public/assets"}
+  - {route: "/quickui", path: "dcat-page/resources/templates/public/quickui"}
   - {route: "/themes", path: "./dist/themes"}
   - {route: "/uploads", path: "./resources/assets/uploads"}

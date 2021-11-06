@@ -1,0 +1,136 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+a {
+  display: block;
+  text-decoration: none;
+  color: #353535;
+  cursor: pointer;
+}
+ul {
+  list-style: none;
+}
+body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #eee;
+}
+.doc-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  /* padding: 0 20px; */
+  *padding: 0;
+  background-color: #ffffff;
+  border-bottom: solid 1px #eee;
+  box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+.doc-header h1.logo {
+  display: inline-block;
+  *width: 300px;
+  *float: left;
+}
+.doc-header h1.logo > a {
+  position: relative;
+  color: #39f;
+  font-size: 18px;
+  line-height: 80px;
+  padding-left: 80px;
+}
+.doc-header h1.logo > a::before {
+  content: '';
+  position: absolute;
+  display: block;
+  height: 54px;
+  width: 60px;
+  top: 13px;
+  left: 0;
+  background-image: url('../img/logo.png');
+  background-size: 100%;
+}
+.doc-tab {
+  float: right;
+  *padding-right: 20px;
+}
+.doc-tab ul.tabs > li.tab {
+  display: inline-block;
+  *float: left;
+}
+.doc-tab ul.tabs > li.tab > a {
+  color: #657180;
+  font-size: 14px;
+  line-height: 80px;
+  padding: 0 15px;
+}
+.doc-tab ul.tabs > li.tab > a:hover {
+  color: #39f;
+}
+.doc-tab ul.tabs > li.tab.active > a {
+  color: #39f;
+  border-bottom: solid 2px #39f;
+}
+.doc-content {
+  position: absolute;
+  top: 80px;
+  bottom: 0;
+  *bottom: auto;
+  bottom: auto\9;
+  left: 0;
+  right: 0;
+  border-left: solid 1px #eee;
+  border-right: solid 1px #eee;
+  background-color: #ffffff;
+  padding-left: 240px;
+  *overflow: hidden;
+}
+.doc-nav {
+  position: absolute;
+  width: 240px;
+  left: 0;
+  top: 0;
+  height: 100%;
+  overflow: auto;
+  border-right: solid 1px #eee;
+}
+.doc-nav li > a {
+  color: #657180;
+  padding: 0 15px;
+}
+.doc-nav li > a:hover {
+  color: #39f;
+}
+.doc-nav li.active > a {
+  color: #39f;
+}
+.doc-nav ul.menus > li.menu > a, .doc-nav ul.menus > li.menu > h2 {
+  line-height: 60px;
+  font-size: 16px;
+}
+.doc-nav ul.pages {
+  padding-left: 15px;
+}
+.doc-nav ul.pages > li.page > a {
+  line-height: 46px;
+  font-size: 14px;
+}
+.doc-nav ul.pages > li.page > a:hover {
+  background-color: #F3F3F3;
+}
+.doc-nav ul.pages > li.page.active > a {
+  background-color: #F3F3F3;
+  border-right: 2px solid #3399FF;
+}
+.doc-markdown {
+  overflow: auto;
+  height: 100%;
+  padding: 15px;
+  *padding-left: 30px;
+}
+.doc-markdown a {
+  display: inline;
+}

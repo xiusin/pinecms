@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
 	github.com/MarcGrol/golangAnnotations v1.0.0
-	github.com/alecthomas/chroma v0.9.2
+	github.com/alecthomas/chroma v0.9.4
 	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0
 	github.com/alibabacloud-go/darabonba-openapi v0.1.6
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.2
@@ -54,6 +54,7 @@ require (
 )
 
 require (
+	github.com/88250/lute v1.7.3 // indirect
 	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible // indirect
 	github.com/StackExchange/wmi v1.2.0 // indirect
@@ -79,6 +80,7 @@ require (
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
+	github.com/gopherjs/gopherjs v0.0.0-20210619142842-05447a1fa367 // indirect
 	github.com/gorilla/schema v1.2.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect

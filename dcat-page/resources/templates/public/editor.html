@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor/dist/index.css" />
+  <script src="https://cdn.jsdelivr.net/npm/vditor/dist/index.min.js"></script>
+</head>
+
+<body>
+  <div id="vditor" style="height: 100%;"></div>
+  <script>
+    new Vditor('vditor', {
+      cache: {
+        enable: false,
+      },
+      preview: {
+        hljs: true, 
+        lineNumber: true
+      },
+      theme: "dark 2",
+      value: '',
+    })
+  </script>
+</body>
+
+</html>
