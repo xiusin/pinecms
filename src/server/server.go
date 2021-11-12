@@ -2,14 +2,14 @@ package config
 
 import (
 	"fmt"
-	request_log "github.com/xiusin/pine/middlewares/request-log"
-	"github.com/xiusin/pine/middlewares/traceid"
-	"github.com/xiusin/pinecms/src/application/controllers/backend/markdown"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"time"
+
+	request_log "github.com/xiusin/pine/middlewares/request-log"
+	"github.com/xiusin/pine/middlewares/traceid"
 
 	"github.com/allegro/bigcache/v3"
 	pine_bigcache "github.com/xiusin/pine/cache/providers/bigcache"
@@ -104,7 +104,7 @@ func registerV2BackendRoutes() {
 		app.Use(request_log.RequestRecorder(time.Millisecond * 200))
 	}
 
-	app.Use(traceid.TraceId(),	middleware.Pprof(),middleware.SetGlobalConfigData(),apidoc.New(app, nil),middleware.StatesViz(app))
+	app.Use(traceid.TraceId(), middleware.Pprof(), middleware.SetGlobalConfigData(), apidoc.New(app, nil), middleware.StatesViz(app))
 
 	g := app.Group("/v2", middleware.VerifyJwtToken(), middleware.Casbin(config.InitDB(nil), "resources/configs/rbac_models.conf"))
 
@@ -143,7 +143,6 @@ func registerV2BackendRoutes() {
 		Handle(new(backend.DatabaseBackupController))
 
 	wechat.InitRouter(app, g)
-	markdown.InitRouter(app, g)
 
 	app.Group("/v2/public").Handle(new(backend.PublicController))
 	app.Group("/v2/api").Handle(new(backend.PublicController))
