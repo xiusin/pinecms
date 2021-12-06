@@ -160,6 +160,19 @@
       >
       </Table>
     </div>
+
+    <h2>
+      响应结果Responses示例
+    </h2>
+
+    <div class="api-param-table">
+      <json-viewer
+          :value="getJsonViewData()"
+          :expand-depth="3"
+          copyable
+          boxed
+      ></json-viewer>
+    </div>
   </div>
 </template>
 
@@ -177,6 +190,7 @@ import {
 import { textToHtml } from "../../utils/utils";
 import request from "../../utils/request";
 import { url } from "@/api/app";
+import JsonViewer from "vue-json-viewer";
 
 let paramsRowKey = 0;
 export default {
@@ -184,6 +198,7 @@ export default {
     Table,
     Icon,
     Popover,
+    JsonViewer,
     Input,
     Checkbox,
     Select,
@@ -296,6 +311,13 @@ export default {
     this.returnData = this.handleReturnData(this.apiData.return);
   },
   methods: {
+    getJsonViewData() {
+      try {
+        return JSON.parse(this.apiData.raw_return);
+      } catch (e) {
+        return {};
+      }
+    },
     saveData(record, type) {
       request.post(
         url.edit + "?type=" + type + "&menu_key=" + this.apiData.menu_key,
@@ -349,6 +371,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+* {
+  font-size: 13px;
+}
 .api-param-table {
   margin-bottom: 16px;
 }

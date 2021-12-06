@@ -2,7 +2,7 @@ package plugin
 
 import (
 	"fmt"
-	"github.com/xiusin/pinecms/cmd/util"
+	"github.com/xiusin/reload/util"
 	"io/ioutil"
 	"os"
 	"os/exec"

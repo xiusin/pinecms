@@ -60,17 +60,13 @@
             </FormItem>
           </Form>
         </div>
-        <TextArea
-          v-else
-          v-model="parameters"
-          :auto-size="{ minRows: 5, maxRows: 20 }"
-        />
+        <codemirror class="code" v-model="parameters" :options="cmOptions"></codemirror>
       </div>
     </div>
 
     <div class="api-debug-action">
       <Button type="primary" :loading="loading" block @click="excute"
-        >执行 Excute</Button
+        >执行</Button
       >
     </div>
 
@@ -123,6 +119,14 @@ import TableInput from "@/utils/Input";
 import cloneDeep from "lodash/cloneDeep";
 import { ls } from "@/utils/cache";
 import JsonViewer from "vue-json-viewer";
+import {codemirror} from 'vue-codemirror';
+
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/keymap/sublime'
+import "codemirror/theme/dracula.css"
+import "codemirror/mode/vue/vue.js"
+import 'codemirror/addon/selection/active-line'
+
 
 export default {
   components: {
@@ -134,6 +138,7 @@ export default {
     Table,
     TableInput,
     Form,
+    codemirror,
     FormItem: Form.Item,
     Upload,
     JsonViewer
@@ -159,6 +164,17 @@ export default {
 
   data() {
     return {
+      code: "",
+      cmOptions: {
+        tabSize: 4,// tab的空格个数
+        theme: 'dracula',//主题样式
+        lineNumbers: true,//是否显示行数
+        lineWrapping: true, //是否自动换行
+        styleActiveLine: true,//line选择是是否加亮
+        matchBrackets: true,//括号匹配
+        mode: "javascript", //实现javascript代码高亮
+        readOnly: false//只读
+      },
       returnString: "",
       returnData: {},
       parameters: "",

@@ -41,11 +41,12 @@ func New(app *pine.Application, config *Config) pine.Handler {
 			getApiData(ctx)
 		case "edit":
 			saveApiData(ctx)
+		case "export": // 导出丝袜哥
+
 		case "sync": // 同步到腾讯云
 			syncApiDataToTencent(ctx)
-		//标注接口字段为不可再修改， go端不可直接配置
-		case "reset":
-
+		case "reset": 	//标注接口字段为不可再修改， go端不可直接配置
+			
 		}
 	})
 

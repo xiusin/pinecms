@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"io"
-	"net/http"
 	"os"
 	"path/filepath"
 	"time"
@@ -153,18 +152,18 @@ func registerV2BackendRoutes() {
 }
 
 func runServe() {
-	pine.RegisterErrorCodeHandler(http.StatusInternalServerError, func(ctx *pine.Context) {
-		if ctx.IsAjax() {
-			_ = ctx.WriteJSON(pine.H{"code": http.StatusInternalServerError, "message": ctx.Msg})
-		} else {
-			ctx.Abort(http.StatusInternalServerError, ctx.Msg)
-		}
-	})
+	//pine.RegisterErrorCodeHandler(http.StatusInternalServerError, func(ctx *pine.Context) {
+	//	if ctx.IsAjax() {
+	//		_ = ctx.WriteJSON(pine.H{"code": http.StatusInternalServerError, "message": ctx.Msg})
+	//	} else {
+	//		ctx.Abort(http.StatusInternalServerError, ctx.Msg)
+	//	}
+	//})
 	go plugins.Init()
 	app.Run(
 		pine.Addr(fmt.Sprintf(":%d", conf.Port)),
 		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))),
-		pine.WithoutStartupLog(true),
+		//pine.WithoutStartupLog(true),
 		pine.WithServerName("xiusin/pinecms"),
 		pine.WithCookie(true),
 	)

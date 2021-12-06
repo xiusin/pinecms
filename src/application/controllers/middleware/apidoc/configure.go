@@ -11,7 +11,6 @@ type Config struct {
 	DefaultAuthor string         `json:"default_author"` // 默认作者
 	Apps          []apiApp       `json:"apps"`           // 应用， 例如 前端接口，后端接口
 	Groups        []apiGroup     `json:"groups"`         //  应用分组
-	TencentApi    tencentApiConf `json:"-"`
 	Cache         struct {
 		Enable bool   `json:"enable"`
 		Path   string `json:"path"`

@@ -18,8 +18,12 @@ func getApiData(ctx *pine.Context) {
 	var entities []apiEntity
 	_ = simdbDriver.Open(&apiEntity{}).Where("app_id", "=", appKey).Get().AsEntity(&entities)
 	groups := []apiGroup{{Title: "全部", Name: 0}}
-	var lists []apiList
+	var lists = []apiList{}
 	for _, entity := range entities {
+		if len(entity.SubGroup) == 0 {
+			ctx.Logger().Warning(entity.Title + "没有设置SubGroup")
+			continue
+		}
 		var flag = true
 		for _, group := range groups {
 			if group.Title == entity.Group.Title {
@@ -39,14 +43,10 @@ func getApiData(ctx *pine.Context) {
 			}
 		}
 		listItem.Group = entity.Group.Title
-		if len(entity.SubGroup) > 0 {
-			listItem.MenuKey = entity.SubGroup
-			listItem.Title = entity.SubGroup
-		} else {
-			listItem.Title = "未分组"
-			listItem.MenuKey = "no_group"
-		}
+		listItem.MenuKey = entity.SubGroup
+		listItem.Title = entity.SubGroup
 		listItem.Children = append(listItem.Children, entity)
+
 		if idx > -1 {
 			lists[idx] = listItem
 		} else {

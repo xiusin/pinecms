@@ -46,9 +46,9 @@
       <TabPane key="1" tab="文档">
         <DocTable :apiData="apiData" :config="config" />
       </TabPane>
-      <TabPane key="2" tab="Json" force-render>
-        <DocJson :apiData="apiData" :config="config" />
-      </TabPane>
+<!--      <TabPane key="2" tab="Json" force-render>-->
+<!--        <DocJson :apiData="apiData" :config="config" />-->
+<!--      </TabPane>-->
       <TabPane key="3" tab="调试">
         <DocDebug
           :url="url"
