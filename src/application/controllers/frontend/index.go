@@ -11,7 +11,7 @@ import (
 
 func (c *IndexController) Index() {
 	c.setTemplateData()
-	indexPage := "index.html"
+	indexPage := "editor.tpl"
 	pageFilePath := GetStaticFile(indexPage)
 	os.MkdirAll(filepath.Dir(pageFilePath), os.ModePerm)
 	f, err := os.OpenFile(pageFilePath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)

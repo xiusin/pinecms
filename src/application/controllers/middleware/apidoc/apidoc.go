@@ -13,7 +13,6 @@ import (
 /**
 1. 可以自定义字段备注， 比如想要修改部分字段备注
 2. 修改接口信息， 为响应字段添加备注
-3. todo 接入腾讯云API 自动生成文档, 前端点击一键同步到腾讯云.
 */
 var simdbDriver *simdb.Driver
 
@@ -45,8 +44,8 @@ func New(app *pine.Application, config *Config) pine.Handler {
 
 		case "sync": // 同步到腾讯云
 			syncApiDataToTencent(ctx)
-		case "reset": 	//标注接口字段为不可再修改， go端不可直接配置
-			
+		case "reset": //标注接口字段为不可再修改， go端不可直接配置
+
 		}
 	})
 

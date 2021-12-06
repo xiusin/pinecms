@@ -1,16 +1,16 @@
 package apidoc
 
 type Config struct {
-	RoutePrefix   string         `json:"route_prefix"`
-	Enable        bool           `json:"enable"`         // 是否启用apidoc
-	DataPath      string         `json:"-"`              // 配置数据存储目录
-	ResponseParam interface{}    `json:"-"`              // 用于反射返回值信息
-	Title         string         `json:"title"`          // 标题目录
-	Desc          string         `json:"desc"`           // 描述
-	Copyright     string         `json:"copyright"`      // 版权
-	DefaultAuthor string         `json:"default_author"` // 默认作者
-	Apps          []apiApp       `json:"apps"`           // 应用， 例如 前端接口，后端接口
-	Groups        []apiGroup     `json:"groups"`         //  应用分组
+	RoutePrefix   string      `json:"route_prefix"`
+	Enable        bool        `json:"enable"`         // 是否启用apidoc
+	DataPath      string      `json:"-"`              // 配置数据存储目录
+	ResponseParam interface{} `json:"-"`              // 用于反射返回值信息
+	Title         string      `json:"title"`          // 标题目录
+	Desc          string      `json:"desc"`           // 描述
+	Copyright     string      `json:"copyright"`      // 版权
+	DefaultAuthor string      `json:"default_author"` // 默认作者
+	Apps          []apiApp    `json:"apps"`           // 应用， 例如 前端接口，后端接口
+	Groups        []apiGroup  `json:"groups"`         //  应用分组
 	Cache         struct {
 		Enable bool   `json:"enable"`
 		Path   string `json:"path"`
@@ -76,7 +76,13 @@ type Config struct {
 			} `json:"rules"`
 		} `json:"validate"`
 	} `json:"crud"`
-	Debug bool `json:"debug"`
+	Hosts []Host `json:"hosts"`
+	Debug bool   `json:"debug"`
+}
+
+type Host struct {
+	Host  string `json:"host"`
+	Title string `json:"title"`
 }
 
 func (c *Config) FindApp(appOrName string) {
@@ -105,6 +111,10 @@ func DefaultConfig() *Config {
 		//	{Name: "message", Desc: "操作描述", Type: "string"},
 		//	{Name: "data", Desc: "业务数据", Type: "object", Main: true},
 		//},
+		Hosts: []Host{
+			{Title: "本地环境", Host: "http://www.xiusin.cn/"},
+			{Title: "生产环境", Host: "http://www.mirchen.cn/"},
+		},
 		Headers: []apiHeader{
 			{
 				Name:    "Authorization",

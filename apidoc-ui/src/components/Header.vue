@@ -23,7 +23,7 @@
     <div class="header-menu"></div>
     <div class="user-wrapper">
       <div class="select-host" v-if="hostList && hostList.length > 1">
-        <span v-if="device != 'mobile'">HOST: </span>
+        <span>HOST: </span>
         <Select
           v-model="currentHost"
           :style="{
@@ -187,7 +187,8 @@ export default {
     if (globalParams) {
       this.isGlobalParams = true;
     }
-    // this.hostList = config.HOSTS;
+    console.log(this.config.hosts)
+    this.hostList = this.config.hosts || [];
     if (this.urlQuery && this.urlQuery.host) {
       this.currentHost = this.urlQuery.host;
     }

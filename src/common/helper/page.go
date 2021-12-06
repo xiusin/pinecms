@@ -64,11 +64,11 @@ func (p *Page) getUrl(page int) string {
 	if p.dynamic {
 		return fmt.Sprintf("%s?%s", p.urlPrefix, p.buildParams(page))
 	} else {
-		format := "index.html"
+		format := "editor.tpl"
 		if page > 1 {
 			format = fmt.Sprintf("index_%d.html", page)
 		}
-		return strings.TrimSuffix(filepath.Join(p.urlPrefix, format), "index.html")
+		return strings.TrimSuffix(filepath.Join(p.urlPrefix, format), "editor.tpl")
 	}
 }
 
@@ -118,4 +118,3 @@ func (p *Page) String() string {
 	fmt.Fprintf(&page, "<a href='%s'>尾页</a>", p.GetLast())
 	return page.String()
 }
-

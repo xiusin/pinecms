@@ -28,7 +28,7 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine, cacheHandler cache.Abstrac
 			pageName = "/"
 		}
 		if strings.HasSuffix(pageName, "/") {
-			pageName += "index.html"
+			pageName += "editor.tpl"
 		}
 		absFilePath := filepath.Join(conf["SITE_STATIC_PAGE_DIR"], pageName)
 		if byts, err := ioutil.ReadFile(absFilePath); err != nil {
@@ -36,14 +36,14 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine, cacheHandler cache.Abstrac
 			c.Ctx().Abort(http.StatusNotFound)
 		} else {
 			c.Ctx().Render().ContentType(pine.ContentTypeHTML)
-			pine.Logger().Print("render file ",absFilePath)
+			pine.Logger().Print("render file ", absFilePath)
 			_ = c.Ctx().Render().Bytes(byts)
 		}
 		return
 	}
 	pageName := strings.Trim(strings.ReplaceAll(c.Ctx().Params().Get("pagename"), "//", "/"), "/") // 必须包含.html
 	switch pageName {
-	case "index.html", "":
+	case "editor.tpl", "":
 		c.Index()
 	default:
 		urlPartials := strings.Split(pageName, "/")
@@ -57,13 +57,13 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine, cacheHandler cache.Abstrac
 			if strings.HasPrefix(fileName, "index_") {
 				fileInfo := strings.Split(fileName, "_") // index_2.html => 某个分类的第二页
 				c.Ctx().Params().Set("page", strings.TrimSuffix(fileInfo[1], ".html"))
-			} else if fileName != "index.html" {
+			} else if fileName != "editor.tpl" {
 				isDetail = true
 				c.Ctx().Params().Set("aid", strings.TrimSuffix(fileName, ".html")) // 设置文档ID
 			}
 		} else {
 			last = urlPartials[len(urlPartials)-1] // 目录名
-			fileName = "index.html"
+			fileName = "editor.tpl"
 			pageName = filepath.Join(pageName, fileName)
 			c.Ctx().Params().Set("page", "1")
 		}
@@ -122,7 +122,7 @@ func (c *IndexController) statistics(cacheHandler cache.AbstractCache) {
 			statistics[today] += 1
 		}
 		_ = cacheHandler.SetWithMarshal(controllers.CacheStatistics, &statistics)
-		var defaultRefers = map[string]int{"baidu": 0, "google": 0, "so": 0, "bing": 0, "sougou": 0, "other": 0,}
+		var defaultRefers = map[string]int{"baidu": 0, "google": 0, "so": 0, "bing": 0, "sougou": 0, "other": 0}
 		var refers = map[string]int{}
 		// 访问来源
 		referer := string(c.Ctx().Referer())
