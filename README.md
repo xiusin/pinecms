@@ -1,3 +1,4 @@
+
 # 项目描述 #
 PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内以制作模板的方式搭建出来一个网站, 非开发者也能快速愉悦地使用系统. 
 简单使用情况下无需关注代码逻辑. 
@@ -10,11 +11,13 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 
 ## 下载并编译 ##
- ```
+---
+```markdown
  git clone https://github.com/xiusin/pinecms.git
  cd pinecms
  go build -o pinecms
 ```
+---
 
 ## 配置 ##
 1. 执行数据链接生成命令: `./pinecms serve install`
@@ -153,10 +156,12 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - https://github.com/lljj-x/vue-json-schema-form
 - http://goframe.ele.rxthink.cn/tool/generate
 - https://github.com/antonmedv/codejar#getting-started
+- 插件扩展OnFree销毁全局变量
 
 
 # 注解路由开发
 
+---
 ```go
 
 // @Service(sign=true, name="默认解析为实例注释, 此处可填写为实例化内容")
@@ -177,6 +182,7 @@ func (a *AnnoController) List() {
 
 }
 ```
+---
 
 
 # 关于权限系统
