@@ -76,21 +76,7 @@ type Config struct {
 			} `json:"rules"`
 		} `json:"validate"`
 	} `json:"crud"`
-	Hosts []Host `json:"hosts"`
-	Debug bool   `json:"debug"`
-}
-
-type Host struct {
-	Host  string `json:"host"`
-	Title string `json:"title"`
-}
-
-func (c *Config) FindApp(appOrName string) {
-	for _, app := range c.Apps {
-		if app.Title == appOrName || app.Folder == appOrName {
-
-		}
-	}
+	Debug bool `json:"debug"`
 }
 
 var defaultConfig *Config
@@ -111,10 +97,6 @@ func DefaultConfig() *Config {
 		//	{Name: "message", Desc: "操作描述", Type: "string"},
 		//	{Name: "data", Desc: "业务数据", Type: "object", Main: true},
 		//},
-		Hosts: []Host{
-			{Title: "本地环境", Host: "http://www.xiusin.cn/"},
-			{Title: "生产环境", Host: "http://www.mirchen.cn/"},
-		},
 		Headers: []apiHeader{
 			{
 				Name:    "Authorization",
@@ -127,10 +109,12 @@ func DefaultConfig() *Config {
 			{
 				Title:  "后端Api",
 				Folder: "admin",
+				Host:   "http://localhost:2019",
 			},
 			{
 				Title:  "前端Api",
 				Folder: "index",
+				Host:   "http://localhost:2019",
 			},
 		},
 	}

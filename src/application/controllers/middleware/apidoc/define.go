@@ -6,6 +6,7 @@ type apiApp struct { // 记录应用分组. 页面右上角下拉
 	Title  string `json:"title"`
 	Path   string `json:"path,omitempty"`
 	Folder string `json:"folder"`
+	Host   string `json:"host"`
 	Items  []struct {
 		Title       string `json:"title"`
 		Path        string `json:"path"`

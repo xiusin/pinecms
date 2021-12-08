@@ -73,7 +73,6 @@ export default {
     Tabs: Tabs,
     TabPane: Tabs.TabPane,
     DocTable,
-    DocJson,
     DocDebug,
     Tag,
     [Select.name]: Select,

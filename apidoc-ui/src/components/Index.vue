@@ -313,6 +313,7 @@ export default {
       const tokenKey = currentApp && currentApp.hasPassword ? this.currentAppKey : "global";
       const token = ls.get("token_" + tokenKey);
       console.log(token, currentApp, this.currentAppKey, option);
+      ls.set("current_app", this.currentAppKey);
       if (
         !token &&
         ((this.config && this.config.auth && this.config.auth.enable) ||

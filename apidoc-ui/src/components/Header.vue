@@ -22,7 +22,7 @@
     </div>
     <div class="header-menu"></div>
     <div class="user-wrapper">
-      <div class="select-host" v-if="hostList && hostList.length > 1">
+      <!-- <div class="select-host" v-if="hostList && hostList.length > 1">
         <span>HOST: </span>
         <Select
           v-model="currentHost"
@@ -39,7 +39,7 @@
             {{ item.title }}
           </SelectOption>
         </Select>
-      </div>
+      </div> -->
 
       <div class="select-app" v-if="apps.length">
         <span v-if="device != 'mobile'"

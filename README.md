@@ -202,3 +202,4 @@ func (a *AnnoController) List() {
 - Casbin: <https://zhuanlan.zhihu.com/p/148353743>
 - 菜单表增加perms字段， 可以配置权限标识，可以配置节点类型为权限。
 - <http://relation-graph.com/#/demo/scene-network> 组织架构显示
+- https://eddyzhang1986.github.io/antd-jsonschema-form/

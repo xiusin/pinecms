@@ -88,7 +88,7 @@
               v-html="returnString"
             ></div>
             <json-viewer
-              :value="returnData.data"
+              :value="typeof returnData.data !== 'undefined' ? returnData.data : {}"
               :expand-depth="3"
               copyable
               boxed
@@ -131,7 +131,6 @@ import 'codemirror/addon/selection/active-line'
 export default {
   components: {
     Input,
-    TextArea: Input.TextArea,
     Button,
     Alert,
     Empty,
@@ -352,7 +351,15 @@ export default {
       if (this.apiData.paramType === "formdata") {
         headers["Content-Type"] = "application/x-www-form-urlencoded";
       }
-      sendRequest(url, json, method, headers)
+
+      let host = "http://localhost:2019";
+      for (let i in this.config.apps) {
+        if (this.config.apps[i].folder == ls.get("current_app")) {
+          host = this.config.apps[i].host;
+        }
+      }
+      console.log(host + url, json, method, headers);
+      sendRequest(host + url, json, method, headers)
         .then(res => {
           this.loading = false;
           if (res.data && typeof res.data === "string") {
