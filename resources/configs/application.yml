@@ -26,9 +26,3 @@ upload:
   base_path: "assets" # 基本路径
 
 plugin_path: "plugins"
-
-statics:
-  - {route: "/assets", path: "dcat-page/resources/templates/public/assets"}
-  - {route: "/quickui", path: "dcat-page/resources/templates/public/quickui"}
-  - {route: "/themes", path: "./dist/themes"}
-  - {route: "/uploads", path: "./resources/assets/uploads"}

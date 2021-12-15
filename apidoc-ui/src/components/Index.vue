@@ -11,7 +11,7 @@
       @showSideMenu="onShowSideMenu"
     />
     <div class="spin-box" v-if="loading">
-      <Spin tip="Loading..." :spinning="loading"> </Spin>
+      <Spin tip="加载中..." :spinning="loading"> </Spin>
     </div>
     <div v-else-if="error.status">
       <error-box :error="error" />
@@ -21,7 +21,7 @@
     </div>
     <div v-else>
       <splitpanes style="height: calc(100vh - 50px)">
-        <pane v-if="device != 'mobile'" size="20" min-size="20" max-size="40">
+        <pane v-if="device != 'mobile'" size="15" min-size="10" max-size="40">
           <Card
             :bordered="false"
             style="height:100%"
@@ -39,7 +39,7 @@
             />
           </Card>
         </pane>
-        <pane :size="device != 'mobile' ? 70 : 100">
+        <pane>
           <Card
             :bordered="false"
             style="height:100%;overflow: auto;"
@@ -273,29 +273,28 @@ export default {
     },
 
     getConfig(option) {
-      getConfig()
-        .then(res => {
-          if (res.data && res.data.title) {
-            this.config = res.data;
-          } else if (res.data && res.data.data) {
-            this.config = res.data.data;
-          }
-          ls.set("config", this.config);
-          document.title = this.config.title;
-          this.verifyAuth(option);
-        })
-        // .catch(err => {
-        //   const status =
-        //     err.response && err.response.status ? err.response.status : 404;
-        //   this.error = {
-        //     status: status,
-        //     message:
-        //       err.response && err.response.data && err.response.data.message
-        //         ? err.response.data.message
-        //         : err.message
-        //   };
-        //   this.loading = false;
-        // });
+      getConfig().then(res => {
+        if (res.data && res.data.title) {
+          this.config = res.data;
+        } else if (res.data && res.data.data) {
+          this.config = res.data.data;
+        }
+        ls.set("config", this.config);
+        document.title = this.config.title;
+        this.verifyAuth(option);
+      });
+      // .catch(err => {
+      //   const status =
+      //     err.response && err.response.status ? err.response.status : 404;
+      //   this.error = {
+      //     status: status,
+      //     message:
+      //       err.response && err.response.data && err.response.data.message
+      //         ? err.response.data.message
+      //         : err.message
+      //   };
+      //   this.loading = false;
+      // });
     },
     verifyAuth(option) {
       // 默认版本/应用
@@ -310,7 +309,8 @@ export default {
         this.currentAppKey,
         this.config.apps
       );
-      const tokenKey = currentApp && currentApp.hasPassword ? this.currentAppKey : "global";
+      const tokenKey =
+        currentApp && currentApp.hasPassword ? this.currentAppKey : "global";
       const token = ls.get("token_" + tokenKey);
       console.log(token, currentApp, this.currentAppKey, option);
       ls.set("current_app", this.currentAppKey);

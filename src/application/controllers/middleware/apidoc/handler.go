@@ -61,12 +61,12 @@ func getApiData(ctx *pine.Context) {
 }
 
 func saveApiData(ctx *pine.Context) {
-	typ, _ := ctx.GetString("type")
-	switch typ {
+	typo, _ := ctx.GetString("type")
+	switch typo {
 	case "request":
 		saveRequestData(ctx)
 	default:
-
+		helper.Ajax("暂不支持的类型", 1, ctx)
 	}
 }
 
@@ -96,6 +96,6 @@ func saveRequestData(ctx *pine.Context) {
 }
 
 // 同步到腾讯云
-func syncApiDataToTencent(ctx *pine.Context)  {
+func syncApiDataToTencent(ctx *pine.Context) {
 
 }
