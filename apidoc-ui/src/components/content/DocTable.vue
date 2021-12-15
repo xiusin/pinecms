@@ -402,4 +402,10 @@ export default {
 /deep/ .ant-table-small > .ant-table-content > .ant-table-body {
   margin: 0;
 }
+
+/deep/ .ant-table-tbody > tr > td {
+  padding: 5px!important;
+  font-size: 13px;
+}
+
 </style>

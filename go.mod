@@ -41,8 +41,8 @@ require (
 	github.com/traefik/yaegi v0.9.19
 	github.com/valyala/fasthttp v1.31.0
 	github.com/xiusin/logger v0.0.9
-	github.com/xiusin/pine v0.0.0-20211122070519-9c102becd7ba
-	github.com/xiusin/reload v0.0.0-20211206022256-d73b0d87ec8f
+	github.com/xiusin/pine v0.0.0-20211215081942-e576ebe5defd
+	github.com/xiusin/reload v0.0.0-20211215091741-ab993ba2e9d2
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
 	golang.org/x/text v0.3.7

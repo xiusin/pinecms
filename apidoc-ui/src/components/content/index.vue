@@ -42,7 +42,7 @@
       </div>
     </div>
 
-    <Tabs default-active-key="1">
+    <Tabs default-active-key="1" animated="false">
       <TabPane key="1" tab="文档">
         <DocTable :apiData="apiData" :config="config" />
       </TabPane>
@@ -63,7 +63,6 @@
 <script>
 import { Icon, Tabs, message, Tag, Select } from "ant-design-vue";
 import DocTable from "./DocTable";
-import DocJson from "./DocJson";
 import DocDebug from "./DocDebug";
 import { textToHtml } from "../../utils/utils";
 
@@ -194,8 +193,8 @@ export default {
     width: 100%;
     position: relative;
     height: 38px;
-    border-radius: 4px;
-    margin-bottom: 24px;
+    border-radius: 0px;
+    margin-bottom: 10px;
 
     .api-url-tag,
     .api-method-select {

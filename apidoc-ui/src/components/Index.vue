@@ -44,7 +44,7 @@
             :bordered="false"
             style="height:100%;overflow: auto;"
             id="pageContainer"
-            :bodyStyle="{ padding: device == 'mobile' ? '10px' : '24px' }"
+            :bodyStyle="{ padding: device == 'mobile' ? '10px' : '10px' }"
           >
             <DocApiContent
               v-if="currentApiData && currentApiData.url"

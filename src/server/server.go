@@ -57,7 +57,7 @@ func Ac() *config.Config {
 	return conf
 }
 
-func initApp() {
+func InitApp() {
 	app = pine.New()
 	di.Set(controllers.ServiceApplication, func(builder di.AbstractBuilder) (interface{}, error) {
 		return app, nil
@@ -69,10 +69,6 @@ func initApp() {
 		staticPathPrefix = append(staticPathPrefix, static.Route)
 	}
 	app.Use(cache304.Cache304(30000*time.Second, staticPathPrefix...), middleware.CheckDatabaseBackupDownload())
-}
-
-func InitApp() {
-	initApp()
 }
 
 func InitDB() {
@@ -98,13 +94,18 @@ func registerStatic() {
 func registerV2BackendRoutes() {
 
 	if config.AppConfig().Debug {
-
 		app.Use(middleware.Demo())
 		app.Use(middleware.Cors(app))
 		app.Use(request_log.RequestRecorder(time.Millisecond * 200))
 	}
 
-	app.Use(traceid.TraceId(), middleware.Pprof(), middleware.SetGlobalConfigData(), apidoc.New(app, nil), middleware.StatesViz(app))
+	app.Use(
+		traceid.TraceId(),
+		middleware.Pprof(),
+		middleware.SetGlobalConfigData(),
+		apidoc.New(app, nil),
+		middleware.StatesViz(app),
+	)
 
 	g := app.Group("/v2", middleware.VerifyJwtToken(), middleware.Casbin(config.InitDB(nil), "resources/configs/rbac_models.conf"))
 
@@ -153,18 +154,10 @@ func registerV2BackendRoutes() {
 }
 
 func runServe() {
-	//pine.RegisterErrorCodeHandler(http.StatusInternalServerError, func(ctx *pine.Context) {
-	//	if ctx.IsAjax() {
-	//		_ = ctx.WriteJSON(pine.H{"code": http.StatusInternalServerError, "message": ctx.Msg})
-	//	} else {
-	//		ctx.Abort(http.StatusInternalServerError, ctx.Msg)
-	//	}
-	//})
 	go plugins.Init()
 	app.Run(
 		pine.Addr(fmt.Sprintf(":%d", conf.Port)),
 		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))),
-		//pine.WithoutStartupLog(true),
 		pine.WithServerName("xiusin/pinecms"),
 		pine.WithCookie(true),
 	)

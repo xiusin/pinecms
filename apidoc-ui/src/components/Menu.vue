@@ -254,7 +254,6 @@ export default {
               <div class="action-title_wraper">
                 {method}
                 {menu.title}
-                {url}
               </div>
             </span>
           </MenuItem>
@@ -530,7 +529,7 @@ export default {
           {renderTagsSelect()}
         </div>
         <div class="doc-menu-box">
-          <Menu style="width: 100%" mode="inline" {...menuProps}>
+          <Menu style="width: 100%;" mode="inline" {...menuProps}>
             {menuTree}
           </Menu>
         </div>
@@ -673,5 +672,9 @@ export default {
       }
     }
   }
+}
+
+.ant-menu-inline .ant-menu-submenu-title {
+  font-size: 12px;
 }
 </style>

@@ -36,6 +36,5 @@ func init() {
 	rootCmd.AddCommand(crud.Cmd)
 	rootCmd.AddCommand(menuCmd)
 	rootCmd.AddCommand(dede.Cmd)
-	rootCmd.AddCommand(mateCmd)
 	config.InitApp()
 }
