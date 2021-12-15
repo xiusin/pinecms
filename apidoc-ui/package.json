@@ -16,7 +16,7 @@
     "html-loader": "^0.5.5",
     "js-md5": "^0.7.3",
     "lodash": "^4.17.15",
-    "marked": "^1.2.7",
+    "marked": "^2.0.0",
     "nprogress": "^0.2.0",
     "splitpanes": "^2.2.1",
     "vue": "^2.6.10",
