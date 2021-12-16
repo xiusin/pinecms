@@ -25,10 +25,7 @@ func SetApiEntity(ctx *pine.Context, entity *Entity, configures ...Configure) {
 			e.Title = entity.Title
 			e.Desc = entity.Desc
 			e.configured = true
-			e.Group = apiGroup{
-				Title: entity.Group,
-				Name:  entity.Group,
-			}
+			e.Group = apiGroup{Title: entity.Group, Name: entity.Group}
 			e.SubGroup = entity.SubGroup
 			for _, configure := range configures {
 				configure(e)

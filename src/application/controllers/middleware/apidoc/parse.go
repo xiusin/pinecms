@@ -24,7 +24,7 @@ func parseInterface(reqParams interface{}) ([]apiParam, []apiReturn) {
 				fieldType = "bool"
 			case reflect.String:
 				fieldType = "string"
-			case reflect.Struct:
+			case reflect.Struct, reflect.Map:
 				fieldType = "object"
 			case reflect.Slice, reflect.Array:
 				fieldType = "array"
@@ -61,7 +61,6 @@ func parseInterface(reqParams interface{}) ([]apiParam, []apiReturn) {
 					apiReturn.Default = v
 				}
 			}
-
 			apiReqParams = append(apiReqParams, apiReqParam)
 			apiReturns = append(apiReturns, apiReturn)
 		}

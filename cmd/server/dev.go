@@ -21,10 +21,12 @@ var devCmd = &cobra.Command{
 				apidocCmd := exec.Command("yarn", "serve")
 				apidocCmd.Dir = "apidoc-ui"
 				apidocCmd.Stderr = os.Stdout
+				apidocCmd.Stdout = os.Stdout
 				apidocCmd.Run()
 			}, func(ctx context.Context) {
-				adminCmd := exec.Command("yarn", "serve", "dev")
+				adminCmd := exec.Command("yarn", "dev")
 				adminCmd.Dir = "admin"
+				adminCmd.Stdout = os.Stdout
 				adminCmd.Stderr = os.Stdout
 				adminCmd.Run()
 			})

@@ -42,7 +42,7 @@
       </div>
     </div>
 
-    <Tabs default-active-key="1" animated="false">
+    <Tabs default-active-key="1">
       <TabPane key="1" tab="文档">
         <DocTable :apiData="apiData" :config="config" />
       </TabPane>

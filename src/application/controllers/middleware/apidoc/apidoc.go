@@ -41,9 +41,7 @@ func New(app *pine.Application, config *Config) pine.Handler {
 		case "edit":
 			saveApiData(ctx)
 		case "export": // 导出丝袜哥
-
-		case "sync": // 同步到腾讯云
-			syncApiDataToTencent(ctx)
+			exportApiData(ctx)
 		case "reset": //标注接口字段为不可再修改， go端不可直接配置
 
 		}
@@ -72,6 +70,17 @@ func New(app *pine.Application, config *Config) pine.Handler {
 		entity.Author = defaultConfig.DefaultAuthor
 		entity.RawQuery = string(ctx.RequestCtx.QueryArgs().QueryString())
 		entity.QueryDataMethod = string(ctx.Response.Header.ContentType())
+
+		ctx.QueryArgs().VisitAll(func(key, value []byte) {
+			if !entity.QueryExist(string(key)) {
+				entity.Query = append(entity.Query, apiParam{
+					Name:    string(key),
+					Type:    "string",
+					Default: string(value),
+				})
+			}
+		})
+
 		if strings.Contains(strings.ToLower(entity.QueryDataMethod), "application/json") {
 			entity.RawParam = string(ctx.Request.Body())
 		} else {
