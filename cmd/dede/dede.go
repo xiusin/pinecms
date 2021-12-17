@@ -5,8 +5,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"github.com/go-xorm/xorm"
-	"github.com/gookit/color"
-	"github.com/schollz/progressbar"
 	"github.com/spf13/cobra"
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -20,7 +18,6 @@ import (
 
 var (
 	dc             = config.DBConfig()
-	bar            = progressbar.New(100)
 	dedeOrm        *xorm.Engine
 	tableSchema    string
 	pineOrm        *xorm.Engine
@@ -76,8 +73,6 @@ func initORM(dsn string) {
 		return
 	}
 	_orm.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, dc.Db.DbPrefix))
-	bar.Reset()
-	_ = bar.Add(5)
 	pineOrm = _orm
 }
 
@@ -128,7 +123,6 @@ func importChannelType() {
 	var dslTable = dc.Db.DbPrefix + "document_model_dsl"
 	_ = clearDocumentModelTable(table, dslTable)
 	channels, _ := dedeOrm.QueryString("SELECT * FROM dede_channeltype")
-	pre := 70 / len(channels)
 	for _, channel := range channels {
 		data := createModelTable(table, channel)
 		modelTableName := dc.Db.DbPrefix + data.Table
@@ -210,7 +204,6 @@ func importChannelType() {
 		}
 		GenSQLFromSQLite3(data.Id, channel["maintable"], modelTableName, modelFields, fields, mapList)
 		transDocument(modelTableName, data, modelFields, channel)
-		bar.Add(pre)
 		time.Sleep(time.Millisecond * 100)
 	}
 }
@@ -327,9 +320,7 @@ func importArcType() {
 			})
 		}
 	}
-	bar.Reset()
-	bar.Add(100)
-	fmt.Println(color.Green.Sprint(`
+	fmt.Println(`
 
 SUCCESS!
 
@@ -338,7 +329,7 @@ SUCCESS!
 3. 使用标签开发模板
 4. Enjoy! 😃
 
-%s`, color.Red.Sprint("注意: 导入不保证完全正确,建议进行模型设置(固化字段被设置为text类型)")))
+注意: 导入不保证完全正确,建议进行模型设置(固化字段被设置为text类型)`)
 }
 
 func importAd() {

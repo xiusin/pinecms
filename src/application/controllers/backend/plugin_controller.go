@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/go-xorm/xorm"
-	"github.com/russross/blackfriday"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/application/plugins"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -53,7 +52,7 @@ func (c *PluginController) after(act int, _ interface{}) error {
 				Description: conf.Description,
 				Contact:     conf.Contact,
 				Path:        plugin,
-				Page:        string(blackfriday.MarkdownBasic([]byte(conf.Page))),
+				Page:        conf.Page,
 				ErrMsg:      conf.Error,
 				NoInstall:   true,
 				Enable:      false,

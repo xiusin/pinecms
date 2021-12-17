@@ -3,7 +3,6 @@ package wechat
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/doug-martin/goqu"
 	"github.com/go-xorm/xorm"
 	"github.com/silenceper/wechat/v2/officialaccount/message"
 	"github.com/valyala/fasthttp/fasthttpadaptor"
@@ -49,14 +48,16 @@ func msgHandler(ctx *pine.Context) {
 		var replyMsg interface{}
 		var err error
 
-		goqu.From(controllers.GetTableName("wechat_msg_reply_rule")).Where(
-			goqu.Or(goqu.Ex{
-				"match_value": msg.Content,
-				"exact_match": 1,
-			}, goqu.Ex{
-				"match_value": msg.Content,
-				"exact_match": 0,
-			}))
+		return nil
+
+		//goqu.From(controllers.GetTableName("wechat_msg_reply_rule")).Where(
+		//	goqu.Or(goqu.Ex{
+		//		"match_value": msg.Content,
+		//		"exact_match": 1,
+		//	}, goqu.Ex{
+		//		"match_value": msg.Content,
+		//		"exact_match": 0,
+		//	}))
 
 		var baseSql = "SELECT * FROM %s WHERE ((match_value = ? AND exact_match = 1) OR " +
 			"(INSTR(?, match_value) > 0 AND  exact_match = 0)) AND appid = '" + appid +

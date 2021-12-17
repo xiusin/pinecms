@@ -16,7 +16,6 @@ import (
 	"github.com/xwb1989/sqlparser"
 
 	"github.com/alecthomas/chroma/quick"
-	"github.com/gookit/color"
 	"github.com/xiusin/logger"
 	config "github.com/xiusin/pinecms/src/server"
 	"xorm.io/core"
@@ -72,7 +71,7 @@ var Cmd = &cobra.Command{
 		onlyInfo, _ := cmd.Flags().GetBool("info")
 		frontendPath, _ := cmd.Flags().GetString("fepath")
 		if len(table) == 0 {
-			logger.Print(color.Red.Sprint("请输入表名"))
+			logger.Print("请输入表名")
 			_ = cmd.Help()
 			return
 		}
@@ -89,7 +88,7 @@ var Cmd = &cobra.Command{
 			}
 		}
 		if tableMata == nil {
-			logger.Errorf("无法获取数据表[%s]元信息", color.Red.Sprint(getTableName(table)))
+			logger.Errorf("无法获取数据表[%s]元信息", getTableName(table))
 			return
 		}
 		for _, v := range tableMata.Columns() {
@@ -100,7 +99,7 @@ var Cmd = &cobra.Command{
 		if !force { // 非强制创建则检测文件是否存在
 			for _, s := range []string{frontendPath + "/" + feModuleDir + table, controllerPath, tablePath} {
 				if _, err := os.Stat(s); !os.IsNotExist(err) {
-					logger.Print("已有存在: " + color.Red.Sprint(s))
+					logger.Print("已有存在: " + s)
 					return
 				}
 			}
@@ -123,7 +122,7 @@ var Cmd = &cobra.Command{
 		}
 		byts = bytes.Replace(byts, []byte(holder), []byte(holder+"\r\n\t"+`backendRouter.Handle(new(backend.`+controllerName+`), "/`+util.SnakeString(table)+`")`), 1)
 		ioutil.WriteFile(routerFile, byts, os.ModePerm)
-		logger.Print("创建模块文件成功, 已注册路由信息至: " + color.Green.Sprint(routerFile))
+		logger.Print("创建模块文件成功, 已注册路由信息至: " + routerFile)
 	},
 }
 
@@ -163,7 +162,7 @@ func genControllerFile(print bool, controllerName, tableName, controllerPath str
 		err = ioutil.WriteFile(controllerPath, []byte(content), os.ModePerm)
 	}
 	if err == nil {
-		logger.Print("创建文件： " + color.Green.Sprint(controllerPath))
+		logger.Print("创建文件： " + controllerPath)
 	}
 	if print {
 		_ = quick.Highlight(os.Stdout, content, "go", "terminal256", theme)
@@ -251,7 +250,7 @@ func genTableFileAndFrontendFile(print bool, tableName, tablePath, frontendPath 
 		err = ioutil.WriteFile(tablePath, []byte(content), os.ModePerm)
 	}
 	if err == nil {
-		logger.Print("创建文件： " + color.Green.Sprint(tablePath))
+		logger.Print("创建文件： " + tablePath)
 	}
 	if print {
 		_ = quick.Highlight(os.Stdout, content, "go", "terminal256", theme)
@@ -283,9 +282,9 @@ func genFrontendFile(table, frontendPath string, tableDsl, formDsl, filterDsl []
 			content = string(bytes.ReplaceAll([]byte(content), []byte("[tableDSL]"), data))
 		}
 		if err := os.WriteFile(filename, bytes.ReplaceAll([]byte(content), []byte("[table]"), []byte(util.SnakeString(table))), os.ModePerm); err == nil {
-			logger.Print("创建文件： " + color.Green.Sprint(filename))
+			logger.Print("创建文件： " + filename)
 		} else {
-			logger.Print("创建文件", color.Red.Sprint(filename)+"失败")
+			logger.Print("创建文件" + filename + "失败")
 		}
 	}
 }
