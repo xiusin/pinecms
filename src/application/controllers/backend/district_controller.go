@@ -56,7 +56,7 @@ func (c *DistrictController) PostList()  {
 			ids = c.getSubDistrictId()
 			allIds = append(allIds, ids...)
 		}
-		var entities []tables.District
+		var entities = []tables.District{}
 		c.Orm.In("id", allIds).Find(&entities)
 		helper.Ajax(pine.H{
 			"list": entities,

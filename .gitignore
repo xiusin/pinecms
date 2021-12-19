@@ -36,3 +36,5 @@ tests/*.h
 ./pinecms
 pinecms
 admin/.yarnclean
+build
+build.zip

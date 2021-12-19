@@ -96,7 +96,7 @@ func registerV2BackendRoutes() {
 	if config.AppConfig().Debug {
 		app.Use(middleware.Demo())
 		app.Use(middleware.Cors(app))
-		app.Use(request_log.RequestRecorder(time.Millisecond * 200))
+		app.Use(request_log.RequestRecorder())
 	}
 
 	app.Use(

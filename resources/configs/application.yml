@@ -26,3 +26,10 @@ upload:
   base_path: "assets" # 基本路径
 
 plugin_path: "plugins"
+
+
+statics:
+  - { route: "/assets/", path: "./admin/dist/assets/"}
+  - { route: "/fonts/", path: "./admin/dist/fonts/"}
+  - { route: "/images/", path: "./admin/dist/images/"}
+  - { route: "/theme/", path: "./admin/dist/theme/"}

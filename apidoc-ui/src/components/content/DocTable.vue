@@ -21,20 +21,23 @@
       <h2>
         请求参数 GET &nbsp;
         <Tooltip title="编辑请求参数信息" v-if="!recordQueryEditable">
-          <Button type="primary" size="small" @click="recordQueryEditable = true"
-          >编辑</Button
+          <Button
+            type="primary"
+            size="small"
+            @click="recordQueryEditable = true"
+            >编辑</Button
           >
         </Tooltip>
         <template v-else>
           <Button
-              type="primary"
-              size="small"
-              @click="saveData(apiData.query, 'request', 'query')"
-          >保存</Button
+            type="primary"
+            size="small"
+            @click="saveData(apiData.query, 'request', 'query')"
+            >保存</Button
           >
           &nbsp;&nbsp;
           <Button type="info" size="small" @click="addParam(apiData.query)"
-          >新增</Button
+            >新增</Button
           >
           &nbsp;&nbsp;
           <Tooltip title="清除后， 系统将根据请求响应生成新的文档">
@@ -44,32 +47,32 @@
       </h2>
       <div class="api-param-table">
         <Table
-            :columns="paramsColumns"
-            size="small"
-            :rowKey="renterRowKey"
-            :bordered="true"
-            :pagination="false"
-            :data-source="apiData.query"
-            :scroll="tableScroll"
-            childrenColumnName="params"
+          :columns="paramsColumns"
+          size="small"
+          :rowKey="renterRowKey"
+          :bordered="true"
+          :pagination="false"
+          :data-source="apiData.query"
+          :scroll="tableScroll"
+          childrenColumnName="params"
         >
           <template
-              v-for="col in ['name', 'default', 'address', 'desc']"
-              :slot="col"
-              slot-scope="text, record"
+            v-for="col in ['name', 'default', 'address', 'desc']"
+            :slot="col"
+            slot-scope="text, record"
           >
             <div :key="col">
               <template v-if="recordQueryEditable">
                 <Input
-                    style="margin: -5px 0"
-                    :value="text"
-                    @blur="e => (record[col] = e.target.value)"
+                  style="margin: -5px 0"
+                  :value="text"
+                  @blur="e => (record[col] = e.target.value)"
                 >
                   <Icon
-                      v-if="col === 'name'"
-                      type="delete"
-                      slot="addonAfter"
-                      @click="
+                    v-if="col === 'name'"
+                    type="delete"
+                    slot="addonAfter"
+                    @click="
                       () => {
                         removeParam(record);
                       }
@@ -86,29 +89,29 @@
           </template>
 
           <template slot="require" slot-scope="text, record">
-            <template v-if="recordEditable">
+            <template v-if="recordQueryEditable">
               <Checkbox
-                  key="require"
-                  @change="e => (record.require = e.target.checked)"
-                  :checked="text"
+                key="require"
+                @change="e => (record.require = e.target.checked)"
+                :checked="text"
               />
             </template>
             <template v-else>
-              <Icon
-                  key="require"
-                  type="check"
-                  style="color:#1890ff"
-                  v-if="text"
+               <Icon
+                key="require"
+                type="check"
+                style="color:#1890ff"
+                v-if="text"
               />
             </template>
           </template>
 
           <template slot="type" slot-scope="text, record">
-            <template v-if="recordEditable">
+            <template v-if="recordQueryEditable">
               <Select
-                  :defaultValue="text"
-                  style="width: 90px"
-                  @change="v => (record.type = v)"
+                :defaultValue="text"
+                style="width: 90px"
+                @change="v => (record.type = v)"
               >
                 <Option v-for="item in types" :key="item">
                   {{ item }}
@@ -123,25 +126,24 @@
       </div>
     </div>
 
-
     <div v-if="apiData.method !== 'GET'">
       <h2>
         请求参数 ({{ apiData.query_data_method }}) &nbsp;
         <Tooltip title="编辑请求参数信息" v-if="!recordEditable">
           <Button type="primary" size="small" @click="recordEditable = true"
-          >编辑</Button
+            >编辑</Button
           >
         </Tooltip>
         <template v-else>
           <Button
-              type="primary"
-              size="small"
-              @click="saveData(apiData.param, 'request', 'param')"
-          >保存</Button
+            type="primary"
+            size="small"
+            @click="saveData(apiData.param, 'request', 'param')"
+            >保存</Button
           >
           &nbsp;&nbsp;
           <Button type="info" size="small" @click="addParam(apiData.param)"
-          >新增</Button
+            >新增</Button
           >
           &nbsp;&nbsp;
           <Tooltip title="清除后， 系统将根据请求响应生成新的文档">
@@ -151,33 +153,33 @@
       </h2>
       <div class="api-param-table">
         <Table
-            :columns="paramsColumns"
-            size="small"
-            :rowKey="renterRowKey"
-            :bordered="true"
-            :pagination="false"
-            :data-source="apiData.param"
-            :scroll="tableScroll"
-            defaultExpandAllRows
-            childrenColumnName="params"
+          :columns="paramsColumns"
+          size="small"
+          :rowKey="renterRowKey"
+          :bordered="true"
+          :pagination="false"
+          :data-source="apiData.param"
+          :scroll="tableScroll"
+          defaultExpandAllRows
+          childrenColumnName="params"
         >
           <template
-              v-for="col in ['name', 'default', 'address', 'desc']"
-              :slot="col"
-              slot-scope="text, record"
+            v-for="col in ['name', 'default', 'address', 'desc']"
+            :slot="col"
+            slot-scope="text, record"
           >
             <div :key="col">
               <template v-if="recordEditable">
                 <Input
-                    style="margin: -5px 0"
-                    :value="text"
-                    @blur="e => (record[col] = e.target.value)"
+                  style="margin: -5px 0"
+                  :value="text"
+                  @blur="e => (record[col] = e.target.value)"
                 >
                   <Icon
-                      v-if="col === 'name'"
-                      type="delete"
-                      slot="addonAfter"
-                      @click="
+                    v-if="col === 'name'"
+                    type="delete"
+                    slot="addonAfter"
+                    @click="
                       () => {
                         removeParam(record);
                       }
@@ -196,17 +198,17 @@
           <template slot="require" slot-scope="text, record">
             <template v-if="recordEditable">
               <Checkbox
-                  key="require"
-                  @change="e => (record.require = e.target.checked)"
-                  :checked="text"
+                key="require"
+                @change="e => (record.require = e.target.checked)"
+                :checked="text"
               />
             </template>
             <template v-else>
               <Icon
-                  key="require"
-                  type="check"
-                  style="color:#1890ff"
-                  v-if="text"
+                key="require"
+                type="check"
+                style="color:#1890ff"
+                v-if="text"
               />
             </template>
           </template>
@@ -214,9 +216,9 @@
           <template slot="type" slot-scope="text, record">
             <template v-if="recordEditable">
               <Select
-                  :defaultValue="text"
-                  style="width: 90px"
-                  @change="v => (record.type = v)"
+                :defaultValue="text"
+                style="width: 90px"
+                @change="v => (record.type = v)"
               >
                 <Option v-for="item in types" :key="item">
                   {{ item }}
@@ -236,15 +238,15 @@
 
       <Tooltip title="编辑响应信息" v-if="!recordReturnEditable">
         <Button type="primary" size="small" @click="recordReturnEditable = true"
-        >编辑</Button
+          >编辑</Button
         >
       </Tooltip>
       <template v-else>
         <Button
-            type="primary"
-            size="small"
-            @click="saveData(apiData.param, 'request', 'return')"
-        >保存</Button
+          type="primary"
+          size="small"
+          @click="saveData(apiData.return, 'request', 'return')"
+          >保存</Button
         >
       </template>
 
@@ -281,21 +283,19 @@
         childrenColumnName="params"
         @expandedRowsChange="onExpandedRowsChange"
       >
-<!--        <template v-for="col in ['name', 'type', 'desc']"  :slot="col" slot-scope="text, record">-->
-<!--          <div :key="col">-->
-<!--            <template v-if="recordReturnEditable">-->
-<!--              <Input-->
-<!--                  style="margin: -5px 0"-->
-<!--                  :value="text"-->
-<!--                  @blur="e => (record[col] = e.target.value)"-->
-<!--              >-->
-<!--              </Input>-->
-<!--            </template>-->
-<!--            <template v-else>-->
-<!--              {{ text }} 我数奥施康定阿萨德健康-->
-<!--            </template>-->
-<!--          </div>-->
-<!--        </template>-->
+        <template slot="desc" slot-scope="text, record">
+          <template v-if="recordReturnEditable">
+            <Input
+                style="margin: -5px 0"
+                :value="text"
+                @blur="e => (record['desc'] = e.target.value)"
+            >
+            </Input>
+          </template>
+          <template v-else>
+            {{text}}
+          </template>
+        </template>
       </Table>
     </div>
 
@@ -305,10 +305,10 @@
 
     <div class="api-param-table">
       <json-viewer
-          :value="getJsonViewData()"
-          :expand-depth="3"
-          copyable
-          boxed
+        :value="getJsonViewData()"
+        :expand-depth="3"
+        copyable
+        boxed
       ></json-viewer>
     </div>
   </div>
@@ -394,14 +394,6 @@ export default {
           dataIndex: "desc",
           scopedSlots: { customRender: "desc" }
         }
-        // ,
-        // {
-        //   title: "启用",
-        //   dataIndex: "enable",
-        //   align: "center",
-        //   width: 50,
-        //   scopedSlots: { customRender: "enable" }
-        // }
       ],
       returnColumns: [
         {
@@ -425,7 +417,7 @@ export default {
         {
           title: "说明",
           dataIndex: "desc",
-          scopedSlots: { customRender: "rowDesc" }
+          scopedSlots: { customRender: "desc" }
         }
       ],
       tableScroll: {
@@ -443,7 +435,7 @@ export default {
   },
   created() {
     this.returnData = this.handleReturnData(this.apiData.return);
-    console.log(this.returnData)
+    console.log(this.returnData);
   },
   methods: {
     getJsonViewData() {
@@ -455,7 +447,13 @@ export default {
     },
     saveData(record, type, subType) {
       request.post(
-        url.edit + "?type=" + type + "&sub_type=" + subType + "&menu_key=" + this.apiData.menu_key,
+        url.edit +
+          "?type=" +
+          type +
+          "&sub_type=" +
+          subType +
+          "&menu_key=" +
+          this.apiData.menu_key,
         record
       );
       this.recordQueryEditable = false;
@@ -489,8 +487,12 @@ export default {
             item._key = `${item.name}_${paramsRowKey}`;
             if (["any", "object", "array"].includes(item.type)) {
               this.expandedRowKeys.push(item._key);
-              if (item.params.length === 1 && item.params[0].name === "") {
-                item.params = this.handleReturnData(this.deepParseJsonTreeToConf(JSON.parse(this.apiData.raw_return)[item.name]));
+              if (!item.params) {
+                item.params = this.handleReturnData(
+                  this.parseJsonTree(
+                    JSON.parse(this.apiData.raw_return)[item.name]
+                  )
+                );
               } else {
                 item.params = this.handleReturnData(item.params);
               }
@@ -507,32 +509,35 @@ export default {
       paramsRowKey++;
       return `${record.name}_${paramsRowKey}`;
     },
-    deepParseJsonTreeToConf(parseData, name) {
+    parseJsonTree(parseData, name) {
       let arr = [];
       if (parseData instanceof Array) {
-        parseData = parseData[0]
-        let item = {"name": name, "desc": "", "type": "array"}
-        item.params = this.deepParseJsonTreeToConf(parseData)
-        arr.push(item)
-      }else if (typeof parseData === "object") {
+        parseData = parseData[0];
+        let item = { name: name, desc: "", type: "array" };
+        if (!(parseData instanceof Array) && typeof parseData == "object") {
+          item.params = this.parseJsonTree(parseData);
+        } else {
+          item.params = [{ name: "Item(s)", desc: "", type: typeof parseData }];
+        }
+        arr.push(item);
+      } else if (typeof parseData === "object") {
         for (let key in parseData) {
           if (!parseData.hasOwnProperty(key)) continue;
           if (parseData[key] instanceof Array) {
-            let item = {"name": key, "desc": "", "type": "array"}
-            item.params = this.deepParseJsonTreeToConf(parseData[key][0], key)
-            arr.push(item)
-          }else if (typeof parseData[key] === "object") {
-            let item = {"name": key, "desc": "", "type": "object"}
-            item.params = this.deepParseJsonTreeToConf(parseData[key], key)
-            arr.push(item)
+            let item = { name: key, desc: "", type: "array" };
+            item.params = this.parseJsonTree(parseData[key][0], key);
+            arr.push(item);
+          } else if (typeof parseData[key] === "object") {
+            let item = { name: key, desc: "", type: "object" };
+            item.params = this.parseJsonTree(parseData[key], key);
+            arr.push(item);
           } else {
-            arr.push({"name": key,"type": typeof parseData[key]})
+            arr.push({ name: key, desc: "", type: typeof parseData[key] });
           }
         }
       } else {
-        arr.push({"name": name,"type": typeof parseData})
+        arr.push({ name: name, desc: "", type: typeof parseData });
       }
-
       return arr;
     }
   }

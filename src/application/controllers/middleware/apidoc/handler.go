@@ -84,21 +84,25 @@ func saveRequestData(ctx *pine.Context) {
 	var data []apiParam
 	var retData []apiReturn
 	var entity apiEntity
-	if err := ctx.BindJSON(&data); err != nil {
-		if err = ctx.BindJSON(&retData); err != nil {
-			helper.Ajax(err.Error(), 1, ctx)
-			return
-		}
+
+	subType, _ := ctx.GetString("sub_type")
+	var err error
+	if subType == "return" {
+		err = ctx.BindJSON(&retData)
+	} else {
+		err = ctx.BindJSON(&data)
+	}
+	if err != nil {
+		helper.Ajax(err.Error(), 1, ctx)
+		return
 	}
 	entity.MenuKey, _ = ctx.GetString("menu_key")
-	err := simdbDriver.Open(&entity).Where("menu_key", "=", entity.MenuKey).First().AsEntity(&entity)
+	err = simdbDriver.Open(&entity).Where("menu_key", "=", entity.MenuKey).First().AsEntity(&entity)
 	if err != nil {
 		helper.Ajax(err.Error(), 1, ctx)
 		return
 	}
 	entity.Immutable = true
-
-	subType, _ := ctx.GetString("sub_type")
 
 	switch strings.ToLower(subType) {
 	case "query":
@@ -108,7 +112,6 @@ func saveRequestData(ctx *pine.Context) {
 	case "return":
 		entity.Return = retData
 	}
-
 	err = simdbDriver.Open(&entity).Where("menu_key", "=", entity.MenuKey).Update(&entity)
 	if err != nil {
 		helper.Ajax(err.Error(), 1, ctx)
