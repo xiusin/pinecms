@@ -133,6 +133,10 @@ func (c *BaseController) PostList() {
 			}
 		}
 
+		if c.Entries == nil {
+			c.Entries = []struct{}{}
+		}
+
 		helper.Ajax(pine.H{
 			"list": c.Entries,
 			"pagination": pine.H{

@@ -1,8 +1,6 @@
 package backend
 
 import (
-	"fmt"
-
 	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
@@ -51,7 +49,6 @@ func (c *SettingController) before(act int, params interface{}) error {
 }
 
 func (c *SettingController) after(act int, params interface{}) error {
-	fmt.Println("after", act)
 	if act == OpEdit {
 		helper.AbstractCache().Delete(controllers.CacheSetting)
 		config.SiteConfig()

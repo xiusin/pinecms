@@ -6,12 +6,17 @@
 					<div class="login-screen">
 						<div class="well">
 							<div class="login-head">
-								<img src="/login-head.png" style="width: 100%" />
+								<img src="/images/login-head.png" style="width: 100%" />
 							</div>
 							<div class="login-form">
-								<img id="profile-img" class="profile-img-card" src="/avatar.png" />
+								<img
+									id="profile-img"
+									class="profile-img-card"
+									src="/images/avatar.png"
+									alt=""
+								/>
 								<p id="profile-name" class="profile-name-card"></p>
-								<el-form class="form" size="medium" :disabled="saving">
+								<el-form class="form" size="medium">
 									<el-form-item>
 										<el-input
 											v-model="form.username"
@@ -67,7 +72,6 @@
 									style="width: 100%"
 									size="small"
 									class="submit-btn"
-									:loading="saving"
 									@click="toLogin"
 									>登录
 								</el-button>
@@ -98,8 +102,6 @@ export default defineComponent({
 		const store = useStore();
 		const { refs, setRefs }: any = useRefs();
 
-		const saving = ref<boolean>(false);
-
 		// 登录表单数据
 		const form = reactive({
 			username: "admin",
@@ -122,8 +124,6 @@ export default defineComponent({
 			// 	return ElMessage.warning("图片验证码不能为空");
 			// }
 
-			saving.value = true;
-
 			try {
 				// 登录
 				await store.dispatch("userLogin", form);
@@ -143,14 +143,11 @@ export default defineComponent({
 				ElMessage.error(err);
 				refs.value.captcha.refresh();
 			}
-
-			saving.value = false;
 		}
 
 		return {
 			refs,
 			form,
-			saving,
 			toLogin,
 			setRefs
 		};
@@ -177,7 +174,7 @@ a {
 
 .login-bg {
 	padding-top: 200px;
-	background: url("/loginbg.png");
+	background: url("/images/loginbg.png");
 	background-size: 100% 100%;
 	height: 100%;
 }

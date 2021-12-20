@@ -35,7 +35,7 @@ func VerifyJwtToken() pine.Handler {
 				ctx.QueryArgs().Set("id", fmt.Sprintf("%d", pl.AdminId))
 			}
 			if !strings.Contains(uri, "/log/list") {
-				_, _ = di.MustGet(&xorm.Engine{}).(*xorm.Engine).Insert(&tables.RequestLog{
+				go di.MustGet(&xorm.Engine{}).(*xorm.Engine).Insert(&tables.RequestLog{
 					Uri:      string(ctx.RequestURI()),
 					Userid:   pl.AdminId,
 					Params:   string(ctx.PostBody()),

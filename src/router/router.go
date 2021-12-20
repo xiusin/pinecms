@@ -15,8 +15,8 @@ func InitRouter(app *pine.Application) {
 		ctx.WriteString(string(ctx.RequestCtx.URI().Scheme()) + "://" + string(ctx.Host()) + "/admin/")
 	})
 
-	app.GET("/admin/", func(ctx *pine.Context) {
-		if byts, err := ioutil.ReadFile("dist/editor.tpl"); err != nil {
+	app.GET("/admin", func(ctx *pine.Context) {
+		if byts, err := ioutil.ReadFile("admin/dist/index.html"); err != nil {
 			ctx.Abort(500, err.Error())
 		} else {
 			_ = ctx.WriteHTMLBytes(byts)

@@ -2,8 +2,6 @@ package config
 
 import (
 	"fmt"
-	"github.com/xiusin/pinecms/src/common/helper"
-	ormlogger "github.com/xiusin/pinecms/src/common/logger"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -98,13 +96,13 @@ func InitDB(conf *DbConfig) *xorm.Engine {
 			panic(err.Error())
 		}
 		_orm.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, m.DbPrefix))
-		_orm.SetLogger(ormlogger.NewIrisCmsXormLogger(helper.NewOrmLogFile(config.LogPath), core.LOG_INFO))
+		//_orm.SetLogger(ormlogger.NewIrisCmsXormLogger(helper.NewOrmLogFile(config.LogPath), core.LOG_INFO))
 		if err = _orm.Ping(); err != nil {
 			panic(err.Error())
 		}
-		_orm.ShowSQL(o.ShowSql)
+		_orm.ShowSQL(false)
 		_orm.TZLocation, _ = time.LoadLocation("Asia/Shanghai")
-		_orm.ShowExecTime(o.ShowExecTime)
+		_orm.ShowExecTime(false)
 		_orm.SetMaxOpenConns(int(o.MaxOpenConns))
 		_orm.SetMaxIdleConns(int(o.MaxIdleConns))
 		dbConfig.Engine = _orm

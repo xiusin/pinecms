@@ -29,7 +29,7 @@ bootstrap(app)
 	.then(() => {
 		app.component("v-chart", VueECharts);
 		app.provide("mitt", mitt());
-		app.use(store).use(router).use(VueUeditorWrap).use(ElementPlus).mount("#app");
+		app.use(store).use(ElementPlus).use(router).use(VueUeditorWrap).mount("#app");
 	})
 	.catch((err: string) => {
 		console.error(`启动失败`, err);
