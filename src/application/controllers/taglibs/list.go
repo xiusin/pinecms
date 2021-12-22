@@ -56,7 +56,7 @@ func List(args jet.Arguments) reflect.Value {
 		orderBy = "listorder"
 	}
 	if orderBy == "rand" {
-		if strings.ToLower(config.DBConfig().Db.DbDriver) == "mysql" {
+		if strings.ToLower(config.DB().Db.DbDriver) == "mysql" {
 			orderBy = "RAND()"
 		} else {
 			orderBy = "RANDOM()"

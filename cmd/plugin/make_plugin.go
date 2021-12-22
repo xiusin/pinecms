@@ -20,7 +20,7 @@ const configName = "config.json"
 const sourceTpl = `package main
 
 import (
-	"github.com/go-xorm/xorm"
+	"xorm.io/xorm"
 	"github.com/xiusin/pine"
 	"sync"
 )

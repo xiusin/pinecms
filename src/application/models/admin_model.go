@@ -4,9 +4,9 @@ import (
 	"errors"
 	"github.com/xiusin/pine/di"
 
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"xorm.io/xorm"
 )
 
 type AdminModel struct {
@@ -29,7 +29,7 @@ func (a *AdminModel) Login(username, password, ip string) (tables.Admin, error) 
 		return admin, errors.New("密码错误，请再次尝试！")
 	}
 	admin.Lastloginip = ip
-	a.orm.Id(admin.Userid).Update(admin)
+	a.orm.ID(admin.Userid).Update(admin)
 	return admin, nil
 }
 
@@ -52,7 +52,7 @@ func (a *AdminModel) EditPassword(userid int64, password string) bool {
 	if res {
 		admin.Password = helper.Password(password, encrypt)
 		admin.Encrypt = encrypt
-		result, _ := a.orm.Id(admin.Userid).Update(&admin)
+		result, _ := a.orm.ID(admin.Userid).Update(&admin)
 		if result == 0 {
 			return false
 		} else {

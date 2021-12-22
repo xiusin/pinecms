@@ -16,7 +16,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-xorm/xorm"
 	"github.com/valyala/fasthttp"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
@@ -25,6 +24,7 @@ import (
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
+	"xorm.io/xorm"
 )
 
 const ext = ".so"
@@ -249,7 +249,7 @@ func Init() {
 		pine.Logger().Warning("windows 不支持plugin功能")
 		return
 	}
-	pluginPath := config.AppConfig().PluginPath
+	pluginPath := config.App().PluginPath
 	if len(pluginPath) > 0 {
 		pluginMgr.path = pluginPath
 		_ = os.Mkdir(pluginMgr.path, os.ModePerm)

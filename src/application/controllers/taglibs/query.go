@@ -2,13 +2,13 @@ package taglibs
 
 import (
 	"github.com/CloudyKit/jet"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/config"
 	"reflect"
 	"runtime/debug"
 	"strings"
+	"xorm.io/xorm"
 )
 
 /**
@@ -30,7 +30,7 @@ func Query(args jet.Arguments) reflect.Value {
 	sess := pine.Make(controllers.ServiceXorm).(*xorm.Engine)
 	query := strings.Trim(args.Get(0).String(), " ")
 	// 只允许查询操作
-	conf := config.DBConfig()
+	conf := config.DB()
 	if strings.HasPrefix(query, "SELECT") || strings.HasPrefix(query, "select") {
 		rest, err := sess.QueryString(strings.ReplaceAll(query, "#@_", conf.Db.DbPrefix))
 		if err != nil {

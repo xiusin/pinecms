@@ -15,12 +15,12 @@ func TopType(args jet.Arguments) reflect.Value {
 		return defaultArrReturnVal
 	}
 	typeid := getNumber(args.Get(0))
-	cat,err := models.NewCategoryModel().GetCategoryFByIdForBE(typeid)
+	cat, err := models.NewCategoryModel().GetCategoryFByIdForBE(typeid)
 	if err != nil {
 		panic(err)
 	}
 	if cat.Topid != 0 {
-		cat,err = models.NewCategoryModel().GetCategoryFByIdForBE(cat.Topid)
+		cat, err = models.NewCategoryModel().GetCategoryFByIdForBE(cat.Topid)
 		if err != nil {
 			panic(err)
 		}
@@ -29,5 +29,3 @@ func TopType(args jet.Arguments) reflect.Value {
 	cat.Page = nil
 	return reflect.ValueOf(cat)
 }
-
-

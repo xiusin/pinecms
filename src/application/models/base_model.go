@@ -1,8 +1,8 @@
 package models
 
 import (
-	"github.com/go-xorm/xorm"
 	"xorm.io/builder"
+	"xorm.io/xorm"
 )
 
 type BaseModel struct {

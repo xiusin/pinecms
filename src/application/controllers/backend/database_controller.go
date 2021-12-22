@@ -7,14 +7,13 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"xorm.io/core"
+	"xorm.io/xorm/schemas"
 
 	"github.com/alexmullins/zip"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"xorm.io/xorm"
 )
 
 type DatabaseController struct {
@@ -41,7 +40,7 @@ func (c *DatabaseController) Manager(orm *xorm.Engine) {
 	var wg sync.WaitGroup
 	wg.Add(len(mataDatas))
 	for _, mataData := range mataDatas {
-		go func(mataData *core.Table) {
+		go func(mataData *schemas.Table) {
 			defer wg.Done()
 			total, _ := orm.Table(mataData.Name).Count()
 			data = append(data, map[string]interface{}{

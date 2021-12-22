@@ -3,20 +3,20 @@ package models
 import (
 	"errors"
 	"fmt"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"xorm.io/xorm"
 )
 
 type DocumentModel struct {
-	orm *xorm.Engine
+	orm   *xorm.Engine
 	cache cache.AbstractCache
 }
 
-func init()  {
+func init() {
 	di.Set(&DocumentModel{}, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return &DocumentModel{
 			orm:   builder.MustGet("*xorm.Engine").(*xorm.Engine),
@@ -24,7 +24,6 @@ func init()  {
 		}, nil
 	}, true)
 }
-
 
 func NewDocumentModel() *DocumentModel {
 	return di.MustGet(&DocumentModel{}).(*DocumentModel)

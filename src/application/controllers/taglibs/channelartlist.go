@@ -3,11 +3,11 @@ package taglibs
 import (
 	"fmt"
 	"github.com/CloudyKit/jet"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"reflect"
 	"strings"
+	"xorm.io/xorm"
 )
 
 /**
@@ -15,7 +15,7 @@ sons 是否附带直属子分类数据, 可用于下级数据的迭代, 可取�
 active 是否附带当前活动状态逻辑, 一般用于下级菜单激活上级菜单的高亮样式
 topid 记录当前所处页面的tid
 {{channellist = channelartlist(typeid, row, topid, sons, active)}}
- */
+*/
 func ChannelArtList(args jet.Arguments) reflect.Value {
 	if !checkArgType(&args) {
 		return defaultArrReturnVal
@@ -33,14 +33,14 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 
 	var orm *xorm.Session
 	if _typeid == "0" || _typeid == "top" {
-		orm =  getCategoryOrm().Where("parentid = 0")
+		orm = getCategoryOrm().Where("parentid = 0")
 	} else if strings.Contains(_typeid, ",") {
-		orm =  getCategoryOrm().In("catid", strings.Split(_typeid, ","))
+		orm = getCategoryOrm().In("catid", strings.Split(_typeid, ","))
 	} else {
-		orm =  getCategoryOrm().Where("parentid = ?", _typeid)
+		orm = getCategoryOrm().Where("parentid = ?", _typeid)
 	}
 
-	_topid := getNumber(args.Get(2))	// 当前页面的ID
+	_topid := getNumber(args.Get(2)) // 当前页面的ID
 
 	var cats []tables.Category
 
@@ -54,7 +54,7 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 	withSons := args.Get(3).Bool()
 	withActive := args.Get(4).Bool()
 
-	for k,v := range cats {
+	for k, v := range cats {
 		if v.Type != 2 {
 			if withSons {
 				var sons tables.Category
@@ -66,7 +66,7 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 			if withActive {
 				cat1s := m.GetPosArr(v.Catid)
 				cats[k].Url = fmt.Sprintf("/%s/", m.GetUrlPrefixWithCategoryArr(cat1s))
-				for _, v:= range cat1s {
+				for _, v := range cat1s {
 					if v.Catid == _topid {
 						cats[k].Active = true
 						break

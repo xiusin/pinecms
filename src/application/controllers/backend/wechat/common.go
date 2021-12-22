@@ -2,7 +2,6 @@ package wechat
 
 import (
 	"errors"
-	"github.com/go-xorm/xorm"
 	"github.com/silenceper/wechat/v2"
 	"github.com/silenceper/wechat/v2/officialaccount"
 	offConfig "github.com/silenceper/wechat/v2/officialaccount/config"
@@ -10,6 +9,7 @@ import (
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"xorm.io/xorm"
 )
 
 func GetOfficialAccount(appid string) (*officialaccount.OfficialAccount, *tables.WechatAccount) {

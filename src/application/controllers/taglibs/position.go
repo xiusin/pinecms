@@ -52,4 +52,3 @@ func getCategoryPos(tid int64) string {
 	}
 	return data.Pos
 }
-

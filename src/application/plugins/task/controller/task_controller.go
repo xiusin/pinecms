@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/plugins/task/manager"
@@ -11,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+	"xorm.io/xorm"
 )
 
 // TaskController 控制器区域
@@ -114,7 +114,7 @@ func (c *TaskController) PostScriptList() {
 }
 
 func (c *TaskController) PostScriptInfo() {
-	fullPath := string( c.Input().GetStringBytes("path"))
+	fullPath := string(c.Input().GetStringBytes("path"))
 	f, err := os.Open(fullPath)
 	if err != nil {
 		helper.Ajax(err, 1, c.Ctx())
@@ -131,14 +131,13 @@ func (c *TaskController) PostScriptInfo() {
 	helper.Ajax(string(content), 0, c.Ctx())
 }
 
-
 func (c *TaskController) PostScriptSave() {
 	edit := c.Input().GetBool("edit")
 	fullPath := string(c.Input().GetStringBytes("path"))
 	if !edit {
 		fullPath = filepath.Join(helper.GetRootPath("tasks"), fullPath)
 	}
-	if err := ioutil.WriteFile(fullPath, c.Input().GetStringBytes("content"), os.ModePerm) ;err != nil {
+	if err := ioutil.WriteFile(fullPath, c.Input().GetStringBytes("content"), os.ModePerm); err != nil {
 		helper.Ajax(err, 1, c.Ctx())
 	} else {
 		helper.Ajax(fullPath, 0, c.Ctx())

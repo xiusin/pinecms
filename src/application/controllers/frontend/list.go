@@ -36,8 +36,8 @@ func (c *IndexController) List(pageFilePath string) {
 		page = 1
 	}
 	total, _ := getOrmSess(category.Model).In("catid", models.NewCategoryModel().GetNextCategoryOnlyCatids(tid, true)).Count()
-	tpl := "list_" + category.Model.Table + ".jet"	// default tpl
-	if len(category.Model.FeTplList) > 0 {	// model tpl
+	tpl := "list_" + category.Model.Table + ".jet" // default tpl
+	if len(category.Model.FeTplList) > 0 {         // model tpl
 		tpl = category.Model.FeTplList
 	}
 	if len(category.ListTpl) > 0 { // category tpl
@@ -59,19 +59,19 @@ func (c *IndexController) List(pageFilePath string) {
 		return
 	}
 	err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), struct {
-		Field       *tables.Category
-		TypeID      int64
-		ArtCount    int64
-		ModelName   string
-		QP          map[string][]string
-		PageNum     int64
+		Field     *tables.Category
+		TypeID    int64
+		ArtCount  int64
+		ModelName string
+		QP        map[string][]string
+		PageNum   int64
 	}{
-		Field:       category,
-		TypeID:      tid,
-		ArtCount:    total,
-		PageNum:     int64(page),
-		ModelName:   category.Model.Table,
-		QP:          c.Ctx().GetData(),
+		Field:     category,
+		TypeID:    tid,
+		ArtCount:  total,
+		PageNum:   int64(page),
+		ModelName: category.Model.Table,
+		QP:        c.Ctx().GetData(),
 	})
 	if err != nil {
 		pine.Logger().Error(err)

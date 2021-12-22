@@ -5,7 +5,7 @@ import VueHighlightJS from "vue-highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
 import "vue-highlight.js/lib/allLanguages";
 
-import { message } from "ant-design-vue";
+import {message} from "ant-design-vue";
 
 Vue.config.productionTip = false;
 
@@ -17,11 +17,7 @@ message.config({
   maxCount: 3
 });
 
-const storageOptions = {
-  namespace: "apidoc_",
-  name: "ls",
-  storage: "local"
-};
+const storageOptions = { namespace: "apidoc_", name: "ls", storage: "local" };
 
 Vue.use(Storage, storageOptions);
 

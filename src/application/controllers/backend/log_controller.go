@@ -20,7 +20,7 @@ func (c *LogController) Construct() {
 		{Field: "params", Op: "LIKE", DataExp: "%$?%"},
 	}
 	c.SearchFields = []SearchFieldDsl{
-		 {Field: "method"},
+		{Field: "method"},
 	}
 	c.Table = &tables.RequestLog{}
 	c.Entries = &[]tables.RequestLog{}

@@ -1,7 +1,6 @@
 package frontend
 
 import (
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -15,6 +14,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"xorm.io/xorm"
 )
 
 func (c *IndexController) Bootstrap(orm *xorm.Engine, cacheHandler cache.AbstractCache) {

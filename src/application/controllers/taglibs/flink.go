@@ -2,12 +2,12 @@ package taglibs
 
 import (
 	"github.com/CloudyKit/jet"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"reflect"
 	"runtime/debug"
 	"strings"
+	"xorm.io/xorm"
 )
 
 func Flink(args jet.Arguments) reflect.Value {

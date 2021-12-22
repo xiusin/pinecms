@@ -2,7 +2,6 @@ package taglibs
 
 import (
 	"github.com/CloudyKit/jet"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -10,6 +9,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"xorm.io/xorm"
 )
 
 var defaultArrReturnVal = reflect.ValueOf([]interface{}{})
@@ -39,7 +39,7 @@ func getNumber(val reflect.Value) int64 {
 	} else if strings.Contains(t, "int") {
 		return val.Int()
 	} else if t == "string" {
-		v,_ := strconv.Atoi(val.String())
+		v, _ := strconv.Atoi(val.String())
 		return int64(v)
 	}
 	return 0

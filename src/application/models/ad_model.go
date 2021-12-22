@@ -1,11 +1,11 @@
 package models
 
 import (
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"xorm.io/xorm"
 )
 
 type AdModel struct {

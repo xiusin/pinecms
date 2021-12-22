@@ -3,11 +3,11 @@ package logger
 import (
 	"bytes"
 	"fmt"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"time"
+	"xorm.io/xorm"
 )
 
 type pineCmsLoggerWriter struct {

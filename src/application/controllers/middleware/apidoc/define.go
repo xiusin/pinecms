@@ -112,7 +112,6 @@ func (e *apiEntity) QueryExist(name string) bool {
 	return false
 }
 
-
 // FilterParams 根据配置过滤无用参数, 可以通过设置: 仅允许, 仅排除, 无.
 // 此函数仅嵌入时可以生效, 通过管理端设置是可以直接通过
 // 当接口设置为不可变时, 不允许改变

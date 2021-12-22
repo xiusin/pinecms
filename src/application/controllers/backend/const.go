@@ -64,5 +64,3 @@ type FormControl struct {
 	Limits           []string      `json:"limits"`
 	LimitsLogic      string        `json:"limitsLogic"`
 }
-
-

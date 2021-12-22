@@ -9,11 +9,10 @@ import (
 	"strings"
 )
 
-
 var exampleCmd = &cobra.Command{
 	Use:   "example",
 	Short: "获取案例demo数据库以及资源",
-	Run: func(cmd *cobra.Command, args []string)  {
+	Run: func(cmd *cobra.Command, args []string) {
 		var input string
 		fmt.Print("下载demo会覆盖本地数据资源以及清理本地缓存,确定要执行吗?[Y/n]")
 		fmt.Scanln(&input)

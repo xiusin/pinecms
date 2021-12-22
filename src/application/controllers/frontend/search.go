@@ -2,7 +2,6 @@ package frontend
 
 import (
 	"fmt"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/render/engine/jet"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -14,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"xorm.io/xorm"
 )
 
 func (c *IndexController) Search(orm *xorm.Engine) {

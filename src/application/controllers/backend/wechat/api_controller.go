@@ -3,7 +3,6 @@ package wechat
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-xorm/xorm"
 	"github.com/silenceper/wechat/v2/officialaccount/message"
 	"github.com/valyala/fasthttp/fasthttpadaptor"
 	"github.com/xiusin/pine"
@@ -11,6 +10,7 @@ import (
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"net/http"
 	"time"
+	"xorm.io/xorm"
 )
 
 func msgHandler(ctx *pine.Context) {

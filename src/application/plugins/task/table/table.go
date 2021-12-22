@@ -30,7 +30,7 @@ type TaskLog struct {
 	TaskId    int64     `json:"taskId" xorm:"comment('任务ID')"`
 	Status    bool      `json:"status" xorm:"comment('状态 0:失败 1：成功')"`
 	Detail    string    `json:"detail" xorm:"text comment('详情')"`
-	ExecTime  int64		`json:"exec_time" xorm:"int(11) default 0 comment('执行时长')"`
+	ExecTime  int64     `json:"exec_time" xorm:"int(11) default 0 comment('执行时长')"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

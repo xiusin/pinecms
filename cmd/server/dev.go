@@ -2,11 +2,12 @@ package server
 
 import (
 	"context"
+	"github.com/xiusin/pinecms/src/config"
 	"os"
 	"os/exec"
 
 	"github.com/spf13/cobra"
-	config "github.com/xiusin/pinecms/src/server"
+	"github.com/xiusin/pinecms/src/server"
 	"github.com/xiusin/reload"
 	"github.com/xiusin/reload/util"
 )
@@ -36,12 +37,11 @@ var devCmd = &cobra.Command{
 
 			// 杀掉之前启动的主进程
 
-
 		}
 
 		reload.Loop(func() error {
 			config.InitDB()
-			config.Server()
+			server.Server()
 			return nil
 		}, &reload.Conf{Cmd: &reload.CmdConf{
 			Params:       []string{"serve", "dev"},
@@ -50,6 +50,6 @@ var devCmd = &cobra.Command{
 	},
 }
 
-func init()  {
+func init() {
 	devCmd.Flags().Bool("fe", false, "是否启动fe进程")
 }

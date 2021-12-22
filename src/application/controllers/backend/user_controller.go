@@ -2,13 +2,13 @@ package backend
 
 import (
 	"errors"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"strings"
+	"xorm.io/xorm"
 )
 
 type UserController struct {
@@ -95,7 +95,6 @@ func (c *UserController) after(opType int, param interface{}) error {
 	}
 	return nil
 }
-
 
 func (c *UserController) PostLogout() {
 	helper.Ajax("退出成功", 0, c.Ctx())

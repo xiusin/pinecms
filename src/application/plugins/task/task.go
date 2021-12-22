@@ -3,12 +3,12 @@ package main
 import (
 	"sync"
 
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/plugins/task/controller"
 	"github.com/xiusin/pinecms/src/application/plugins/task/manager"
 	"github.com/xiusin/pinecms/src/application/plugins/task/table"
+	"xorm.io/xorm"
 )
 
 type Task struct {
@@ -180,7 +180,7 @@ func (p *Task) GetController() pine.IController {
 
 func (p *Task) Init(services di.AbstractBuilder) {
 	p.Do(func() {
-    p.status = true // 默认开启
+		p.status = true // 默认开启
 		p.orm = services.MustGet(&xorm.Engine{}).(*xorm.Engine)
 		p.Install()
 		_, _ = p.orm.Cols("entity_id", "error").Update(&table.TaskInfo{}) // 更新一些错误信息

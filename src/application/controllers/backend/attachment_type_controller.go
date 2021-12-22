@@ -11,7 +11,7 @@ type AttachmentTypeController struct {
 
 func (c *AttachmentTypeController) Construct() {
 	c.SearchFields = []SearchFieldDsl{
-		 {Op: "=", Field: "type"},
+		{Op: "=", Field: "type"},
 	}
 	c.Table = &tables.AttachmentType{}
 	c.Entries = &[]tables.AttachmentType{}
@@ -20,7 +20,7 @@ func (c *AttachmentTypeController) Construct() {
 	c.BaseController.Construct()
 }
 
-func (c *AttachmentTypeController) PostList()  {
+func (c *AttachmentTypeController) PostList() {
 	c.Orm.Find(c.Entries)
 	helper.Ajax(c.Entries, 0, c.Ctx())
 }

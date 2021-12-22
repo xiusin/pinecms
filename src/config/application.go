@@ -14,33 +14,38 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+const dbYml = "resources/configs/database.yml"
+const appYml = "resources/configs/application.yml"
+
 type Config struct {
 	Debug   bool    `yaml:"debug"`
-	Favicon string  `yaml:"favicon"`
 	Port    int64   `yaml:"port"`
-	View    View    `yaml:"view"`
-	Session Session `yaml:"session"`
-	LogPath string  `yaml:"log_path"`
-	CacheDb string  `yaml:"cache_db"`
-	Statics []struct {
-		Route string `yaml:"route"`
-		Path  string `yaml:"path"`
-	} `yaml:"statics"`
-	Charset           string `yaml:"charset"`
-	JwtKey            string `yaml:"jwtkey"`
-	HashKey           string `yaml:"hashkey"`
-	BlockKey          string `yaml:"blockkey"`
-	BackendRouteParty string `yaml:"backend_route_party"`
-	PluginPath        string `yaml:"plugin_path"`
+	View    viewConf    `yaml:"view"`
+	Session SessConf `yaml:"session"`
+
+	LogPath     string `yaml:"log_path"`
+	RuntimePath string `yaml:"runtime_path"`
+	PluginPath  string `yaml:"plugin_path"`
+	CacheDb     string `yaml:"cache_db"`
+
+	Charset  string `yaml:"charset"`
+	JwtKey   string `yaml:"jwtkey"`
+	HashKey  string `yaml:"hashkey"`
+	BlockKey string `yaml:"blockkey"`
 
 	Upload struct {
 		MaxBodySize int64  `yaml:"max_bodysize"`
 		Engine      string `yaml:"engine"`
 		BasePath    string `yaml:"base_path"`
 	} `yaml:"upload"`
+
+	Statics []struct {
+		Route string `yaml:"route"`
+		Path  string `yaml:"path"`
+	} `yaml:"statics"`
 }
 
-type Session struct {
+type SessConf struct {
 	Name    string        `yaml:"name"`
 	Expires time.Duration `yaml:"expires"`
 }
@@ -50,24 +55,52 @@ type Html struct {
 	Suffix string `yaml:"suffix"`
 }
 
-type View struct {
+type viewConf struct {
 	Reload    bool   `yaml:"reload"`
 	FeDirname string `yaml:"fedirname"`
 	BeDirname string `yaml:"bedirname"`
 	Theme     string
 }
 
-const dbYml = "resources/configs/database.yml"
-const appYml = "resources/configs/application.yml"
-
 var config = &Config{}
 
-func init() {
-	parseConfig(appYml, config)
-	_ = os.MkdirAll(config.LogPath, os.ModePerm)
+func (c *Config) init() {
+	if len(c.Upload.BasePath) == 0 {
+		c.Upload.BasePath = "uploads"
+	}
+	if len(c.RuntimePath) == 0 {
+		c.RuntimePath = "runtime"
+	}
+	if len(c.LogPath) == 0 {
+		c.LogPath = "logs"
+	}
+	c.LogPath = RuntimePath(c.LogPath)
+	if len(c.CacheDb) == 0 {
+		c.CacheDb = "cache.db"
+	}
+	c.CacheDb = RuntimePath(c.CacheDb)
 }
 
-func AppConfig() *Config {
+func (c *Config) StaticPrefixArr() []string {
+	var staticPathPrefix []string
+	for _, static := range config.Statics {
+		staticPathPrefix = append(staticPathPrefix, static.Route)
+	}
+	return staticPathPrefix
+}
+
+func IsDebug() bool {
+	return config.Debug
+}
+
+func RuntimePath(path ...string) string {
+	if len(path) == 0 {
+		path = append(path, "")
+	}
+	return filepath.Join(config.RuntimePath, path[0])
+}
+
+func App() *Config {
 	return config
 }
 
@@ -87,7 +120,7 @@ func parseConfig(path string, out interface{}) {
 }
 
 func SiteConfig() (map[string]string, error) {
-	xorm, cache := helper.XormEngine(), helper.AbstractCache()
+	xorm, cache := helper.Orm(), helper.AbstractCache()
 	var settingData = map[string]string{}
 	if err := cache.GetWithUnmarshal(controllers.CacheSetting, &settingData); err != nil {
 		var settings []tables.Setting
@@ -105,4 +138,10 @@ func SiteConfig() (map[string]string, error) {
 		}
 	}
 	return settingData, nil
+}
+
+func init() {
+	parseConfig(appYml, config)
+	config.init()
+	_ = os.MkdirAll(config.LogPath, os.ModePerm)
 }

@@ -11,9 +11,10 @@ import (
 
 	"github.com/CloudyKit/jet"
 )
+
 /**
-        {{pagelist(row, .TypeID, .ArtCount, .PageNum, .QP) | unsafe}}
- */
+  {{pagelist(row, .TypeID, .ArtCount, .PageNum, .QP) | unsafe}}
+*/
 func PageList(args jet.Arguments) reflect.Value {
 	defer func() {
 		if err := recover(); err != nil {
@@ -25,9 +26,9 @@ func PageList(args jet.Arguments) reflect.Value {
 	total := int(getNumber(args.Get(2)))
 	page := int(getNumber(args.Get(3)))
 	qp, _ := args.Get(4).Interface().(map[string][]string)
-	conf,_ := config.SiteConfig()
+	conf, _ := config.SiteConfig()
 	if limit == 0 {
-		limit,_ = strconv.Atoi(conf["SITE_PAGE_SIZE"])
+		limit, _ = strconv.Atoi(conf["SITE_PAGE_SIZE"])
 		if limit == 0 {
 			limit = 15
 		}
@@ -38,8 +39,8 @@ func PageList(args jet.Arguments) reflect.Value {
 	}
 	if len(qp) == 0 {
 		return reflect.ValueOf(helper.NewPage("/"+models.NewCategoryModel().GetUrlPrefix(tid), page, limit, total, nil, false).String())
- 	} else {
- 		// todo 地址后期path
+	} else {
+		// todo 地址后期path
 		return reflect.ValueOf(helper.NewPage("/search.go", page, limit, total, qp, true).String())
 	}
 

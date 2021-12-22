@@ -5,10 +5,10 @@ import (
 )
 
 var Cmd = &cobra.Command{
-	Use:   "dede",
-	Short: "导入织梦CMS数据",
-	Long: `从织梦CMS源中匹配已知数据`,
-TraverseChildren:true,
+	Use:              "dede",
+	Short:            "导入织梦CMS数据",
+	Long:             `从织梦CMS源中匹配已知数据`,
+	TraverseChildren: true,
 }
 var SqlFieldTypeMap = map[string]string{
 	"varchar": "varchar(100)",

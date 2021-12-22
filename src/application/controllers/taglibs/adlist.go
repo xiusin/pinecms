@@ -2,7 +2,6 @@ package taglibs
 
 import (
 	"github.com/CloudyKit/jet"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -11,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"xorm.io/xorm"
 )
 
 /**
@@ -39,8 +39,8 @@ func AdList(args jet.Arguments) reflect.Value {
 	switch pos.Type().String() {
 	case "string":
 		if len(pos.String()) > 0 {
-			advPos  := &tables.AdvertSpace{}
-			exists ,_ :=  pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(advPos).Where("name = ?", pos.String()).Get(advPos)
+			advPos := &tables.AdvertSpace{}
+			exists, _ := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(advPos).Where("name = ?", pos.String()).Get(advPos)
 			if !exists {
 				return reflect.ValueOf([]tables.Advert{})
 			}
@@ -54,7 +54,6 @@ func AdList(args jet.Arguments) reflect.Value {
 	if len(ids) > 0 {
 		orm.In("id", ids)
 	}
-
 
 	now := time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)
 	orm.Where("status = 1").Where("start_time <= ?", now).Where("end_time >= ?", now).Select("id, name, image, link_url")

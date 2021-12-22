@@ -30,7 +30,7 @@ func (c *DistrictController) getSubDistrictId() []int64 {
 	return p
 }
 
-func (c *DistrictController) PostList()  {
+func (c *DistrictController) PostList() {
 	query := c.Orm.Table(c.Table)
 	if p, err := c.buildParamsForQuery(query); err != nil {
 		helper.Ajax("参数错误: "+err.Error(), 1, c.Ctx())
@@ -83,6 +83,6 @@ func (c *DistrictController) PostImport() {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
 	}
-	c.Orm.Exec("rename table district to "+ controllers.GetTableName("district")  + ";")
+	c.Orm.Exec("rename table district to " + controllers.GetTableName("district") + ";")
 	helper.Ajax("导入数据库成功", 0, c.Ctx())
 }

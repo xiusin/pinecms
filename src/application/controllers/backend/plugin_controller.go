@@ -3,12 +3,12 @@ package backend
 import (
 	"encoding/json"
 	"errors"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/application/plugins"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"math/rand"
 	"time"
+	"xorm.io/xorm"
 )
 
 type PluginController struct {
@@ -125,7 +125,7 @@ func (c *PluginController) PostEnable() {
 		helper.Ajax("请传入插件路径", 1, c.Ctx())
 		return
 	}
-	enable,_ := c.Input().GetBool("enable")
+	enable, _ := c.Input().GetBool("enable")
 	ret, _ := c.Orm.Where("path = ?", string(path)).Cols("enable").Update(&tables.Plugin{
 		Enable:    enable,
 		UpdatedAt: tables.LocalTime(time.Now()),

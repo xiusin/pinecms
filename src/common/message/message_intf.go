@@ -22,6 +22,6 @@ type AbstractMessage interface {
 
 var MessageServiceDict = map[string]string{
 	ServiceNullMessage:  "空短信",
-	ServiceSmsMessage:   "阿里信息",
+	//ServiceSmsMessage:   "阿里信息",
 	ServiceEmailMessage: "邮箱",
 }

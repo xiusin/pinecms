@@ -16,11 +16,10 @@ var initCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		app := tview.NewApplication()
 		var submitted bool
-		var db config.DbConfig
+		var db config.DbConf
 		if db.Inited() {
 			panic("项目已初始化")
 		}
-
 		if _, err := os.Stat(""); os.IsNotExist(err) {
 			panic("缺少初始数据库文件" + initFilePath)
 		}

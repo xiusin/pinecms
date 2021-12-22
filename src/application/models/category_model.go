@@ -13,7 +13,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/go-xorm/xorm"
+	"xorm.io/xorm"
 )
 
 type CategoryModel struct {

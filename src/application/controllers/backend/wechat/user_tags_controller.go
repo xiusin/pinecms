@@ -143,7 +143,7 @@ func (c *WechatUserTagsController) PostTagging() {
 	helper.Ajax("操作成功", 0, c.Ctx())
 }
 
-func (c *WechatUserTagsController) refreshUserInfo(account *officialaccount.OfficialAccount)  {
+func (c *WechatUserTagsController) refreshUserInfo(account *officialaccount.OfficialAccount) {
 	for _, openid := range c.p.Openids {
 		u, err := account.GetUser().GetUserInfo(openid)
 		if err == nil {

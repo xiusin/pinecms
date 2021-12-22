@@ -31,7 +31,7 @@ export default (): UserConfig => {
 			}
 		},
 		server: {
-			port: 9000,
+			port: 9090,
 			hmr: {
 				overlay: true
 			},

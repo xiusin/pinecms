@@ -2,7 +2,6 @@ package backend
 
 import (
 	"encoding/json"
-	"github.com/go-xorm/xorm"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
@@ -17,6 +16,7 @@ import (
 	"runtime"
 	"sync"
 	"time"
+	"xorm.io/xorm"
 )
 
 var runningStart = time.Now()
@@ -230,7 +230,7 @@ func (stat *StatController) GetData(orm *xorm.Engine, cacher cache.AbstractCache
 	s.StartTime = runningStart.Format(helper.TimeFormat)
 	s.PineVersion = pine.Version
 	s.PineCmsVersion = version.Version
-	s.XormVersion = xorm.Version
+	s.XormVersion = ""
 	s.LocalIp, _ = stat.GetLocalIP()
 	s.OutIp, _ = stat.GetOutIp()
 	versions, err := orm.QueryString("SELECT VERSION() AS version")

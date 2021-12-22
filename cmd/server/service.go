@@ -6,7 +6,8 @@ import (
 	"syscall"
 
 	"github.com/takama/daemon"
-	config "github.com/xiusin/pinecms/src/server"
+	"github.com/xiusin/pinecms/src/config"
+	"github.com/xiusin/pinecms/src/server"
 )
 
 type Service struct{ daemon.Daemon }
@@ -36,7 +37,7 @@ func (service *Service) Manage(args []string, usage string) (string, error) {
 
 	go func() {
 		config.InitDB()
-		config.Server()
+		server.Server()
 	}()
 
 	killSignal := <-interrupt

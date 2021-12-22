@@ -28,7 +28,7 @@ func (c *IndexController) Page(pathname string) {
 	}
 	page := category.Page
 	if page == nil {
-		page = &tables.Page{Title: category.Catname,}
+		page = &tables.Page{Title: category.Catname}
 	}
 	if page.Keywords == "" {
 		page.Keywords = category.Keywords
@@ -61,8 +61,8 @@ func (c *IndexController) Page(pathname string) {
 		ArtID       int64
 		TopCategory *tables.Category // 顶级栏目信息
 	}{
-		Field:       page,
-		TypeID:      tid,
+		Field:  page,
+		TypeID: tid,
 	})
 	if err != nil {
 		c.Ctx().WriteString(err.Error())

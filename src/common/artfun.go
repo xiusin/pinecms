@@ -8,8 +8,8 @@ import (
 )
 
 // 处理文章列表信息数据. 补全一些cms生成
-func HandleArtListInfo(list []map[string]string, titlelen int)  {
-	m:=models.NewCategoryModel()
+func HandleArtListInfo(list []map[string]string, titlelen int) {
+	m := models.NewCategoryModel()
 	for i, art := range list {
 		catid, _ := strconv.Atoi(art["catid"])
 		prefix := m.GetUrlPrefix(int64(catid))

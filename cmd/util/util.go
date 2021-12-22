@@ -57,7 +57,6 @@ func Replace(str, old, new string) string {
 	return strings.ReplaceAll(str, old, new)
 }
 
-
 func SnakeString(s string) string {
 	data := make([]byte, 0, len(s)*2)
 	j := false

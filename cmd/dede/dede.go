@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"github.com/go-xorm/xorm"
 	"github.com/spf13/cobra"
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -14,10 +13,11 @@ import (
 	"strings"
 	"time"
 	"xorm.io/core"
+	"xorm.io/xorm"
 )
 
 var (
-	dc             = config.DBConfig()
+	dc             = config.DB()
 	dedeOrm        *xorm.Engine
 	tableSchema    string
 	pineOrm        *xorm.Engine

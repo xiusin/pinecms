@@ -3,7 +3,6 @@ package frontend
 import (
 	"fmt"
 	jet2 "github.com/CloudyKit/jet"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -15,6 +14,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"xorm.io/xorm"
 )
 
 type IndexController struct {
@@ -81,7 +81,6 @@ func template(tpl string) string {
 	}
 	return path
 }
-
 
 func GetStaticFile(filename string) string {
 	setting, _ := config.SiteConfig()

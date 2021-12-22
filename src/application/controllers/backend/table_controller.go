@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"xorm.io/xorm"
 )
 
 type TableController struct {
@@ -47,7 +47,7 @@ func (c *TableController) before(act int, params interface{}) error {
 	if OpList == act {
 		params.(*xorm.Session).Unscoped().Where("mid <> ?", 0)
 		v, _ := c.Input().GetInt64("mid")
-		if  v != 0 {
+		if v != 0 {
 			params.(*xorm.Session).Where("mid = ?", v)
 		}
 	} else if OpAdd == act || OpEdit == act {

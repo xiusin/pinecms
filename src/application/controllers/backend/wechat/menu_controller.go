@@ -11,7 +11,7 @@ import (
 type WechatMenuController struct {
 	backend.BaseController
 	key string
-	p menuParam
+	p   menuParam
 }
 
 func (c *WechatMenuController) Construct() {
@@ -27,7 +27,7 @@ func (c *WechatMenuController) PostEdit() {
 	}
 	account, _ := GetOfficialAccount(c.p.Appid)
 	if err := account.GetMenu().SetMenu(c.p.Menu.Button); err != nil {
-		helper.Ajax("设置菜单失败: " + err.Error(), 1, c.Ctx())
+		helper.Ajax("设置菜单失败: "+err.Error(), 1, c.Ctx())
 	} else {
 		helper.Ajax("发布菜单成功", 0, c.Ctx())
 	}

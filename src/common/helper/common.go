@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
+	"github.com/xiusin/pine/di"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -19,9 +20,9 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
+	"xorm.io/xorm"
 
 	"golang.org/x/image/bmp"
 
@@ -312,4 +313,19 @@ func Bytes2String(b []byte) *string {
 
 func IsWindows() bool {
 	return runtime.GOOS == "windows"
+}
+
+// Inject 注入依赖
+func Inject(key interface{}, v interface{}, single ...bool) {
+	if len(single) == 0 {
+		single = append(single, true)
+	}
+	if vi, ok := v.(di.BuildHandler); ok {
+		di.Set(key, vi, single[0])
+	} else {
+		di.Set(key, func(builder di.AbstractBuilder) (i interface{}, e error) {
+			return v, nil
+		}, single[0])
+	}
+
 }

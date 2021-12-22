@@ -3,7 +3,6 @@ package wechat
 import (
 	"bytes"
 	"fmt"
-	"github.com/go-xorm/xorm"
 	"github.com/silenceper/wechat/v2/officialaccount/material"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
@@ -15,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+	"xorm.io/xorm"
 )
 
 type WechatMaterialController struct {

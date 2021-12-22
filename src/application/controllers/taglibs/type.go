@@ -3,13 +3,13 @@ package taglibs
 import (
 	"fmt"
 	"github.com/CloudyKit/jet"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"reflect"
 	"runtime/debug"
+	"xorm.io/xorm"
 )
 
 func Type(args jet.Arguments) reflect.Value {
@@ -31,7 +31,7 @@ func Type(args jet.Arguments) reflect.Value {
 	defer sess.Close()
 	exists, _ := sess.ID(catid).Get(data)
 	if exists && data.Type != 2 {
-		data.Url =  fmt.Sprintf("/%s/", models.NewCategoryModel().GetUrlPrefix(data.Catid))
+		data.Url = fmt.Sprintf("/%s/", models.NewCategoryModel().GetUrlPrefix(data.Catid))
 	}
 	return reflect.ValueOf(data)
 }

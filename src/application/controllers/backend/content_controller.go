@@ -51,6 +51,7 @@ func (c *ContentController) PostList() {
 		return
 	}
 	c.Table = controllers.GetTableName(document.Table) // 设置表名
+	fmt.Println(c.Table)
 
 	query := c.Orm.Table(c.Table)
 	if p, err := c.buildParamsForQuery(query); err != nil {
@@ -58,17 +59,16 @@ func (c *ContentController) PostList() {
 	} else {
 		var fields tables.ModelDslFields
 		c.Orm.Where("mid = ?", category.ModelId).Find(&fields)
-		query.Where("catid = ?", catid).
-			OrderBy("listorder DESC").OrderBy("id DESC")
+		query.Where("catid = ?", catid).OrderBy("listorder DESC").OrderBy("id DESC")
 		query.Cols(fields.GetListFields()...)
 		var count int64
 		var contents []map[string]interface{}
 		if p.Size == 0 {
 			err = query.Find(c.Entries)
 		} else {
-			count, err = query.Clone().Count()
+			count, err = query.Limit(p.Size, (p.Page-1)*p.Size).FindAndCount(&contents)
 			if err == nil {
-				contents, err = query.Limit(p.Size, (p.Page-1)*p.Size).QueryInterface()
+				contents, err = query.QueryInterface()
 			}
 		}
 		if err != nil {

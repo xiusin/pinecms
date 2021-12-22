@@ -1,5 +1,7 @@
 package apidoc
 
+import "github.com/xiusin/pinecms/src/config"
+
 type Config struct {
 	RoutePrefix   string      `json:"route_prefix"`
 	Enable        bool        `json:"enable"`         // 是否启用apidoc
@@ -89,14 +91,9 @@ func DefaultConfig() *Config {
 		Desc:          "PineCMS 接口文档",
 		Copyright:     "https://github.com/xiusin/pinecms.git",
 		DefaultAuthor: "xiusin",
-		Debug:         true,
-		DataPath:      "docdb",
+		Debug:         config.IsDebug(),
+		DataPath:      config.RuntimePath("docdb"),
 		ResponseParam: &DemoResponseParam{},
-		//Responses: []apiPublicResponse{ // todo 使用解析
-		//	{Name: "code", Desc: "状态码", Type: "int"},
-		//	{Name: "message", Desc: "操作描述", Type: "string"},
-		//	{Name: "data", Desc: "业务数据", Type: "object", Main: true},
-		//},
 		Headers: []apiHeader{
 			{
 				Name:    "Authorization",

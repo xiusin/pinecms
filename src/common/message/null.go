@@ -8,7 +8,9 @@ var ServiceNullMessage = "pinecms.message.service.null"
 
 func (n NullMessage) Init() error { return nil }
 
-func (n NullMessage) Notice(receiver []string, params []interface{}, templateId int) error { return nil }
+func (n NullMessage) Notice(receiver []string, params []interface{}, templateId int) error {
+	return nil
+}
 
 func (n NullMessage) Send(receiver []string, msg string, typo int) error { return nil }
 

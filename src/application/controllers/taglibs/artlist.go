@@ -12,11 +12,11 @@ import (
 	"xorm.io/builder"
 
 	"github.com/CloudyKit/jet"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"xorm.io/xorm"
 )
 
 /**
@@ -81,7 +81,7 @@ func ArcList(args jet.Arguments) reflect.Value {
 	var isRand bool
 	if orderBy == "rand" {
 		isRand = true
-		if strings.ToLower(config.DBConfig().Db.DbDriver) == "mysql" {
+		if strings.ToLower(config.DB().Db.DbDriver) == "mysql" {
 			orderBy = "RAND()"
 		} else {
 			orderBy = "RANDOM()"

@@ -6,24 +6,23 @@ import (
 	"errors"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/cmd/util"
+	. "github.com/xiusin/pinecms/src/config"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
+	"xorm.io/xorm/schemas"
 
 	"github.com/xwb1989/sqlparser"
 
 	"github.com/alecthomas/chroma/quick"
-	"github.com/xiusin/logger"
-	config "github.com/xiusin/pinecms/src/server"
-	"xorm.io/core"
-
 	"github.com/spf13/cobra"
+	"github.com/xiusin/logger"
 )
 
-var cols = map[string]*core.Column{}
+var cols = map[string]*schemas.Column{}
 var topCode []string
 var matchSuffix = struct {
 	enumRadioSuffix, setCheckboxSuffix, switchSuffix []string
@@ -60,8 +59,8 @@ var Cmd = &cobra.Command{
 状态:-1=禁用,0=待审核,1=正常:el-checkbox 
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		config.InitDB()
-		if !config.Ac().Debug {
+		InitDB()
+		if !IsDebug() {
 			logger.SetReportCaller(false)
 			logger.Print("非Debug模式，不支持 crud 命令")
 			return
@@ -75,12 +74,12 @@ var Cmd = &cobra.Command{
 			_ = cmd.Help()
 			return
 		}
-		metas, err := config.XOrmEngine.DBMetas()
+		metas, err := Orm().DBMetas()
 		if err != nil {
 			pine.Logger().Error(err)
 			return
 		}
-		var tableMata *core.Table
+		var tableMata *schemas.Table
 		for _, meta := range metas {
 			if meta.Name == getTableName(table) {
 				tableMata = meta
@@ -140,7 +139,7 @@ func getControllerName(tableName string) (controller string, filename string) {
 }
 
 func getTableName(table string) string {
-	prefix := config.Dc().Db.DbPrefix
+	prefix := DB().Db.DbPrefix
 	if strings.HasPrefix(table, prefix) {
 		return table
 	}
@@ -171,8 +170,8 @@ func genControllerFile(print bool, controllerName, tableName, controllerPath str
 }
 
 func genTableFileAndFrontendFile(print bool, tableName, tablePath, frontendPath string) error {
-	realTableName := config.Dc().Db.DbPrefix + strings.ToLower(tableName)
-	res, err := config.XOrmEngine.QueryString(`SHOW CREATE TABLE ` + realTableName)
+	realTableName := DB().Db.DbPrefix + strings.ToLower(tableName)
+	res, err := Orm().QueryString(`SHOW CREATE TABLE ` + realTableName)
 	if err != nil {
 		return err
 	}
@@ -290,7 +289,7 @@ func genFrontendFile(table, frontendPath string, tableDsl, formDsl, filterDsl []
 }
 
 // getLabelAndFieldTypeAndProps 解析生成基础结构
-func getLabelAndFieldTypeAndProps(col SQLColumn, xormCol *core.Column) (labelName, inputType string, props map[string]interface{}) {
+func getLabelAndFieldTypeAndProps(col SQLColumn, xormCol *schemas.Column) (labelName, inputType string, props map[string]interface{}) {
 	inputType, fieldType, fieldName, props := "el-input", col.Type, col.Name, map[string]interface{}{"size": "mini", "is_number": false, "is_float": false}
 
 	if matchSuffix.match(matchSuffix.imageSuffix, fieldName) {

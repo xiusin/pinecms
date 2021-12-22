@@ -6,19 +6,26 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/casbin/casbin"
+	"github.com/casbin/casbin/v2"
 	xd "github.com/casbin/xorm-adapter"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"xorm.io/xorm"
 )
 
 func Casbin(engine *xorm.Engine, conf string) pine.Handler {
 	var _locker = &sync.Mutex{}
-	enforcer := casbin.NewEnforcer(helper.GetRootPath(conf), xd.NewAdapterByEngine(engine))
+	adapter, err := xd.NewAdapterByEngine(engine)
+	if err != nil {
+		panic(err)
+	}
+	enforcer, err := casbin.NewEnforcer(helper.GetRootPath(conf), adapter)
+	if err != nil {
+		panic(err)
+	}
 	di.Set(controllers.ServiceCasbinEnforcer, func(builder di.AbstractBuilder) (interface{}, error) {
 		return enforcer, nil
 	}, true)
@@ -47,7 +54,7 @@ func Casbin(engine *xorm.Engine, conf string) pine.Handler {
 				var passable bool
 				ctx.Logger().Print("pathString", pathString)
 				for _, role := range roles {
-					passable = enforcer.Enforce(fmt.Sprintf("%d", role), pathString[1], pathString[2])
+					passable, _ = enforcer.Enforce(fmt.Sprintf("%d", role), pathString[1], pathString[2])
 					if passable {
 						ctx.Next()
 						return

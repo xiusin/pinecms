@@ -1,11 +1,10 @@
 package models
 
 import (
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"github.com/xiusin/pinecms/src/common/helper"
+	"xorm.io/xorm"
 )
 
 type MemberModel struct {
@@ -45,7 +44,6 @@ func (m *MemberModel) Exist(account string) bool {
 func (m *MemberModel) Edit(id int64, members *tables.Member) bool {
 	res, err := m.orm.ID(id).MustCols("enabled", "integral").Update(members)
 	if err != nil {
-		m.orm.Logger().Error(helper.GetCallerFuncName(), err)
 		return false
 	}
 	return res > 0

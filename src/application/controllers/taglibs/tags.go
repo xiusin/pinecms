@@ -18,7 +18,7 @@ func HotWords(args jet.Arguments) reflect.Value {
 			pine.Logger().Error("HotWords Failed", err, string(debug.Stack()))
 		}
 	}()
-	conf,_ := config.SiteConfig()
+	conf, _ := config.SiteConfig()
 	words := strings.Split(conf["SITE_HOTWORDS"], ",")
 	return reflect.ValueOf(words)
 }

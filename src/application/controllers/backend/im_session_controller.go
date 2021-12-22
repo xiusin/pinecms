@@ -16,10 +16,10 @@ func (c *ImSessionController) SessionPage() {
 
 }
 
-func (c *ImSessionController) SessionUnreadCount()  {
+func (c *ImSessionController) SessionUnreadCount() {
 
 }
 
-func (c *ImSessionController) MessagePage()  {
+func (c *ImSessionController) MessagePage() {
 
 }

@@ -10,13 +10,13 @@ import (
 
 	"github.com/xiusin/pinecms/src/application/plugins/task/table"
 
-	"github.com/go-xorm/xorm"
 	"github.com/robfig/cron/v3"
 	"github.com/traefik/yaegi/interp"
 	"github.com/traefik/yaegi/stdlib"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"xorm.io/xorm"
 )
 
 var tm *taskManager

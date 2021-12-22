@@ -15,4 +15,3 @@ var Cmd = &cobra.Command{
 		fmt.Println("version: " + Version)
 	},
 }
-

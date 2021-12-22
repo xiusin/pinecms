@@ -4,6 +4,8 @@
 PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内以制作模板的方式搭建出来一个网站, 非开发者也能快速愉悦地使用系统.
 简单使用情况下无需关注代码逻辑.
 
+> 前端仓库: <https://github.com/xiusin/pinecms-web.git>
+
 > 目前程序正在持续迭代开发中，提供开发期间的数据库文件, 后期数据库结构变更比较大， 请勿用于重要场景。
 
 # 编译部署 #
@@ -86,13 +88,15 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 ## ApiDoc 管理插件 ##
 
-内置集成接口ApiDoc插件, 支持从请求参数到响应结果的自动生成`略微侵入代码: 需要设置分组名称以及接口名称`. 可以在管理界面修改参数以及全局参数, 接口db可以随意迁移, 支持直接调试请求. 
+内置集成接口ApiDoc插件, 支持从请求参数到响应结果的自动生成`略微侵入代码: 需要设置分组名称以及接口名称`. 可以在管理界面修改参数以及全局参数, 接口db可以随意迁移, 支持直接调试请求.
+
+> 接口文档仓库: <https://github.com/xiusin/pinecms-apidoc-ui.git>
 
 ![接口文档详情](./images/apidoc-detail.png)
 
 ![接口文档调试](./images/apidoc-debug.png)
 
-## 插件系统 (doing) ##
+## 插件系统 ##
 
 支持动态插拔插件, 并注册到系统功能, 提供方便便捷的扩展功能.
 系统可以动态扫描插件目录,自动发现并可以热加载进系统.  
@@ -100,7 +104,6 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 - 插件系统界面
 ![插件系统界面](./images/plugin.png)
-
 
 ## 服务器监控 ##
 
@@ -177,40 +180,11 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - <http://goframe.ele.rxthink.cn/tool/generate>
 - <https://github.com/antonmedv/codejar#getting-started>
 - 插件扩展OnFree销毁全局变量
-
-# 注解路由开发 #
-
----
-
-```go
-
-// @Service(sign=true, name="默认解析为实例注释, 此处可填写为实例化内容")
-
-// @Group("/anno")
-type AnnoController struct {
-    //@Share(field) 看是否可以实现解析注入
-    Field *int
-}
-
-// @Post("/list", xxxxxxx)
-func (a *AnnoController) List() {
-
-}
-
-// @Request(methods=[GET,POST], "默认为方法名小驼峰, 填写则为填写名称")
-func (a *AnnoController) List() {
-
-}
-```
-
----
-
-# 关于权限系统 #
-
 - Casbin: <https://zhuanlan.zhihu.com/p/148353743>
 - 菜单表增加perms字段， 可以配置权限标识，可以配置节点类型为权限。
 - <http://relation-graph.com/#/demo/scene-network> 组织架构显示
 - <https://eddyzhang1986.github.io/antd-jsonschema-form/>
+- 路由注解
 
 <!-- 热门语言卡片 -->
 <!-- https://github-readme-stats.vercel.app/api/top-langs/?username=xiusin&layout=compact -->

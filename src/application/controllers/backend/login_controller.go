@@ -49,7 +49,7 @@ func (c *LoginController) Login() {
 		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
-	var hs = jwt.NewHS256([]byte(config.AppConfig().JwtKey))
+	var hs = jwt.NewHS256([]byte(config.App().JwtKey))
 	now := time.Now()
 	pl := controllers.LoginAdminPayload{
 		Payload: jwt.Payload{

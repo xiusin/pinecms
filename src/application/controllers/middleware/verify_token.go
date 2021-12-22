@@ -3,16 +3,18 @@ package middleware
 import (
 	"fmt"
 	"github.com/gbrlsnchs/jwt/v3"
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/config"
 	"strings"
+	"xorm.io/xorm"
 )
 
-func VerifyJwtToken() pine.Handler {
+// VerifyJwtToken 验证jwt
+// excludePrefix 需要排除认证的路由前缀
+func VerifyJwtToken(excludePrefix ...string) pine.Handler {
 	return func(ctx *pine.Context) {
 		uri := ctx.Path()
 		if !strings.Contains(uri, "login") && !strings.Contains(uri, "/public/") && !strings.Contains(uri, "thumb") {
@@ -20,7 +22,7 @@ func VerifyJwtToken() pine.Handler {
 			if token == "" {
 				token, _ = ctx.GetString("token")
 			}
-			var hs = jwt.NewHS256([]byte(config.AppConfig().JwtKey))
+			var hs = jwt.NewHS256([]byte(config.App().JwtKey))
 			// 验证token
 			var pl controllers.LoginAdminPayload
 			_, err := jwt.Verify([]byte(token), hs, &pl)

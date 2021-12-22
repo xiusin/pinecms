@@ -20,7 +20,7 @@ func LikeArticle(args jet.Arguments) reflect.Value {
 	if !checkArgType(&args) {
 		return defaultArrReturnVal
 	}
-	var kws  = []string{args.Get(1).String(), args.Get(2).String(), args.Get(3).String()}
+	var kws = []string{args.Get(1).String(), args.Get(2).String(), args.Get(3).String()}
 	limit := int(getNumber(args.Get(0)))
 	catid := getNumber(args.Get(4))
 	titlelen := int(getNumber(args.Get(6)))
@@ -30,16 +30,16 @@ func LikeArticle(args jet.Arguments) reflect.Value {
 	}
 	var cond []string
 	m := models.NewCategoryModel()
-	category,_ := m.GetCategoryFByIdForBE(catid)
+	category, _ := m.GetCategoryFByIdForBE(catid)
 	modelTable := controllers.GetTableName(category.Model.Table)
-	sess := getOrmSess(category.Model.Table).Where(modelTable + ".id <> ?", getNumber(args.Get(5)))
+	sess := getOrmSess(category.Model.Table).Where(modelTable+".id <> ?", getNumber(args.Get(5)))
 	for _, kw := range kws {
 		splitKeywords := strings.Split(kw, ",")
 		for _, keyword := range splitKeywords {
 			if keyword == "" {
 				continue
 			}
-			cond = append(cond, fmt.Sprintf("%s.keywords LIKE ? OR %s.title LIKE ? OR %s.tags LIKE ?", modelTable, modelTable, modelTable), )
+			cond = append(cond, fmt.Sprintf("%s.keywords LIKE ? OR %s.title LIKE ? OR %s.tags LIKE ?", modelTable, modelTable, modelTable))
 			keywords = append(keywords, "%"+strings.Trim(keyword, "")+"%", "%"+strings.Trim(keyword, "")+"%", "%"+strings.Trim(keyword, "")+"%")
 		}
 	}

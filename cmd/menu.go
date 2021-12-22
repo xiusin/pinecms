@@ -3,20 +3,20 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	. "github.com/xiusin/pinecms/src/config"
 
-	"github.com/go-xorm/xorm"
 	"github.com/spf13/cobra"
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	config "github.com/xiusin/pinecms/src/server"
+	"xorm.io/xorm"
 )
 
 var menuCmd = &cobra.Command{
 	Use:   "menu",
 	Short: "生成模块菜单权限",
 	Run: func(cmd *cobra.Command, args []string) {
-		config.InitDB() // 方法不可放到init里，否则缓存组件阻塞
-		if !config.Ac().Debug {
+		InitDB() // 方法不可放到init里，否则缓存组件阻塞
+		if !IsDebug() {
 			logger.SetReportCaller(false)
 			logger.Print("非Debug模式，不支持 Menu 命令")
 			return
@@ -63,16 +63,16 @@ var menuCmd = &cobra.Command{
 		}
 		role := &tables.Menu{}
 		if !force {
-			count, _ := config.XOrmEngine.Table(role).Where("c = ?", table).Count()
+			count, _ := Orm().Table(role).Where("c = ?", table).Count()
 			if count > 0 {
 				logger.Errorf("已经存在%s的相关菜单, 如需强制覆盖请追加参数--force true", table)
 				return
 			}
 		}
 
-		config.XOrmEngine.Where("c = ?", table).Delete(role)
+		Orm().Where("c = ?", table).Delete(role)
 
-		_, err := config.XOrmEngine.Transaction(func(session *xorm.Session) (interface{}, error) {
+		_, err := Orm().Transaction(func(session *xorm.Session) (interface{}, error) {
 			var parId int64
 			for k, item := range menus {
 				role := tables.Menu{}
@@ -86,7 +86,7 @@ var menuCmd = &cobra.Command{
 					role.Parentid = parId
 					role.Display = false
 				}
-				id, err := config.XOrmEngine.Insert(&role)
+				id, err := Orm().Insert(&role)
 				if err != nil {
 					return nil, err
 				}

@@ -40,4 +40,3 @@ func DirTree(dir string) []DirInfo {
 	}
 	return ms
 }
-

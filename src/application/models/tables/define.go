@@ -30,11 +30,11 @@ func (l LocalTime) String() string {
 	return time.Time(l).Format(localDateTimeFormat)
 }
 
-func (l LocalTime)Now() LocalTime {
+func (l LocalTime) Now() LocalTime {
 	return LocalTime(time.Now())
 }
 
-func (l LocalTime)ParseTime(t time.Time) LocalTime {
+func (l LocalTime) ParseTime(t time.Time) LocalTime {
 	return LocalTime(t)
 }
 
@@ -79,13 +79,13 @@ func (l *LocalTime) FromDB(b []byte) error {
 
 func (l *LocalTime) ToDB() ([]byte, error) {
 	if nil == l {
-		return nil,nil
+		return nil, nil
 	}
 	return []byte(time.Time(*l).Format(localDateTimeFormat)), nil
 }
 
 func (l *LocalTime) Value() (driver.Value, error) {
-	if  nil== l {
+	if nil == l {
 		return nil, nil
 	}
 	return time.Time(*l).Format(localDateTimeFormat), nil

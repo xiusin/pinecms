@@ -7,8 +7,8 @@ import (
 
 	"github.com/xiusin/pine/di"
 
-	"github.com/go-xorm/xorm"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"xorm.io/xorm"
 )
 
 type AdminRoleModel struct {
