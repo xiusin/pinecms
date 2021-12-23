@@ -2,14 +2,15 @@ package config
 
 import (
 	"fmt"
-	"github.com/xiusin/pine/di"
-	"github.com/xiusin/pinecms/src/application/controllers"
-	"github.com/xiusin/pinecms/src/common/helper"
 	"io/ioutil"
 	"os"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm/log"
 
 	"gopkg.in/yaml.v2"
@@ -69,12 +70,10 @@ func (t *DbConf) buildDsn() string {
 		t.Db.Conf.ServeIp, t.Db.Conf.Port, t.Db.Conf.Name)
 }
 
-func (t *DbConf) CreateYaml() error {
+func (t *DbConf) BuildYaml() error {
 	t.Db.Dsn = t.buildDsn()
 	out, err := yaml.Marshal(t)
-	if err != nil {
-		return err
-	}
+	helper.PanicErr(err)
 	return ioutil.WriteFile(dbYml, out, os.ModePerm)
 }
 
@@ -85,46 +84,37 @@ type orm struct {
 	MaxIdleConns int64 `yaml:"max_idle_conns"`
 }
 
-var dbConfig = &DbConf{}
+var configure = &DbConf{}
 
 func Orm() *xorm.Engine {
 	return di.MustGet(controllers.ServiceXorm).(*xorm.Engine)
 }
 
 func InitDB(conf ...*DbConf) *xorm.Engine {
-	dbConfig.Do(func() {
+	configure.Do(func() {
 		if len(conf) > 0 {
-			dbConfig = conf[0]
+			configure = conf[0]
 		} else {
-			parseConfig(dbYml, dbConfig)
+			parseConfig(dbYml, configure)
 		}
-		m, o := dbConfig.Db, dbConfig.Orm
-		_orm, err := xorm.NewEngine(m.DbDriver, m.Dsn)
-		if err != nil {
-			panic(err.Error())
-		}
-		_orm.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, m.DbPrefix))
+		_orm, err := xorm.NewEngine(configure.Db.DbDriver, configure.Db.Dsn)
+		helper.PanicErr(err)
+		_orm.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, configure.Db.DbPrefix))
 		_orm.SetLogger(log.NewSimpleLogger(helper.NewOrmLogFile(config.LogPath)))
-		if err = _orm.Ping(); err != nil {
-			panic(err.Error())
-		}
-		_orm.ShowSQL(o.ShowSql)
-		_orm.TZLocation, _ = time.LoadLocation("Asia/Shanghai")
-		_orm.SetMaxOpenConns(int(o.MaxOpenConns))
-		_orm.SetMaxIdleConns(int(o.MaxIdleConns))
-		dbConfig.Engine = _orm
-		di.Set(controllers.ServiceXorm, func(builder di.AbstractBuilder) (i interface{}, err error) {
-			return _orm, nil
-		}, true)
-		helper.Inject(controllers.ServiceTablePrefix, dbConfig.Db.DbPrefix)
+		helper.PanicErr(_orm.Ping())
+
+		_orm.ShowSQL(configure.Orm.ShowSql)
+		_orm.TZLocation = time.FixedZone("CST", 8*3600) // 东八区
+		// _orm.SetDefaultCacher()
+		_orm.SetMaxOpenConns(int(configure.Orm.MaxOpenConns))
+		_orm.SetMaxIdleConns(int(configure.Orm.MaxIdleConns))
+		configure.Engine = _orm
+		helper.Inject(controllers.ServiceXorm, _orm)
+		helper.Inject(controllers.ServiceTablePrefix, configure.Db.DbPrefix)
 	})
-	return dbConfig.Engine
+	return configure.Engine
 }
 
 func DB() *DbConf {
-	return dbConfig
-}
-
-func Redis() redisConf {
-	return dbConfig.Redis
+	return configure
 }

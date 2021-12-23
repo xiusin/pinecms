@@ -1,14 +1,14 @@
 package router
 
 import (
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pinecms/src/config"
 	"io/ioutil"
 	"path/filepath"
+
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/config"
 )
 
-
-func InitStatics(app *pine.Application)  {
+func InitStatics(app *pine.Application) {
 	for _, static := range config.App().Statics {
 		app.Static(static.Route, filepath.FromSlash(static.Path), 1)
 	}

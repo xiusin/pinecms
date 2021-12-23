@@ -6,7 +6,7 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 > 前端仓库: <https://github.com/xiusin/pinecms-web.git>
 
-> 目前程序正在持续迭代开发中，提供开发期间的数据库文件, 后期数据库结构变更比较大， 请勿用于重要场景。
+> 目前程序正在持续迭代开发中，提供开发期间的数据库文件`resources/pinecms.sql`, 后期数据库结构变更比较大。
 
 # 编译部署 #
 
@@ -81,8 +81,7 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 # 演示 #
 
 - 首页 <http://pinecms.xiusin.cn/>
-- 后端 <http://pinecms.xiusin.cn/b/login/index>
-- 新版后端 <http://new_pinecms.xiusin.cn/>
+- 后端 <http://pinecms.xiusin.cn/admin/>
 
 # 新功能 #
 

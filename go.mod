@@ -32,7 +32,7 @@ require (
 	github.com/traefik/yaegi v0.9.19
 	github.com/valyala/fasthttp v1.31.0
 	github.com/xiusin/logger v0.0.9
-	github.com/xiusin/pine v0.0.0-20211215081942-e576ebe5defd
+	github.com/xiusin/pine v0.0.0-20211223081959-57d1fd6642cb
 	github.com/xiusin/reload v0.0.0-20211215091741-ab993ba2e9d2
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
@@ -53,6 +53,7 @@ require (
 	github.com/bits-and-blooms/bloom v1.0.1-0.20210513151749-57921726402d // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b // indirect
 	github.com/cubewise-code/go-mime v0.0.0-20200519001935-8c5762b177d8 // indirect
+	github.com/dgrr/http2 v0.2.13 // indirect
 	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/fatih/color v1.13.0 // indirect
@@ -92,6 +93,7 @@ require (
 	github.com/tklauser/numcpus v0.2.3 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fastjson v1.6.3 // indirect
+	github.com/valyala/fastrand v1.1.0 // indirect
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
 	golang.org/x/net v0.0.0-20210924151903-3ad01bbaa167 // indirect

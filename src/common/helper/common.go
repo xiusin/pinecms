@@ -4,7 +4,6 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
-	"github.com/xiusin/pine/di"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -19,6 +18,8 @@ import (
 	"strings"
 	"time"
 	"unsafe"
+
+	"github.com/xiusin/pine/di"
 
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -328,4 +329,11 @@ func Inject(key interface{}, v interface{}, single ...bool) {
 		}, single[0])
 	}
 
+}
+
+// PanicErr 抛出异常
+func PanicErr(err error) {
+	if err != nil {
+		panic(err)
+	}
 }

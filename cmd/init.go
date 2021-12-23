@@ -68,7 +68,7 @@ var initCmd = &cobra.Command{
 						return
 					}
 					submitted = true
-					err := db.CreateYaml()
+					err := db.BuildYaml()
 					if err != nil {
 						submitted = false
 						alert(pages, "保存失败, "+err.Error())

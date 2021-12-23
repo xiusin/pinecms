@@ -2,9 +2,10 @@ package server
 
 import (
 	"context"
-	"github.com/xiusin/pinecms/src/config"
 	"os"
 	"os/exec"
+
+	"github.com/xiusin/pinecms/src/config"
 
 	"github.com/spf13/cobra"
 	"github.com/xiusin/pinecms/src/server"
@@ -35,8 +36,9 @@ var devCmd = &cobra.Command{
 				})
 			}
 
-			// 杀掉之前启动的主进程
-
+			// runtime.SetFinalizer(engine, func(engine *Engine) {
+			// 	_ = engine.Close()
+			// })
 		}
 
 		reload.Loop(func() error {
