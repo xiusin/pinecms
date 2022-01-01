@@ -161,6 +161,7 @@ export default defineComponent({
 		let groups = {};
 
 		let kvGroups = [{ label: "请选择分组", value: "" }];
+		let kvDepartmentGroups = [{ label: "请选择部门", value: "" }];
 
 		// 新增、编辑配置
 		const upsert = reactive<Upsert>({

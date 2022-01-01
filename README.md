@@ -184,7 +184,8 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - <http://relation-graph.com/#/demo/scene-network> 组织架构显示
 - <https://eddyzhang1986.github.io/antd-jsonschema-form/>
 - 路由注解
-
+<!-- https://demo.goploy.icu/#/server/index SFTP功能 -->
+<!-- http://pigx.pig4cloud.com/#/mp/wxaccountfans/index -->
 <!-- 热门语言卡片 -->
 <!-- https://github-readme-stats.vercel.app/api/top-langs/?username=xiusin&layout=compact -->
 

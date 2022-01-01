@@ -27,7 +27,6 @@ func (c *DatabaseBackupController) BackupList() {
 	if err != nil {
 		c.Logger().Error(err)
 	}
-	pine.Logger().Print(list)
 	helper.Ajax(list, 0, c.Ctx())
 }
 

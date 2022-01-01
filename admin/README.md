@@ -14,13 +14,13 @@
 
 ## 地址
 
--   [⚡️ vue2.x + element-ui](https://github.com/cool-team-official/cool-admin-vue)
+- [⚡️ vue2.x + element-ui](https://github.com/cool-team-official/cool-admin-vue)
 
--   [⚡️ vue3.x + element-plus + ts + webpack](https://github.com/cool-team-official/cool-admin-vue/tree/vue3-ts-webpack)
+- [⚡️ vue3.x + element-plus + ts + webpack](https://github.com/cool-team-official/cool-admin-vue/tree/vue3-ts-webpack)
 
--   [📌 vue3.x + element-plus + ts + vite](https://github.com/cool-team-official/cool-admin-vue/tree/vue3-ts-vite)
+- [📌 vue3.x + element-plus + ts + vite](https://github.com/cool-team-official/cool-admin-vue/tree/vue3-ts-vite)
 
--   [🌐 码云仓库地址](https://gitee.com/cool-team-official/cool-admin-vue)
+- [🌐 码云仓库地址](https://gitee.com/cool-team-official/cool-admin-vue)
 
 ## 演示
 

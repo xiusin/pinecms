@@ -51,7 +51,6 @@ func (c *ContentController) PostList() {
 		return
 	}
 	c.Table = controllers.GetTableName(document.Table) // 设置表名
-	fmt.Println(c.Table)
 
 	query := c.Orm.Table(c.Table)
 	if p, err := c.buildParamsForQuery(query); err != nil {

@@ -13,7 +13,7 @@ export default defineComponent({
 		const service = inject<any>("service");
 
 		onMounted(() => {
-			service.system.common.pprof().then((data: any) => {
+			service.common.pprof().then((data: any) => {
 				url.value = data;
 			});
 		});

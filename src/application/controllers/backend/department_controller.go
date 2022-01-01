@@ -2,7 +2,9 @@ package backend
 
 import (
 	"errors"
+
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 type DepartmentController struct {
@@ -56,4 +58,9 @@ func (c *DepartmentController) before(act int, params interface{}) error {
 		}
 	}
 	return nil
+}
+
+func (c *DepartmentController) GetSelect() {
+	c.Orm.Find(c.Entries)
+	helper.Ajax(c.Entries, 0, c.Ctx())
 }

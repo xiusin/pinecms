@@ -1,12 +1,13 @@
 package middleware
 
 import (
+	"runtime"
+	"time"
+
 	"github.com/arl/statsviz"
 	"github.com/fasthttp/websocket"
 	"github.com/valyala/fasthttp/fasthttpadaptor"
 	"github.com/xiusin/pine"
-	"runtime"
-	"time"
 )
 
 func StatesViz(app *pine.Application) pine.Handler {
