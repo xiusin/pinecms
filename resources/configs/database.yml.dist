@@ -1,7 +1,7 @@
 db:
   dsn: "root:+3ak9,XhB&oD@tcp(127.0.0.1:3306)/pinecms?charset=utf8mb4"
-  db_prefix: "pinecms_"
-  db_driver: "mysql"
+  prefix: "pinecms_"
+  driver: "mysql"
 
 orm:
   show_sql: true
