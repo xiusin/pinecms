@@ -22,7 +22,7 @@ type Db struct {
 	DbDriver string `yaml:"driver"`
 	Dsn      string `yaml:"dsn"`
 	DbPrefix string `yaml:"prefix"`
-	Conf     dbInfo `yaml:"-"`
+	Conf     dbInfo `yaml:"-" json:"-"`
 }
 
 type dbInfo struct {
@@ -97,6 +97,8 @@ func InitDB(conf ...*DbConf) *xorm.Engine {
 		} else {
 			parseConfig(dbYml, configure)
 		}
+		fmt.Println(configure)
+
 		_orm, err := xorm.NewEngine(configure.Db.DbDriver, configure.Db.Dsn)
 		helper.PanicErr(err)
 		_orm.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, configure.Db.DbPrefix))
