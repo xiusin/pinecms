@@ -113,8 +113,9 @@ export default defineComponent({
 			isDrag.value = false;
 			loading.value = true;
 
-			await service.system.dept.list().then((res: any[]) => {
+			await service.system.department.select().then((res: any[]) => {
 				list.value = deepTree(res);
+				console.log(res);
 				emit("list-change", list.value);
 			});
 

@@ -3,9 +3,7 @@
 		<el-row type="flex">
 			<cl-refresh-btn />
 			<el-button size="mini" type="primary" @click="syncRemoteDB">导入远程数据库</el-button>
-<!--			<cl-add-btn />-->
 			<cl-flex1 />
-<!--			<cl-search-key />-->
 		</el-row>
 
 		<el-row>

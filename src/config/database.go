@@ -97,7 +97,6 @@ func InitDB(conf ...*DbConf) *xorm.Engine {
 		} else {
 			parseConfig(dbYml, configure)
 		}
-		fmt.Println(configure)
 
 		_orm, err := xorm.NewEngine(configure.Db.DbDriver, configure.Db.Dsn)
 		helper.PanicErr(err)
@@ -106,8 +105,7 @@ func InitDB(conf ...*DbConf) *xorm.Engine {
 		helper.PanicErr(_orm.Ping())
 
 		_orm.ShowSQL(configure.Orm.ShowSql)
-		_orm.TZLocation = time.FixedZone("CST", 8*3600) // 东八区
-		// _orm.SetDefaultCacher()
+		_orm.TZLocation = time.FixedZone("CST", 8*3600)
 		_orm.SetMaxOpenConns(int(configure.Orm.MaxOpenConns))
 		_orm.SetMaxIdleConns(int(configure.Orm.MaxIdleConns))
 		configure.Engine = _orm

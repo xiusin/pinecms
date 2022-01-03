@@ -4,7 +4,6 @@
 			<cl-refresh-btn />
 			<cl-add-btn />
 			<cl-flex1 />
-			<cl-search-key />
 		</el-row>
 
 		<el-row>

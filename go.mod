@@ -31,8 +31,8 @@ require (
 	github.com/takama/daemon v1.0.0
 	github.com/traefik/yaegi v0.9.19
 	github.com/valyala/fasthttp v1.31.0
-	github.com/xiusin/logger v0.0.9
-	github.com/xiusin/pine v0.0.0-20211228060742-f1650f3087fd
+	github.com/xiusin/logger v0.0.10-0.20220103084022-9cb8378d9b03
+	github.com/xiusin/pine v0.0.0-20220103084217-90abd2984099
 	github.com/xiusin/reload v0.0.0-20211215091741-ab993ba2e9d2
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d

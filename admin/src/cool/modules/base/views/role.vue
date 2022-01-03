@@ -5,7 +5,6 @@
 			<cl-add-btn />
 			<cl-multi-delete-btn />
 			<cl-flex1 />
-			<cl-search-key />
 		</el-row>
 
 		<el-row>

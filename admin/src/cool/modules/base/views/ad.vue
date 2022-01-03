@@ -15,6 +15,20 @@
 								v-bind="adSpaceTable"
 								@selection-change="onSelectionChange"
 							>
+								<template  #column-name="{ scope }">
+									{{scope.row.name}}<el-popover
+										placement="top"
+										:width="200"
+										trigger="hover"
+										:content="scope.row.remark"
+									>
+										<template #reference>
+											<el-icon>
+												<picture>查看</picture>
+											</el-icon>
+										</template>
+									</el-popover>
+								</template>
 								<template #slot-btn="{ scope }">
 									<el-button
 										@click="
@@ -57,12 +71,19 @@
 							>
 								<template #column-image="{ scope }">
 									<el-image
+										v-if="scope.row.image"
 										lazy
 										:preview-src-list="[scope.row.image]"
 										:src="scope.row.image"
 										fit="contain"
 										style="max-height: 50px; max-width: 80px"
-									/>
+									>
+										<template #error>
+											<div class="image-slot" style="font-size: 45px">
+												<icon-svg name="icon-wechat-material" />
+											</div>
+										</template>
+									</el-image>
 								</template>
 							</cl-table>
 						</el-row>
@@ -88,10 +109,18 @@
 import { defineComponent, inject, reactive, ref } from "vue";
 import { useRefs } from "/@/core";
 import { QueryList, Table, Upsert } from "cl-admin-crud-vue3/types";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElIcon } from "element-plus";
+import IconSvg from "../components/icon-svg/index.vue";
+import {Picture} from "@element-plus/icons-vue"
 
 export default defineComponent({
 	name: "sys-ad",
+
+	components: {
+		IconSvg,
+		ElIcon,
+		Picture
+	},
 
 	setup() {
 		const service = inject<any>("service");
@@ -488,6 +517,16 @@ export default defineComponent({
 		.dept {
 			width: calc(100% - 100px);
 		}
+	}
+
+	.image-slot {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		height: 100%;
+		background: #f5f7fa;
+		color: #909399;
 	}
 }
 </style>
