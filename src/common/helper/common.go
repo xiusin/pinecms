@@ -3,12 +3,7 @@ package helper
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"errors"
-	"image"
-	"image/gif"
-	"image/jpeg"
-	"image/png"
-	"io"
+	"fmt"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -17,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 	"unsafe"
 
 	"github.com/xiusin/pine/di"
@@ -24,8 +20,6 @@ import (
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"xorm.io/xorm"
-
-	"golang.org/x/image/bmp"
 
 	"github.com/kataras/go-mailer"
 )
@@ -202,54 +196,11 @@ func SendEmail(opt *EmailOpt, conf map[string]string) error {
 }
 
 func NewOrmLogFile(path string) *os.File {
-	f, err := os.OpenFile(path+"orm.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	f, err := os.OpenFile(filepath.Join(path, "orm.log"), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
 	}
 	return f
-}
-
-/*
-* 图片裁剪
-* 入参:
-* 规则:如果精度为0则精度保持不变
-*https://www.cnblogs.com/cqvoip/p/8078882.html
-* 返回:error
- */
-func clip(in io.Reader, out io.Writer, x0, y0, x1, y1, quality int) error {
-	origin, fm, err := image.Decode(in)
-	if err != nil {
-		return err
-	}
-
-	switch fm {
-	case "jpeg":
-		img := origin.(*image.YCbCr)
-		subImg := img.SubImage(image.Rect(x0, y0, x1, y1)).(*image.YCbCr)
-		return jpeg.Encode(out, subImg, &jpeg.Options{quality})
-	case "png":
-		switch origin.(type) {
-		case *image.NRGBA:
-			img := origin.(*image.NRGBA)
-			subImg := img.SubImage(image.Rect(x0, y0, x1, y1)).(*image.NRGBA)
-			return png.Encode(out, subImg)
-		case *image.RGBA:
-			img := origin.(*image.RGBA)
-			subImg := img.SubImage(image.Rect(x0, y0, x1, y1)).(*image.RGBA)
-			return png.Encode(out, subImg)
-		}
-	case "gif":
-		img := origin.(*image.Paletted)
-		subImg := img.SubImage(image.Rect(x0, y0, x1, y1)).(*image.Paletted)
-		return gif.Encode(out, subImg, &gif.Options{})
-	case "bmp":
-		img := origin.(*image.RGBA)
-		subImg := img.SubImage(image.Rect(x0, y0, x1, y1)).(*image.RGBA)
-		return bmp.Encode(out, subImg)
-	default:
-		return errors.New("ERROR FORMAT")
-	}
-	return nil
 }
 
 func GetRandomString(l int) string {
@@ -329,6 +280,35 @@ func Inject(key interface{}, v interface{}, single ...bool) {
 		}, single[0])
 	}
 
+}
+
+func GetUrlPrefix(catid int64) string {
+	getUrlPrefix := di.MustGet(controllers.ServiceCatUrlPrefixFunc).(func(int64) string)
+	return getUrlPrefix(catid)
+}
+
+// 处理文章列表信息数据. 补全一些cms生成
+func HandleArtListInfo(list []map[string]string, titlelen int) {
+	for i, art := range list {
+		catid, _ := strconv.Atoi(art["catid"])
+		prefix := GetUrlPrefix(int64(catid))
+		if art["type"] != "2" {
+			art["caturl"] = fmt.Sprintf("/%s/", prefix)
+			art["typeurl"] = art["caturl"]
+		}
+		id, _ := strconv.Atoi(art["id"])
+		art["arcurl"] = fmt.Sprintf("/%s/%d.html", prefix, id)
+		art["arturl"] = art["arcurl"]
+		art["click"] = art["visit_count"]
+		art["fulltitle"] = art["title"]
+		if titlelen > 0 {
+			if utf8.RuneCountInString(art["title"]) > titlelen {
+				titleRune := []rune(art["title"])
+				art["title"] = string(titleRune[:titlelen])
+			}
+		}
+		list[i] = art
+	}
 }
 
 // PanicErr 抛出异常

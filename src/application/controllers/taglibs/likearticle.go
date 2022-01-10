@@ -2,13 +2,14 @@ package taglibs
 
 import (
 	"fmt"
+	"reflect"
+	"strings"
+
 	"github.com/CloudyKit/jet"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
-	"github.com/xiusin/pinecms/src/common"
-	"reflect"
-	"strings"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 func LikeArticle(args jet.Arguments) reflect.Value {
@@ -48,6 +49,6 @@ func LikeArticle(args jet.Arguments) reflect.Value {
 	sess.Join("LEFT", categoryTable, categoryTable+".catid = "+modelTable+".catid")
 	sess.Select(fmt.Sprintf("%s.*, %s.catname as typename", modelTable, categoryTable))
 	list, _ := sess.Limit(limit).Desc(modelTable + ".id").QueryString()
-	common.HandleArtListInfo(list, titlelen)
+	helper.HandleArtListInfo(list, titlelen)
 	return reflect.ValueOf(list)
 }

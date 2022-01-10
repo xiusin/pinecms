@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
@@ -93,7 +94,7 @@ func (d *DocumentModel) DeleteByID(id int64) (bool, error) {
 		}
 		if !NewDocumentFieldDslModel().DeleteByMID(id) {
 			pine.Logger().Errorf("删除数据模型ID: %d 成功, 删除关联字段失败, 回滚数据", id)
-			return nil, errors.New(fmt.Sprintf("删除数据模型ID: %d 成功, 删除关联字段失败, 回滚数据", id))
+			return nil, fmt.Errorf("删除数据模型ID: %d 成功, 删除关联字段失败, 回滚数据", id)
 		}
 		icache := di.MustGet(controllers.ServiceICache).(cache.AbstractCache)
 		key := fmt.Sprintf(controllers.CacheDocumentModelPrefix, id)

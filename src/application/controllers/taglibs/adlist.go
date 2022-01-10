@@ -1,15 +1,15 @@
 package taglibs
 
 import (
+	"reflect"
+	"strconv"
+	"strings"
+
 	"github.com/CloudyKit/jet"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"reflect"
-	"strconv"
-	"strings"
-	"time"
 	"xorm.io/xorm"
 )
 
@@ -55,7 +55,7 @@ func AdList(args jet.Arguments) reflect.Value {
 		orm.In("id", ids)
 	}
 
-	now := time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)
+	now := helper.NowDate(helper.TimeFormat)
 	orm.Where("status = 1").Where("start_time <= ?", now).Where("end_time >= ?", now).Select("id, name, image, link_url")
 	var advs = []tables.Advert{}
 	orm.Find(&advs)

@@ -1,6 +1,11 @@
 package server
 
 import (
+	"io"
+	"os"
+	"path/filepath"
+	"time"
+
 	jet2 "github.com/CloudyKit/jet"
 	"github.com/allegro/bigcache/v3"
 	"github.com/xiusin/logger"
@@ -19,15 +24,13 @@ import (
 	"github.com/xiusin/pinecms/src/common/helper"
 	commonLogger "github.com/xiusin/pinecms/src/common/logger"
 	"github.com/xiusin/pinecms/src/config"
-	"io"
-	"os"
-	"time"
 )
 
 var (
-	app          = pine.New()
+	app  = pine.New()
+	conf = config.App()
+
 	cacheHandler cache.AbstractCache
-	conf         = config.App()
 )
 
 func InitApp() {
@@ -60,15 +63,23 @@ func InitDI() {
 func initLoggerService() di.BuildHandler {
 	return func(builder di.AbstractBuilder) (i interface{}, e error) {
 		loggers := logger.New()
-		writer := commonLogger.NewPineCmsLogger(config.Orm(), 10)
-		pine.RegisterOnInterrupt(func() { writer.Close() })
-		loggers.SetOutput(io.MultiWriter(os.Stdout, writer))
+		ormLogger := commonLogger.NewPineCmsLogger(config.Orm(), 10)
+		cmsLoggerFile, err := os.OpenFile(filepath.Join(conf.LogPath, "cms.log"), os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
+		helper.PanicErr(err)
+
+		pine.RegisterOnInterrupt(func() {
+			ormLogger.Close()
+			cmsLoggerFile.Close()
+		})
+
+		loggers.SetOutput(io.MultiWriter(os.Stdout, ormLogger, cmsLoggerFile))
 		logger.SetDefault(loggers)
+
 		loggers.SetReportCaller(true, 3)
 		if config.IsDebug() {
 			loggers.SetLogLevel(logger.DebugLevel)
 		} else {
-			loggers.SetLogLevel(logger.ErrorLevel)
+			loggers.SetLogLevel(logger.WarnLevel)
 		}
 		return loggers, nil
 	}

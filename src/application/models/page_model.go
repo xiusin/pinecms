@@ -17,26 +17,17 @@ func NewPageModel() *PageModel {
 
 func (p *PageModel) AddPage(page *tables.Page) bool {
 	res, _ := p.orm.Insert(page)
-	if res != 0 {
-		return true
-	}
-	return false
+	return res != 0
 }
 
 func (p *PageModel) UpdatePage(page *tables.Page) bool {
 	res, _ := p.orm.Where("catid=?", page.Id).Update(page)
-	if res != 0 {
-		return true
-	}
-	return false
+	return res != 0
 }
 
 func (p *PageModel) DelPage(catid int64) bool {
 	res, _ := p.orm.Delete(&tables.Page{Id: catid})
-	if res != 0 {
-		return true
-	}
-	return false
+	return res != 0
 }
 
 func (p *PageModel) GetPage(catid int64) *tables.Page {

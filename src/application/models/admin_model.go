@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+
 	"github.com/xiusin/pine/di"
 
 	"github.com/xiusin/pinecms/src/application/models/tables"

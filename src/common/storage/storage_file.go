@@ -2,14 +2,15 @@ package storage
 
 import (
 	"fmt"
-	"github.com/xiusin/pine/di"
-	"github.com/xiusin/pinecms/src/application/controllers"
-	"github.com/xiusin/pinecms/src/config"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/config"
 )
 
 type FileUploader struct {
@@ -90,9 +91,9 @@ func init() {
 		if err != nil {
 			return nil, err
 		}
-		uploadDir, _ := cfg["UPLOAD_DIR"]
-		urlPrefixDir, _ := cfg["UPLOAD_URL_PREFIX"]
-		siteUrl, _ := cfg["SITE_URL"]
+		checkIsValidConf(cfg)
+
+		uploadDir, urlPrefixDir, siteUrl := cfg["UPLOAD_DIR"], cfg["UPLOAD_URL_PREFIX"], cfg["SITE_URL"]
 		return NewFileUploader(siteUrl, urlPrefixDir, uploadDir), nil
 	}, false)
 }

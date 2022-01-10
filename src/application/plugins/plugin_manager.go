@@ -245,10 +245,10 @@ func (p *pluginManager) Uninstall(name string) {
 }
 
 func Init() {
-	if helper.IsWindows() {
-		pine.Logger().Warning("windows 不支持plugin功能")
+	if !config.App().PluginEnable || helper.IsWindows() {
 		return
 	}
+
 	pluginPath := config.App().PluginPath
 	if len(pluginPath) > 0 {
 		pluginMgr.path = pluginPath
@@ -257,6 +257,7 @@ func Init() {
 		pine.Logger().Warning("没有配置PluginPath, 禁用plugin功能")
 		return
 	}
+
 	scanPluginDir()
 	go tickScanDir()
 	pluginMgr.loadPlugin()
@@ -282,7 +283,7 @@ func scanPluginDir() {
 }
 
 func tickScanDir() {
-	for range time.Tick(time.Second * 10) {
+	for range time.Tick(time.Second * 30) {
 		scanPluginDir()
 	}
 }

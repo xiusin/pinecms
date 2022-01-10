@@ -2,13 +2,13 @@ package taglibs
 
 import (
 	"fmt"
-	"github.com/xiusin/pinecms/src/common"
-	"github.com/xiusin/pinecms/src/common/helper"
-	"github.com/xiusin/pinecms/src/config"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/xiusin/pinecms/src/common/helper"
+	"github.com/xiusin/pinecms/src/config"
 	"xorm.io/builder"
 
 	"github.com/CloudyKit/jet"
@@ -125,7 +125,7 @@ func ArcList(args jet.Arguments) reflect.Value {
 	if modelID == 0 {
 		modelID = 1
 	}
-	exists, err := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(model).ID(modelID).Get(model)
+	exists, _ := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(model).ID(modelID).Get(model)
 	if !exists {
 		panic(fmt.Sprintf("模型ID%d不存在", modelID))
 	}
@@ -197,6 +197,6 @@ func ArcList(args jet.Arguments) reflect.Value {
 		panic(err)
 	}
 	// 重写URL
-	common.HandleArtListInfo(list, int(titlelen))
+	helper.HandleArtListInfo(list, int(titlelen))
 	return reflect.ValueOf(list)
 }

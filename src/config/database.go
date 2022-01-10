@@ -6,7 +6,6 @@ import (
 	"os"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -105,7 +104,7 @@ func InitDB(conf ...*DbConf) *xorm.Engine {
 		helper.PanicErr(_orm.Ping())
 
 		_orm.ShowSQL(configure.Orm.ShowSql)
-		_orm.TZLocation = time.FixedZone("CST", 8*3600)
+		_orm.TZLocation = helper.GetLocation()
 		_orm.SetMaxOpenConns(int(configure.Orm.MaxOpenConns))
 		_orm.SetMaxIdleConns(int(configure.Orm.MaxIdleConns))
 		configure.Engine = _orm

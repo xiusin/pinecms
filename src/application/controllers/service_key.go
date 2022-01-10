@@ -26,5 +26,7 @@ const ServiceApplication = "pinecms.application"
 
 const ServiceBackendRouter = "pinecms.router.backend"
 
+const ServiceCatUrlPrefixFunc = "pinecms.cat.url.prefix.func"
+
 // 允许插件自动注册上传驱动 并注册服务进DI
 // DI内自动获取选中 (根据驱动名称) 驱动

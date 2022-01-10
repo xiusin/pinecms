@@ -2,11 +2,12 @@ package logger
 
 import (
 	"bytes"
-	"fmt"
+	"time"
+
 	"github.com/xiusin/logger"
+	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"time"
 	"xorm.io/xorm"
 )
 
@@ -31,7 +32,7 @@ func (p *pineCmsLoggerWriter) BeginConsume() {
 		}
 		_, err := p.orm.InsertOne(p.parseLog(log))
 		if err != nil {
-			fmt.Println(err)
+			pine.Logger().Warning("日志入库失败", err)
 		}
 	}
 }

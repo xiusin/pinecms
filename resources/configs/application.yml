@@ -12,6 +12,8 @@ session:
 runtime_path: "runtime"
 cache_db: "cache.db"
 log_path: "logs"
+
+plugin_enable: false
 plugin_path: "plugins"
 
 favicon: "./resources/assets/favicon.ico"

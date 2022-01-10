@@ -1,13 +1,13 @@
 package taglibs
 
 import (
+	"reflect"
+	"strings"
+
 	"github.com/CloudyKit/jet"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/config"
-	"reflect"
-	"runtime/debug"
-	"strings"
 	"xorm.io/xorm"
 )
 
@@ -24,11 +24,11 @@ func Query(args jet.Arguments) reflect.Value {
 	}
 	defer func() {
 		if err := recover(); err != nil {
-			pine.Logger().Error("Query Failed", err, string(debug.Stack()))
+			pine.Logger().Error("Query Failed", err)
 		}
 	}()
 	sess := pine.Make(controllers.ServiceXorm).(*xorm.Engine)
-	query := strings.Trim(args.Get(0).String(), " ")
+	query := strings.Trim(args.Get(0).String(), " \n\t")
 	// 只允许查询操作
 	conf := config.DB()
 	if strings.HasPrefix(query, "SELECT") || strings.HasPrefix(query, "select") {

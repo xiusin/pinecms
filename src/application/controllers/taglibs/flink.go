@@ -5,7 +5,6 @@ import (
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"reflect"
-	"runtime/debug"
 	"strings"
 	"xorm.io/xorm"
 )
@@ -16,7 +15,7 @@ func Flink(args jet.Arguments) reflect.Value {
 	}
 	defer func() {
 		if err := recover(); err != nil {
-			pine.Logger().Error("Flink Failed", string(debug.Stack()))
+			pine.Logger().Error("Flink Failed")
 		}
 	}()
 	orm := pine.Make("*xorm.Engine").(*xorm.Engine)

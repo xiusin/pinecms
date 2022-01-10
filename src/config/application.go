@@ -18,15 +18,16 @@ const dbYml = "resources/configs/database.yml"
 const appYml = "resources/configs/application.yml"
 
 type Config struct {
-	Debug   bool    `yaml:"debug"`
-	Port    int64   `yaml:"port"`
-	View    viewConf    `yaml:"view"`
+	Debug   bool     `yaml:"debug"`
+	Port    int64    `yaml:"port"`
+	View    viewConf `yaml:"view"`
 	Session SessConf `yaml:"session"`
 
-	LogPath     string `yaml:"log_path"`
-	RuntimePath string `yaml:"runtime_path"`
-	PluginPath  string `yaml:"plugin_path"`
-	CacheDb     string `yaml:"cache_db"`
+	LogPath      string `yaml:"log_path"`
+	RuntimePath  string `yaml:"runtime_path"`
+	PluginPath   string `yaml:"plugin_path"`
+	PluginEnable bool   `yaml:"plugin_enable"`
+	CacheDb      string `yaml:"cache_db"`
 
 	Charset  string `yaml:"charset"`
 	JwtKey   string `yaml:"jwtkey"`

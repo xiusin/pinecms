@@ -3,15 +3,16 @@ package models
 import (
 	"errors"
 	"fmt"
+	"log"
+	"path/filepath"
+	"runtime"
+	"strings"
+
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"log"
-	"path/filepath"
-	"runtime"
-	"strings"
 
 	"xorm.io/xorm"
 )
@@ -24,12 +25,17 @@ type CategoryModel struct {
 var ErrCategoryNotExists = errors.New("category not exists")
 
 func init() {
-	di.Set(&CategoryModel{}, func(builder di.AbstractBuilder) (i interface{}, err error) {
+	model := &CategoryModel{}
+	di.Set(model, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return &CategoryModel{
 			orm:   builder.MustGet("*xorm.Engine").(*xorm.Engine),
 			cache: builder.MustGet("cache.AbstractCache").(cache.AbstractCache),
 		}, nil
 	}, true)
+
+	di.Bind(controllers.ServiceCatUrlPrefixFunc, func(builder di.AbstractBuilder) (interface{}, error) { // (id int64) string
+		return model.GetUrlPrefix, nil
+	})
 }
 
 func NewCategoryModel() *CategoryModel {
@@ -76,7 +82,7 @@ func (c *CategoryModel) GetTree(categorys []tables.Category, parentid int64) []m
 				if category.Type == 2 {
 					modelName = ""
 				} else if category.Type == 0 {
-					tableName, _ := modelMap[category.ModelId]
+					tableName := modelMap[category.ModelId]
 					total, _ = c.orm.Table(controllers.GetTableName(tableName)).Where("catid = ?", category.Catid).Where("deleted_time IS NULL").Count()
 				}
 

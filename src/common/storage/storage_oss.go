@@ -3,15 +3,16 @@ package storage
 import (
 	"errors"
 	"fmt"
+	"io"
+	"mime"
+	"path/filepath"
+	"strings"
+
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/config"
-	"io"
-	"mime"
-	"path/filepath"
-	"strings"
 )
 
 type OssUploader struct {
@@ -37,10 +38,14 @@ func (s *OssUploader) Exists(name string) (bool, error) {
 	return s.bucket.IsObjectExist(name)
 }
 
-func NewOssUploader(config map[string]string) *OssUploader {
+func checkIsValidConf(config map[string]string) {
 	if config["OSS_ENDPOINT"] == "" || config["OSS_KEYID"] == "" || config["OSS_KEYSECRET"] == "" || config["OSS_BUCKET"] == "" {
 		panic("请配置OSS信息")
 	}
+}
+
+func NewOssUploader(config map[string]string) *OssUploader {
+	checkIsValidConf(config)
 	client, err := oss.New(config["OSS_ENDPOINT"], config["OSS_KEYID"], config["OSS_KEYSECRET"])
 	if err != nil {
 		panic(err)
@@ -103,7 +108,7 @@ func init() {
 		defer func() {
 			if errPanic := recover(); errPanic != nil {
 				engine = nil
-				err = errors.New(fmt.Sprintf("%s", err))
+				err = fmt.Errorf("%s", err)
 			}
 		}()
 		cfg, err := config.SiteConfig()
