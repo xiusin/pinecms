@@ -20,9 +20,9 @@
 </template>
 
 <script lang="ts">
-import { useRefs } from "/@/core";
-import { deepTree } from "/@/core/utils";
-import { CrudLoad, RefreshOp, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { useRefs } from "/@/cool";
+import { deepTree } from "/@/cool/utils";
+import { CrudLoad, RefreshOp, Table, Upsert } from "@cool-vue/crud/types";
 import { defineComponent, inject, reactive } from "vue";
 
 export default defineComponent({

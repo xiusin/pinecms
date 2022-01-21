@@ -43,14 +43,14 @@
 								type="text"
 								v-copy="item.media_id"
 								icon="el-icon-copy-document"
-							>复制media_id
+								>复制media_id
 							</el-button>
 							<el-button
 								size="mini"
 								type="text"
 								icon="el-icon-delete"
 								@click="deleteHandle(item.media_id)"
-							>删除
+								>删除
 							</el-button>
 						</div>
 					</div>

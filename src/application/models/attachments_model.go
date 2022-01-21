@@ -2,8 +2,8 @@ package models
 
 import (
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm"
 )
 
@@ -17,7 +17,7 @@ type AttachmentsModel struct {
 }
 
 func NewAttachmentsModel() *AttachmentsModel {
-	return &AttachmentsModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
+	return &AttachmentsModel{orm: helper.GetORM()}
 }
 
 func (a *AttachmentsModel) GetList(keywords string, page, limit int64) (list []tables.Attachments, total int64) {

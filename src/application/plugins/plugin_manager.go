@@ -130,7 +130,7 @@ func (p *pluginManager) Reload() {
 	jsonPath := filepath.Join(p.path, "plugins.json")
 	conf, _ := json.Marshal(&pluginNames)
 
-	ioutil.WriteFile(jsonPath, conf, os.ModePerm)
+	_ = ioutil.WriteFile(jsonPath, conf, os.ModePerm)
 }
 
 func (p *pluginManager) Install(filename string) (PluginIntf, error) {

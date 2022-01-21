@@ -1,4 +1,4 @@
-import { BaseService, Service } from "/@/core";
+import { BaseService, Service } from "/@/cool";
 
 @Service("public")
 class Common extends BaseService {
@@ -71,7 +71,6 @@ class Common extends BaseService {
 			url: "/apidoc"
 		});
 	}
-
 }
 
 export default Common;

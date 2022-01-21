@@ -32,7 +32,7 @@
 								type="success"
 								:disabled="selects.ids.length == 0"
 								@click="toMove()"
-							>转移</el-button
+								>转移</el-button
 							>
 							<cl-flex1 />
 							<cl-search-key />
@@ -63,17 +63,14 @@
 										size="small"
 										effect="dark"
 										style="margin: 2px"
-									>{{ item }}</el-tag
+										>{{ item }}</el-tag
 									>
 								</template>
 
 								<!-- 单个转移 -->
 								<template #slot-move-btn="{ scope }">
-									<el-button
-										type="text"
-										size="mini"
-										@click="toMove(scope.row)"
-									>转移</el-button
+									<el-button type="text" size="mini" @click="toMove(scope.row)"
+										>转移</el-button
 									>
 								</template>
 							</cl-table>
@@ -102,7 +99,7 @@
 <script lang="ts">
 import { computed, defineComponent, inject, reactive, ref, watch } from "vue";
 import { useStore } from "vuex";
-import { useRefs } from "/@/core";
+import { useRefs } from "/@/cool";
 import { Table, Upsert } from "@cool-vue/crud/types";
 export default defineComponent({
 	name: "sys-user",
@@ -475,65 +472,65 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .system-user {
-.pane {
-	display: flex;
-	height: 100%;
-	width: 100%;
-	position: relative;
-}
-.dept {
-	height: 100%;
-	width: 300px;
-	max-width: calc(100% - 50px);
-	background-color: #fff;
-	transition: width 0.3s;
-	margin-right: 10px;
-	flex-shrink: 0;
-&._collapse {
-	 margin-right: 0;
-	 width: 0;
- }
-}
-.user {
-	width: calc(100% - 310px);
-	flex: 1;
-.header {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 40px;
-	position: relative;
-	background-color: #fff;
-span {
-	font-size: 14px;
-	white-space: nowrap;
-	overflow: hidden;
-}
-.icon {
-	position: absolute;
-	left: 0;
-	top: 0;
-	font-size: 18px;
-	cursor: pointer;
-	background-color: #fff;
-	height: 40px;
-	width: 80px;
-	line-height: 40px;
-	padding-left: 10px;
-}
-}
-}
-.dept,
-.user {
-	overflow: hidden;
-.container {
-	height: calc(100% - 40px);
-}
-}
-@media only screen and (max-width: 768px) {
-	.dept {
-		width: calc(100% - 100px);
+	.pane {
+		display: flex;
+		height: 100%;
+		width: 100%;
+		position: relative;
 	}
-}
+	.dept {
+		height: 100%;
+		width: 300px;
+		max-width: calc(100% - 50px);
+		background-color: #fff;
+		transition: width 0.3s;
+		margin-right: 10px;
+		flex-shrink: 0;
+		&._collapse {
+			margin-right: 0;
+			width: 0;
+		}
+	}
+	.user {
+		width: calc(100% - 310px);
+		flex: 1;
+		.header {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 40px;
+			position: relative;
+			background-color: #fff;
+			span {
+				font-size: 14px;
+				white-space: nowrap;
+				overflow: hidden;
+			}
+			.icon {
+				position: absolute;
+				left: 0;
+				top: 0;
+				font-size: 18px;
+				cursor: pointer;
+				background-color: #fff;
+				height: 40px;
+				width: 80px;
+				line-height: 40px;
+				padding-left: 10px;
+			}
+		}
+	}
+	.dept,
+	.user {
+		overflow: hidden;
+		.container {
+			height: calc(100% - 40px);
+		}
+	}
+	@media only screen and (max-width: 768px) {
+		.dept {
+			width: calc(100% - 100px);
+		}
+	}
 }
 </style>

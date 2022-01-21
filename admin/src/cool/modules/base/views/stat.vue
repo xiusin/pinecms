@@ -224,9 +224,8 @@ export default defineComponent({
 				try {
 					chartDiskOption.series[0].data[0].value = state.value.disk.usedPercent;
 					chartRamOption.series[0].data[0].value = state.value.ram.usedPercent;
-					chartCpuOption.series[0].data[0].value = state.value.cpu.cpu_percent[0].toFixed(
-						2
-					);
+					chartCpuOption.series[0].data[0].value =
+						state.value.cpu.cpu_percent[0].toFixed(2);
 				} catch (e) {}
 			});
 		}

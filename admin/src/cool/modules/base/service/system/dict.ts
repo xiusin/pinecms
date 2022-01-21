@@ -1,7 +1,6 @@
-import {BaseService, Service} from "/@/core";
+import { BaseService, Service } from "/@/cool";
 
 @Service("dict")
-class SysDict extends BaseService {
-}
+class SysDict extends BaseService {}
 
 export default SysDict;

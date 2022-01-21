@@ -35,8 +35,8 @@
 
 <script lang="ts">
 import { defineComponent, inject, reactive, ref, watch } from "vue";
-import { useRefs } from "/@/core";
-import { CrudLoad, QueryList, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { useRefs } from "/@/cool";
+import { CrudLoad, QueryList, Table, Upsert } from "@cool-vue/crud/types";
 import { ElMessage } from "element-plus";
 
 export default defineComponent({

@@ -3,6 +3,7 @@
 		<el-row type="flex">
 			<cl-refresh-btn />
 			<cl-add-btn />
+			<cl-menu-quick @success="refresh()" v-if="isDev" />
 		</el-row>
 
 		<el-row>
@@ -77,11 +78,12 @@
 </template>
 
 <script lang="ts">
-import { useRefs } from "/@/core";
-import { deepTree } from "/@/core/utils";
+import { useRefs } from "/@/cool";
+import { deepTree } from "/@/cool/utils";
 import { useRouter } from "vue-router";
 import { defineComponent, inject, reactive } from "vue";
-import { CrudLoad, RefreshOp, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { CrudLoad, RefreshOp, Table, Upsert } from "@cool-vue/crud/types";
+import { isDev } from "/@/config/env";
 
 export default defineComponent({
 	name: "sys-menu",
@@ -386,7 +388,8 @@ export default defineComponent({
 			onRowClick,
 			upsertAppend,
 			setPermission,
-			toUrl
+			toUrl,
+			isDev
 		};
 	}
 });

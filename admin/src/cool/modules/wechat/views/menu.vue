@@ -3,8 +3,9 @@
 		<div id="app-menu">
 			<div class="weixin-preview">
 				<div class="weixin-bd">
-					<div class="weixin-header">公众号菜单
-						<account-select v-model="appid"/>
+					<div class="weixin-header">
+						公众号菜单
+						<account-select v-model="appid" />
 					</div>
 					<ul class="weixin-menu" id="weixin-menu">
 						<li
@@ -19,7 +20,7 @@
 							</div>
 							<ul class="weixin-sub-menu">
 								<li
-									v-for="(sub, i2) in (btn.sub_button || [])"
+									v-for="(sub, i2) in btn.sub_button || []"
 									:key="i2"
 									class="menu-sub-item"
 									:class="{
@@ -44,7 +45,8 @@
 									class="menu-sub-item"
 									:class="{
 										'on-drag-over':
-											onDragOverMenu === i + '_' + (btn.sub_button || []).length
+											onDragOverMenu ===
+											i + '_' + (btn.sub_button || []).length
 									}"
 									@click.stop="addMenu(2, i)"
 									@dragover.prevent="
@@ -76,13 +78,20 @@
 			</div>
 		</div>
 		<div class="weixin-btn-group" @click="updateWxMenu">
-			<el-button type="success" :disabled="appid === ''" icon="el-icon-upload">发布</el-button>
-			<el-button type="warning" :disabled="appid === ''" icon="el-icon-delete" @click="delMenu">清空</el-button>
+			<el-button type="success" :disabled="appid === ''" icon="el-icon-upload"
+				>发布</el-button
+			>
+			<el-button
+				type="warning"
+				:disabled="appid === ''"
+				icon="el-icon-delete"
+				@click="delMenu"
+				>清空</el-button
+			>
 		</div>
 	</div>
 </template>
 <script>
-
 import wxMenuButtonEditor from "./wx-menu-button-editor.vue";
 import AccountSelect from "../components/account-select.vue";
 
@@ -94,7 +103,7 @@ export default {
 	data() {
 		return {
 			appid: "",
-			menu: {buttons: [], menuid: 0}, //当前菜单
+			menu: { buttons: [], menuid: 0 }, //当前菜单
 			selectedMenuIndex: 0, //当前选中菜单索引
 			selectedSubMenuIndex: 0, //当前选中子菜单索引
 			selectedMenuLevel: 0, //选中菜单级别
@@ -109,15 +118,18 @@ export default {
 	},
 	methods: {
 		init() {
-			this.service.wechat.menu.info({
-				appid: this.appid,
-			}).then((data) => {
-				this.menu.buttons = data.button;
-				this.menu.menuid = data.menuid;
-			}).catch((e) => {
-				this.$message.error(e)
-				this.menu = {buttons: [], menuid: 0}
-			});
+			this.service.wechat.menu
+				.info({
+					appid: this.appid
+				})
+				.then((data) => {
+					this.menu.buttons = data.button;
+					this.menu.menuid = data.menuid;
+				})
+				.catch((e) => {
+					this.$message.error(e);
+					this.menu = { buttons: [], menuid: 0 };
+				});
 		},
 
 		//选中主菜单
@@ -136,8 +148,8 @@ export default {
 		},
 		//添加菜单
 		addMenu(level, i) {
-			if (this.appid === '') {
-				this.$message.error('请先选择公众号');
+			if (this.appid === "") {
+				this.$message.error("请先选择公众号");
 				return;
 			}
 			try {
@@ -187,21 +199,24 @@ export default {
 		updateWxMenu() {
 			let btns = [];
 			for (const idx in this.menu.buttons) {
-				let subBtn =  this.menu.buttons[idx].sub_button || [];
+				let subBtn = this.menu.buttons[idx].sub_button || [];
 				btns[idx] = this.menu.buttons[idx];
 				btns[idx].sub_button = subBtn;
 			}
-			this.service.wechat.menu.update({
-				appid: this.appid,
-				menu: {
-					button: this.menu.buttons || [],
-					menuid: this.menu.menuid || 0
-				},
-			}).then((data) => {
-				this.$message.success('发布菜单成功');
-			}).catch(e => {
-				this.$message.error(e);
-			})
+			this.service.wechat.menu
+				.update({
+					appid: this.appid,
+					menu: {
+						button: this.menu.buttons || [],
+						menuid: this.menu.menuid || 0
+					}
+				})
+				.then((data) => {
+					this.$message.success("发布菜单成功");
+				})
+				.catch((e) => {
+					this.$message.error(e);
+				});
 		},
 		onDrop(i, i2) {
 			//拖拽移动位置
@@ -488,7 +503,6 @@ export default {
 	border: 1px solid #e7e7eb;
 	background-color: #fff;
 }
-
 
 .weixin-menu-detail .menu-content .menu-label {
 	text-align: left;

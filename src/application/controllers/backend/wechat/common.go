@@ -9,12 +9,12 @@ import (
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"xorm.io/xorm"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 func GetOfficialAccount(appid string) (*officialaccount.OfficialAccount, *tables.WechatAccount) {
 	accountData := &tables.WechatAccount{}
-	orm := di.MustGet(controllers.ServiceXorm).(*xorm.Engine)
+	orm := helper.GetORM()
 	orm.Where("app_id = ?", appid).Get(accountData)
 	if accountData.Id == 0 {
 		panic(errors.New("公众号" + appid + "不存在"))

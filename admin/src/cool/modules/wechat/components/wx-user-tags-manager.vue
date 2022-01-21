@@ -25,7 +25,7 @@
 				>+ 添加</el-button
 			>
 		</div>
-		<span class="dialog-footer" >
+		<span class="dialog-footer">
 			<el-button @click="visible = false" size="mini">关闭</el-button>
 		</span>
 	</cl-dialog>

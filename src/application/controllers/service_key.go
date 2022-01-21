@@ -1,5 +1,7 @@
 package controllers
 
+import "xorm.io/xorm"
+
 const ServiceConfig = "pinecms.config"
 
 const ServiceSiteConfig = "pinecms.site.config"
@@ -10,7 +12,7 @@ const ServiceTablePrefix = "pinecms.table_prefix"
 
 const ServiceJetEngine = "pinecms.jet"
 
-const ServiceXorm = "*xorm.Engine"
+var ServiceXorm = &xorm.Engine{}
 
 const ServiceCasbinEnforcer = "pinecms.casbin.enforcer"
 

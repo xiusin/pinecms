@@ -1,4 +1,4 @@
-import { BaseService, Service } from "/@/core";
+import { BaseService, Service } from "/@/cool";
 
 @Service("tags")
 class SysTags extends BaseService {}

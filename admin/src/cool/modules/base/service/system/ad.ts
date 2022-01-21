@@ -1,9 +1,6 @@
-import { BaseService, Service } from "/@/core";
+import { BaseService, Service } from "/@/cool";
 
 @Service("ad")
-class SysAd extends BaseService {
-}
+class SysAd extends BaseService {}
 
 export default SysAd;
-
-

@@ -142,7 +142,7 @@ import { computed, defineComponent, inject, provide, reactive, ref, watch } from
 import { useStore } from "vuex";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { ElFile } from "element-plus/lib/el-upload/src/upload.type";
-import { isEmpty } from "/@/core/utils";
+import { isEmpty } from "/@/cool/utils";
 import Category from "./category.vue";
 import FileItem from "./file-item.vue";
 
@@ -264,7 +264,7 @@ export default defineComponent({
 		// 上传成功
 		function onSuccess(res: any, file: ElFile) {
 			const item = list.value.find((e: any) => file.uid == e.uid);
-			console.log("onSuccess", res)
+			console.log("onSuccess", res);
 			if (item) {
 				item.url = res.data;
 

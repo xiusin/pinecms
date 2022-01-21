@@ -90,7 +90,7 @@ import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import Captcha from "./components/captcha.vue";
-import { useRefs } from "/@/core";
+import { useRefs } from "/@/cool";
 
 export default defineComponent({
 	components: {

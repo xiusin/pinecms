@@ -2,8 +2,8 @@ package models
 
 import (
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"strconv"
 	"xorm.io/xorm"
 )
@@ -13,7 +13,7 @@ type MenuModel struct {
 }
 
 func NewMenuModel() *MenuModel {
-	return &MenuModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
+	return &MenuModel{orm: helper.GetORM()}
 }
 
 func (m MenuModel) GetTree(menus []tables.Menu, parentid int64) []tables.Menu {

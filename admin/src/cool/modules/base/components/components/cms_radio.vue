@@ -5,11 +5,10 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from "vue";
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
 	name: "cms-radio",
-	emits: ["update:modelValue"],
 	props: {
 		modelValue: {
 			type: Number,
@@ -20,14 +19,15 @@ export default defineComponent({
 			default: () => []
 		}
 	},
+	emits: ["update:modelValue"],
 
-	setup(props, {emit}) {
-		console.log(props)
-		const val = ref(props.modelValue)
+	setup(props, { emit }) {
+		console.log(props);
+		const val = ref(props.modelValue);
 		function changeVal(val) {
-			emit('update:modelValue', parseInt(val))
+			emit("update:modelValue", parseInt(val));
 		}
-		return {val, props, changeVal};
+		return { val, props, changeVal };
 	}
 });
 </script>

@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { CrudLoad, Table, Upsert } from "@cool-vue/crud/types";
 import { defineComponent, inject, reactive } from "vue";
 
 export default defineComponent({

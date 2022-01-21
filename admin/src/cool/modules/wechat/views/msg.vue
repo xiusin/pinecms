@@ -97,8 +97,8 @@
 
 <script lang="ts">
 import { defineComponent, inject, reactive, ref } from "vue";
-import { useRefs } from "/@/core";
-import { CrudLoad, Table } from "cl-admin-crud-vue3/types";
+import { useRefs } from "/@/cool";
+import { CrudLoad, Table } from "@cool-vue/crud/types";
 import moment from "moment";
 import { ElMessage } from "element-plus";
 

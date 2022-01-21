@@ -7,7 +7,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm/log"
@@ -86,7 +85,7 @@ type orm struct {
 var configure = &DbConf{}
 
 func Orm() *xorm.Engine {
-	return di.MustGet(controllers.ServiceXorm).(*xorm.Engine)
+	return helper.GetORM()
 }
 
 func InitDB(conf ...*DbConf) *xorm.Engine {

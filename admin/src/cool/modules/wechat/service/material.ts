@@ -1,5 +1,7 @@
-import { BaseService, Service } from "/@/core";
-import { getUrl } from "../../../../core/utils";
+import { BaseService, Service } from "/@/cool";
+
+import { getUrl } from "../../../utils";
+
 import store from "/@/store";
 
 @Service("wechat/material")

@@ -3,8 +3,6 @@ package models
 import (
 	"errors"
 
-	"github.com/xiusin/pine/di"
-
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm"
@@ -15,7 +13,7 @@ type AdminModel struct {
 }
 
 func NewAdminModel() *AdminModel {
-	return &AdminModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
+	return &AdminModel{orm: helper.GetORM()}
 }
 
 // Login 登录用户

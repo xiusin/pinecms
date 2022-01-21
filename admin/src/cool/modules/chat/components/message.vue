@@ -114,8 +114,8 @@ import { computed, defineComponent, inject, nextTick, onUnmounted, reactive, ref
 import dayjs from "dayjs";
 import { ElMessage } from "element-plus";
 import { useStore } from "vuex";
-import { isString } from "/@/core/utils";
-import { useRefs } from "/@/core";
+import { isString } from "/@/cool/utils";
+import { useRefs } from "/@/cool";
 import IconVoice from "./icon-voice.vue";
 
 import AvatarUrl from "../static/images/custom-avatar.png";

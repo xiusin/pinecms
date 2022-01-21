@@ -19,22 +19,23 @@
 					:value="tagid"
 				/>
 			</el-select>
-			<div style="margin: 20px 0; font-size: 12px">已选择用户数：<font style="color: red;">{{ wxUsers.length }}</font>
+			<div style="margin: 20px 0; font-size: 12px">
+				已选择用户数：<font style="color: red">{{ wxUsers.length }}</font>
 			</div>
 		</div>
 		<span slot="footer" class="dialog-footer">
 			<el-button @click="dialogVisible = false" size="mini">关闭</el-button>
-			<el-button type="primary" @click="dataFormSubmit()" :disabled="submitting" size="mini">确定</el-button>
+			<el-button type="primary" @click="dataFormSubmit()" :disabled="submitting" size="mini"
+				>确定</el-button
+			>
 		</span>
 	</cl-dialog>
 </template>
 <script>
-
 export default {
 	name: "wx-user-tagging",
 	props: {
-		wxUsers: Array,
-
+		wxUsers: Array
 	},
 	data() {
 		return {
@@ -67,7 +68,7 @@ export default {
 				throw "mode参数有误";
 			}
 			let userTags = this.wxUsers.map((u) => u.tagid_list || []); //示例：[[1,2],[],[1,3]]
-			this.wxUserTags = await this.service.wechat.tags.list({appid: this.appid})
+			this.wxUserTags = await this.service.wechat.tags.list({ appid: this.appid });
 
 			if (this.mode === "tagging") {
 				//绑定标签时可选：所有标签 - 用户标签交集
@@ -95,12 +96,13 @@ export default {
 			}
 			this.submitting = true;
 			let openidList = this.wxUsers.map((u) => u.openid);
-			this.service.wechat.tags.tagging({
-				id: this.selectedTagid,
-				openids: openidList,
-				action: this.mode,
-				appid: this.appid
-			})
+			this.service.wechat.tags
+				.tagging({
+					id: this.selectedTagid,
+					openids: openidList,
+					action: this.mode,
+					appid: this.appid
+				})
 				.then(() => {
 					this.submitting = false;
 					this.$message({
@@ -108,10 +110,11 @@ export default {
 						type: "success",
 						onClose: () => (this.dialogVisible = false)
 					});
-				}).catch((e) => {
-				this.submitting = false;
-				this.$message.error(e);
-			})
+				})
+				.catch((e) => {
+					this.submitting = false;
+					this.$message.error(e);
+				});
 		}
 	}
 };

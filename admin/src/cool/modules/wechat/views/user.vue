@@ -12,11 +12,28 @@
 					:disabled="appid === ''"
 					>标签管理</el-button
 				>
-				<el-button size="mini" icon="el-icon-sort" type="warning" @click="syncFans" :disabled="appid === ''"
+				<el-button
+					size="mini"
+					icon="el-icon-sort"
+					type="warning"
+					@click="syncFans"
+					:disabled="appid === ''"
 					>同步粉丝</el-button
 				>
-				<el-button type="primary" size="mini" @click="userTagging('tagging')" :disabled="dataListSelections.length <= 0 || appid === ''">绑定标签</el-button>
-				<el-button type="primary" size="mini" @click="userTagging('untagging')" :disabled="dataListSelections.length <= 0 || appid === ''">解绑标签</el-button>
+				<el-button
+					type="primary"
+					size="mini"
+					@click="userTagging('tagging')"
+					:disabled="dataListSelections.length <= 0 || appid === ''"
+					>绑定标签</el-button
+				>
+				<el-button
+					type="primary"
+					size="mini"
+					@click="userTagging('untagging')"
+					:disabled="dataListSelections.length <= 0 || appid === ''"
+					>解绑标签</el-button
+				>
 				<cl-flex1 />
 				<account-select v-model="appid" />
 			</el-row>
@@ -43,14 +60,18 @@
 			:appid="appid"
 			@close="showWxUserTagsEditor = false"
 		/>
-		<wx-user-tagging :ref="setRefs('wxUserTagging')" :wxUsers="dataListSelections" :appid="appid" />
+		<wx-user-tagging
+			:ref="setRefs('wxUserTagging')"
+			:wxUsers="dataListSelections"
+			:appid="appid"
+		/>
 	</div>
 </template>
 
 <script lang="ts">
-import {defineComponent, inject, reactive, ref, watch} from "vue";
-import { useRefs } from "/@/core";
-import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { defineComponent, inject, reactive, ref, watch } from "vue";
+import { useRefs } from "/@/cool";
+import { CrudLoad, Table, Upsert } from "@cool-vue/crud/types";
 import { ElMessage } from "element-plus";
 import WxUserTagsManager from "../components/wx-user-tags-manager.vue";
 import WxUserTagging from "./wx-user-tagging.vue";
@@ -290,20 +311,20 @@ export default defineComponent({
 				});
 		}
 
-		const dataListSelections = ref([])
+		const dataListSelections = ref([]);
 
 		function onSelectionChange(selection: any[]) {
 			dataListSelections.value = selection;
 		}
 
 		function userTagging(action: string) {
-			refs.value.wxUserTagging.init(action, appid.value)
+			refs.value.wxUserTagging.init(action, appid.value);
 		}
 
-		watch(appid, (newValue, oldValue) => { //直接监听
+		watch(appid, (newValue, oldValue) => {
+			//直接监听
 			refs.value.crud.refresh();
 		});
-
 
 		// 刷新列表
 		function refresh(params: any) {
@@ -334,7 +355,7 @@ export default defineComponent({
 			table,
 			setRefs,
 			onLoad,
-			upsert,
+			upsert
 		};
 	}
 });

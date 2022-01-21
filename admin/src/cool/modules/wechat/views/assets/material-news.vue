@@ -3,10 +3,7 @@
 		<div>
 			<el-form :inline="true" :model="dataForm">
 				<el-form-item>
-					<el-button
-						size="mini"
-						type="primary"
-						@click="addOrUpdateHandle()"
+					<el-button size="mini" type="primary" @click="addOrUpdateHandle()"
 						>新增</el-button
 					>
 				</el-form-item>

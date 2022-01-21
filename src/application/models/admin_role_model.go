@@ -3,6 +3,7 @@ package models
 import (
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"log"
 
 	"github.com/xiusin/pine/di"
@@ -16,7 +17,7 @@ type AdminRoleModel struct {
 }
 
 func NewAdminRoleModel() *AdminRoleModel {
-	return &AdminRoleModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
+	return &AdminRoleModel{orm: helper.GetORM()}
 }
 
 func (a *AdminRoleModel) List(page, rows int) ([]tables.AdminRole, int64) {

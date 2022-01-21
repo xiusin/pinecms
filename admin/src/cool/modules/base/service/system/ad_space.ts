@@ -1,9 +1,6 @@
-import { BaseService, Service } from "/@/core";
+import { BaseService, Service } from "/@/cool";
 
 @Service("ad/space")
-class SysAdSpace extends BaseService {
-}
+class SysAdSpace extends BaseService {}
 
 export default SysAdSpace;
-
-

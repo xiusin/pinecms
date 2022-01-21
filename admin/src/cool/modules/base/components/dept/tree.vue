@@ -63,9 +63,9 @@
 <script lang="ts">
 import { defineComponent, inject, onMounted, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { ContextMenu } from "cl-admin-crud-vue3";
-import { useRefs } from "/@/core";
-import { deepTree, isArray, revDeepTree, isPc } from "/@/core/utils";
+import { ContextMenu } from "@cool-vue/crud";
+import { useRefs } from "/@/cool";
+import { deepTree, isArray, revDeepTree, isPc } from "/@/cool/utils";
 
 export default defineComponent({
 	name: "cl-dept-tree",

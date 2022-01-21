@@ -55,7 +55,7 @@ import Session from "./session.vue";
 import Message from "./message.vue";
 import Input from "./input.vue";
 import { parseContent } from "../utils";
-import { useRefs } from "/@/core";
+import { useRefs } from "/@/cool";
 import NotifyMp3 from "../static/notify.mp3";
 
 export default defineComponent({

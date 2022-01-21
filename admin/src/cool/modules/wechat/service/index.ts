@@ -18,6 +18,6 @@ export default {
 		material: new Material(),
 		template: new Template(),
 		tags: new Tags(),
-		menu: new Menu(),
+		menu: new Menu()
 	}
 };

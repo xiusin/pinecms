@@ -13,8 +13,8 @@
 
 <script lang="ts">
 import { defineComponent, inject, reactive, ref } from "vue";
-import { useRefs } from "/@/core";
-import { CrudLoad, Table } from "cl-admin-crud-vue3/types";
+import { useRefs } from "/@/cool";
+import { CrudLoad, Table } from "@cool-vue/crud/types";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 export default defineComponent({
@@ -56,13 +56,13 @@ export default defineComponent({
 					prop: "comment",
 					align: "left",
 					component: {
-						"name": "el-input",
-						"props": {
-							"size": "mini",
-							"clearable": true,
+						name: "el-input",
+						props: {
+							size: "mini",
+							clearable: true,
 							onChange: (val, val1) => {
-								console.log(val, val1)
-							},
+								console.log(val, val1);
+							}
 						}
 					}
 				}
@@ -98,33 +98,38 @@ export default defineComponent({
 				.catch(() => null);
 		}
 
-
 		function repair() {
 			if (selects.value.length == 0) {
-				ElMessage.warning("请先选择要修复的表")
-				return
+				ElMessage.warning("请先选择要修复的表");
+				return;
 			}
-			service.system.databaseList.repair({
-				"tables": selects.value
-			}).then((data) => {
-				ElMessage.success(data)
-			}).catch((e) => {
-				ElMessage.error(e)
-			})
+			service.system.databaseList
+				.repair({
+					tables: selects.value
+				})
+				.then((data) => {
+					ElMessage.success(data);
+				})
+				.catch((e) => {
+					ElMessage.error(e);
+				});
 		}
 
 		function optimize() {
 			if (selects.value.length == 0) {
-				ElMessage.warning("请先选择要优化的表")
-				return
+				ElMessage.warning("请先选择要优化的表");
+				return;
 			}
-			service.system.databaseList.optimize({
-				"tables": selects.value
-			}).then((data) => {
-				ElMessage.success(data)
-			}).catch((e) => {
-				ElMessage.error(e)
-			})
+			service.system.databaseList
+				.optimize({
+					tables: selects.value
+				})
+				.then((data) => {
+					ElMessage.success(data);
+				})
+				.catch((e) => {
+					ElMessage.error(e);
+				});
 		}
 
 		return {

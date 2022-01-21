@@ -1,5 +1,5 @@
 import store from "store";
-import { getUrlParam } from "/@/core/utils";
+import { getUrlParam } from "/@/cool/utils";
 import { MenuItem } from "/$/base/types";
 
 // 路由模式
@@ -19,6 +19,7 @@ const baseUrl: String = (function () {
 	} else {
 		proxy = store.get("proxy") || "dev";
 	}
+	console.log("baseUrl", proxy, isDev);
 	return isDev ? `/${proxy}` : `/v2`; //${host} 可以填写/pro或/v2
 })();
 

@@ -40,7 +40,7 @@
 
 <script lang="ts">
 import { defineComponent, inject, ref } from "vue";
-import { useRefs } from "/@/core";
+import { useRefs } from "/@/cool";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 export default defineComponent({

@@ -2,7 +2,14 @@
 	<div style="padding: 10px; background: #fff">
 		<div style="padding: 10px 0">
 			<account-select v-model="appid" />
-			<el-button style="margin-left: 5px;" size="mini" type="warning" @click="sync()" :disabled="appid === ''">同步素材</el-button>
+			<el-button
+				style="margin-left: 5px"
+				size="mini"
+				type="warning"
+				@click="sync()"
+				:disabled="appid === ''"
+				>同步素材</el-button
+			>
 		</div>
 		<el-tabs v-model="activeTab" @tab-click="handleTabClick">
 			<el-tab-pane :label="'图片素材（' + assetsCount.imageCount + ')'" name="image">
@@ -43,11 +50,14 @@ export default {
 	},
 	methods: {
 		sync() {
-			this.service.wechat.material.sync().then(() => {
-				this.$message.success("同步完成");
-			}).catch((e) => {
-				this.$message.error(e);
-			})
+			this.service.wechat.material
+				.sync()
+				.then(() => {
+					this.$message.success("同步完成");
+				})
+				.catch((e) => {
+					this.$message.error(e);
+				});
 		},
 		handleTabClick(tab) {
 			this.$nextTick(() => {

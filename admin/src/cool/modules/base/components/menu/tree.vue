@@ -36,7 +36,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, inject, onMounted, ref, watch } from "vue";
-import { deepTree } from "/@/core/utils";
+import { deepTree } from "/@/cool/utils";
 
 export default defineComponent({
 	name: "cl-menu-tree",

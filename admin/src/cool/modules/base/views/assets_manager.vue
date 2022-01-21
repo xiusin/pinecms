@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import { defineComponent, inject, ref } from "vue";
-import { useRefs } from "/@/core";
+import { useRefs } from "/@/cool";
 
 export default defineComponent({
 	name: "sys-assets-manager",

@@ -26,7 +26,7 @@
 import { defineComponent, inject, ref } from "vue";
 import { baseUrl } from "/@/config/env";
 
-import { useRefs } from "/@/core";
+import { useRefs } from "/@/cool";
 
 export default defineComponent({
 	name: "sys-theme",

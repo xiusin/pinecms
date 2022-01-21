@@ -45,16 +45,14 @@ func InitCache() {
 		conf.View.Theme = string(theme)
 	}
 	helper.Inject(controllers.ServiceICache, cacheHandler)
-	helper.Inject(di.ServicePineSessions, func(builder di.AbstractBuilder) (i interface{}, err error) {
-		sess := sessions.New(cacheProvider.NewStore(cacheHandler), &sessions.Config{CookieName: conf.Session.Name, Expires: conf.Session.Expires})
-		return sess, nil
-	})
+	sess := sessions.New(cacheProvider.NewStore(cacheHandler), &sessions.Config{CookieName: conf.Session.Name, Expires: conf.Session.Expires})
+	di.Instance(sess)
 }
 
 func InitDI() {
 	helper.Inject(controllers.ServiceApplication, app)
 	helper.Inject(controllers.ServiceConfig, conf)
-	helper.Inject(di.ServicePineLogger, initLoggerService())
+	helper.Inject(logger.GetDefault(), initLoggerService())
 	helper.Inject(controllers.ServiceJetEngine, initJetEngine())
 
 	pine.RegisterViewEngine(di.MustGet(controllers.ServiceJetEngine).(render.AbstractRenderer))

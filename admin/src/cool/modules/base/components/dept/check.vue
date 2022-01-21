@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { deepTree } from "/@/core/utils";
+import { deepTree } from "/@/cool/utils";
 import { ElMessage } from "element-plus";
 import { defineComponent, inject, nextTick, onMounted, ref, watch } from "vue";
 

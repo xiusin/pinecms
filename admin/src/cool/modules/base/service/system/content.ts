@@ -1,4 +1,4 @@
-import { BaseService, Service } from "/@/core";
+import { BaseService, Service } from "/@/cool";
 
 @Service("content")
 class SysContent extends BaseService {
@@ -14,7 +14,7 @@ class SysContent extends BaseService {
 		return this.request({
 			url: "/page",
 			method: "GET",
-			params,
+			params
 		});
 	}
 
@@ -22,7 +22,7 @@ class SysContent extends BaseService {
 		return this.request({
 			url: "/page",
 			method: "POST",
-			data,
+			data
 		});
 	}
 }

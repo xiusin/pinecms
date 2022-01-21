@@ -52,10 +52,10 @@
 
 <script lang="ts">
 import { defineComponent, inject, reactive, ref } from "vue";
-import { useRefs } from "/@/core";
+import { useRefs } from "/@/cool";
 import AddOrUpdate from "./msg-template-add-or-update.vue";
 import TemplateMsgTask from "../components/template-msg-task.vue";
-import { CrudLoad, Table } from "cl-admin-crud-vue3/types";
+import { CrudLoad, Table } from "@cool-vue/crud/types";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 export default defineComponent({

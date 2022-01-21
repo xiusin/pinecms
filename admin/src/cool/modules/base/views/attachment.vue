@@ -1,29 +1,29 @@
 <template>
 	<cl-crud @load="onLoad">
 		<el-row type="flex">
-			<cl-refresh-btn/>
+			<cl-refresh-btn />
 		</el-row>
 
 		<el-row>
-			<cl-table v-bind="table"/>
+			<cl-table v-bind="table" />
 		</el-row>
 
 		<el-row type="flex">
-			<cl-flex1/>
-			<cl-pagination/>
+			<cl-flex1 />
+			<cl-pagination />
 		</el-row>
 	</cl-crud>
 
 	<cl-dialog v-model="preview.visible" title="图片预览" :props="{ width: previewWidth }">
-		<img style="width: 100%" :src="preview.url" alt=""/>
+		<img style="width: 100%" :src="preview.url" alt="" />
 	</cl-dialog>
 </template>
 
 <script lang="ts">
-import {defineComponent, inject, onMounted, reactive} from "vue";
-import {ElImage} from "element-plus"
-import {useRefs} from "/@/core";
-import {CrudLoad, Table} from "cl-admin-crud-vue3/types";
+import { defineComponent, inject, onMounted, reactive } from "vue";
+import { ElImage } from "element-plus";
+import { useRefs } from "/@/cool";
+import { CrudLoad, Table } from "@cool-vue/crud/types";
 
 export default defineComponent({
 	name: "attachment",
@@ -32,7 +32,7 @@ export default defineComponent({
 	},
 	setup() {
 		const service = inject<any>("service");
-		const {refs, setRefs} = useRefs();
+		const { refs, setRefs } = useRefs();
 		let preview = {
 			visible: false,
 			url: ""
@@ -73,7 +73,7 @@ export default defineComponent({
 								width: 40,
 								height: 40
 							},
-							fit: "contain",
+							fit: "contain"
 						}
 					}
 				},
@@ -81,7 +81,7 @@ export default defineComponent({
 					label: "文件大小",
 					prop: "size",
 					width: 100,
-					component: ({h, scope}: any) => {
+					component: ({ h, scope }: any) => {
 						return file_size_format(scope.size);
 					}
 				},
@@ -100,7 +100,7 @@ export default defineComponent({
 								width: 40,
 								height: 40
 							},
-							fit: "contain",
+							fit: "contain"
 						}
 					}
 				},
@@ -119,12 +119,10 @@ export default defineComponent({
 			]
 		});
 
-		onMounted(() => {
-
-		})
+		onMounted(() => {});
 
 		// crud 加载
-		function onLoad({ctx, app}: CrudLoad) {
+		function onLoad({ ctx, app }: CrudLoad) {
 			ctx.service(service.system.attachment).done();
 			app.refresh();
 		}

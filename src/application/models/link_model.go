@@ -2,7 +2,6 @@ package models
 
 import (
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm"
@@ -13,7 +12,7 @@ type LinkModel struct {
 }
 
 func NewLinkModel() *LinkModel {
-	return &LinkModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
+	return &LinkModel{orm: helper.GetORM()}
 }
 
 func (l *LinkModel) GetList(page, limit int64) ([]tables.Link, int64) {

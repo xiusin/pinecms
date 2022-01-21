@@ -1,4 +1,4 @@
-import {BaseService, Permission, Service} from "/@/core";
+import { BaseService, Permission, Service } from "/@/cool";
 
 @Service("errlog")
 class SysErrLog extends BaseService {

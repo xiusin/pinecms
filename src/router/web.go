@@ -20,7 +20,7 @@ func InitRouter(app *pine.Application) {
 	//app.Handle(new(frontend.FescController))
 	//app.Handle(new(frontend.IndexController))
 	app.GET("/", func(ctx *pine.Context) {
-		ctx.WriteString(string(ctx.RequestCtx.URI().Scheme()) + "://" + string(ctx.Host()) + "/admin/")
+		ctx.Redirect("/admin/")
 	})
 
 	app.GET("/admin", func(ctx *pine.Context) {

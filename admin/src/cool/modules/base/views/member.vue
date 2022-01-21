@@ -45,8 +45,8 @@
 
 <script lang="ts">
 import { computed, defineComponent, inject, reactive, ref, watch } from "vue";
-import { useRefs } from "/@/core";
-import { Table, Upsert } from "cl-admin-crud-vue3/types";
+import { useRefs } from "/@/cool";
+import { Table, Upsert } from "@cool-vue/crud/types";
 
 export default defineComponent({
 	name: "sys-member",

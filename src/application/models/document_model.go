@@ -20,7 +20,7 @@ type DocumentModel struct {
 func init() {
 	di.Set(&DocumentModel{}, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return &DocumentModel{
-			orm:   builder.MustGet("*xorm.Engine").(*xorm.Engine),
+			orm:   builder.MustGet(controllers.ServiceXorm).(*xorm.Engine),
 			cache: builder.MustGet("cache.AbstractCache").(cache.AbstractCache),
 		}, nil
 	}, true)

@@ -19,8 +19,7 @@
 					:maxlength="selectedMenuLevel === 1 ? 5 : 8"
 					show-word-limit
 					@input="checkMenuName(button.name)"
-				>
-				</el-input>
+				/>
 			</div>
 		</div>
 		<div v-show="!button.sub_button || button.sub_button.length === 0">
@@ -30,15 +29,31 @@
 					<el-select v-model="button.type" name="type" size="small" style="width: 380px">
 						<el-option key="view" value="view">跳转网页(view)</el-option>
 						<el-option key="media_id" value="media_id">发送消息(media_id)</el-option>
-						<el-option key="view_limited" value="view_limited" disabled>跳转公众号图文消息链接(view_limited)</el-option>
-						<el-option key="miniprogram" value="miniprogram">打开指定小程序(miniprogram)</el-option>
+						<el-option key="view_limited" value="view_limited" disabled
+							>跳转公众号图文消息链接(view_limited)</el-option
+						>
+						<el-option key="miniprogram" value="miniprogram"
+							>打开指定小程序(miniprogram)</el-option
+						>
 						<el-option key="click" value="click">自定义点击事件(click)</el-option>
-						<el-option key="scancode_push" value="scancode_push">扫码上传消息(scancode_push)</el-option>
-						<el-option key="scancode_waitmsg" value="scancode_waitmsg">扫码提示下发(scancode_waitmsg)</el-option>
-						<el-option key="pic_sysphoto" value="pic_sysphoto">系统相机拍照(pic_sysphoto)</el-option>
-						<el-option key="pic_photo_or_album" value="pic_photo_or_album">弹出拍照或者相册(pic_photo_or_album)</el-option>
-						<el-option key="pic_weixin" value="pic_weixin">弹出微信相册(pic_weixin)</el-option>
-						<el-option key="location_select" value="location_select">弹出地理位置选择器(location_select)</el-option>
+						<el-option key="scancode_push" value="scancode_push"
+							>扫码上传消息(scancode_push)</el-option
+						>
+						<el-option key="scancode_waitmsg" value="scancode_waitmsg"
+							>扫码提示下发(scancode_waitmsg)</el-option
+						>
+						<el-option key="pic_sysphoto" value="pic_sysphoto"
+							>系统相机拍照(pic_sysphoto)</el-option
+						>
+						<el-option key="pic_photo_or_album" value="pic_photo_or_album"
+							>弹出拍照或者相册(pic_photo_or_album)</el-option
+						>
+						<el-option key="pic_weixin" value="pic_weixin"
+							>弹出微信相册(pic_weixin)</el-option
+						>
+						<el-option key="location_select" value="location_select"
+							>弹出地理位置选择器(location_select)</el-option
+						>
 					</el-select>
 				</div>
 			</div>

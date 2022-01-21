@@ -11,6 +11,7 @@ import MenuTopbar from "./menu/topbar.vue";
 import MenuFile from "./menu/file.vue";
 import MenuIcons from "./menu/icons.vue";
 import MenuPerms from "./menu/perms.vue";
+import MenuQuick from "./menu/quick.vue";
 import MenuTree from "./menu/tree.vue";
 import CategoryTree from "./category/tree.vue";
 import DepartmentTree from "./department/tree.vue";
@@ -39,6 +40,7 @@ export default {
 	MenuIcons,
 	MenuPerms,
 	MenuTree,
+	MenuQuick,
 	RoleSelect,
 	RolePerms,
 	EditorQuill,

@@ -1,8 +1,8 @@
 package models
 
 import (
-	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm"
 )
 
@@ -11,7 +11,7 @@ type WechatMemberModel struct {
 }
 
 func NewWechatMemberModel() *WechatMemberModel {
-	return &WechatMemberModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
+	return &WechatMemberModel{orm: helper.GetORM()}
 }
 
 func (w *WechatMemberModel) GetList(page, limit int64) (list []tables.WechatMember, total int64) {

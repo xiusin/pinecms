@@ -66,8 +66,8 @@
 
 <script lang="ts">
 import { defineComponent, inject, reactive, ref } from "vue";
-import { useRefs } from "/@/core";
-import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { useRefs } from "/@/cool";
+import { CrudLoad, Table, Upsert } from "@cool-vue/crud/types";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 import chinaMap from "/public/china.json";

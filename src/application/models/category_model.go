@@ -28,7 +28,7 @@ func init() {
 	model := &CategoryModel{}
 	di.Set(model, func(builder di.AbstractBuilder) (i interface{}, err error) {
 		return &CategoryModel{
-			orm:   builder.MustGet("*xorm.Engine").(*xorm.Engine),
+			orm:   builder.MustGet(controllers.ServiceXorm).(*xorm.Engine),
 			cache: builder.MustGet("cache.AbstractCache").(cache.AbstractCache),
 		}, nil
 	}, true)

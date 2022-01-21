@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { cloneDeep } from "/@/core/utils";
+import { cloneDeep } from "/@/cool/utils";
 
 export default {
 	name: "cl-filter-group",
@@ -55,15 +55,14 @@ export default {
 			const next = (params) => {
 				this.loading = true;
 
-				this.crud
-					.refresh({
-						param: this.form,
-						page: 1,
-						...params
-					})
-					// .done(() => {
-					// 	this.loading = false;
-					// });
+				this.crud.refresh({
+					param: this.form,
+					page: 1,
+					...params
+				});
+				// .done(() => {
+				// 	this.loading = false;
+				// });
 			};
 
 			if (this.onSearch) {

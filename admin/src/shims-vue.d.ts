@@ -6,7 +6,7 @@ declare module "*.vue" {
 }
 
 declare module "cl-admin-crud-vue3" {
-	import type { ClContextMenu } from "cl-admin-crud-vue3/types";
+	import type { ClContextMenu } from "@cool-vue/crud/types";
 	import type { Plugin } from "vue";
 
 	const ContextMenu: ClContextMenu;

@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 
 // cool
-import { bootstrap } from "./core";
+import { bootstrap } from "./cool";
 
 // router
 import router from "./router";
@@ -10,32 +10,36 @@ import router from "./router";
 // store
 import store from "./store";
 
+// mock
 import "./mock";
 
 // element-plus
 import ElementPlus from "element-plus";
-
 import "element-plus/theme-chalk/src/index.scss";
+
 // mitt
 import mitt from "mitt";
 
 // echarts
 import VueECharts from "vue-echarts";
 
-import VueUeditorWrap from "vue-ueditor-wrap";
-
 const app = createApp(App);
 
 bootstrap(app)
 	.then(() => {
+		// echarts 可视图表
 		app.component("v-chart", VueECharts);
+
+		// 事件通讯
 		app.provide("mitt", mitt());
-		app.use(store).use(ElementPlus).use(router).use(VueUeditorWrap).mount("#app");
+
+		app.use(store).use(router).use(ElementPlus).mount("#app");
 	})
 	.catch((err: string) => {
-		console.error(`启动失败`, err);
+		console.error(`COOL-ADMIN 启动失败`, err);
 	});
 
+// 应用加载
 store.dispatch("appLoad");
 
 // @ts-ignore

@@ -2,9 +2,8 @@ package models
 
 import (
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/di"
-	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm"
 )
 
@@ -13,7 +12,7 @@ type AdModel struct {
 }
 
 func NewAdModel() *AdModel {
-	return &AdModel{orm: di.MustGet(controllers.ServiceXorm).(*xorm.Engine)}
+	return &AdModel{orm: helper.GetORM()}
 }
 
 func (l *AdModel) GetList(page, limit int) ([]tables.Advert, int64) {

@@ -171,18 +171,32 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 - redis manager管理插件
 
+
+# error 
+```
+fatal error: concurrent map writes
+
+goroutine 53 [running]:
+runtime.throw({0x4d4e9db, 0x30})
+        /usr/local/Cellar/go/1.17/libexec/src/runtime/panic.go:1198 +0x71 fp=0xc0005b7600 sp=0xc0005b75d0 pc=0x4038a11
+runtime.mapassign_faststr(0x4be0fc0, 0xc0154880f0, {0x4d2e7f9, 0xd})
+        /usr/local/Cellar/go/1.17/libexec/src/runtime/map_faststr.go:294 +0x38b fp=0xc0005b7668 sp=0xc0005b7600 pc=0x401680b
+github.com/xiusin/logger.(*LogEntity).SetDataKV(0xc014f04060, {0x4d2e7f9, 0x0}, {0x4b93b60, 0xc0150f4030})
+        /Users/xiusin/projects/pkg/mod/github.com/xiusin/logger@v0.0.10-0.20220103084022-9cb8378d9b03/entity.go:29 +0xdb fp=0xc0005b76d0 sp=0xc0005b7668 pc=0x41e077b
+github.com/xiusin/logger.(*LogEntity).Id(0xc014f04060, {0xc00043c060, 0x24})
+
+```
+
 # TODO #
 
-- github.com/gokeeptech/gktemplate
 - Bleve 全文检索 （插件提供）
-- <https://github.com/lljj-x/vue-json-schema-form>
+- 页面编辑器: <https://github.com/lljj-x/vue-json-schema-form>
 - <http://goframe.ele.rxthink.cn/tool/generate>
-- <https://github.com/antonmedv/codejar#getting-started>
-- 插件扩展OnFree销毁全局变量
 - Casbin: <https://zhuanlan.zhihu.com/p/148353743>
 - 菜单表增加perms字段， 可以配置权限标识，可以配置节点类型为权限。
 - <http://relation-graph.com/#/demo/scene-network> 组织架构显示
-- <https://eddyzhang1986.github.io/antd-jsonschema-form/>
+- 动态构建表单: <https://eddyzhang1986.github.io/antd-jsonschema-form/> 
+  
 - 路由注解
 <!-- https://demo.goploy.icu/#/server/index SFTP功能 -->
 <!-- http://pigx.pig4cloud.com/#/mp/wxaccountfans/index -->

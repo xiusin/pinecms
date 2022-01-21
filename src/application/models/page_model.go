@@ -2,8 +2,8 @@ package models
 
 import (
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm"
 )
 
@@ -12,7 +12,7 @@ type PageModel struct {
 }
 
 func NewPageModel() *PageModel {
-	return &PageModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
+	return &PageModel{orm: helper.GetORM()}
 }
 
 func (p *PageModel) AddPage(page *tables.Page) bool {

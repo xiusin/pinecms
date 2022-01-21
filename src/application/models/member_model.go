@@ -2,8 +2,8 @@ package models
 
 import (
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm"
 )
 
@@ -12,7 +12,7 @@ type MemberModel struct {
 }
 
 func NewMemberModel() *MemberModel {
-	return &MemberModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
+	return &MemberModel{orm: helper.GetORM()}
 }
 
 func (m *MemberModel) GetList(page, limit int64) (list []tables.Member, total int64) {

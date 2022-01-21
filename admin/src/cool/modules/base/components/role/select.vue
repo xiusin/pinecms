@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { defineComponent, inject, onMounted, ref, watch } from "vue";
-import { isArray } from "/@/core/utils";
+import { isArray } from "/@/cool/utils";
 
 export default defineComponent({
 	name: "cl-role-select",

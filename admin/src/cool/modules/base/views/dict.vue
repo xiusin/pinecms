@@ -45,9 +45,9 @@
 								>当前分类: {{ catName }}({{ catKey }})</el-button
 							>
 							<cl-refresh-btn size="small" />
-							<cl-add-btn  size="small"  />
+							<cl-add-btn size="small" />
 							<cl-flex1 />
-							<cl-search-key  size="small"  />
+							<cl-search-key size="small" />
 						</el-row>
 
 						<el-row>
@@ -100,8 +100,8 @@
 
 <script lang="ts">
 import { defineComponent, inject, reactive, ref } from "vue";
-import { useRefs } from "/@/core";
-import { QueryList, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { useRefs } from "/@/cool";
+import { QueryList, Table, Upsert } from "@cool-vue/crud/types";
 import { ElMessage } from "element-plus";
 
 export default defineComponent({
@@ -174,12 +174,12 @@ export default defineComponent({
 					prop: "id",
 					order: "descending"
 				},
-				"highlight-current-row": true,
+				"highlight-current-row": true
 			},
 			columns: [
 				{
 					prop: "id",
-					width: 70,
+					width: 70
 				},
 				{
 					prop: "name",
@@ -399,7 +399,7 @@ export default defineComponent({
 
 		// 多选监听
 		function onSelectionChange(selection: any[]) {
-			console.log("selection", selection)
+			console.log("selection", selection);
 			selects.ids = selection.map((e) => e.id);
 		}
 

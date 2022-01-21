@@ -9,6 +9,7 @@
 
 	.el-menu {
 		border-right: 0;
+		background-color: transparent;
 
 		.el-sub-menu__title,
 		&-item {
@@ -48,6 +49,12 @@
 					font-size: 19px;
 				}
 			}
+		}
+	}
+
+	&__popup {
+		.icon-svg {
+			margin-right: 10px;
 		}
 	}
 }

@@ -15,8 +15,9 @@
 								v-bind="adSpaceTable"
 								@selection-change="onSelectionChange"
 							>
-								<template  #column-name="{ scope }">
-									{{scope.row.name}}<el-popover
+								<template #column-name="{ scope }">
+									{{ scope.row.name
+									}}<el-popover
 										placement="top"
 										:width="200"
 										trigger="hover"
@@ -107,11 +108,11 @@
 
 <script lang="ts">
 import { defineComponent, inject, reactive, ref } from "vue";
-import { useRefs } from "/@/core";
-import { QueryList, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { useRefs } from "/@/cool";
+import { QueryList, Table, Upsert } from "@cool-vue/crud/types";
 import { ElMessage, ElIcon } from "element-plus";
 import IconSvg from "../components/icon-svg/index.vue";
-import {Picture} from "@element-plus/icons-vue"
+import { Picture } from "@element-plus/icons-vue";
 
 export default defineComponent({
 	name: "sys-ad",

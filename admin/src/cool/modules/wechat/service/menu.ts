@@ -1,7 +1,6 @@
-import { BaseService, Service } from "/@/core";
+import { BaseService, Service } from "/@/cool";
 
 @Service("wechat/menu")
-class WechatMenu extends BaseService {
-}
+class WechatMenu extends BaseService {}
 
 export default WechatMenu;

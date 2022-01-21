@@ -1,15 +1,12 @@
-import { useStore } from "vuex";
 import { computed, defineComponent, h, ref, watch } from "vue";
 import "./index.scss";
-import { useRoute, useRouter } from "vue-router";
+import { useCool } from "/@/cool";
 
 export default defineComponent({
 	name: "cl-menu-slider",
 
 	setup() {
-		const router = useRouter();
-		const route = useRoute();
-		const store = useStore();
+		const { router, route, store } = useCool();
 
 		// 是否可见
 		const visible = ref<boolean>(true);
@@ -51,7 +48,7 @@ export default defineComponent({
 	},
 
 	render(ctx: any) {
-		function deepMenu(list: any) {
+		function deepMenu(list: any, index: number) {
 			return list
 				.filter((e: any) => e.isShow)
 				.map((e: any) => {
@@ -62,21 +59,22 @@ export default defineComponent({
 							<el-sub-menu></el-sub-menu>,
 							{
 								index: String(e.id),
-								key: e.id
+								key: e.id,
+								"popper-class": "cl-slider-menu__popup"
 							},
 							{
 								title: () => {
-									return !ctx.menuCollapse ? (
+									return ctx.menuCollapse && index == 1 ? (
+										<icon-svg name={e.icon}></icon-svg>
+									) : (
 										<span>
 											<icon-svg name={e.icon}></icon-svg>
 											<span>{e.name}</span>
 										</span>
-									) : (
-										<icon-svg name={e.icon}></icon-svg>
 									);
 								},
 								default() {
-									return deepMenu(e.children);
+									return deepMenu(e.children, index + 1);
 								}
 							}
 						);
@@ -102,7 +100,7 @@ export default defineComponent({
 				});
 		}
 
-		const children = deepMenu(ctx.menuList);
+		const children = deepMenu(ctx.menuList, 1);
 
 		return (
 			ctx.visible && (
@@ -112,7 +110,8 @@ export default defineComponent({
 						background-color="transparent"
 						collapse-transition={false}
 						collapse={ctx.browser.isMini ? false : ctx.menuCollapse}
-						onSelect={ctx.toView}>
+						onSelect={ctx.toView}
+					>
 						{children}
 					</el-menu>
 				</div>

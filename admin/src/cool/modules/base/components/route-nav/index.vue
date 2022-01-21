@@ -20,7 +20,7 @@ import { computed, defineComponent, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import _ from "lodash";
-import { isEmpty } from "/@/core/utils";
+import { isEmpty } from "/@/cool/utils";
 
 export default defineComponent({
 	name: "cl-route-nav",

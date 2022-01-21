@@ -5,22 +5,22 @@
 		</el-row>
 		<el-row>
 			<cl-table v-bind="table">
-				<template #slot-download="{scope}" >
+				<template #slot-download="{ scope }">
 					<el-button size="mini" type="text" @click="download(scope.row)">下载</el-button>
 				</template>
 			</cl-table>
 		</el-row>
-<!--		<el-row type="flex">-->
-<!--			<cl-flex1 />-->
-<!--			<cl-pagination />-->
-<!--		</el-row>-->
+		<!--		<el-row type="flex">-->
+		<!--			<cl-flex1 />-->
+		<!--			<cl-pagination />-->
+		<!--		</el-row>-->
 	</cl-crud>
 </template>
 
 <script lang="ts">
 import { defineComponent, inject, reactive } from "vue";
-import { useRefs } from "/@/core";
-import { CrudLoad, Table, Upsert } from "cl-admin-crud-vue3/types";
+import { useRefs } from "/@/cool";
+import { CrudLoad, Table, Upsert } from "@cool-vue/crud/types";
 
 export default defineComponent({
 	name: "database-backup-list",
@@ -66,7 +66,7 @@ export default defineComponent({
 					label: "操作",
 					type: "op",
 					width: 100,
-					buttons: ["slot-download","delete"]
+					buttons: ["slot-download", "delete"]
 				}
 			]
 		});
@@ -78,11 +78,13 @@ export default defineComponent({
 		}
 
 		function download(row) {
-			service.system.databaseBackupList.download({
-				"name": row.name
-			}).then((data : any) => {
-				window.open(data)
-			})
+			service.system.databaseBackupList
+				.download({
+					name: row.name
+				})
+				.then((data: any) => {
+					window.open(data);
+				});
 		}
 
 		return {

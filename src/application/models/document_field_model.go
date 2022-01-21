@@ -1,8 +1,8 @@
 package models
 
 import (
-	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm"
 )
 
@@ -11,7 +11,7 @@ type DocumentModelFieldModel struct {
 }
 
 func NewDocumentModelFieldModel() *DocumentModelFieldModel {
-	return &DocumentModelFieldModel{orm: di.MustGet("*xorm.Engine").(*xorm.Engine)}
+	return &DocumentModelFieldModel{orm: helper.GetORM()}
 }
 
 func (w *DocumentModelFieldModel) GetList(page, limit int64) (list []*tables.DocumentModelField, total int64) {

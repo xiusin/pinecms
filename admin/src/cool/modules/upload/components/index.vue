@@ -108,7 +108,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { clone, last, isArray, isNumber, isBoolean, basename } from "/@/core/utils";
+import { clone, last, isArray, isNumber, isBoolean, basename } from "/@/cool/utils";
 import { v4 as uuidv4 } from "uuid";
 export default {
 	name: "cl-upload",

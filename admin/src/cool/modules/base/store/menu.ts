@@ -2,7 +2,7 @@ import { ElMessage } from "element-plus";
 import storage from "store";
 import store from "/@/store";
 import router from "/@/router";
-import { deepTree, revDeepTree, isArray, isEmpty } from "/@/core/utils";
+import { deepTree, revDeepTree, isArray, isEmpty } from "/@/cool/utils";
 import { menuList } from "/@/config/env";
 import { revisePath } from "../utils";
 import { MenuItem } from "../types";

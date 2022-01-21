@@ -1,6 +1,4 @@
-<template>
-
-</template>
+<template></template>
 <script>
 import MaterialFile from "./material-file.vue";
 import MaterialNews from "./material-news.vue";
@@ -22,9 +20,8 @@ export default {
 	},
 	emits: ["selected", "onClose"],
 	data: function () {
-	  console.log("init");
-		return {
-		};
+		console.log("init");
+		return {};
 	},
 	methods: {
 		onSelect(itemInfo) {

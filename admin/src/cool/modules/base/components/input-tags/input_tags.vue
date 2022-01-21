@@ -1,19 +1,23 @@
 <template>
 	<div>
 		<el-tag
-			v-for="(tag,index) in dynamicTags"
-			:key="index" closable
+			v-for="(tag, index) in dynamicTags"
+			:key="index"
+			closable
 			:disable-transitions="false"
-			@click="editTag(tag,index)"
-			@close="handleClose(tag)">
-			<span v-if="index!=num">{{ tag }}</span>
+			@click="editTag(tag, index)"
+			@close="handleClose(tag)"
+		>
+			<span v-if="index != num">{{ tag }}</span>
 			<input
 				class="custom_input"
-				type="text" v-model="words"
-				v-if="index==num"
+				type="text"
+				v-model="words"
+				v-if="index == num"
 				ref="editInput"
-				@keyup.enter.native="handleInput(tag,index)"
-				@blur="handleInput(tag,index)">
+				@keyup.enter.native="handleInput(tag, index)"
+				@blur="handleInput(tag, index)"
+			/>
 		</el-tag>
 		<el-input
 			class="input-new-tag"
@@ -22,46 +26,40 @@
 			ref="saveTagInput"
 			size="small"
 			@keyup.enter.native="handleInputConfirm"
-			@blur="handleInputConfirm">
-		</el-input>
-		<el-button
-			v-else
-			class="button-new-tag"
-			size="mini"
-			@click="showInput">{{ theme }}
+			@blur="handleInputConfirm"
+		/>
+		<el-button v-else class="button-new-tag" size="mini" @click="showInput"
+			>{{ theme }}
 		</el-button>
 	</div>
 </template>
 
 <script>
 export default {
-	name: 'input-tags',
+	name: "input-tags",
 	model: {
-		prop: 'tagList',
-		event: 'input'
+		prop: "tagList",
+		event: "input"
 	},
 	props: {
 		tagList: {
 			type: Array,
 			default() {
-				return []
+				return [];
 			}
 		},
 		theme: {
 			type: String,
-			default: '+ 新标签'
+			default: "+ 新标签"
 		}
-	},
-	mounted() {
-		console.log()
 	},
 	data() {
 		return {
 			inputVisible: false,
-			inputValue: '',
+			inputValue: "",
 			num: -1,
-			words: ''
-		}
+			words: ""
+		};
 	},
 	computed: {
 		dynamicTags: {
@@ -69,9 +67,12 @@ export default {
 				return this.tagList;
 			},
 			set(tagList) {
-				this.$emit('input', tagList);
+				this.$emit("input", tagList);
 			}
 		}
+	},
+	mounted() {
+		console.log();
 	},
 	methods: {
 		// 数组去重
@@ -84,7 +85,7 @@ export default {
 		},
 		showInput() {
 			this.inputVisible = true;
-			this.$nextTick(_ => {
+			this.$nextTick((_) => {
 				this.$refs.saveTagInput.$refs.input.focus();
 			});
 		},
@@ -95,11 +96,11 @@ export default {
 			}
 			this.dynamicTags = this.unique(this.dynamicTags);
 			this.inputVisible = false;
-			this.inputValue = '';
+			this.inputValue = "";
 		},
 		editTag(tag, index) {
 			this.num = index;
-			this.$nextTick(_ => {
+			this.$nextTick((_) => {
 				this.$refs.editInput[0].focus();
 			});
 			this.words = tag;
@@ -110,11 +111,11 @@ export default {
 				this.dynamicTags[index] = words;
 			}
 			this.dynamicTags = this.unique(this.dynamicTags);
-			this.words = '';
+			this.words = "";
 			this.num = -1;
 		}
 	}
-}
+};
 </script>
 <style scoped lang="scss">
 .el-tag + .el-tag {
@@ -144,6 +145,6 @@ export default {
 	border: transparent;
 	background-color: transparent;
 	font-size: 12px;
-	color: #B59059;
+	color: #b59059;
 }
 </style>

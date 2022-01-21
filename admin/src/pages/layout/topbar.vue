@@ -52,7 +52,7 @@
 import { computed, defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { href } from "/@/core/utils";
+import { href } from "/@/cool/utils";
 
 export default defineComponent({
 	setup() {

@@ -47,7 +47,6 @@
 
 <script lang="ts">
 import { computed, defineComponent, inject } from "vue";
-import { ContextMenu } from "cl-admin-crud-vue3";
 
 export default defineComponent({
 	name: "cl-upload-space-item",
@@ -92,26 +91,26 @@ export default defineComponent({
 
 		// 右键菜单
 		function openContextMenu(e: any) {
-			ContextMenu.open(e, {
-				list: [
-					{
-						label: isSelected.value ? "取消选中" : "选中",
-						"suffix-icon": isSelected.value ? "el-icon-close" : "el-icon-check",
-						callback: (_: any, done: Function) => {
-							select();
-							done();
-						}
-					},
-					{
-						label: "删除",
-						"suffix-icon": "el-icon-delete",
-						callback: (_: any, done: Function) => {
-							remove();
-							done();
-						}
-					}
-				]
-			});
+			// ContextMenu.open(e, {
+			// 	list: [
+			// 		{
+			// 			label: isSelected.value ? "取消选中" : "选中",
+			// 			"suffix-icon": isSelected.value ? "el-icon-close" : "el-icon-check",
+			// 			callback: (_: any, done: Function) => {
+			// 				select();
+			// 				done();
+			// 			}
+			// 		},
+			// 		{
+			// 			label: "删除",
+			// 			"suffix-icon": "el-icon-delete",
+			// 			callback: (_: any, done: Function) => {
+			// 				remove();
+			// 				done();
+			// 			}
+			// 		}
+			// 	]
+			// });
 		}
 
 		return {
