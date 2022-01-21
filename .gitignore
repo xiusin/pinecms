@@ -11,8 +11,6 @@ resources/configs/database.yml
 resources/assets/example/
 resources/themes/example/
 resources/html/
-pinecms-dev-build
-pinecms-dev-build.exe~
 *.exe
 /apidoc.html
 /apidoc.html.json
@@ -32,11 +30,8 @@ tests/*.jpg
 tests/*.h
 .lh
 /plugins/
-/mywebsql_images
 ./pinecms
 pinecms
 admin/.yarnclean
-build
-build.zip
 publish
 publish.zip
