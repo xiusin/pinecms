@@ -33,7 +33,7 @@
 		"vue-router": "^4.0.5",
 		"vuedraggable": "^4.0.1",
 		"vuex": "^4.0.0-0",
-		"xlsx": "^0.16.9"
+		"xlsx": "^0.17.0"
 	},
 	"devDependencies": {
 		"@types/lodash": "^4.14.168",
