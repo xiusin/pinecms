@@ -1,21 +1,20 @@
 package server
 
 import (
+	"github.com/xiusin/pine/cache/providers/pleveldb"
 	"io"
 	"os"
 	"path/filepath"
 	"time"
 
-	jet2 "github.com/CloudyKit/jet"
-	"github.com/allegro/bigcache/v3"
+	"github.com/CloudyKit/jet"
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
-	pineBigCache "github.com/xiusin/pine/cache/providers/bigcache"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pine/middlewares/cache304"
 	"github.com/xiusin/pine/render"
-	"github.com/xiusin/pine/render/engine/jet"
+	"github.com/xiusin/pine/render/engine/pjet"
 	"github.com/xiusin/pine/sessions"
 	cacheProvider "github.com/xiusin/pine/sessions/providers/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -39,7 +38,7 @@ func InitApp() {
 }
 
 func InitCache() {
-	cacheHandler = pineBigCache.New(bigcache.DefaultConfig(24 * time.Hour))
+	cacheHandler = pleveldb.New(config.App().CacheDb, nil)
 	theme, _ := cacheHandler.Get(controllers.CacheTheme)
 	if len(theme) > 0 {
 		conf.View.Theme = string(theme)
@@ -62,15 +61,15 @@ func initLoggerService() di.BuildHandler {
 	return func(builder di.AbstractBuilder) (i interface{}, e error) {
 		loggers := logger.New()
 		ormLogger := commonLogger.NewPineCmsLogger(config.Orm(), 10)
-		cmsLoggerFile, err := os.OpenFile(filepath.Join(conf.LogPath, "cms.log"), os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
+		cmsLogger, err := os.OpenFile(filepath.Join(conf.LogPath, "pinecms.log"), os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
 		helper.PanicErr(err)
 
 		pine.RegisterOnInterrupt(func() {
 			ormLogger.Close()
-			cmsLoggerFile.Close()
+			_ = cmsLogger.Close()
 		})
 
-		loggers.SetOutput(io.MultiWriter(os.Stdout, ormLogger, cmsLoggerFile))
+		loggers.SetOutput(io.MultiWriter(os.Stdout, ormLogger, cmsLogger))
 		logger.SetDefault(loggers)
 
 		loggers.SetReportCaller(true, 3)
@@ -83,11 +82,11 @@ func initLoggerService() di.BuildHandler {
 	}
 }
 
-func initJetEngine() *jet.PineJet {
-	jetEngine := jet.New(conf.View.FeDirname, ".jet", conf.View.Reload)
-	jetEngine.AddPath("./resources/taglibs/")
+func initJetEngine() *pjet.PineJet {
+	jetEngine := pjet.New(conf.View.FeDirname, ".jet", conf.View.Reload)
+	jetEngine.AddPath("resources/taglibs/")
 
-	tags := map[string]jet2.Func{
+	tags := map[string]jet.Func{
 		"flink":          taglibs.Flink,
 		"type":           taglibs.Type,
 		"adlist":         taglibs.AdList,

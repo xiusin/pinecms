@@ -16,11 +16,7 @@ const CacheCategoryInfoPrefix = "pinecms.category.%d"
 const CacheCategoryContentPrefix = "pinecms.content.%d_%d"
 const CacheModelTablePrefix = "pinecms.model.table.%d"
 const CacheMysqlVersion = "pinecms.mysql.version"
-const CacheVerifyCode = "pinecms.verify.code"
 const CacheAdminRoles = "pinecms.admin.roles"
-const CacheAdminRolesList = "pinecms.admin.roles.%d" // 指定管理员role
+const CacheAdminRolesList = "pinecms.admin.roles.%d"
+const CacheTableNames = "pinecms.orm.table.name"
 
-// CacheKeyAll 缓存管理迭代
-var CacheKeyAll = []map[string]interface{}{
-	{CacheTheme: "主题"},
-}

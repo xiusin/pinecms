@@ -3,6 +3,7 @@ package backend
 import (
 	"bytes"
 	"fmt"
+	"github.com/xiusin/pine/cache"
 	"io"
 	"strings"
 	"sync"
@@ -30,14 +31,18 @@ func (c *DatabaseController) RegisterRoute(b pine.IRouterWrapper) {
 	b.POST("/database/backup", "Backup")
 }
 
-func (c *DatabaseController) Manager(orm *xorm.Engine) {
-	mataDatas, err := orm.DBMetas()
+func (c *DatabaseController) Manager(orm *xorm.Engine, cache cache.AbstractCache) {
+	var mataDatas []*schemas.Table
 	var data []map[string]interface{}
-	if err != nil || len(mataDatas) == 0 {
-		pine.Logger().Error("读取数据库元信息失败", err)
-		helper.Ajax("读取数据库元信息失败", 1, c.Ctx())
+
+	if err := cache.Remember(controllers.CacheTableNames, &mataDatas, func() (interface{}, error) {
+		v, err := orm.DBMetas()
+		return &v, err
+	}, 600); err != nil {
+		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
+
 	var wg sync.WaitGroup
 	wg.Add(len(mataDatas))
 	for _, mataData := range mataDatas {
@@ -108,7 +113,6 @@ func (c *DatabaseController) backup(settingData map[string]string) (msg string, 
 	uploadFile := fmt.Sprintf("%s/%s", baseBackupDir, fNameBaseName+".zip")
 	buf := bytes.NewBuffer([]byte{})
 	if err := orm.DumpAll(buf); err != nil {
-		pine.Logger().Error("备份数据表失败", err)
 		return "备份表数据失败", 1
 	}
 

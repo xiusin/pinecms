@@ -2,7 +2,7 @@ package frontend
 
 import (
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/render/engine/jet"
+	"github.com/xiusin/pine/render/engine/pjet"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"io/ioutil"
 	"os"
@@ -20,7 +20,7 @@ func (c *IndexController) Index() {
 		return
 	}
 	defer f.Close()
-	jet := pine.Make(controllers.ServiceJetEngine).(*jet.PineJet)
+	jet := pine.Make(controllers.ServiceJetEngine).(*pjet.PineJet)
 	temp, err := jet.GetTemplate(template("index.jet"))
 	if err != nil {
 		c.Logger().Error(err)

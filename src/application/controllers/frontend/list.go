@@ -2,7 +2,7 @@ package frontend
 
 import (
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/render/engine/jet"
+	"github.com/xiusin/pine/render/engine/pjet"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -51,7 +51,7 @@ func (c *IndexController) List(pageFilePath string) {
 		return
 	}
 	defer f.Close()
-	jet := pine.Make(controllers.ServiceJetEngine).(*jet.PineJet)
+	jet := pine.Make(controllers.ServiceJetEngine).(*pjet.PineJet)
 	temp, err := jet.GetTemplate(template(tpl))
 	if err != nil {
 		pine.Logger().Error(err)

@@ -150,7 +150,7 @@ func (c *BaseController) PostList() {
 
 func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, error) {
 	if err := parseParam(c.Ctx(), &c.p); err != nil {
-		return nil, err
+		pine.Logger().Warning("解析参数错误", err)
 	}
 	if len(c.KeywordsSearch) > 0 && c.p.Keywords != "" { // 关键字搜索
 		var whereBuilder []string
@@ -269,6 +269,10 @@ func (c *BaseController) add() bool {
 		pine.Logger().Error("新增记录失败", err)
 	}
 	return result > 0
+}
+
+func (c *BaseController) PostUpdate() {
+	c.PostEdit()
 }
 
 func (c *BaseController) PostEdit() {

@@ -6,7 +6,6 @@ go.sum
 vendor
 node_modules
 uploads
-trace.out
 resources/configs/database.yml
 resources/assets/example/
 resources/themes/example/
@@ -20,11 +19,7 @@ resources/html/
 /admin/public/Ueditor/
 /apidoc-ui/public/UEditor/
 /admin/wx-manage/
-/sunny
 /main
-/frp/frpc
-/frp/frpc.ini
-/docdb/
 tests/*.png
 tests/*.jpg
 tests/*.h

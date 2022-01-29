@@ -23,7 +23,12 @@ type OssUploader struct {
 }
 
 func (s *OssUploader) Remove(name string) error {
-	return s.bucket.DeleteObject(strings.TrimLeft(filepath.Join(s.urlPrefix, name), "/"))
+	if exist, err := s.Exists(name); err != nil {
+		return err
+	} else if !exist {
+		return fmt.Errorf("object %s not exists", name)
+	}
+	return s.bucket.DeleteObject(name)
 }
 
 func (s *OssUploader) GetFullUrl(name string) string {
@@ -34,13 +39,13 @@ func (s *OssUploader) GetFullUrl(name string) string {
 }
 
 func (s *OssUploader) Exists(name string) (bool, error) {
-	name = strings.TrimLeft(getAvailableUrl(filepath.Join(s.urlPrefix, name)), "/")
 	return s.bucket.IsObjectExist(name)
 }
 
 func checkIsValidConf(config map[string]string) {
-	if config["OSS_ENDPOINT"] == "" || config["OSS_KEYID"] == "" || config["OSS_KEYSECRET"] == "" || config["OSS_BUCKET"] == "" {
-		panic("请配置OSS信息")
+	if config["OSS_ENDPOINT"] == "" || config["OSS_KEYID"] == "" ||
+		config["OSS_KEYSECRET"] == "" || config["OSS_BUCKET"] == "" {
+		panic(fmt.Errorf("请配置OSS信息"))
 	}
 }
 
@@ -84,7 +89,7 @@ func (s *OssUploader) List(dir string) ([]File, string, error) {
 	if err != nil {
 		return nil, "", err
 	}
-	var files []File
+	var files = []File{}
 	for _, object := range list.Objects {
 		files = append(files, File{
 			Id:       object.Key,

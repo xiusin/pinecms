@@ -48,7 +48,10 @@ func strFirstToUpper(str string) string {
 }
 
 func parseParam(ctx *pine.Context, param interface{}) error {
-	return ctx.BindJSON(param)
+	if ctx.IsJson() && len(ctx.RequestCtx.PostBody()) > 0 {
+		return ctx.BindJSON(param)
+	}
+	return nil
 }
 
 func ArrayCol(arr interface{}, col string) []interface{} {

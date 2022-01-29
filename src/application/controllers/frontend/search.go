@@ -3,7 +3,7 @@ package frontend
 import (
 	"fmt"
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/render/engine/jet"
+	"github.com/xiusin/pine/render/engine/pjet"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -190,7 +190,7 @@ func (c *IndexController) Search(orm *xorm.Engine) {
 		}
 		return list
 	}
-	pineJet := pine.Make(controllers.ServiceJetEngine).(*jet.PineJet)
+	pineJet := pine.Make(controllers.ServiceJetEngine).(*pjet.PineJet)
 	tpl, err := pineJet.GetTemplate(template("search.jet"))
 	if err != nil {
 		pine.Logger().Error("读取搜索页面失败", err)

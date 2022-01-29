@@ -3,6 +3,7 @@ module github.com/xiusin/pinecms
 go 1.17
 
 replace github.com/xiusin/pine => ../pine
+
 replace github.com/xiusin/logger => ../logger
 
 require (
@@ -10,7 +11,6 @@ require (
 	github.com/alecthomas/chroma v0.9.4
 	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0
 	github.com/aliyun/aliyun-oss-go-sdk v2.1.9+incompatible
-	github.com/allegro/bigcache/v3 v3.0.1
 	github.com/arl/statsviz v0.4.0
 	github.com/casbin/casbin/v2 v2.40.3
 	github.com/casbin/xorm-adapter v1.0.1-0.20191120030838-267478260350

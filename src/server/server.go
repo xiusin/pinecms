@@ -9,7 +9,6 @@ import (
 	"github.com/xiusin/pinecms/src/router"
 )
 
-
 func Server() {
 	InitCache()
 
@@ -18,11 +17,11 @@ func Server() {
 	router.InitRouter(app)
 
 	go plugins.Init()
+
 	app.Run(
-		pine.Addr(fmt.Sprintf(":%d", conf.Port)),
+		pine.Addr(fmt.Sprintf("%s:%d", "127.0.0.1", conf.Port)),
 		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))),
 		pine.WithServerName("xiusin/pinecms"),
 		pine.WithCookie(true),
 	)
 }
-

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
-	"github.com/xiusin/pine/render/engine/jet"
+	"github.com/xiusin/pine/render/engine/pjet"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"io/ioutil"
@@ -74,7 +74,7 @@ func (c *IndexController) Detail(pathname string) {
 		return
 	}
 	defer f.Close()
-	pineJet := pine.Make(controllers.ServiceJetEngine).(*jet.PineJet)
+	pineJet := pine.Make(controllers.ServiceJetEngine).(*pjet.PineJet)
 	temp, err := pineJet.GetTemplate(template(tpl))
 	if err != nil {
 		pine.Logger().Error(err)

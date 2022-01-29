@@ -5,7 +5,6 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"path/filepath"
-	"strings"
 )
 
 type DatabaseBackupController struct {
@@ -49,15 +48,15 @@ func (c *DatabaseBackupController) BackupDownload() {
 
 func (c *DatabaseBackupController) BackupDelete() {
 	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
-	names := c.Input().GetFormStrings("ids")
-	if len(names) == 0 {
+	names := c.Input().Get("ids")
+	if len(names.([]interface{})) == 0 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	relName := filepath.Join(baseBackupDir, strings.Trim(names[0], `"`))
+	relName := names.([]interface{})[0].(string)
 	uploader := getStorageEngine(settingData)
 	if err := uploader.Remove(relName); err != nil {
-		helper.Ajax("删除文件错误: "+err.Error(), 1, c.Ctx())
+		helper.Ajax(err, 1, c.Ctx())
 		return
 	}
 	helper.Ajax("删除文件成功", 0, c.Ctx())

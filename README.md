@@ -80,8 +80,7 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 # 演示 #
 
-- 首页 <http://pinecms.xiusin.cn/>
-- 后端 <http://pinecms.xiusin.cn/admin/>
+- <http://pinecms.xiusin.cn/admin/>
 
 # 新功能 #
 
@@ -169,23 +168,6 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
   - 自动回复素材功能
   - 客服消息
 
-- redis manager管理插件
-
-
-# error 
-```
-fatal error: concurrent map writes
-
-goroutine 53 [running]:
-runtime.throw({0x4d4e9db, 0x30})
-        /usr/local/Cellar/go/1.17/libexec/src/runtime/panic.go:1198 +0x71 fp=0xc0005b7600 sp=0xc0005b75d0 pc=0x4038a11
-runtime.mapassign_faststr(0x4be0fc0, 0xc0154880f0, {0x4d2e7f9, 0xd})
-        /usr/local/Cellar/go/1.17/libexec/src/runtime/map_faststr.go:294 +0x38b fp=0xc0005b7668 sp=0xc0005b7600 pc=0x401680b
-github.com/xiusin/logger.(*LogEntity).SetDataKV(0xc014f04060, {0x4d2e7f9, 0x0}, {0x4b93b60, 0xc0150f4030})
-        /Users/xiusin/projects/pkg/mod/github.com/xiusin/logger@v0.0.10-0.20220103084022-9cb8378d9b03/entity.go:29 +0xdb fp=0xc0005b76d0 sp=0xc0005b7668 pc=0x41e077b
-github.com/xiusin/logger.(*LogEntity).Id(0xc014f04060, {0xc00043c060, 0x24})
-
-```
 
 # TODO #
 

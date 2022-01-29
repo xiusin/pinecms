@@ -19,7 +19,7 @@ import (
 	"github.com/valyala/fasthttp"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
-	plugin2 "github.com/xiusin/pinecms/cmd/plugin"
+	cmdPlugin "github.com/xiusin/pinecms/cmd/plugin"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -56,18 +56,17 @@ type Plug struct {
 var pluginMgr = &pluginManager{
 	plugins:        map[string]*Plug{},
 	installPlugins: map[string]struct{}{},
-	scannedPlugins: map[string]*plugin2.Config{},
+	scannedPlugins: map[string]*cmdPlugin.Config{},
 	remoteDomain:   "https://plugin.xiusin.cn",
 	fileGlob:       "*/**" + ext,
 }
 
-// todo 可以打包子目录进行前端代码发布, 或后端源代码
-// 插件端可以配置导出assets.zip
+// 插件端可以配置导出assets.zip TODO 可以打包子目录进行前端代码发布, 或后端源代码
 type pluginManager struct {
 	sync.Mutex
 	plugins        map[string]*Plug
 	installPlugins map[string]struct{}        // 已经通过安装配置的插件
-	scannedPlugins map[string]*plugin2.Config // 已经扫描到的插件(已安装 + 未安装)
+	scannedPlugins map[string]*cmdPlugin.Config // 已经扫描到的插件(已安装 + 未安装)
 	path           string
 	fileGlob       string
 	remoteDomain   string
@@ -87,17 +86,17 @@ func (p *pluginManager) Iter(fn IterFn) error {
 	return nil
 }
 
-func (p *pluginManager) GetLocalPlugin() map[string]plugin2.Config {
+func (p *pluginManager) GetLocalPlugin() map[string]cmdPlugin.Config {
 	p.Lock()
 	defer p.Unlock()
-	var scannedPlugins = map[string]plugin2.Config{}
+	var scannedPlugins = map[string]cmdPlugin.Config{}
 	for s, s2 := range p.scannedPlugins {
 		scannedPlugins[s] = *s2
 	}
 	return scannedPlugins
 }
 
-func (p *pluginManager) GetPluginInfo(name string) (*plugin2.Config, error) {
+func (p *pluginManager) GetPluginInfo(name string) (*cmdPlugin.Config, error) {
 	conf, exist := p.scannedPlugins[name]
 	if !exist {
 		return conf, errors.New("插件不存在")
@@ -184,8 +183,7 @@ func (p *pluginManager) registerRouter(plug PluginIntf) {
 	pine.Logger().Print("[plugin:task] 注册路由分组:" + plug.Prefix() + "成功")
 }
 
-// Download 下载插件,系统,go版本,插件版本
-// TODO 怎么处理进度呢? 下载完成或下载失败
+// Download 下载插件,系统,go版本,插件版本 TODO 怎么处理进度呢? 下载完成或下载失败
 func (p *pluginManager) Download(name string) {
 	if len(p.path) == 0 {
 		return
@@ -248,16 +246,12 @@ func Init() {
 	if !config.App().PluginEnable || helper.IsWindows() {
 		return
 	}
-
-	pluginPath := config.App().PluginPath
-	if len(pluginPath) > 0 {
+	if pluginPath := config.App().PluginPath; len(pluginPath) > 0 {
 		pluginMgr.path = pluginPath
-		_ = os.Mkdir(pluginMgr.path, os.ModePerm)
 	} else {
 		pine.Logger().Warning("没有配置PluginPath, 禁用plugin功能")
 		return
 	}
-
 	scanPluginDir()
 	go tickScanDir()
 	pluginMgr.loadPlugin()
@@ -266,7 +260,7 @@ func Init() {
 func scanPluginDir() {
 	if plugins, _ := filepath.Glob(filepath.Join(pluginMgr.path, pluginMgr.fileGlob)); len(plugins) > 0 {
 		for _, f := range plugins {
-			conf := plugin2.Config{}
+			conf := cmdPlugin.Config{}
 			jsonPath := filepath.Join(filepath.Dir(f), jsonName)
 			content, err := ioutil.ReadFile(jsonPath)
 			if err == nil {

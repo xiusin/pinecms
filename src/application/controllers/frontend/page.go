@@ -2,7 +2,7 @@ package frontend
 
 import (
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/render/engine/jet"
+	"github.com/xiusin/pine/render/engine/pjet"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -44,7 +44,7 @@ func (c *IndexController) Page(pathname string) {
 		return
 	}
 	defer f.Close()
-	pineJet := pine.Make(controllers.ServiceJetEngine).(*jet.PineJet)
+	pineJet := pine.Make(controllers.ServiceJetEngine).(*pjet.PineJet)
 	tpl := "page.jet"
 	if len(category.DetailTpl) > 0 {
 		tpl = category.DetailTpl
