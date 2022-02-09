@@ -178,7 +178,8 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - 菜单表增加perms字段， 可以配置权限标识，可以配置节点类型为权限。
 - <http://relation-graph.com/#/demo/scene-network> 组织架构显示
 - 动态构建表单: <https://eddyzhang1986.github.io/antd-jsonschema-form/> 
-  
+- https://gitee.com/qiao_hai_long/vue-filemanager?_from=gitee_search
+- 
 - 路由注解
 <!-- https://demo.goploy.icu/#/server/index SFTP功能 -->
 <!-- http://pigx.pig4cloud.com/#/mp/wxaccountfans/index -->

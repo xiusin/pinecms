@@ -22,6 +22,7 @@ func Server() {
 		pine.Addr(fmt.Sprintf("%s:%d", "127.0.0.1", conf.Port)),
 		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))),
 		pine.WithServerName("xiusin/pinecms"),
+		pine.WithoutStartupLog(true),
 		pine.WithCookie(true),
 	)
 }

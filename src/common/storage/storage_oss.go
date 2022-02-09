@@ -84,10 +84,10 @@ func (s *OssUploader) Upload(storageName string, LocalFile io.Reader) (string, e
 	return s.host + "/" + storageName, nil
 }
 
-func (s *OssUploader) List(dir string) ([]File, string, error) {
+func (s *OssUploader) List(dir string) ([]File, error) {
 	list, err := s.bucket.ListObjects(oss.Prefix(strings.TrimLeft(getAvailableUrl(filepath.Join(s.urlPrefix, dir)), "/")))
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
 	var files = []File{}
 	for _, object := range list.Objects {
@@ -99,11 +99,23 @@ func (s *OssUploader) List(dir string) ([]File, string, error) {
 			Ctime:    object.LastModified,
 		})
 	}
-	return files, s.host, nil
+	return files, nil
 }
 
 func (s *OssUploader) GetEngineName() string {
 	return "oss存储"
+}
+
+func (s *OssUploader) Content(name string) ([]byte, error) {
+	return nil, nil
+}
+
+func (s *OssUploader) Info(name string) (*File, error) {
+	return &File{}, nil
+}
+
+func (s *OssUploader) Rename(oldname, newname string) error {
+	return nil
 }
 
 func init() {

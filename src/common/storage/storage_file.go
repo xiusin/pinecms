@@ -2,15 +2,14 @@ package storage
 
 import (
 	"fmt"
+	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/config"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/xiusin/pine/di"
-	"github.com/xiusin/pinecms/src/application/controllers"
-	"github.com/xiusin/pinecms/src/config"
 )
 
 type FileUploader struct {
@@ -19,11 +18,11 @@ type FileUploader struct {
 	baseDir string
 }
 
-func NewFileUploader(host, fixDir, uploadDir string) *FileUploader {
+func NewFileUploader(opt map[string]string) *FileUploader {
 	return &FileUploader{
-		host:    host,
-		fixDir:  fixDir,
-		baseDir: uploadDir,
+		host:    opt["SITE_URL"],
+		fixDir:  opt["UPLOAD_URL_PREFIX"],
+		baseDir: opt["UPLOAD_DIR"],
 	}
 }
 
@@ -46,23 +45,24 @@ func (s *FileUploader) Upload(storageName string, LocalFile io.Reader) (string, 
 	return s.GetFullUrl(storageName), nil
 }
 
-func (s *FileUploader) List(dir string) ([]File, string, error) {
+func (s *FileUploader) List(dir string) ([]File, error) {
 	scanDir := filepath.Join(s.baseDir, dir)
 	fs, err := ioutil.ReadDir(scanDir)
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
-	var list []File
+	var list = []File{}
 	for _, f := range fs {
 		list = append(list, File{
 			Id:       f.Name(),
-			FullPath: filepath.Join(s.fixDir, dir, f.Name()),
+			FullPath: strings.ReplaceAll(filepath.Join(s.fixDir, dir, f.Name()), "\\", "/"),
 			Name:     filepath.Base(f.Name()),
 			Size:     f.Size(),
 			Ctime:    f.ModTime(),
+			IsDir:    f.IsDir(),
 		})
 	}
-	return list, s.fixDir, nil
+	return list, nil
 }
 
 func (s *FileUploader) Exists(name string) (bool, error) {
@@ -85,6 +85,30 @@ func (s *FileUploader) Remove(name string) error {
 	return os.Remove(filepath.Join(s.baseDir, name))
 }
 
+func (s *FileUploader) Content(name string) ([]byte, error) {
+	return os.ReadFile(filepath.Join(s.baseDir, name))
+}
+
+func (s *FileUploader) Rename(oldname, newname string) error {
+	return os.Rename(filepath.Join(s.baseDir, oldname), filepath.Join(s.baseDir, newname))
+}
+
+func (s *FileUploader) Info(name string) (*File, error) {
+	finfo, err := os.Stat(filepath.Join(s.baseDir, name))
+	if err != nil {
+		return nil, err
+	}
+
+	return &File{
+		FullPath: filepath.Join(s.fixDir, name),
+		Name:     finfo.Name(),
+		Size:     finfo.Size(),
+		Ctime:    finfo.ModTime(),
+		IsDir:    finfo.IsDir(),
+	}, nil
+
+}
+
 func init() {
 	di.Set(fmt.Sprintf(controllers.ServiceUploaderEngine, (&FileUploader{}).GetEngineName()), func(builder di.AbstractBuilder) (interface{}, error) {
 		cfg, err := config.SiteConfig()
@@ -92,8 +116,6 @@ func init() {
 			return nil, err
 		}
 		checkIsValidConf(cfg)
-
-		uploadDir, urlPrefixDir, siteUrl := cfg["UPLOAD_DIR"], cfg["UPLOAD_URL_PREFIX"], cfg["SITE_URL"]
-		return NewFileUploader(siteUrl, urlPrefixDir, uploadDir), nil
+		return NewFileUploader(cfg), nil
 	}, false)
 }

@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/application/controllers/backend/filemanager"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/wechat"
 )
 
@@ -9,9 +10,9 @@ import (
 // {holder}占位符作为替换位置, 不可删除
 func InitModuleRouter(backendRouter *pine.Router, app *pine.Application) {
 	// holder
+	filemanager.InitRouter(app, backendRouter)
 }
 
-
-func InitSubModuleRouter(app *pine.Application, admin *pine.Router)  {
+func InitSubModuleRouter(app *pine.Application, admin *pine.Router) {
 	wechat.InitRouter(app, admin)
 }

@@ -12,7 +12,6 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm"
@@ -65,7 +64,7 @@ type BaseController struct {
 func (c *BaseController) Construct() {
 	c.TableKey = "id"
 	c.TableStructKey = "Id"
-	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
+	c.Orm = helper.GetORM()
 	c.AppId = "admin"
 	if c.apiEntities == nil {
 		c.apiEntities = map[string]apidoc.Entity{ // 内置一个模板, 配合ApiEntityName使用

@@ -13,15 +13,12 @@ import (
 )
 
 func getStorageEngine(settingData map[string]string) storage.Uploader {
-	prefixDir := settingData["UPLOAD_URL_PREFIX"]
-	uploadDir := settingData["UPLOAD_DIR"]
-	siteUrl := settingData["SITE_URL"]
 	engine := settingData["UPLOAD_ENGINE"]
 	var uploadEngine storage.Uploader
 	uploader, err := di.Get(fmt.Sprintf(controllers.ServiceUploaderEngine, engine))
 	if err != nil {
 		pine.Logger().Warning("缺少存储驱动, 自动转换为本地存储", err)
-		uploadEngine = storage.NewFileUploader(siteUrl, prefixDir, uploadDir)
+		uploadEngine = storage.NewFileUploader(settingData)
 	} else {
 		uploadEngine = uploader.(storage.Uploader)
 	}

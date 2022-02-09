@@ -22,7 +22,7 @@ func (c *DatabaseBackupController) RegisterRoute(b pine.IRouterWrapper) {
 func (c *DatabaseBackupController) BackupList() {
 	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
 	uploader := getStorageEngine(settingData)
-	list, _, err := uploader.List(baseBackupDir)
+	list, err := uploader.List(baseBackupDir)
 	if err != nil {
 		c.Logger().Error(err)
 	}

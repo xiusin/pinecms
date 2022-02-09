@@ -2,10 +2,6 @@ module github.com/xiusin/pinecms
 
 go 1.17
 
-replace github.com/xiusin/pine => ../pine
-
-replace github.com/xiusin/logger => ../logger
-
 require (
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
 	github.com/alecthomas/chroma v0.9.4
@@ -34,9 +30,9 @@ require (
 	github.com/spf13/cobra v1.2.1
 	github.com/takama/daemon v1.0.0
 	github.com/traefik/yaegi v0.9.19
-	github.com/valyala/fasthttp v1.32.0
+	github.com/valyala/fasthttp v1.33.0
 	github.com/xiusin/logger v0.0.10-0.20220103084022-9cb8378d9b03
-	github.com/xiusin/pine v0.0.0-20220120062707-fc37f930b8f3
+	github.com/xiusin/pine v0.0.0-20220206052816-3f62ad820f65
 	github.com/xiusin/reload v0.0.0-20211215091741-ab993ba2e9d2
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	golang.org/x/text v0.3.7
@@ -57,7 +53,7 @@ require (
 	github.com/bits-and-blooms/bloom v1.0.1-0.20210513151749-57921726402d // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b // indirect
 	github.com/cubewise-code/go-mime v0.0.0-20200519001935-8c5762b177d8 // indirect
-	github.com/dgrr/http2 v0.3.3 // indirect
+	github.com/dgrr/http2 v0.3.4 // indirect
 	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/fatih/color v1.13.0 // indirect
@@ -75,7 +71,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kataras/tablewriter v0.0.0-20180708051242-e063d29b7c23 // indirect
-	github.com/klauspost/compress v1.14.1 // indirect
+	github.com/klauspost/compress v1.14.2 // indirect
 	github.com/landoop/tableprinter v0.0.0-20201125135848-89e81fc956e7 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.10.4 // indirect
@@ -99,10 +95,9 @@ require (
 	github.com/valyala/fastjson v1.6.3 // indirect
 	github.com/valyala/fastrand v1.1.0 // indirect
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
-	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
+	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
-	golang.org/x/net v0.0.0-20210924151903-3ad01bbaa167 // indirect
-	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
+	golang.org/x/sys v0.0.0-20220204135822-1c1b9b1eba6a // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
