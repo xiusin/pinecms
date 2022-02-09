@@ -242,7 +242,10 @@ export function deepTree(list: Array<any>) {
 	const newList: Array<any> = [];
 	const map: any = {};
 
-	list.forEach((e) => (map[e.id] = e));
+	list.forEach((e) => {
+		e.parentId = e.parentId || e.parent_id;
+		map[e.id] = e;
+	});
 
 	list.forEach((e) => {
 		const parent = map[e.parentId];

@@ -10055,12 +10055,13 @@
 	box-sizing: border-box;
 	padding: 20px;
 }
-.el-footer {
-	padding: 0 20px;
-	box-sizing: border-box;
-	-ms-flex-negative: 0;
-	flex-shrink: 0;
-}
+/*.el-footer {*/
+/*	padding: 0 20px;*/
+/*	box-sizing: border-box;*/
+/*	-ms-flex-negative: 0;*/
+/*	flex-shrink: 0;*/
+/*}*/
+.el-footer {background: #fff;border-top: 1px solid #e6e6e6;padding:13px 15px;}
 .el-timeline {
 	margin: 0;
 	font-size: 14px;

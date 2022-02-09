@@ -115,7 +115,6 @@ export default defineComponent({
 
 			await service.system.department.select().then((res: any[]) => {
 				list.value = deepTree(res);
-				console.log(res);
 				emit("list-change", list.value);
 			});
 

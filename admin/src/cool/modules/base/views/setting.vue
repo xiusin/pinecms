@@ -1,14 +1,8 @@
 <template>
 	<cl-crud @load="onLoad" :ref="setRefs('crud')">
-		<el-row type="flex">
-			<cl-refresh-btn />
-			<cl-add-btn />
-			<cl-flex1 />
-			<cl-query :list="list" />
-			<cl-search-key />
-		</el-row>
+		<el-row type="flex" class="topBtn"><cl-flex1 /><cl-add-btn /></el-row>
 		<el-row>
-			<el-tabs type="border-card" style="width: 100%" v-model="tab">
+			<el-tabs style="width: 100%" v-model="tab">
 				<el-tab-pane
 					v-for="(item, index) in list"
 					:label="item.label"
@@ -17,16 +11,10 @@
 					><cl-table v-bind="table"
 				/></el-tab-pane>
 				<div style="padding: 10px 0; text-align: right" v-if="tab === '邮箱设置'">
-					<el-button size="mini" type="info" @click="sendTestEmail"
-						>测试发送邮件</el-button
-					>
+					<el-button size="mini" type="info" @click="sendTestEmail">测试发送邮件</el-button>
 					<cl-form :ref="setRefs('emailForm')" />
 				</div>
 			</el-tabs>
-		</el-row>
-
-		<el-row type="flex">
-			<cl-flex1 />
 		</el-row>
 
 		<cl-upsert :ref="setRefs('upsert')" v-bind="upsert" @open="onUpsertOpen" />
@@ -287,13 +275,19 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .change-btn {
 	display: flex;
 	position: absolute;
 	right: 10px;
 	bottom: 10px;
 	z-index: 9;
+}
+
+.cl-crud > .topBtn {
+	position: absolute;
+	right: 20px;
+	top: 20px;
 }
 
 .editor {

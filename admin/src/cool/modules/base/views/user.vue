@@ -119,12 +119,6 @@ export default defineComponent({
 		const dept = ref<any[]>([]);
 		// 表格配置
 		const table = reactive<Table>({
-			props: {
-				"default-sort": {
-					prop: "createTime",
-					order: "descending"
-				}
-			},
 			columns: [
 				{
 					type: "selection",
@@ -135,7 +129,7 @@ export default defineComponent({
 					label: "头像"
 				},
 				{
-					prop: "name",
+					prop: "realname",
 					label: "姓名",
 					minWidth: 150
 				},
@@ -145,13 +139,8 @@ export default defineComponent({
 					minWidth: 150
 				},
 				{
-					prop: "nickName",
-					label: "昵称",
-					minWidth: 150
-				},
-				{
-					prop: "departmentName",
-					label: "部门名称",
+					prop: "email",
+					label: "邮箱",
 					minWidth: 150
 				},
 				{
@@ -159,11 +148,6 @@ export default defineComponent({
 					label: "角色",
 					headerAlign: "center",
 					minWidth: 200
-				},
-				{
-					prop: "phone",
-					label: "手机号码",
-					minWidth: 150
 				},
 				{
 					prop: "remark",
@@ -188,14 +172,18 @@ export default defineComponent({
 					]
 				},
 				{
-					prop: "createTime",
-					label: "创建时间",
-					sortable: "custom",
+					prop: "lastlogintime",
+					label: "最后登录时间",
+					minWidth: 150
+				},
+				{
+					prop: "lastloginip",
+					label: "最后登录IP",
 					minWidth: 150
 				},
 				{
 					type: "op",
-					buttons: ["slot-move-btn", "edit", "delete"],
+					buttons: ["edit", "delete"],
 					width: 160
 				}
 			]
@@ -219,7 +207,23 @@ export default defineComponent({
 					}
 				},
 				{
-					prop: "name",
+					prop: "username",
+					label: "用户名",
+					span: 24,
+					component: {
+						name: "el-input",
+						props: {
+							placeholder: "用户名"
+						}
+					},
+					rules: {
+						required: true,
+						message: "用户名不能为空"
+					}
+				},
+
+				{
+					prop: "realname",
 					label: "姓名",
 					span: 12,
 					component: {
@@ -228,40 +232,10 @@ export default defineComponent({
 							placeholder: "请填写姓名"
 						}
 					},
-					rules: {
-						required: true,
-						message: "姓名不能为空"
-					}
-				},
-				{
-					prop: "nickName",
-					label: "昵称",
-					span: 12,
-					component: {
-						name: "el-input",
-						props: {
-							placeholder: "请填写昵称"
-						}
-					},
-					rules: {
-						required: true,
-						message: "昵称不能为空"
-					}
-				},
-				{
-					prop: "username",
-					label: "用户名",
-					span: 12,
-					component: {
-						name: "el-input",
-						props: {
-							placeholder: "请填写用户名"
-						}
-					},
 					rules: [
 						{
 							required: true,
-							message: "用户名不能为空"
+							message: "姓名不能为空"
 						}
 					]
 				},
@@ -269,6 +243,7 @@ export default defineComponent({
 					prop: "password",
 					label: "密码",
 					span: 12,
+					hidden: ":isAdd",
 					component: {
 						name: "el-input",
 						props: {
@@ -300,17 +275,6 @@ export default defineComponent({
 					rules: {
 						required: true,
 						message: "角色不能为空"
-					}
-				},
-				{
-					prop: "phone",
-					label: "手机号码",
-					span: 12,
-					component: {
-						name: "el-input",
-						props: {
-							placeholder: "请填写手机号码"
-						}
 					}
 				},
 				{
@@ -354,6 +318,13 @@ export default defineComponent({
 							}
 						]
 					}
+				},
+				{
+					prop: "tips",
+					hidden: ":isEdit",
+					component: {
+						name: "slot-tips"
+					}
 				}
 			]
 		});
@@ -371,7 +342,7 @@ export default defineComponent({
 		);
 		// crud 加载
 		function onLoad({ ctx, app }: any) {
-			ctx.service(service.base.sys.user).done();
+			ctx.service(service.system.user).done();
 			app.refresh();
 		}
 		// 刷新列表
@@ -429,6 +400,7 @@ export default defineComponent({
 		}
 		// 部门列表监听
 		function onDeptListChange(list: any[]) {
+			console.log("dept.value", dept.value);
 			dept.value = list;
 		}
 		// 是否显示部门

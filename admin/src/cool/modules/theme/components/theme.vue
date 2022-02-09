@@ -205,7 +205,7 @@ export default {
 
 		// 设置主题
 		setTheme({ name, color, label }) {
-			if (this.form.theme.color == color) {
+			if (this.form.theme.color === color) {
 				return false;
 			}
 

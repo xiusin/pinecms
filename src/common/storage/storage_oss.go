@@ -118,6 +118,14 @@ func (s *OssUploader) Rename(oldname, newname string) error {
 	return nil
 }
 
+func (s *OssUploader) Mkdir(dir string) error {
+	return nil
+}
+
+func (s *OssUploader) Rmdir(dir string) error {
+	return nil
+}
+
 func init() {
 	di.Set(fmt.Sprintf(controllers.ServiceUploaderEngine, (&OssUploader{}).GetEngineName()), func(builder di.AbstractBuilder) (interface{}, error) {
 		var engine Uploader

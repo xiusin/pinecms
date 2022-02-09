@@ -2,14 +2,15 @@ package storage
 
 import (
 	"fmt"
-	"github.com/xiusin/pine/di"
-	"github.com/xiusin/pinecms/src/application/controllers"
-	"github.com/xiusin/pinecms/src/config"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/config"
 )
 
 type FileUploader struct {
@@ -83,6 +84,14 @@ func (s *FileUploader) GetFullUrl(name string) string {
 
 func (s *FileUploader) Remove(name string) error {
 	return os.Remove(filepath.Join(s.baseDir, name))
+}
+
+func (s *FileUploader) Mkdir(dir string) error {
+	return os.Mkdir(filepath.Join(s.baseDir, dir), os.ModePerm)
+}
+
+func (s *FileUploader) Rmdir(dir string) error {
+	return os.RemoveAll(filepath.Join(s.baseDir, dir))
 }
 
 func (s *FileUploader) Content(name string) ([]byte, error) {

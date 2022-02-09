@@ -3,9 +3,11 @@ package filemanager
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/xiusin/pine"
 	"path/filepath"
+	"regexp"
 	"strings"
+
+	"github.com/xiusin/pine"
 
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/filemanager/tables"
@@ -14,9 +16,11 @@ import (
 
 type FileManagerController struct {
 	backend.BaseController
-	User   *tables.FileManagerAccount
-	engine storage.Uploader
-	path   string
+	User      *tables.FileManagerAccount
+	engine    storage.Uploader
+	path      string
+	urlPrefix string
+	disk      string
 }
 
 func (c *FileManagerController) Construct() {
@@ -36,7 +40,9 @@ func (c *FileManagerController) Construct() {
 			panic(fmt.Errorf("用户配置的存储引擎不存在"))
 		}
 		c.path, _ = c.Input().GetString("path", "")
-		c.path = strings.TrimPrefix(c.path, "/uploads/")
+		c.disk, _ = c.Input().GetString("disk", "public")
+		c.urlPrefix = "/uploads/"
+		c.path = strings.TrimPrefix(c.path, c.urlPrefix)
 	}
 }
 
@@ -90,16 +96,13 @@ func (c *FileManagerController) PostLogin() {
 
 func (c *FileManagerController) PostLogout() {
 	c.Session().Destroy()
-	c.Render().JSON(pine.H{
-		"result": ResResult{
-			Status:  "success",
-			Message: "logouted",
-		},
-	})
+
+	c.Render().JSON(pine.H{"result": ResResult{Status: "success", Message: "logouted"}})
 }
 
 func (c *FileManagerController) GetInitialize() {
 	c.Render().ContentType(pine.ContentTypeJSON)
+
 	c.Render().Text(`{
   "result": {
     "status": "success",
@@ -141,10 +144,6 @@ func (c *FileManagerController) GetContent() {
 	c.GetTree()
 }
 
-func (c *FileManagerController) PostFileAuthor() {
-
-}
-
 func (c *FileManagerController) PostSelectDisk() {
 
 }
@@ -162,14 +161,6 @@ func (c *FileManagerController) GetDownload() {
 	_ = c.Render().Bytes(content)
 }
 
-func (c *FileManagerController) PostZip() {
-
-}
-
-func (c *FileManagerController) PostUnzip() {
-
-}
-
 func (c *FileManagerController) PostUpdateFile() {
 	fs, err := c.Ctx().FormFile("file")
 	if err != nil {
@@ -182,7 +173,7 @@ func (c *FileManagerController) PostUpdateFile() {
 		return
 	}
 	defer f.Close()
-	if _, err := c.engine.Upload(strings.TrimPrefix(c.path, "/uploads/"), f); err != nil {
+	if _, err := c.engine.Upload(strings.TrimPrefix(c.path, c.urlPrefix), f); err != nil {
 		ResponseError(c.Ctx(), err.Error())
 		return
 	}
@@ -236,6 +227,17 @@ func (c *FileManagerController) PostCreateFile() {
 }
 
 func (c *FileManagerController) PostCreateDirectory() {
+	cmp := regexp.MustCompile(`[\\\\/:*?"<>|]`)
+	name, _ := c.Input().GetString("name")
+	if cmp.MatchString(name) {
+		ResponseError(c.Ctx(), "目录创建失败,含有非法字符有\\/:*?\"<>|")
+		return
+	}
+	if err := c.engine.Mkdir(name); err != nil {
+		ResponseError(c.Ctx(), err.Error())
+		return
+	}
+	c.Render().JSON(pine.H{"result": ResResult{Status: "success", Message: "目录创建成功"}})
 
 }
 
@@ -249,8 +251,14 @@ func (c *FileManagerController) PostDelete() {
 
 	hasErr := false
 	for _, item := range items {
-		if err := c.engine.Remove(item.Path); err != nil {
-			hasErr = true
+		if item.Type == "dir" {
+			if err := c.engine.Rmdir(item.Path); err != nil {
+				hasErr = true
+			}
+		} else {
+			if err := c.engine.Remove(item.Path); err != nil {
+				hasErr = true
+			}
 		}
 	}
 	if hasErr {
@@ -272,7 +280,14 @@ func (c *FileManagerController) PostRename() {
 	oldname, _ := c.Input().GetString("oldName")
 	newname, _ := c.Input().GetString("newName")
 
-	if err := c.engine.Rename(strings.TrimPrefix(oldname, "/uploads/"), strings.TrimPrefix(newname, "/uploads/")); err != nil {
+	cmp := regexp.MustCompile(`[\\\\/:*?"<>|]`)
+
+	if cmp.MatchString(newname) {
+		ResponseError(c.Ctx(), "重命名失败,含有非法字符有\\/:*?\"<>|")
+		return
+	}
+
+	if err := c.engine.Rename(strings.TrimPrefix(oldname, c.urlPrefix), strings.TrimPrefix(newname, c.urlPrefix)); err != nil {
 		ResponseError(c.Ctx(), err.Error())
 		return
 	}

@@ -17,6 +17,8 @@ type Uploader interface {
 	Content(string) ([]byte, error)
 	Info(string) (*File, error)
 	Rename(string, string) error
+	Mkdir(string) error
+	Rmdir(string) error
 }
 
 type File struct {
