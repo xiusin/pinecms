@@ -16,12 +16,12 @@ type ResResult struct {
 	Message string `json:"message"`
 }
 
-var initLocker sync.Once
+var once sync.Once
 
 const Logined = "true"
 
 func InitInstall(app *pine.Application, urlPrefix, dir string) {
-	initLocker.Do(func() {
+	once.Do(func() {
 		app.Static(urlPrefix, dir, 1)
 
 		orm := helper.GetORM()
@@ -113,3 +113,4 @@ type DelItem struct {
 	Path string `json:"path"`
 	Type string `json:"type"`
 }
+
