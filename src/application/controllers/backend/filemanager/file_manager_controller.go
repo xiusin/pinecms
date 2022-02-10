@@ -48,22 +48,11 @@ func (c *FileManagerController) Construct() {
 
 func (c *FileManagerController) GetMe() {
 	if isLogin := c.Session().Get("isLogin"); isLogin != Logined {
-		c.Render().JSON(pine.H{
-			"result": ResResult{
-				Status: "success",
-			},
-			"isLogin": false,
-		})
+		c.Render().JSON(pine.H{"result": ResResult{Status: "success"}, "isLogin": false})
 		return
 	}
 
-	c.Render().JSON(pine.H{
-		"result": ResResult{
-			Status: "success",
-		},
-		"isLogin":  true,
-		"nickname": c.Session().Get("nickname"),
-	})
+	c.Render().JSON(pine.H{"result": ResResult{Status: "success"}, "isLogin": true, "nickname": c.Session().Get("nickname")})
 }
 
 func (c *FileManagerController) PostLogin() {
@@ -85,10 +74,7 @@ func (c *FileManagerController) PostLogin() {
 	c.Session().Set("loginId", fmt.Sprintf("%d", c.Table.(*tables.FileManagerAccount).Id))
 
 	c.Render().JSON(pine.H{
-		"result": ResResult{
-			Status:  "success",
-			Message: "logined",
-		},
+		"result":   ResResult{Status: "success", Message: "logined"},
 		"isLogin":  true,
 		"nickname": c.Table.(*tables.FileManagerAccount).Nickname,
 	})
@@ -96,7 +82,6 @@ func (c *FileManagerController) PostLogin() {
 
 func (c *FileManagerController) GetLogout() {
 	c.Session().Destroy()
-
 	c.Render().JSON(pine.H{"result": ResResult{Status: "success", Message: "logouted"}})
 }
 
@@ -131,13 +116,7 @@ func (c *FileManagerController) GetInitialize() {
 func (c *FileManagerController) GetTree() {
 	l, _ := c.engine.List(c.path)
 	dirs, files := c._formatList(l)
-	c.Render().JSON(pine.H{
-		"result": ResResult{
-			Status: "success",
-		},
-		"directories": dirs,
-		"files":       files,
-	})
+	c.Render().JSON(pine.H{"result": ResResult{Status: "success"}, "directories": dirs, "files": files})
 }
 
 func (c *FileManagerController) GetContent() {
@@ -152,12 +131,12 @@ func (c *FileManagerController) GetDownloadFile() {
 }
 
 func (c *FileManagerController) GetDownload() {
-	content, err := c.engine.Content(c.path)
-	if err != nil {
+
+	if content, err := c.engine.Content(c.path); err != nil {
 		ResponseError(c.Ctx(), err.Error())
-		return
+	} else {
+		_ = c.Render().Bytes(content)
 	}
-	_ = c.Render().Bytes(content)
 }
 
 func (c *FileManagerController) PostUpdateFile() {
@@ -186,9 +165,8 @@ func (c *FileManagerController) PostUpdateFile() {
 	c.Render().JSON(pine.H{"result": ResResult{Status: "success", Message: "updated"}, "file": finfo})
 }
 
-// 缩略图地址
 func (c *FileManagerController) GetThumbnailsLink() {
-	c.Render().Text(c.engine.GetFullUrl(c.path))
+	_ = c.Render().Text(c.engine.GetFullUrl(c.path))
 }
 
 func (c *FileManagerController) GetPreview() {
@@ -208,25 +186,16 @@ func (c *FileManagerController) PostCreateFile() {
 	f, _ := os.CreateTemp("", "")
 	defer f.Close()
 	storageName := filepath.Join(c.path, name)
-
-	_, err := c.engine.Upload(storageName, f)
-	if err != nil {
-		ResponseError(c.Ctx(), err.Error())
-		return
-	}
-	finfo, err := c.engine.Info(storageName)
-	if err != nil {
+	if _, err := c.engine.Upload(storageName, f); err != nil {
 		ResponseError(c.Ctx(), err.Error())
 		return
 	}
 
-	c.Render().JSON(pine.H{
-		"result": ResResult{
-			Status:  "success",
-			Message: "fileCreated",
-		},
-		"file": finfo,
-	})
+	if finfo, err := c.engine.Info(storageName); err != nil {
+		ResponseError(c.Ctx(), err.Error())
+	} else {
+		c.Render().JSON(pine.H{"result": ResResult{Status: "success", Message: "fileCreated"}, "file": finfo})
+	}
 }
 
 func (c *FileManagerController) PostCreateDirectory() {
