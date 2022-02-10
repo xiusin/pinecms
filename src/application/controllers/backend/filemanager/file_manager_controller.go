@@ -3,6 +3,7 @@ package filemanager
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -24,7 +25,6 @@ type FileManagerController struct {
 }
 
 func (c *FileManagerController) Construct() {
-	InitInstall()
 	c.Table = &tables.FileManagerAccount{}
 	c.BaseController.Construct()
 	if !strings.HasSuffix(c.Ctx().Path(), "/me") && !strings.HasSuffix(c.Ctx().Path(), "/login") {
@@ -94,7 +94,7 @@ func (c *FileManagerController) PostLogin() {
 	})
 }
 
-func (c *FileManagerController) PostLogout() {
+func (c *FileManagerController) GetLogout() {
 	c.Session().Destroy()
 
 	c.Render().JSON(pine.H{"result": ResResult{Status: "success", Message: "logouted"}})
@@ -144,12 +144,11 @@ func (c *FileManagerController) GetContent() {
 	c.GetTree()
 }
 
-func (c *FileManagerController) PostSelectDisk() {
+func (c *FileManagerController) PostSelectDisk() {}
 
-}
-
-func (c *FileManagerController) PostDownloadFile() {
-
+func (c *FileManagerController) GetDownloadFile() {
+	c.Ctx().Response.Header.Set("Content-Disposition", "attachment")
+	c.Render().Text(c.engine.GetFullUrl(c.path))
 }
 
 func (c *FileManagerController) GetDownload() {
@@ -173,15 +172,23 @@ func (c *FileManagerController) PostUpdateFile() {
 		return
 	}
 	defer f.Close()
-	if _, err := c.engine.Upload(strings.TrimPrefix(c.path, c.urlPrefix), f); err != nil {
+	if _, err := c.engine.Upload(filepath.Join(c.path, fs.Filename), f); err != nil {
 		ResponseError(c.Ctx(), err.Error())
 		return
 	}
-	c.Render().JSON(pine.H{"result": ResResult{Status: "success", Message: "updated"}})
+
+	finfo, err := c.engine.Info(filepath.Join(c.path, fs.Filename))
+	if err != nil {
+		ResponseError(c.Ctx(), err.Error())
+		return
+	}
+
+	c.Render().JSON(pine.H{"result": ResResult{Status: "success", Message: "updated"}, "file": finfo})
 }
 
+// 缩略图地址
 func (c *FileManagerController) GetThumbnailsLink() {
-
+	c.Render().Text(c.engine.GetFullUrl(c.path))
 }
 
 func (c *FileManagerController) GetPreview() {
@@ -198,20 +205,16 @@ func (c *FileManagerController) GetUrl() {
 
 func (c *FileManagerController) PostCreateFile() {
 	name, _ := c.Input().GetString("name")
-	file, _ := c.Ctx().FormFile("file")
-	f, err := file.Open()
-	if err != nil {
-		ResponseError(c.Ctx(), err.Error())
-		return
-	}
+	f, _ := os.CreateTemp("", "")
 	defer f.Close()
+	storageName := filepath.Join(c.path, name)
 
-	path, err := c.engine.Upload(name, f)
+	_, err := c.engine.Upload(storageName, f)
 	if err != nil {
 		ResponseError(c.Ctx(), err.Error())
 		return
 	}
-	finfo, err := c.engine.Info(path)
+	finfo, err := c.engine.Info(storageName)
 	if err != nil {
 		ResponseError(c.Ctx(), err.Error())
 		return
@@ -329,18 +332,14 @@ func (c *FileManagerController) _formatList(fileList []storage.File) (directorie
 	for _, file := range fileList {
 		file.FullPath = strings.ReplaceAll(file.FullPath, "\\", "/")
 		f := FMFile{
-			ID:        nil,
 			Basename:  file.Name,
-			Filename:  filepath.Base(file.Name),
-			Dirname:   strings.ReplaceAll(filepath.Dir(file.FullPath), "\\", "/"),
-			Path:      file.FullPath,
-			ParentID:  "",
-			Timestamp: file.Ctime.Second() * 1000,
-			ACL:       0,
+			Filename:  strings.ReplaceAll(filepath.Base(file.Name), filepath.Ext(file.Name), ""),
+			Dirname:   strings.TrimLeft(strings.TrimPrefix(strings.ReplaceAll(filepath.Dir(file.FullPath), "\\", "/"), strings.TrimSuffix(c.urlPrefix, "/")), "/"),
+			Path:      strings.TrimLeft(strings.TrimPrefix(strings.ReplaceAll(file.FullPath, "\\", "/"), strings.TrimSuffix(c.urlPrefix, "/")), "/"),
+			Timestamp: file.Ctime.Unix(),
 			Size:      int(file.Size),
 			Extension: strings.TrimLeft(filepath.Ext(file.Name), "."),
 			Props:     FMFileProps{},
-			Author:    "",
 		}
 		if file.IsDir {
 			f.Type = "dir"

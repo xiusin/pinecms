@@ -1,8 +1,9 @@
 package filemanager
 
 import (
-	"github.com/xiusin/pinecms/src/config"
 	"sync"
+
+	"github.com/xiusin/pinecms/src/config"
 
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/filemanager/tables"
@@ -19,8 +20,10 @@ var initLocker sync.Once
 
 const Logined = "true"
 
-func InitInstall() {
+func InitInstall(app *pine.Application, urlPrefix, dir string) {
 	initLocker.Do(func() {
+		app.Static(urlPrefix, dir, 1)
+
 		orm := helper.GetORM()
 		defer func() {
 			if err := recover(); err != nil {
@@ -97,7 +100,7 @@ type FMFile struct {
 	Dirname   string      `json:"dirname"`
 	Path      string      `json:"path"`
 	ParentID  string      `json:"parentId"`
-	Timestamp int         `json:"timestamp"`
+	Timestamp int64       `json:"timestamp"`
 	ACL       int         `json:"acl"`
 	Size      int         `json:"size"`
 	Type      string      `json:"type"`

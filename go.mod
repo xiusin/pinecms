@@ -32,7 +32,7 @@ require (
 	github.com/traefik/yaegi v0.9.19
 	github.com/valyala/fasthttp v1.33.0
 	github.com/xiusin/logger v0.0.10-0.20220103084022-9cb8378d9b03
-	github.com/xiusin/pine v0.0.0-20220206052816-3f62ad820f65
+	github.com/xiusin/pine v0.0.0-20220210041148-9a69a2ce3b64
 	github.com/xiusin/reload v0.0.0-20211215091741-ab993ba2e9d2
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	golang.org/x/text v0.3.7
@@ -97,7 +97,7 @@ require (
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
 	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
-	golang.org/x/sys v0.0.0-20220204135822-1c1b9b1eba6a // indirect
+	golang.org/x/sys v0.0.0-20220209214540-3681064d5158 // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
