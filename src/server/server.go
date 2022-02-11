@@ -12,6 +12,7 @@ import (
 func Server() {
 	InitCache()
 
+	pine.SetControllerDefaultAction("Index")
 	router.InitApiRouter(app)
 	router.InitStatics(app)
 	router.InitRouter(app)

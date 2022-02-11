@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Terminal</title>
+
+
+    <link href="https://cdn.bootcdn.net/ajax/libs/xterm/3.9.2/xterm.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/webssh/static/css/layui.css" rel="stylesheet" type="text/css"/>
+    <link href="/webssh/static/css/fullscreen.min.css" rel="stylesheet" type="text/css"/>
+    <style>
+        html{
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
+
+        .terminal {
+            border: #000 solid 5px;
+            font-family: cursive;
+            font-size: 15px;
+        }
+
+        .reverse-video {
+            color: #000;
+            background: #f0f0f0;
+        }
+
+    </style>
+</head>
+<body>
+<div id="terms" style="height: 100vh;width: 100vw"></div>
+</body>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/layer/3.1.1/layer.min.js"></script>
+<script src="/webssh/static/layui.all.js?v=1"></script>
+<script src="/static/xterm/xterm.min.js"></script>
+<script src="/static/xterm/fullscreen.min.js"></script>
+<script src="/static/xterm/fit.min.js"></script>
+<script src="/static/xterm/search.min.js"></script>
+<script src="/webssh/static/js/net.js?v=1.9"></script>
+<script src="/webssh/static/js/sftp.js?v=0.17"></script>
+<script src="/static/xterm/main.js?v=0.89"></script>
+<script src="/webssh/static/js/polyfill.js"></script>
+<script src="/webssh/static/js/fileupload.js?v=0.75"></script>
+</html>
