@@ -20,8 +20,18 @@ var once sync.Once
 
 const Logined = "true"
 
+const DownloadFlag = "download"
+
 func InitInstall(app *pine.Application, urlPrefix, dir string) {
 	once.Do(func() {
+		app.Use(func(ctx *pine.Context) {
+			// 前端打开链接触发下载
+			if str, _ := ctx.GetString("fmq"); str == DownloadFlag {
+				ctx.Response.Header.Set("Content-Disposition", "attachment")
+			}
+			ctx.Next()
+		})
+
 		app.Static(urlPrefix, dir, 1)
 
 		orm := helper.GetORM()

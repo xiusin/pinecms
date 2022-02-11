@@ -127,7 +127,13 @@ func (c *FileManagerController) PostSelectDisk() {}
 
 func (c *FileManagerController) GetDownloadFile() {
 	c.Ctx().Response.Header.Set("Content-Disposition", "attachment")
-	c.Render().Text(c.engine.GetFullUrl(c.path))
+	url := c.engine.GetFullUrl(c.path)
+	if strings.Contains(url, "?") {
+		url += "&fmq=" + DownloadFlag
+	} else {
+		url += "?fmq=" + DownloadFlag
+	}
+	c.Render().Text(url)
 }
 
 func (c *FileManagerController) GetDownload() {
