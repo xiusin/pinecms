@@ -181,6 +181,7 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - https://gitee.com/qiao_hai_long/vue-filemanager?_from=gitee_search
 - 
 - 路由注解
+- 文件管理功能， FTP, STORAGE, SFTP, LOCAL
 <!-- https://demo.goploy.icu/#/server/index SFTP功能 -->
 <!-- http://pigx.pig4cloud.com/#/mp/wxaccountfans/index -->
 <!-- 热门语言卡片 -->
