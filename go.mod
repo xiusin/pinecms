@@ -2,6 +2,10 @@ module github.com/xiusin/pinecms
 
 go 1.17
 
+replace (
+	github.com/xiusin/pine => ../pine
+)
+
 require (
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
 	github.com/alecthomas/chroma v0.9.4
@@ -53,6 +57,7 @@ require (
 	github.com/bits-and-blooms/bloom v1.0.1-0.20210513151749-57921726402d // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b // indirect
 	github.com/cubewise-code/go-mime v0.0.0-20200519001935-8c5762b177d8 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/dgrr/http2 v0.3.4 // indirect
 	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect

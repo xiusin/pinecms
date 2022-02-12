@@ -26,9 +26,9 @@ if (protocol == "https") {
 const token = window.localStorage.getItem("token")
 if (token == "") {
     if (window != top) {
-        top.location.href = "/login";
+        top.location.href = "/webssh/ui/login";
     }
-    window.location.href = "/login";
+    window.location.href = "/webssh/ui/login";
 }
 const auth = {
     type: "auth",

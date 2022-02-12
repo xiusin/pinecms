@@ -12,6 +12,10 @@ func (c *SshController) Index() {
 	c.Render().HTML("index.html")
 }
 
+func (c *SshController) GetLogin() {
+	c.Render().HTML("index.html")
+}
+
 func (c *SshController) GetConsole()  {
 	c.Render().HTML("console.html")
 }

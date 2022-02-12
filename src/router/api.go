@@ -3,7 +3,6 @@ package router
 import (
 	"github.com/xiusin/pine"
 	requestLog "github.com/xiusin/pine/middlewares/request-log"
-	"github.com/xiusin/pine/middlewares/traceid"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware"
@@ -28,7 +27,7 @@ func InitApiRouter(app *pine.Application) {
 	if config.IsDebug() {
 		app.Use(middleware.Demo(), middleware.Cors(app), requestLog.RequestRecorder())
 	}
-	app.Use(traceid.TraceId(), middleware.Pprof(), middleware.SetGlobalConfigData(), apidoc.New(app, nil), middleware.StatesViz(app))
+	app.Use(middleware.Pprof(), middleware.SetGlobalConfigData(), apidoc.New(app, nil), middleware.StatesViz(app))
 
 	casbin :=  middleware.Casbin(config.InitDB(), CasbinModelConf)
 

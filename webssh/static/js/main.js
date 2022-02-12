@@ -1,7 +1,7 @@
 window.onload = function () {
     var token = window.localStorage.getItem("token")
     if (token) {
-        window.location.href = "/console"
+        window.location.href = "/webssh/ui/console"
     }
 }
 
@@ -44,7 +44,7 @@ login = function () {
 
 login_callback = function (result) {
     layer.msg(result.msg);
-    window.location.href = "/console"
+    window.location.href = "/webssh/ui/console"
 }
 
 send = function () {

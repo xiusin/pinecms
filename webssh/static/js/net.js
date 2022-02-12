@@ -11,7 +11,7 @@ default_callback = function (result) {
 
 http_send = function (url, data, callback = default_callback, method = "POST") {
     layer.load(1);
-    url = "/v1" + url;
+    url = "/webssh/v1" + url;
     $.ajax({
         url: url,
         type: method,
@@ -31,9 +31,9 @@ http_send = function (url, data, callback = default_callback, method = "POST") {
                 layer.msg(result.msg, function () {
                     window.localStorage.clear();        //清空浏览器缓存
                     if (window != top) {
-                        top.location.href = "/login";
+                        top.location.href = "/webssh/ui/login";
                     }
-                    window.location.href = "/login";
+                    window.location.href = "/webssh/ui/login";
                 })
             }
             if (result.code != 200) {

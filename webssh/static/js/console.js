@@ -26,7 +26,7 @@ openpass = function (ID) {
         mask: true,
         //maxmin: true, //开启最大化最小化按钮
         area: ['30vw', '50vh'],
-        content: '/setpass?id=' + ID,
+        content: '/webssh/ui/setpass?id=' + ID,
         shadeClose: false,
         cancel: function(){
             open_repass_index = 0
@@ -41,7 +41,7 @@ getinfo = function () {
     table.render({
         elem: '#server_list'
         , id: 'server_list'
-        , url: '/v1/userinfo'
+        , url: '/webssh/v1/userinfo'
         , headers: {
             Authorization: "Bearer " + token,
         }
@@ -71,9 +71,9 @@ getinfo = function () {
                 layer.msg(res.msg, function () {
                     window.localStorage.clear();        //清空浏览器缓存
                     if (window != top) {
-                        top.location.href = "/login";
+                        top.location.href = "/webssh/ui/login";
                     }
-                    window.location.href = "/login";
+                    window.location.href = "/webssh/ui/login";
                 })
                 return
             }
@@ -160,7 +160,7 @@ add = function () {
         mask: true,
         //maxmin: true, //开启最大化最小化按钮
         area: ['30vw', '50vh'],
-        content: '/add',
+        content: '/webssh/ui/add',
         shadeClose: false,
         cancel: function(){
             open_add_index = 0
@@ -190,7 +190,7 @@ open_terminal = function (ID, sername) {
         mask: true,
         //maxmin: true, //开启最大化最小化按钮
         area: ['30vw', '30vh'],
-        content: '/openterm?id=' + ID + "&sername=" + encodeURI(sername),
+        content: '/webssh/ui/openterm?id=' + ID + "&sername=" + encodeURI(sername),
         shadeClose: false,
         cancel: function(){
             open_terminal_index = 0
