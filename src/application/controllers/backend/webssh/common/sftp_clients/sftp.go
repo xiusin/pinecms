@@ -3,7 +3,7 @@ package sftp_clients
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/gorilla/websocket"
+	"github.com/fasthttp/websocket"
 	"github.com/pkg/sftp"
 	"log"
 	"path"

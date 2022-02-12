@@ -25,7 +25,7 @@ let file_status = {
 }
 
 create_sftp = function () {
-    sftp = new WebSocket(ws_p + '://' + window.location.host + '/v1/sftp/' + GetQueryString("sid"));
+    sftp = new WebSocket(ws_p + '://' + window.location.host + '/webssh/v1/sftp?sid=' + GetQueryString("sid"));
     sftp.onopen = function () {
         sftp.send(JSON.stringify(auth));  //验证权限
 

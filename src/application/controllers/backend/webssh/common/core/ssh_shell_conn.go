@@ -3,7 +3,7 @@ package core
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/gorilla/websocket"
+	"github.com/fasthttp/websocket"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
 	"io"

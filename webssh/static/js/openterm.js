@@ -20,7 +20,7 @@ openterm_callback = function (result) {
     parent.getinfo();
     var getData = GetRequest();
     if (top) {
-        top.layui.home.TabController.add(getData.sername, "/term?sid=" + result.data);
+        top.layui.home.TabController.add(getData.sername, "/webssh/ui/term?sid=" + result.data);
     } else {
         layer.msg("请不要单独打开本页面")
     }

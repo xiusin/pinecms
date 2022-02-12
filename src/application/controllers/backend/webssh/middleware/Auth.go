@@ -13,15 +13,11 @@ import (
 
 func Auth() pine.Handler {
 	return func(c *pine.Context) {
-		if strings.Contains(c.Path(), "/ui") {
-			c.Next()
-			return
-		}
-
-		// 放行接口不验证
-		if strings.Contains(c.Path(), "/login") {
-			c.Next()
-			return
+		for _, s := range []string{"ui", "login", "sftp", "term"} {
+			if strings.Contains(c.Path(), "/" + s) {
+				c.Next()
+				return
+			}
 		}
 
 		var resp Apiform.Resp

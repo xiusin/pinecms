@@ -30,7 +30,8 @@ type List_resp struct {
 
 type GetTerm struct {
 	ID       int64  `form:"id" binding:"required"`
-	Password string `form:"setpass" binding:"required"`
+	Password string `form:"password"`
+	Setpass  string `from:"setpass"`
 }
 
 type WsAuth struct {
@@ -70,7 +71,7 @@ type SerInfo struct {
 
 func (t *GetTerm) Decode(server tables.SSHServer) (sid string, err error) {
 	sid = uuid.Must(uuid.NewV4(), nil).String()
-	sPass, err := common.AesDecryptCBC(server.Password, []byte(t.Password))
+	sPass, err := common.AesDecryptCBC(server.Password, []byte(t.Setpass))
 	if err != nil {
 		return "", err
 	}

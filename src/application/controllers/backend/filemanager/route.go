@@ -1,7 +1,6 @@
 package filemanager
 
 import (
-	"embed"
 	"github.com/xiusin/pine"
 )
 
@@ -11,9 +10,9 @@ func InitRouter(app *pine.Application, router *pine.Router) {
 	app.Handle(new(FileManagerController), "/filemanager")
 }
 
-//go:embed dist
-var assets embed.FS
+////go:embed dist
+//var assets embed.FS
 
 func FileMangerWebRouter(app *pine.Application)  {
-	app.StaticFS("/fm/ui", assets, "index.html")
+	//app.StaticFS("/fm/ui", assets, "index.html")
 }

@@ -42,7 +42,7 @@ function completeLoading() {
     }
 }
 
-const socket = new WebSocket(ws_p + '://' + window.location.host + '/v1/term/' + GetQueryString("sid"));
+const socket = new WebSocket(ws_p + '://' + window.location.host + '/webssh/v1/term?sid=' + GetQueryString("sid"));
 
 const term = new Terminal({cols: 180, rows: 50, screenKeys: true, cursorBlink: true, cursorStyle: "block"});
 term.open(document.getElementById('terms'));

@@ -48,12 +48,12 @@ getinfo = function () {
         , title: '服务器列表'
         , cols: [[
             {field: 'ID', title: 'ID', sort: true, totalRow: true, hide: true}
-            , {field: 'Ip', title: 'IP地址', sort: true, totalRow: true, edit: 'text'}
-            , {field: 'Port', title: '端口', sort: true, totalRow: true, edit: 'text'}
-            , {field: 'Username', title: '用户', sort: true, edit: 'text'}
+            , {field: 'Ip', title: 'IP地址', sort: true, totalRow: true, edit: 'text', width:150}
+            , {field: 'Port', title: '端口', sort: true, totalRow: true, edit: 'text', width:80}
+            , {field: 'Username', title: '用户', sort: true, edit: 'text', width:100}
             , {field: 'Nickname', title: '备注', edit: 'text'}
-            , {field: 'BeforeTime', title: '上次登录', sort: true, totalRow: true}
-            , {field: 'Controller', title: '操作'}
+            , {field: 'BeforeTime', title: '上次登录', sort: true, totalRow: true, width:210}
+            , {field: 'Controller', title: '操作', width:280}
         ]]
         , skin: "row"
         , even: 'true'
@@ -79,7 +79,7 @@ getinfo = function () {
             }
             //console.log(res.data.List)
             for (key in res.data.List) {
-                res.data.List[key].Controller = "<button onclick=\"open_terminal(" + res.data.List[key].ID + ",'" + res.data.List[key].Nickname + " - " + res.data.List[key].Ip + "'" + ")\" class=\"layui-btn-xs layui-btn-blue\">打开SSH终端</button>&nbsp;<button onclick=\"openpass(" + res.data.List[key].ID + ")\" class=\"layui-btn-xs layui-btn-warm\">重置密码</button>&nbsp;<button onclick=\"del_info(" + res.data.List[key].ID + ")\" class=\"layui-btn-xs layui-btn-danger\">删除</button>"
+                res.data.List[key].Controller = "<button onclick=\"open_terminal(" + res.data.List[key].Id + ",'" + res.data.List[key].Nickname + " - " + res.data.List[key].Ip + "'" + ")\" class=\"layui-btn layui-btn-xs layui-btn-blue\">打开SSH终端</button>&nbsp;<button onclick=\"openpass(" + res.data.List[key].Id + ")\" class=\"layui-btn layui-btn-xs layui-btn-warm\">重置密码</button>&nbsp;<button onclick=\"del_info(" + res.data.List[key].Id + ")\" class=\"layui-btn layui-btn-xs layui-btn-danger\">删除</button>"
             }
             settmpdata(res);
             return {

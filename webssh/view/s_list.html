@@ -10,16 +10,6 @@
 </head>
 <body class="layui-view-body">
 <div class="layui-content">
-    <div class="layui-page-header">
-        <div class="pagewrap">
-                <span class="layui-breadcrumb">
-                  <a href="">首页</a>
-                  <a href="">控制台</a>
-                  <a><cite>服务器</cite></a>
-                </span>
-            <h2 class="title">服务器</h2>
-        </div>
-    </div>
     <div class="layui-row">
         <div class="layui-card">
             <div class="layui-card-body">
@@ -50,7 +40,6 @@
     document.onreadystatechange = completeLoading;
     //加载状态为complete时移除loading效果
     function completeLoading() {
-        console.log("Loading Success")
         if (document.readyState == "complete") {
             layer.close(index);
             if(window.localStorage.getItem("upload_info") == undefined){

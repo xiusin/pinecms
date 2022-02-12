@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/gorilla/websocket"
+	"github.com/fasthttp/websocket"
 	"github.com/xiusin/pine"
 	"log"
 	"time"

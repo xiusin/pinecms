@@ -1,15 +1,52 @@
 package webssh
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/fasthttp/websocket"
+	"github.com/valyala/fasthttp"
+	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/webssh/Apiform"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/webssh/common"
+	"github.com/xiusin/pinecms/src/application/controllers/backend/webssh/common/core"
+	"github.com/xiusin/pinecms/src/application/controllers/backend/webssh/common/sftp_clients"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/webssh/errcode"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/webssh/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"log"
 	"time"
 )
+
+var upGrader = websocket.FastHTTPUpgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024 * 1024 * 10,
+	CheckOrigin: func(ctx *fasthttp.RequestCtx) bool {
+		return true
+	},
+}
+
+type AuthMsg struct {
+	Type  string `json:"type"`
+	Token string `json:"token"`
+}
+
+type sftpReq struct {
+	Type  string `json:"type"`
+	Token string `json:"token"`
+}
+
+type sftpResp struct {
+	Code int    `json:"code"`
+	Type string `json:"type"`
+	Msg  string `json:"msg"`
+	Data string `json:"data"`
+}
+
+// MFA https://github.com/renmcc/koko/blob/ab95a0a40d2b851424aab06125483957cf64a219/pkg/auth/server.go
+var mfaInstruction = "Please enter 6 digits."
+var mfaQuestion = "[MFA auth]: "
+
 
 type ApiController struct {
 	backend.BaseController
@@ -54,11 +91,185 @@ func (c *ApiController) PostLogin() {
 }
 
 func (c *ApiController) GetTerm() {
+	var auth Apiform.WsAuth
+	if c.Ctx().BindForm(&auth) != nil {
+		return
+	}
+	if err := upGrader.Upgrade(c.Ctx().RequestCtx, func(wsConn *websocket.Conn) {
+		cols, rows := 120, 32
+		var serInfo Apiform.SerInfo //接收反序列化数据
+		for {
+			_, wsData, err := wsConn.ReadMessage()
+			if err != nil {
+				pine.Logger().Print(err)
+				_ = wsConn.Close()
+				return
+			}
+			msgObj := AuthMsg{}
+			if err := json.Unmarshal(wsData, &msgObj); err != nil {
+				log.Println("Auth : unmarshal websocket message failed:", string(wsData))
+				pine.Logger().Print(err)
+				continue
+			}
+			token := msgObj.Token
+			claims, err := common.ParseToken(token)
+			valid := claims.Valid()
+			if valid != nil || err != nil {
+				fmt.Println("身份验证失败")
+				_ = wsConn.WriteMessage(websocket.BinaryMessage, []byte("身份验证失败\r\n"))
+				_ = wsConn.Close()
+				return
+			}
+			sInfo, err := helper.AbstractCache().Get(auth.Sid)
+			if err != nil || len(sInfo) == 0 {
+				fmt.Println("连接超时，请重试！")
+				_ = wsConn.WriteMessage(websocket.BinaryMessage, []byte("连接超时，请重试！\r\n"))
+				_ = wsConn.Close()
+				return
+			}
+			if json.Unmarshal(sInfo, &serInfo) != nil {
+				fmt.Println("服务器信息获取失败，请重试！")
+				_ = wsConn.WriteMessage(websocket.BinaryMessage, []byte("服务器信息获取失败，请重试！\r\n"))
+				_ = wsConn.Close()
+				return
+			}
+			//log.Println(ser_info)
+			if claims.Userid != serInfo.BindUser { //验证权限
+				fmt.Println("权限验证失败，请重试！")
+				_ = wsConn.WriteMessage(websocket.BinaryMessage, []byte("权限验证失败，请重试！\r\n"))
+				_ = wsConn.Close()
+				return
+			}
+			break
+			//break
+		}
+		client, err := core.NewSshClient(core.Server{Ip: serInfo.Ip, Port: serInfo.Port, User: serInfo.Username, Passwd: serInfo.Password})
+		if err != nil {
+			pine.Logger().Print(err)
+			return
+		}
 
+		defer client.Close()
+		ssConn, err := core.NewSshConn(cols, rows, client) //加入sftp客户端
+		if err != nil {
+			pine.Logger().Print(err)
+			return
+		}
+		sftp_clients.Client.Lock()
+		sftp_clients.Client.C[auth.Sid] = &sftp_clients.MyClient{uint(serInfo.BindUser), ssConn.SftpClient}
+		sftp_clients.Client.Unlock()
+		defer func() {
+			sftp_clients.Client.Lock()
+			delete(sftp_clients.Client.C, auth.Sid) //释放SFTP客户端
+			sftp_clients.Client.Unlock()
+		}()
+		defer ssConn.Close()
+		quitChan := make(chan bool, 3)
+
+		// most messages are ssh output, not webSocket input
+		go ssConn.ReceiveWsMsg(wsConn, quitChan)
+		go ssConn.SendComboOutput(wsConn, quitChan)
+		go ssConn.SessionWait(quitChan)
+
+		<-quitChan //任意协程退出则结束
+		log.Println("websocket finished")
+	}); err != nil {
+		var resp Apiform.Resp
+		resp.Code = errcode.C_from_err
+		resp.Msg = err.Error()
+		c.Render().JSON(resp)
+	}
 }
 
 func (c *ApiController) GetSftp() {
+	var auth Apiform.WsAuth
 
+	if err := c.Ctx().BindForm(&auth); err != nil {
+		var resp Apiform.Resp
+		resp.Code = errcode.C_from_err
+		resp.Msg = err.Error()
+		pine.Logger().Print(err)
+		c.Render().JSON(resp)
+		return
+	}
+
+	if err := upGrader.Upgrade(c.Ctx().RequestCtx, func(wsConn *websocket.Conn) {
+		for {
+			_, wsData, err := wsConn.ReadMessage()
+			if err != nil {
+				log.Println(err.Error())
+				_ = wsConn.Close()
+				return
+			}
+			//unmashal bytes into struct
+			msgObj := sftpReq{}
+			if err := json.Unmarshal(wsData, &msgObj); err != nil {
+				log.Println("Auth : unmarshal websocket message failed:", string(wsData))
+				continue
+			}
+			respMsg := sftpResp{}
+			token := msgObj.Token
+			claims, err := common.ParseToken(token)
+			valid := claims.Valid()
+			if valid != nil || err != nil {
+				respMsg.Code = errcode.S_auth_fmt_err
+				respMsg.Msg = "身份令牌校验不通过"
+				respMsg.Data = err.Error()
+				msg, _ := json.Marshal(respMsg)
+				if err := wsConn.WriteMessage(websocket.TextMessage, msg); err != nil {
+					log.Println("sftp token fmt err:", err)
+				}
+				_ = wsConn.Close()
+				return
+			}
+			if claims.Userid != int64(sftp_clients.Client.C[auth.Sid].Uid) { //身份与缓存不符合
+				respMsg.Code = errcode.S_auth_fmt_err
+				respMsg.Msg = "用户权限不通过"
+				respMsg.Data = err.Error()
+				msg, _ := json.Marshal(respMsg)
+				if err := wsConn.WriteMessage(websocket.TextMessage, msg); err != nil {
+					log.Println("sftp server_user err:", err)
+				}
+				_ = wsConn.Close()
+				return
+			}
+
+			path, err := sftp_clients.Client.C[auth.Sid].Sftp.Getwd()
+			if err != nil {
+				respMsg.Code = errcode.S_send_err
+				respMsg.Type = "connect"
+				respMsg.Msg = "SFTP连接失败"
+				msg, _ := json.Marshal(respMsg)
+				if err := wsConn.WriteMessage(websocket.TextMessage, msg); err != nil {
+					log.Println("sftp connect err:", err)
+				}
+				return
+			}
+
+			respMsg.Code = 200
+			respMsg.Type = "connect"
+			respMsg.Msg = "连接成功"
+			respMsg.Data = path
+			msg, _ := json.Marshal(respMsg)
+			if err := wsConn.WriteMessage(websocket.TextMessage, msg); err != nil {
+				log.Println("sftp return err:", err)
+				return
+			}
+
+			break
+			//break
+		}
+		quitChan := make(chan bool, 2)
+		go sftp_clients.Client.C[auth.Sid].ReceiveWsMsg(wsConn, quitChan)
+		<-quitChan //任意协程退出则结束
+		fmt.Println("Sftp Exit")
+		log.Println("sftp websocket finished")
+	}); err != nil {
+		var resp Apiform.Resp
+		resp.Code = errcode.C_from_err
+		resp.Msg = err.Error()
+		c.Render().JSON(resp)
+	}
 }
 
 func (c *ApiController) GetUserinfo() {
@@ -89,10 +300,6 @@ func (c *ApiController) GetUserinfo() {
 		resp.Msg = "Token信息错误"
 	}
 	c.Render().JSON(resp)
-}
-
-func (c *ApiController) PostNickname() {
-
 }
 
 func (c *ApiController) PostAddser() {
@@ -186,7 +393,7 @@ func (c *ApiController) PostGetterm() {
 	uid := c.Ctx().Value("uid").(int64)
 	resp.Code = errcode.C_from_err
 	resp.Msg = "表单错误"
-	if c.Ctx().BindForm(&term) == nil {
+	if err := c.Ctx().BindForm(&term); err == nil {
 		var server tables.SSHServer
 		server.Id = term.ID
 		server.BindUser = uid
@@ -206,6 +413,9 @@ func (c *ApiController) PostGetterm() {
 			resp.Code = errcode.S_Db_err
 			resp.Msg = "服务器信息检索失败"
 		}
+	} else {
+		resp.Code = errcode.S_Verify_err
+		resp.Msg = err.Error()
 	}
 	c.Render().JSON(resp)
 }
