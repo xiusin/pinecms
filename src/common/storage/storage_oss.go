@@ -34,7 +34,7 @@ func (s *OssUploader) Remove(name string) error {
 func (s *OssUploader) GetFullUrl(name string) string {
 	return fmt.Sprintf("%s/%s",
 		strings.TrimRight(s.host, "/"),
-		strings.TrimLeft(filepath.Join(s.urlPrefix, name), "/"),
+		strings.TrimLeft(getAvailableUrl(filepath.Join(s.urlPrefix, name)), "/"),
 	)
 }
 
@@ -85,20 +85,30 @@ func (s *OssUploader) Upload(storageName string, LocalFile io.Reader) (string, e
 }
 
 func (s *OssUploader) List(dir string) ([]File, error) {
-	list, err := s.bucket.ListObjects(oss.Prefix(strings.TrimLeft(getAvailableUrl(filepath.Join(s.urlPrefix, dir)), "/")))
+	list, err := s.bucket.ListObjectsV2(
+		oss.Prefix(strings.Trim(getAvailableUrl(filepath.Join(s.urlPrefix, dir)), "/")+"/"),
+		oss.Delimiter("/"),
+		oss.MaxKeys(200))
+
 	if err != nil {
 		return nil, err
 	}
 	var files = []File{}
+	for _, prefix := range list.CommonPrefixes {
+		files = append(files, File{Id: prefix, FullPath: "/" + prefix, Name: filepath.Base(prefix), IsDir: true})
+	}
+
 	for _, object := range list.Objects {
 		files = append(files, File{
 			Id:       object.Key,
-			FullPath: s.host + "/" + object.Key,
+			FullPath: "/" + object.Key,
 			Name:     filepath.Base(object.Key),
 			Size:     object.Size,
 			Ctime:    object.LastModified,
+			IsDir:    strings.HasSuffix(object.Key, "/"),
 		})
 	}
+
 	return files, nil
 }
 

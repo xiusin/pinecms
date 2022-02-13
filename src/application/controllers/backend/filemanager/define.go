@@ -19,22 +19,19 @@ type ResResult struct {
 var once sync.Once
 
 const Logined = "true"
-
 const DownloadFlag = "download"
 
 func InitInstall(app *pine.Application, urlPrefix, dir string) {
 	once.Do(func() {
 		app.Use(func(ctx *pine.Context) {
-			// 前端打开链接触发下载
 			if str, _ := ctx.GetString("fmq"); str == DownloadFlag {
 				ctx.Response.Header.Set("Content-Disposition", "attachment")
 			}
 			ctx.Next()
 		})
-
 		app.Static(urlPrefix, dir, 1)
-
 		orm := helper.GetORM()
+
 		defer func() {
 			if err := recover(); err != nil {
 				pine.Logger().Warning("初始化安装失败", err)
@@ -52,17 +49,12 @@ func InitInstall(app *pine.Application, urlPrefix, dir string) {
 				pine.Logger().Warning("新增用户失败", err)
 			}
 		}
-		pine.Logger().Debug("初始化安装成功")
+		pine.Logger().Debug("初始化FileManager安装成功")
 	})
 }
 
 func ResponseError(c *pine.Context, msg string) {
-	c.Render().JSON(pine.H{
-		"result": ResResult{
-			Status:  "danger",
-			Message: msg,
-		},
-	})
+	c.Render().JSON(pine.H{"result": ResResult{Status: "danger", Message: msg}})
 }
 
 type EngineFn func(map[string]string) storage.Uploader
@@ -88,6 +80,7 @@ func GetUserUploader(u *tables.FileManagerAccount) storage.Uploader {
 	if u == nil {
 		return nil
 	}
+	u.Engine = "Oss对象存储"
 	for _, v := range EngineList() {
 		if v.Name == u.Engine {
 			cnf, _ := config.SiteConfig()
@@ -123,4 +116,3 @@ type DelItem struct {
 	Path string `json:"path"`
 	Type string `json:"type"`
 }
-

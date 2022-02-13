@@ -38,7 +38,7 @@ export default {
                 "store.state.fm.isLogin",
                 this.$store.state.fm.isLogin
               );
-              this.$router.push({ path: "/login" });
+              this.$router.push({ path: "login" });
             }
           });
           break;

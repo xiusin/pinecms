@@ -4,15 +4,13 @@ import (
 	"github.com/xiusin/pine"
 )
 
-func InitRouter(app *pine.Application, router *pine.Router) {
-	InitInstall(app, "/uploads/", "./resources/assets/uploads/")
-	FileMangerWebRouter(app)
-	app.Handle(new(FileManagerController), "/filemanager")
-}
-
 ////go:embed dist
 //var assets embed.FS
 
-func FileMangerWebRouter(app *pine.Application)  {
-	//app.StaticFS("/fm/ui", assets, "index.html")
+func InitRouter(app *pine.Application, router *pine.Router) {
+	InitInstall(app, "/uploads/", "./resources/assets/uploads/")
+	//app.StaticFS("/fm/ui", assets, "dist","index.html")
+	app.Static("/fm/ui", "./resources/assets/filemanager", 3)
+
+	app.Handle(new(FileManagerController), "/filemanager")
 }
