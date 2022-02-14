@@ -51,7 +51,6 @@ func (c *ContentController) PostList() {
 		return
 	}
 	c.Table = controllers.GetTableName(document.Table) // 设置表名
-
 	query := c.Orm.Table(c.Table)
 	if p, err := c.buildParamsForQuery(query); err != nil {
 		helper.Ajax("参数错误: "+err.Error(), 1, c.Ctx())
@@ -63,15 +62,12 @@ func (c *ContentController) PostList() {
 		var count int64
 		var contents []map[string]interface{}
 		if p.Size == 0 {
-			err = query.Find(c.Entries)
+			err = query.Find(&contents)
 		} else {
 			count, err = query.Limit(p.Size, (p.Page-1)*p.Size).FindAndCount(&contents)
-			if err == nil {
-				contents, err = query.QueryInterface()
-			}
 		}
 		if err != nil {
-			helper.Ajax("错误"+err.Error(), 1, c.Ctx())
+			helper.Ajax("limit: " + err.Error(), 1, c.Ctx())
 			return
 		}
 		for i, content := range contents {
@@ -82,6 +78,9 @@ func (c *ContentController) PostList() {
 				}
 			}
 			contents[i] = content
+		}
+		if contents == nil {
+			contents = []map[string]interface{}{}
 		}
 		helper.Ajax(pine.H{
 			"list": contents,
