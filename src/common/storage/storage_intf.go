@@ -15,7 +15,6 @@ type Uploader interface {
 	Remove(name string) error
 	GetEngineName() string
 	Content(string) ([]byte, error)
-	Info(string) (*File, error)
 	Rename(string, string) error
 	Mkdir(string) error
 	Rmdir(string) error

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"mime"
 	"path/filepath"
 	"strings"
@@ -23,7 +24,8 @@ type OssUploader struct {
 }
 
 func (s *OssUploader) Remove(name string) error {
-	if exist, err := s.Exists(name); err != nil {
+	name = s.getObjectName(name)
+	if exist, err := s.bucket.IsObjectExist(name); err != nil {
 		return err
 	} else if !exist {
 		return fmt.Errorf("object %s not exists", name)
@@ -32,14 +34,11 @@ func (s *OssUploader) Remove(name string) error {
 }
 
 func (s *OssUploader) GetFullUrl(name string) string {
-	return fmt.Sprintf("%s/%s",
-		strings.TrimRight(s.host, "/"),
-		strings.TrimLeft(getAvailableUrl(filepath.Join(s.urlPrefix, name)), "/"),
-	)
+	return fmt.Sprintf("%s/%s", strings.TrimRight(s.host, "/"), s.getObjectName(name))
 }
 
 func (s *OssUploader) Exists(name string) (bool, error) {
-	return s.bucket.IsObjectExist(name)
+	return s.bucket.IsObjectExist(s.getObjectName(name))
 }
 
 func checkIsValidConf(config map[string]string) {
@@ -63,7 +62,7 @@ func NewOssUploader(config map[string]string) *OssUploader {
 		client:    client,
 		bucket:    bucket,
 		host:      config["OSS_HOST"],
-		urlPrefix: config["UPLOAD_URL_PREFIX"],
+		urlPrefix: strings.Trim(config["UPLOAD_URL_PREFIX"], "/"),
 	}
 }
 
@@ -71,11 +70,10 @@ func NewOssUploader(config map[string]string) *OssUploader {
 // storageName 云端路径名. 最终上传相对urlPrefix生成地址
 // LocalFile 要上传的文件名
 func (s *OssUploader) Upload(storageName string, LocalFile io.Reader) (string, error) {
-	storageName = getAvailableUrl(filepath.Join(s.urlPrefix, storageName))
 	if s.client == nil {
 		return "", errors.New("ossClient is error")
 	}
-	storageName = strings.TrimLeft(storageName, "/")
+	storageName = getAvailableUrl(s.urlPrefix + "/" + storageName)
 	contentType := mime.TypeByExtension(filepath.Ext(storageName))
 	if err := s.bucket.PutObject(storageName, LocalFile, oss.ContentType(contentType)); err != nil { //上传图片对象
 		pine.Logger().Error("upoadFile failed", storageName, LocalFile == nil)
@@ -86,7 +84,7 @@ func (s *OssUploader) Upload(storageName string, LocalFile io.Reader) (string, e
 
 func (s *OssUploader) List(dir string) ([]File, error) {
 	list, err := s.bucket.ListObjectsV2(
-		oss.Prefix(strings.Trim(getAvailableUrl(filepath.Join(s.urlPrefix, dir)), "/")+"/"),
+		oss.Prefix(strings.Trim(s.getObjectName(dir), "/")+"/"),
 		oss.Delimiter("/"),
 		oss.MaxKeys(200))
 
@@ -117,15 +115,19 @@ func (s *OssUploader) GetEngineName() string {
 }
 
 func (s *OssUploader) Content(name string) ([]byte, error) {
-	return nil, nil
-}
-
-func (s *OssUploader) Info(name string) (*File, error) {
-	return &File{}, nil
+	f, err := s.bucket.GetObject(s.getObjectName(name))
+	if err != nil {
+		return nil, err
+	}
+	return ioutil.ReadAll(f)
 }
 
 func (s *OssUploader) Rename(oldname, newname string) error {
-	return nil
+	_, err := s.bucket.CopyObject(s.getObjectName(oldname), s.getObjectName(newname))
+	if err == nil {
+		s.bucket.DeleteObject(s.getObjectName(oldname))
+	}
+	return err
 }
 
 func (s *OssUploader) Mkdir(dir string) error {
@@ -134,6 +136,10 @@ func (s *OssUploader) Mkdir(dir string) error {
 
 func (s *OssUploader) Rmdir(dir string) error {
 	return nil
+}
+
+func (s *OssUploader) getObjectName(name string) string {
+	return s.urlPrefix + "/" + name
 }
 
 func init() {

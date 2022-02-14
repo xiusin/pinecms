@@ -102,22 +102,6 @@ func (s *FileUploader) Rename(oldname, newname string) error {
 	return os.Rename(filepath.Join(s.baseDir, oldname), filepath.Join(s.baseDir, newname))
 }
 
-func (s *FileUploader) Info(name string) (*File, error) {
-	finfo, err := os.Stat(filepath.Join(s.baseDir, name))
-	if err != nil {
-		return nil, err
-	}
-
-	return &File{
-		FullPath: filepath.Join(s.fixDir, name),
-		Name:     finfo.Name(),
-		Size:     finfo.Size(),
-		Ctime:    finfo.ModTime(),
-		IsDir:    finfo.IsDir(),
-	}, nil
-
-}
-
 func init() {
 	di.Set(fmt.Sprintf(controllers.ServiceUploaderEngine, (&FileUploader{}).GetEngineName()), func(builder di.AbstractBuilder) (interface{}, error) {
 		cfg, err := config.SiteConfig()

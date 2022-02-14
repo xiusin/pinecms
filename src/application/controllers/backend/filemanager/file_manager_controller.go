@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/xiusin/pine"
 
@@ -157,18 +158,22 @@ func (c *FileManagerController) PostUpdateFile() {
 		return
 	}
 	defer f.Close()
-	if _, err := c.engine.Upload(filepath.Join(c.path, fs.Filename), f); err != nil {
+	storageName := filepath.Join(c.path, fs.Filename)
+	if _, err := c.engine.Upload(storageName, f); err != nil {
 		ResponseError(c.Ctx(), err.Error())
 		return
 	}
 
-	finfo, err := c.engine.Info(filepath.Join(c.path, fs.Filename))
-	if err != nil {
-		ResponseError(c.Ctx(), err.Error())
-		return
-	}
-
-	c.Render().JSON(pine.H{"result": ResResult{Status: "success", Message: "updated"}, "file": finfo})
+	c.Render().JSON(pine.H{"result": ResResult{Status: "success", Message: "updated"}, "file": &FMFile{
+		Size:      int(fs.Size),
+		Basename:  fs.Filename,
+		Filename:  strings.ReplaceAll(filepath.Base(fs.Filename), filepath.Ext(fs.Filename), ""),
+		Dirname:   strings.TrimLeft(strings.TrimPrefix(filepath.Dir(storageName), strings.TrimSuffix(c.urlPrefix, "/")), "/"),
+		Path:      strings.TrimLeft(strings.TrimPrefix(strings.ReplaceAll(storageName, "\\", "/"), strings.TrimSuffix(c.urlPrefix, "/")), "/"),
+		Timestamp: time.Now().Unix(),
+		Extension: strings.TrimLeft(filepath.Ext(fs.Filename), "."),
+		Props:     FMFileProps{},
+	}})
 }
 
 func (c *FileManagerController) GetThumbnailsLink() {
@@ -197,11 +202,16 @@ func (c *FileManagerController) PostCreateFile() {
 		return
 	}
 
-	if finfo, err := c.engine.Info(storageName); err != nil {
-		ResponseError(c.Ctx(), err.Error())
-	} else {
-		c.Render().JSON(pine.H{"result": ResResult{Status: "success", Message: "fileCreated"}, "file": finfo})
-	}
+	c.Render().JSON(pine.H{"result": ResResult{Status: "success", Message: "fileCreated"}, "file": &FMFile{
+		Size:      0,
+		Basename:  name,
+		Filename:  strings.ReplaceAll(filepath.Base(name), filepath.Ext(name), ""),
+		Dirname:   strings.TrimLeft(strings.TrimPrefix(filepath.Dir(storageName), strings.TrimSuffix(c.urlPrefix, "/")), "/"),
+		Path:      strings.ReplaceAll(strings.TrimLeft(strings.TrimPrefix(storageName, strings.TrimSuffix(c.urlPrefix, "/")), "/"), "\\", "/"),
+		Timestamp: time.Now().Unix(),
+		Extension: strings.TrimLeft(filepath.Ext(name), "."),
+		Props:     FMFileProps{},
+	}})
 }
 
 func (c *FileManagerController) PostCreateDirectory() {
@@ -231,10 +241,12 @@ func (c *FileManagerController) PostDelete() {
 	for _, item := range items {
 		if item.Type == "dir" {
 			if err := c.engine.Rmdir(item.Path); err != nil {
+				c.Logger().Debug(err)
 				hasErr = true
 			}
 		} else {
 			if err := c.engine.Remove(item.Path); err != nil {
+				c.Logger().Debug(err)
 				hasErr = true
 			}
 		}
