@@ -195,7 +195,10 @@ func (c *FileManagerController) GetUrl() {
 func (c *FileManagerController) PostCreateFile() {
 	name, _ := c.Input().GetString("name")
 	f, _ := os.CreateTemp("", "")
-	defer f.Close()
+	defer func() {
+		f.Close()
+		os.Remove(f.Name())
+	}()
 	storageName := filepath.Join(c.path, name)
 	if _, err := c.engine.Upload(storageName, f); err != nil {
 		ResponseError(c.Ctx(), err.Error())
