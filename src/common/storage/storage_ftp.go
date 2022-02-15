@@ -6,6 +6,7 @@ import (
 	"github.com/xiusin/pine"
 	"io"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -23,7 +24,12 @@ type FtpUploader struct {
 }
 
 func NewFtpUploader(opt map[string]string) *FtpUploader {
-	c, err := ftp.Dial(opt["FTP_SERVER_URL"]+":"+opt["FTP_SERVER_PORT"], ftp.DialWithTimeout(5*time.Second))
+	c, err := ftp.Dial(opt["FTP_SERVER_URL"]+":"+opt["FTP_SERVER_PORT"],
+		ftp.DialWithTimeout(5*time.Second),
+		ftp.DialWithDisabledUTF8(true),
+		ftp.DialWithDebugOutput(os.Stdout),
+		ftp.DialWithDisabledEPSV(true),
+		)
 	if err != nil {
 		panic(err)
 	}
@@ -33,7 +39,7 @@ func NewFtpUploader(opt map[string]string) *FtpUploader {
 	pine.RegisterOnInterrupt(func() {
 		c.Quit()
 	})
-	return &FtpUploader{host: opt["SITE_URL"], fixDir: opt["UPLOAD_URL_PREFIX"], baseDir: opt["UPLOAD_DIR"], client: c}
+	return &FtpUploader{host: opt["SITE_URL"], fixDir: opt["UPLOAD_URL_PREFIX"], baseDir: opt["FTP_UPLOAD_DIR"], client: c}
 }
 
 func (s *FtpUploader) GetEngineName() string {
