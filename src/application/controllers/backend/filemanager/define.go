@@ -1,6 +1,7 @@
 package filemanager
 
 import (
+	"github.com/xiusin/pine/di"
 	"sync"
 
 	"github.com/xiusin/pinecms/src/config"
@@ -20,6 +21,8 @@ var once sync.Once
 
 const Logined = "true"
 const DownloadFlag = "download"
+
+const serviceFtpStorage = "pinecms.service.fm.ftp"
 
 func InitInstall(app *pine.Application, urlPrefix, dir string) {
 	once.Do(func() {
@@ -50,6 +53,19 @@ func InitInstall(app *pine.Application, urlPrefix, dir string) {
 			}
 		}
 		pine.Logger().Debug("初始化FileManager安装成功")
+
+		di.Set(serviceFtpStorage, func(builder di.AbstractBuilder) (interface{}, error) {
+			ftp := storage.NewFtpUploader(map[string]string{
+				"FTP_SERVER_URL":  "124.222.103.232",
+				"FTP_SERVER_PORT": "21",
+				"FTP_USER_NAME":   "test",
+				"FTP_USER_PWD":    "Hh2EptLZAN2KrbXd",
+				"SITE_URL":        "http://localhost:2019/xxx/",
+				"FTP_URL_PREFIX":  "", // 如果配置则使用此配置拼接地址, 否则使用系统接口
+			})
+			return ftp, nil
+		}, true)
+
 	})
 }
 
@@ -73,6 +89,9 @@ func EngineList() []Engine {
 		{"Oss对象存储", func(opt map[string]string) storage.Uploader {
 			return storage.NewOssUploader(opt)
 		}},
+		{"FTP存储", func(opt map[string]string) storage.Uploader {
+			return di.MustGet(serviceFtpStorage).(storage.Uploader) // 由于限制链接数, 全局提供单例模式
+		}},
 	}
 }
 
@@ -80,7 +99,7 @@ func GetUserUploader(u *tables.FileManagerAccount) storage.Uploader {
 	if u == nil {
 		return nil
 	}
-	u.Engine = "Oss对象存储"
+	u.Engine = "FTP存储"
 	for _, v := range EngineList() {
 		if v.Name == u.Engine {
 			cnf, _ := config.SiteConfig()

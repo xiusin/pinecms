@@ -224,7 +224,7 @@ func (c *FileManagerController) PostCreateDirectory() {
 		ResponseError(c.Ctx(), "目录创建失败,含有非法字符有\\/:*?\"<>|")
 		return
 	}
-	if err := c.engine.Mkdir(name); err != nil {
+	if err := c.engine.Mkdir(filepath.Join(c.path, name)); err != nil {
 		ResponseError(c.Ctx(), err.Error())
 		return
 	}
