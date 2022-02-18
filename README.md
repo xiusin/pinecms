@@ -4,22 +4,20 @@
 PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内以制作模板的方式搭建出来一个网站, 非开发者也能快速愉悦地使用系统.
 简单使用情况下无需关注代码逻辑.
 
-> 前端仓库: <https://github.com/xiusin/pinecms-web.git>
+> 前端仓库: <https://github.com/xiusin/pinecms-web.git> <br/>
+> 目前程序正在持续迭代开发中，提供开发期间的数据库文件`resources/pinecms.sql`, 后期数据库结构变更比较大。<br>
 
-> 目前程序正在持续迭代开发中，提供开发期间的数据库文件`resources/pinecms.sql`, 后期数据库结构变更比较大。
+> 推荐一个自己写的Redis管理工具, 支持Web端: https://github.com/xiusin/redis-web-manager.git
 
 # 编译部署 #
-
 ## 下载并编译 ##
 
 ---
-
 ```markdown
  git clone https://github.com/xiusin/pinecms.git
  cd pinecms
  go build -o pinecms
 ```
-
 ---
 
 ## 配置 ##
@@ -45,13 +43,6 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 6. 访问后端登陆页面
     > 访问 `http://localhost:2019/admin/` 默认账号密码 `用户名: admin 密码: 123456`
 
-# 自动静态化路由 #
-
-完全自动静态文件和动态路由. 更友好的SEO方式
-
-# 主题系统 #
-
-系统支持多种主题, 可自由切换不同风格的模板. (一般需要相同类型模型, 字段一致, 减少错误问题)
 
 # 内置模块 #
 
@@ -70,7 +61,7 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 13. 广告管理：主要对各终端的广告数据进行管理维护。
 14. 站点栏目：主要对大型系统网站等栏目进行划分和维护的模块。
 15. 会员管理：对各终端注册的会员进行统一的查询与管理的模块。
-16. CMS管理: 可以系统设置不同的模型数据并添加不同的逻辑。
+16. CMS管理: 可以系统设置不同的模型数据并添加不同的逻辑. 支持多主题。
 17. 插件管理: 可以扩展/下载第三方开发的软件包。
 18. 微信管理: 可以管理素材，会员，信息，自动回复等。
 
@@ -180,8 +171,12 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - 动态构建表单: <https://eddyzhang1986.github.io/antd-jsonschema-form/> 
 - http://fundemo.funadmin.com/2KmvVJA8dU.php/index/index.html
 - 路由注解
-- 文件管理功能， FTP, STORAGE, SFTP, LOCAL
-<!-- https://demo.goploy.icu/#/server/index SFTP功能 -->
+- https://github.com/wangyuan389/mall-cook 低代码商城搭建平台
+- [x] 文件管理功能: FTP, STORAGE 
+    - https://github.com/mengshukeji/luckysheet-vue
+    - 
+- [x] webssh 支持SFTP
+
 <!-- http://pigx.pig4cloud.com/#/mp/wxaccountfans/index -->
 <!-- 热门语言卡片 -->
 <!-- https://github-readme-stats.vercel.app/api/top-langs/?username=xiusin&layout=compact -->

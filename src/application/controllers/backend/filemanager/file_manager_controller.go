@@ -40,7 +40,12 @@ func (c *FileManagerController) Construct() {
 		if c.engine == nil {
 			panic(fmt.Errorf("用户配置的存储引擎不存在"))
 		}
+
 		c.path, _ = c.Input().GetString("path", "")
+		if c.path == "null" {
+			c.path = ""
+		}
+
 		c.disk, _ = c.Input().GetString("disk", "public")
 		c.urlPrefix = "/uploads/"
 		c.path = strings.TrimPrefix(c.path, c.urlPrefix)
@@ -180,14 +185,6 @@ func (c *FileManagerController) GetThumbnailsLink() {
 	_ = c.Render().Text(c.engine.GetFullUrl(c.path))
 }
 
-func (c *FileManagerController) GetPreview() {
-
-}
-
-func (c *FileManagerController) GetStreamFile() {
-
-}
-
 func (c *FileManagerController) GetUrl() {
 	c.Render().JSON(pine.H{"result": ResResult{Status: "success"}, "url": c.engine.GetFullUrl(c.path)})
 }
@@ -200,6 +197,7 @@ func (c *FileManagerController) PostCreateFile() {
 		os.Remove(f.Name())
 	}()
 	storageName := filepath.Join(c.path, name)
+
 	if _, err := c.engine.Upload(storageName, f); err != nil {
 		ResponseError(c.Ctx(), err.Error())
 		return
@@ -228,7 +226,18 @@ func (c *FileManagerController) PostCreateDirectory() {
 		ResponseError(c.Ctx(), err.Error())
 		return
 	}
-	c.Render().JSON(pine.H{"result": ResResult{Status: "success", Message: "目录创建成功"}})
+	result := &FMFile{
+		Basename:  name,
+		Dirname:   c.path,
+		Timestamp: time.Now().Unix(),
+		Type:      "dir",
+		Props:     FMFileProps{},
+	}
+	c.Render().JSON(pine.H{
+		"result":    ResResult{Status: "success", Message: "目录创建成功"},
+		"directory": result,
+		"tree":      []*FMFile{result},
+	})
 
 }
 
@@ -272,14 +281,6 @@ func (c *FileManagerController) PostPaste() {
 func (c *FileManagerController) PostRename() {
 	oldname, _ := c.Input().GetString("oldName")
 	newname, _ := c.Input().GetString("newName")
-
-	cmp := regexp.MustCompile(`[\\\\/:*?"<>|]`)
-
-	if cmp.MatchString(newname) {
-		ResponseError(c.Ctx(), "重命名失败,含有非法字符有\\/:*?\"<>|")
-		return
-	}
-
 	if err := c.engine.Rename(strings.TrimPrefix(oldname, c.urlPrefix), strings.TrimPrefix(newname, c.urlPrefix)); err != nil {
 		ResponseError(c.Ctx(), err.Error())
 		return

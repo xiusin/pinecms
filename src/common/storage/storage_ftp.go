@@ -2,8 +2,6 @@ package storage
 
 import (
 	"fmt"
-	"github.com/jlaffaye/ftp"
-	"github.com/xiusin/pine"
 	"io"
 	"io/ioutil"
 	"path/filepath"
@@ -11,6 +9,9 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/jlaffaye/ftp"
+	"github.com/xiusin/pine"
 
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -23,6 +24,7 @@ type FtpUploader struct {
 	host         string
 	ftpUrlPrefix string
 	client       *ftp.ServerConn
+	conn         func() error
 }
 
 func NewFtpUploader(opt map[string]string) *FtpUploader {
@@ -30,23 +32,49 @@ func NewFtpUploader(opt map[string]string) *FtpUploader {
 	if timeout == 0 {
 		timeout = 5
 	}
-	c, err := ftp.Dial(opt["FTP_SERVER_URL"]+":"+opt["FTP_SERVER_PORT"],
-		ftp.DialWithTimeout(time.Duration(timeout)*time.Second),
-		ftp.DialWithDisabledUTF8(true),
-		ftp.DialWithDisabledEPSV(true),
-	)
-	if err != nil {
-		panic(err)
-	}
-	if err := c.Login(opt["FTP_USER_NAME"], opt["FTP_USER_PWD"]); err != nil {
-		panic(err)
-	}
-	pine.RegisterOnInterrupt(func() {
-		c.Logout()
-		c.Quit()
-	})
 	prefix := strings.TrimSuffix(opt["FTP_URL_PREFIX"], "/")
-	return &FtpUploader{host: opt["SITE_URL"], ftpUrlPrefix: prefix, client: c}
+
+	uploader := &FtpUploader{host: opt["SITE_URL"], ftpUrlPrefix: prefix}
+
+	uploader.conn = func() error {
+		c, err := ftp.Dial(
+			opt["FTP_SERVER_URL"]+":"+opt["FTP_SERVER_PORT"],
+			ftp.DialWithTimeout(time.Duration(timeout)*time.Second),
+			ftp.DialWithDisabledUTF8(true),
+			ftp.DialWithDisabledEPSV(true),
+		)
+		if err != nil {
+			return err
+		}
+		if err := c.Login(opt["FTP_USER_NAME"], opt["FTP_USER_PWD"]); err != nil {
+			c.Quit()
+			return err
+		}
+		uploader.client = c
+		return nil
+	}
+
+	if err := uploader.conn(); err != nil {
+		panic(err)
+	}
+
+	pine.RegisterOnInterrupt(func() {
+		uploader.client.Logout()
+		uploader.client.Quit()
+	})
+
+	go func() {
+		for range time.Tick(time.Second * 5) {
+			uploader.Lock()
+			if err := uploader.client.NoOp(); err != nil {
+				pine.Logger().Warning("ftp链接错误", err.Error())
+				uploader.conn()
+			}
+			uploader.Unlock()
+		}
+	}()
+
+	return uploader
 }
 
 func (s *FtpUploader) GetEngineName() string {
@@ -58,7 +86,7 @@ func (s *FtpUploader) Upload(storageName string, LocalFile io.Reader) (string, e
 	defer s.Unlock()
 	storageName = getAvailableUrl(storageName)
 	if err := s.client.Stor(storageName, LocalFile); err != nil {
-		return "", err
+		return "", fmt.Errorf("上传文件%s错误: %s", storageName, err.Error())
 	}
 	return storageName, nil
 }
@@ -96,7 +124,7 @@ func (s *FtpUploader) Exists(name string) (bool, error) {
 	_, err := s.client.FileSize(getAvailableUrl(name))
 	s.Unlock()
 	if err != nil {
-		return false, err
+		return false, nil
 	}
 	return true, nil
 }
