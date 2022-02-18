@@ -1,5 +1,49 @@
 <template >
-  <AmEditor msg="Welcome to Your Vue.js App"></AmEditor>
+  <div class="login">
+    <div class="header">
+      <img src="../assets/cloudDisk.svg" />
+      <span>轻享云盘</span>
+    </div>
+    <AmEditor msg="Welcome to Your Vue.js App" />
+    <div class="content">
+      <div class="login-body">
+        <div class="top">
+          <p class="title">账号密码登录</p>
+          <router-link to="/register">
+            立即注册
+            <i class="el-icon-arrow-right"></i>
+          </router-link>
+        </div>
+        <el-form
+          status-icon
+          label-position="top"
+          label-width="80px"
+          :rules="rules"
+          :model="formLabelAlign"
+          ref="ruleForm"
+          @submit.native.prevent
+        >
+          <el-form-item label="账号" prop="account">
+            <el-input placeholder="请输入账号" clearable v-model="formLabelAlign.account"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" prop="pwd">
+            <el-input placeholder="请输入密码" show-password clearable v-model="formLabelAlign.pwd"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <div class="check">
+              <el-checkbox v-model="remember">记住密码</el-checkbox>
+              <el-checkbox v-model="autoLogin">自动登录</el-checkbox>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="submitForm()">登录</el-button>
+            <router-link to>忘记密码?</router-link>
+          </el-form-item>
+        </el-form>
+        <div class="footer"></div>
+      </div>
+    </div>
+  </div>
 </template>
 <script>
 import POST from "@/http/post";

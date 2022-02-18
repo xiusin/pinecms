@@ -12,9 +12,13 @@ module.exports = {
     indexPath: 'index.html', //指定生成的 index.html 的输出路径(相对于 outputDir)也可以是一个绝对路径。
     css: {
         extract: true, //是否使用css分离插件ExtractTextPlugin
-        sourceMap: !IS_PROD, //开启CSS source maps
-        loaderOptions: {}, // css预设器配置项
-        requireModuleExtension: true // 启用 CSS modules for all css / pre-processor files.
+        sourceMap: !IS_PROD,
+        loaderOptions: {
+            less: {
+                javascriptEnabled: true
+            }
+        },
+        requireModuleExtension: true
     },
     chainWebpack: config => {
         config.plugins.delete('preload')
@@ -22,12 +26,13 @@ module.exports = {
         const cdn = {
             css: [
                 // 'https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css',
-                'https://cdn.bootcdn.net/ajax/libs/font-awesome/5.14.0/css/all.css',
-                'https://cdn.bootcdn.net/ajax/libs/cropperjs/1.5.9/cropper.min.css',
+                'https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-y/font-awesome/5.15.2/css/all.min.css',
+                'https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-y/cropperjs/2.0.0-alpha.1/cropper.min.css',
                 // 'https://cdn.bootcdn.net/ajax/libs/plyr/3.6.2/plyr.css'
             ],
             js: [
-                'https://cdn.bootcdn.net/ajax/libs/cropperjs/1.5.9/cropper.min.js',
+                // http://cdn.bytedance.com/ 头条免费cdn资源
+                'https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-y/cropperjs/2.0.0-alpha.1/cropper.min.js',
                 // 'https://cdn.bootcdn.net/ajax/libs/plyr/3.6.2/plyr.min.js',
             ]
         };
