@@ -173,8 +173,13 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - 路由注解
 - https://github.com/wangyuan389/mall-cook 低代码商城搭建平台
 - [x] 文件管理功能: FTP, STORAGE 
-    - https://github.com/mengshukeji/luckysheet-vue
+  - https://github.com/mengshukeji/luckysheet-vue
+  - https://view.officeapps.live.com/op/view.aspx?src=文件地址
+  - mp4 mp3 在线播放
+  - 多存储驱动
+  
 - [x] webssh 支持SFTP
+
 
 <!-- http://pigx.pig4cloud.com/#/mp/wxaccountfans/index -->
 <!-- 热门语言卡片 -->
