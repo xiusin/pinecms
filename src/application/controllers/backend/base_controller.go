@@ -32,10 +32,11 @@ const (
 )
 
 type SearchFieldDsl struct {
-	Field    string                      // 字段
-	Op       string                      // 操作字符	默认为 =
-	DataExp  string                      // 数据匹配格式 匹配值=$? 如 LIKE %$?% 默认=$?
-	CallBack func(*xorm.Session, string) // 替换callback 如果设置, 将绝对忽略Field Op DataExp的设置 匹配值=$?
+	Field    string                           // 字段
+	Op       string                           // 操作字符	默认为 =
+	DataExp  string                           // 数据匹配格式 匹配值=$? 如 LIKE %$?% 默认=$?
+	SkipFn   func(interface{}) bool           // 校验某些值不作为筛选条件如： 0， false不筛选状态
+	CallBack func(*xorm.Session, interface{}) // 替换callback 如果设置, 将绝对忽略Field Op DataExp的设置 匹配值=$?
 }
 
 type BaseController struct {
@@ -176,13 +177,16 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 			query.Where(strings.Join(whereBuilder, " OR "), whereLikeBind...)
 		}
 	}
-	if c.SearchFields != nil {
-		for _, v := range c.SearchFields { // 其他字段搜索
-			if v.Field == "" && v.CallBack == nil {
+	if c.SearchFields != nil && len(c.p.Params) > 0 {
+		for _, v := range c.SearchFields {
+			if v.Field == "" {
 				continue
 			}
-			val, exists := c.p.Params[strings.ReplaceAll(v.Field, "`", "")]
-			if exists {
+
+			if val, exists := c.p.Params[strings.ReplaceAll(v.Field, "`", "")]; exists {
+				if v.SkipFn != nil && v.SkipFn(val) {
+					continue
+				}
 				switch val := val.(type) {
 				case string:
 					if len(val) == 0 {
@@ -200,32 +204,14 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 					if v.DataExp == "" {
 						v.DataExp = "$?"
 					}
-					query.Where(fmt.Sprintf("%s %s ?", v.Field, v.Op), strings.ReplaceAll(v.DataExp, "$?", val.(string)))
+					if v.Op == "LIKE" {
+						val = strings.ReplaceAll(v.DataExp, "$?", val.(string))
+					}
+					query.Where(fmt.Sprintf("%s %s ?", v.Field, v.Op), val)
 				} else {
-					v.CallBack(query, c.p.Keywords)
+					v.CallBack(query, val)
 				}
 			}
-
-			//if exists {
-			//	if dsl.Op == "range" { // 范围查询， 组件between and
-			//		ranges := strings.SplitN(val.(string), ",", 2)
-			//		if len(ranges) == 2 {
-			//			query.Where(fmt.Sprintf("%s >= ?", field), ranges[0]).Where(fmt.Sprintf("%s <= ?", field), ranges[1])
-			//		}
-			//	} else {
-			//		switch val.(type) {
-			//		case string:
-			//			if len(val.(string)) == 0 {
-			//				continue
-			//			}
-			//		case bool:
-			//			if !val.(bool) {
-			//				continue
-			//			}
-			//		}
-			//		query.Where(fmt.Sprintf("%s %s ?", field, dsl.Op), val)
-			//	}
-			//}
 		}
 	}
 	if len(c.p.OrderField) > 0 {

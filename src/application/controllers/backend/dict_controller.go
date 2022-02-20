@@ -18,9 +18,8 @@ func (c *DictController) Construct() {
 		{Field: "value", Op: "LIKE", DataExp: "%$?%"},
 		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
 	}
-	c.SearchFields = []SearchFieldDsl{
-		{Field: "status"},
-	}
+	c.SearchFields = []SearchFieldDsl{{Field: "status"}, {Field: "cid"}}
+
 	c.Table = &tables.Dict{}
 	c.Entries = &[]*tables.Dict{}
 	c.ApiEntityName = "字典属性"
@@ -35,6 +34,9 @@ func (c *DictController) before(act int, param interface{}) error {
 	case OpAdd, OpEdit:
 		p := param.(*tables.Dict)
 		id, cid, name := p.Id, p.Cid, p.Name
+		if cid == 0 {
+			return errors.New("请选择所属字典分类")
+		}
 		sess := c.Orm.Table(c.Table).Where("name = ?", name).Where("cid = ?", cid)
 		if OpEdit == act {
 			sess = sess.Where("id <> ?", id)
