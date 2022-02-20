@@ -51,12 +51,8 @@ func (c *DepartmentController) before(act int, params interface{}) error {
 		if exist, _ := sess.Exist(&tables.Department{}); exist {
 			return errors.New("部门已存在")
 		}
-	} else if act == OpDel {
-		p := params.(*idParams)
-		if exist, _ := c.Orm.In("parent_id", p.Ids).Exist(&tables.Department{}); exist {
-			return errors.New("存在下级部门, 不可删除")
-		}
 	}
+
 	return nil
 }
 
