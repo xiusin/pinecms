@@ -1,6 +1,9 @@
 package backend
 
 import (
+	"crypto/md5"
+	"fmt"
+	"io"
 	"path/filepath"
 	"strings"
 
@@ -42,16 +45,13 @@ func (c *PublicController) PostUpload() {
 			return
 		}
 		defer f.Close()
-		//md5hash := md5.New()
-		//
-		//dat,_ := io.ReadAll(f)
-		//_, _ = md5hash.Write(dat)
-		//md5Byts := fmt.Sprintf("%x", md5hash.Sum(nil))
-		//
-		md5Byts := ""
+
+		md5hash := md5.New()
+		io.Copy(md5hash, f) // 不能使用readAll 会读空buffer
+		md5sum := fmt.Sprintf("%x", md5hash.Sum(nil))
 		attach := &tables.Attachments{}
-		//c.Orm.Where("md5 = ?", md5Byts).Get(attach)
-		resJson := map[string]interface{}{"originalName": fs.Filename, "size": fs.Size, "md5": md5Byts}
+		c.Orm.Where("md5 = ?", md5sum).Get(attach)
+		resJson := map[string]interface{}{"originalName": fs.Filename, "size": fs.Size, "md5": md5sum}
 		if len(attach.Url) == 0 {
 			filename := string(helper.Krand(16, 3)) + strings.ToLower(filepath.Ext(fs.Filename))
 			storageName := uploadDir + "/" + filename
