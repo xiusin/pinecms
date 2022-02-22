@@ -121,7 +121,7 @@ func parseConfig(path string, out interface{}) {
 }
 
 func SiteConfig() (map[string]string, error) {
-	xorm, cache := helper.Orm(), helper.AbstractCache()
+	xorm, cache := helper.GetORM(), helper.AbstractCache()
 	var settingData = map[string]string{}
 	if err := cache.GetWithUnmarshal(controllers.CacheSetting, &settingData); err != nil {
 		var settings []tables.Setting

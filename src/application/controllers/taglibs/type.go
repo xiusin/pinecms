@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"github.com/CloudyKit/jet"
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"reflect"
 	"runtime/debug"
-	"xorm.io/xorm"
 )
 
 func Type(args jet.Arguments) reflect.Value {
@@ -25,7 +24,7 @@ func Type(args jet.Arguments) reflect.Value {
 	if catid < 0 {
 		panic("typeid参数不能小于1")
 	}
-	orm := pine.Make(controllers.ServiceXorm).(*xorm.Engine)
+	orm := helper.GetORM()
 	var data = &tables.Category{}
 	sess := orm.Table(data)
 	defer sess.Close()

@@ -1,15 +1,11 @@
 package backend
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
 
-	"github.com/go-playground/locales/en"
-	"github.com/go-playground/locales/zh"
-	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
@@ -18,7 +14,6 @@ import (
 )
 
 var validate = validator.New()
-var trans, _ = ut.New(zh.New(), en.New()).GetTranslator("zh")
 
 const (
 	BindTypeJson = iota
@@ -36,7 +31,7 @@ type SearchFieldDsl struct {
 	Op       string                           // 操作字符	默认为 =
 	DataExp  string                           // 数据匹配格式 匹配值=$? 如 LIKE %$?% 默认=$?
 	SkipFn   func(interface{}) bool           // 校验某些值不作为筛选条件如： 0， false不筛选状态
-	CallBack func(*xorm.Session, interface{}) // 替换callback 如果设置, 将绝对忽略Field Op DataExp的设置 匹配值=$?
+	CallBack func(*xorm.Session, ...interface{}) // 替换callback 如果设置, 将绝对忽略Field Op DataExp的设置 匹配值=$?
 }
 
 type BaseController struct {
@@ -92,9 +87,7 @@ func (c *BaseController) BindParse() (err error) {
 	}
 	if err = validate.Struct(c.Table); err != nil {
 		errs := err.(validator.ValidationErrors)
-		for _, e := range errs {
-			return errors.New(e.Translate(trans))
-		}
+		return errs[0]
 	}
 	return nil
 }
@@ -209,7 +202,12 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 					}
 					query.Where(fmt.Sprintf("%s %s ?", v.Field, v.Op), val)
 				} else {
-					v.CallBack(query, val)
+					switch val := val.(type) {
+					case []interface{}:
+						v.CallBack(query, val...)
+					default:
+						v.CallBack(query, val)
+					}
 				}
 			}
 		}
@@ -257,7 +255,7 @@ func (c *BaseController) add() bool {
 }
 
 func (c *BaseController) PostUpdate() {
-	c.PostEdit()
+	c.PostEdit() // TODO 需要延迟调用, 否则无法实现重现 ?
 }
 
 func (c *BaseController) PostEdit() {

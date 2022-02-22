@@ -3,6 +3,7 @@ package filemanager
 import (
 	"encoding/json"
 	"fmt"
+	"mime"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -179,6 +180,20 @@ func (c *FileManagerController) PostUpdateFile() {
 		Extension: strings.TrimLeft(filepath.Ext(fs.Filename), "."),
 		Props:     FMFileProps{},
 	}})
+}
+
+func (c *FileManagerController) GetStreamFile()  {
+	_ = c.Render().Text(c.engine.GetFullUrl(c.path))
+}
+
+func (c *FileManagerController) GetProxyContent()  {
+	byts , err := c.engine.Content(c.path)
+	if err != nil {
+		ResponseError(c.Ctx(), err.Error())
+		return
+	}
+	c.Ctx().SetContentType(mime.TypeByExtension(filepath.Ext(c.path)))
+	c.Render().Bytes(byts)
 }
 
 func (c *FileManagerController) GetThumbnailsLink() {

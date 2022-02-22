@@ -34,7 +34,7 @@ func NewFtpUploader(opt map[string]string) *FtpUploader {
 	}
 	prefix := strings.TrimSuffix(opt["FTP_URL_PREFIX"], "/")
 
-	uploader := &FtpUploader{host: opt["SITE_URL"], ftpUrlPrefix: prefix}
+	uploader := &FtpUploader{host: opt["PROXY_SITE_URL"], ftpUrlPrefix: prefix}
 
 	uploader.conn = func() error {
 		c, err := ftp.Dial(
@@ -170,6 +170,7 @@ func (s *FtpUploader) Content(name string) ([]byte, error) {
 		return nil, err
 	}
 	defer resp.Close()
+
 	return ioutil.ReadAll(resp)
 }
 

@@ -48,7 +48,7 @@ func (c *SettingController) before(act int, params interface{}) error {
 	return nil
 }
 
-func (c *SettingController) after(act int, params interface{}) error {
+func (c *SettingController) after(act int, _ interface{}) error {
 	if act == OpEdit {
 		helper.AbstractCache().Delete(controllers.CacheSetting)
 		config.SiteConfig()

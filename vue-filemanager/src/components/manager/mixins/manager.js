@@ -98,7 +98,7 @@ export default {
     },
     methods: {
         /**
-         *  加载所选目录并显示文件 
+         *  加载所选目录并显示文件
          * @param path
          */
         selectDirectory(path) {
@@ -109,7 +109,7 @@ export default {
         },
 
         /**
-         * 返回上一级 
+         * 返回上一级
          */
         levelUp() {
             if (this.selectedDirectory) {
@@ -134,8 +134,8 @@ export default {
 
         /**
          * 全选或全删
-         * @param { Boolean } isAll 
-         * @returns 
+         * @param { Boolean } isAll
+         * @returns
          */
         setAllSelected(isAll = false) {
             if (isAll) {
@@ -149,9 +149,9 @@ export default {
         },
         /**
          *(grid模块)多选
-         * @param {*} type 
-         * @param {*} item 
-         * @returns 
+         * @param {*} type
+         * @param {*} item
+         * @returns
          */
         mutliGridSelected(type, item) {
             // 在所选数组中搜索
@@ -183,8 +183,8 @@ export default {
         },
         /**
          * (grid视图)中选择文件
-         * @param {String} type 
-         * @param {String} item 
+         * @param {String} type
+         * @param {String} item
          */
         selectGridItem(type, item) {
             // 在所选数组中搜索
@@ -214,8 +214,8 @@ export default {
         },
         /**
          * 文件夹和文件多选
-         * @param {String} type 
-         * @param {Object} item 
+         * @param {String} type
+         * @param {Object} item
          */
         mutliSelected(type, item) {
             // 在所选数组中搜索
@@ -298,7 +298,7 @@ export default {
          * 显示上下文菜单
          * @param item
          * @param event
-         * @param obj 
+         * @param obj
          */
         contextMenu(item, event) {
             // 选中的项目类型
@@ -340,7 +340,14 @@ export default {
                 return;
             }
 
-            if (this.$store.state.fm.settings.imageExtensions
+            if (this.$store.state.fm.settings.officeExtensions
+                .includes(extension.toLowerCase())) {
+                // 显示图片预览
+                this.$store.commit('fm/modal/setModalState', {
+                    modalName: 'OfficeViewer',
+                    show: true,
+                });
+            } else if (this.$store.state.fm.settings.imageExtensions
                 .includes(extension.toLowerCase())) {
                 // 显示图片预览
                 this.$store.commit('fm/modal/setModalState', {

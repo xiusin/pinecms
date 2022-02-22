@@ -69,7 +69,7 @@ func (c *IndexController) setTemplateData() {
 }
 
 func getOrmSess(model *tables.DocumentModel) *xorm.Session {
-	return pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(controllers.GetTableName(model.Table)).Where("status = 1").Where("deleted_time IS NULL")
+	return helper.GetORM().Table(controllers.GetTableName(model.Table)).Where("status = 1").Where("deleted_time IS NULL")
 }
 
 func template(tpl string) string {

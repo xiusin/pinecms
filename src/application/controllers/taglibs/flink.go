@@ -3,11 +3,10 @@ package taglibs
 import (
 	"github.com/CloudyKit/jet"
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"reflect"
 	"strings"
-	"xorm.io/xorm"
 )
 
 func Flink(args jet.Arguments) reflect.Value {
@@ -19,7 +18,7 @@ func Flink(args jet.Arguments) reflect.Value {
 			pine.Logger().Error("Flink Failed")
 		}
 	}()
-	orm := pine.Make(controllers.ServiceXorm).(*xorm.Engine)
+	orm := helper.GetORM()
 	sess := orm.Table(&tables.Link{})
 	defer sess.Close()
 	row := int(args.Get(0).Float())

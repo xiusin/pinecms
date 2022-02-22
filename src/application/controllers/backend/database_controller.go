@@ -101,7 +101,7 @@ func (c *DatabaseController) Backup() {
 }
 
 func (c *DatabaseController) backup(settingData map[string]string) (msg string, erode int) {
-	orm := pine.Make(controllers.ServiceXorm).(*xorm.Engine)
+	orm := helper.GetORM()
 
 	if settingData["UPLOAD_DATABASE_PASS"] == "" {
 		return "请先设置备份数据库打包zip的密码", 1

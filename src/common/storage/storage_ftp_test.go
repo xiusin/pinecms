@@ -12,7 +12,7 @@ func TestFtpUploader(t *testing.T) {
 		"FTP_SERVER_URL":  "124.222.103.232",
 		"FTP_SERVER_PORT": "21",
 		"FTP_USER_NAME":   "test",
-		"FTP_USER_PWD":    "Hh2EptLZAN2KrbXd",
+		"FTP_USER_PWD":    "",
 		"SITE_URL":        "http://localhost:2019/xxx/",
 		"FTP_URL_PREFIX":  "", // 如果配置则使用此配置拼接地址, 否则使用系统接口
 	})

@@ -1,14 +1,13 @@
 package taglibs
 
 import (
+	"github.com/xiusin/pinecms/src/common/helper"
 	"reflect"
 	"strings"
 
 	"github.com/CloudyKit/jet"
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/config"
-	"xorm.io/xorm"
 )
 
 /**
@@ -27,7 +26,7 @@ func Query(args jet.Arguments) reflect.Value {
 			pine.Logger().Error("Query Failed", err)
 		}
 	}()
-	sess := pine.Make(controllers.ServiceXorm).(*xorm.Engine)
+	sess := helper.GetORM()
 	query := strings.Trim(args.Get(0).String(), " \n\t")
 	// 只允许查询操作
 	conf := config.DB()

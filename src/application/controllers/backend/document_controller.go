@@ -269,11 +269,15 @@ func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 
 	table := table{Props: nil, Columns: []column{}, UpsetComps: []interface{}{}}
 
-	err = cacher.Remember("model_table_"+strconv.Itoa(mid), &table, func() (interface{}, error) {
-		// 系统字段定义
+	modelTableCacheKey := "model_table_"+strconv.Itoa(mid)
+
+	//cacher.Delete(modelTableCacheKey)
+
+	err = cacher.Remember(modelTableCacheKey, &table, func() (interface{}, error) {
 		var fieldDefines []*tables.DocumentModelField
 		var fieldDefineMap = map[int64]*tables.DocumentModelField{}
 		if err := c.Orm.Find(&fieldDefines); err != nil {
+			c.Ctx().Logger().Error(err)
 			return nil, err
 		}
 		for _, define := range fieldDefines {
@@ -346,7 +350,7 @@ func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 			table.UpsetComps = append(table.UpsetComps, comp)
 		}
 		table.SearchFields = fields.GetSearchableFields()
-		return table, nil
+		return &table, nil
 	})
 	if err != nil {
 		helper.Ajax(err, 1, c.Ctx())

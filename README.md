@@ -159,7 +159,6 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
   - 自动回复素材功能
   - 客服消息
 
-
 # TODO #
 
 - Bleve 全文检索 （插件提供）
@@ -170,17 +169,11 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - <http://relation-graph.com/#/demo/scene-network> 组织架构显示
 - 动态构建表单: <https://eddyzhang1986.github.io/antd-jsonschema-form/> 
 - http://fundemo.funadmin.com/2KmvVJA8dU.php/index/index.html
-- 路由注解
 - https://github.com/wangyuan389/mall-cook 低代码商城搭建平台
-- [x] 文件管理功能: FTP, STORAGE 
-  - https://github.com/mengshukeji/luckysheet-vue
-  - https://view.officeapps.live.com/op/view.aspx?src=文件地址
-  - mp4 mp3 在线播放
-  - 多存储驱动
-  
-- [x] webssh 支持SFTP
+- 路由注解 (低)
+- http://fast-crud.docmirror.cn/element/#/crud/basis/value-change 
 
-
+<!-- 参考CMS: http://demo2.wooadmin.cn/run -->
 <!-- http://pigx.pig4cloud.com/#/mp/wxaccountfans/index -->
 <!-- 热门语言卡片 -->
 <!-- https://github-readme-stats.vercel.app/api/top-langs/?username=xiusin&layout=compact -->

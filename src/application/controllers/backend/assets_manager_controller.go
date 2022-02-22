@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
@@ -27,7 +26,7 @@ func (c *AssetsManagerController) Construct() {
 	c.KeywordsSearch = []SearchFieldDsl{
 		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
 	}
-	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
+	c.Orm = helper.GetORM()
 	c.conf = di.MustGet("pinecms.config").(*config.Config)
 }
 

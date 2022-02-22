@@ -3,9 +3,7 @@ package backend
 import (
 	"errors"
 	"fmt"
-	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
-	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm"
@@ -21,7 +19,7 @@ func (c *AdminRoleController) Construct() {
 	c.KeywordsSearch = []SearchFieldDsl{
 		{Field: "rolename", Op: "LIKE", DataExp: "%$?%"},
 	}
-	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
+	c.Orm = helper.GetORM()
 	c.Table = &tables.AdminRole{}
 	c.Entries = &[]tables.AdminRole{}
 	c.BaseController.Construct()

@@ -100,6 +100,9 @@ export default {
         }, ],
       ],
 
+      // 用户预览文档
+      officeExtensions: ['xls', 'xlsx', 'doc', 'docx', 'ppt', 'pptx'],
+
       // 用于查看和预览的图像扩展
       imageExtensions: ['png', 'jpg', 'jpeg', 'gif'],
 

@@ -10,12 +10,9 @@ require (
 	github.com/arl/statsviz v0.4.0
 	github.com/casbin/casbin/v2 v2.40.3
 	github.com/casbin/xorm-adapter v1.0.1-0.20191120030838-267478260350
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/fasthttp/websocket v1.4.3-rc.9
+	github.com/fasthttp/websocket v1.5.0
 	github.com/fatih/structs v1.1.0
 	github.com/gbrlsnchs/jwt/v3 v3.0.0
-	github.com/go-playground/locales v0.13.0
-	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.7.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gokeeptech/gktemplate v0.0.9
@@ -33,13 +30,13 @@ require (
 	github.com/sonyarouje/simdb v0.1.0
 	github.com/spf13/cobra v1.2.1
 	github.com/takama/daemon v1.0.0
-	github.com/traefik/yaegi v0.9.19
+	github.com/traefik/yaegi v0.11.2
 	github.com/valyala/fasthttp v1.33.0
 	github.com/xiusin/logger v0.0.10-0.20220103084022-9cb8378d9b03
 	github.com/xiusin/pine v0.0.0-20220214100813-4f59e0e4308c
 	github.com/xiusin/reload v0.0.0-20211215091741-ab993ba2e9d2
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
-	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce
+	golang.org/x/crypto v0.0.0-20220131195533-30dcbda58838
 	golang.org/x/text v0.3.7
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6
 	gopkg.in/yaml.v2 v2.4.0
@@ -66,17 +63,21 @@ require (
 	github.com/gdamore/encoding v1.0.0 // indirect
 	github.com/gdamore/tcell/v2 v2.3.11 // indirect
 	github.com/go-ole/go-ole v1.2.5 // indirect
+	github.com/go-playground/locales v0.13.0 // indirect
+	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/goccy/go-json v0.8.1 // indirect
+	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
+	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/gookit/color v1.5.0 // indirect
 	github.com/gorilla/schema v1.2.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kataras/tablewriter v0.0.0-20180708051242-e063d29b7c23 // indirect
-	github.com/klauspost/compress v1.14.2 // indirect
+	github.com/klauspost/compress v1.14.3 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/landoop/tableprinter v0.0.0-20201125135848-89e81fc956e7 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
@@ -91,7 +92,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/savsgio/gotils v0.0.0-20210921075833-21a6215cb0e4 // indirect
+	github.com/savsgio/gotils v0.0.0-20220201163454-d252f0a44d5b // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect

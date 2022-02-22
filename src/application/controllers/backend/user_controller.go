@@ -2,12 +2,11 @@ package backend
 
 import (
 	"errors"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"strings"
+	"xorm.io/builder"
 	"xorm.io/xorm"
 )
 
@@ -20,7 +19,14 @@ func (c *UserController) Construct() {
 		{Field: "username", Op: "LIKE", DataExp: "%$?%"},
 		{Field: "email", Op: "LIKE", DataExp: "%$?%"},
 	}
-	c.Orm = pine.Make(controllers.ServiceXorm).(*xorm.Engine)
+
+	c.SearchFields = []SearchFieldDsl{
+		{Field: "departmentIds", CallBack: func(session *xorm.Session, i ...interface{}) {
+			session.Where(builder.In("dept_id", i))
+		}},
+	}
+
+	c.Orm = helper.GetORM()
 	c.Table = &tables.Admin{}
 	c.Entries = &[]*tables.Admin{}
 

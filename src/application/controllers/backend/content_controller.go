@@ -1,7 +1,6 @@
 package backend
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -98,7 +97,6 @@ func (c *ContentController) PostEdit() {
 	id, _ := c.Input().GetInt("id")
 	mid, _ := c.Input().GetInt("mid")
 	catid, _ := c.Input().GetInt("catid")
-	fmt.Println(id, mid, catid)
 	if mid < 1 || catid < 1 || id < 1 {
 		helper.Ajax("缺少关键参数", 1, c.Ctx())
 		return
@@ -115,12 +113,12 @@ func (c *ContentController) PostEdit() {
 
 	var data = map[string]interface{}{}
 	c.Ctx().BindJSON(&data)
-	data["updated_time"] = helper.NowDate("Y-m-d H:i:s")
+	data["updated_time"] = helper.NowDate(helper.TimeFormat)
 	_, err := query.Where("id = ?", id).Where("mid = ?", mid).Where("catid = ?", catid).AllCols().Update(&data)
 	if err == nil {
-		helper.Ajax("更新内容成功", 1, c.Ctx())
+		helper.Ajax("更新内容成功", 0, c.Ctx())
 	} else {
-		helper.Ajax("更新内容失败: "+err.Error(), 0, c.Ctx())
+		helper.Ajax("更新内容失败: "+err.Error(), 1, c.Ctx())
 	}
 }
 

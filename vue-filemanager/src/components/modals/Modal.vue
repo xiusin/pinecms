@@ -1,16 +1,9 @@
 <template >
   <transition name="modal">
-    <!-- <div ref="modal" class="modal" @click="hideModal">
-    <div class="modal-dialog" role="document" :class="modalSize" @click.stop>-->
-    <!-- <component :is="modalName"></component> -->
-    <!-- </div>
-    </div>-->
-
     <component :is="modalName"></component>
   </transition>
 </template>
 <script>
-// import { mapState } from "vuex";
 import NewFolder from "./views/NewFolder";
 import NewFile from "./views/NewFile";
 import AudioPlayer from "./views/AudioPlayer";
@@ -23,6 +16,7 @@ import Rename from "./views/Rename";
 import TextEdit from "./views/TextEdit";
 import Preview from "./views/Preview";
 import Upload from "./views/Upload";
+import OfficeViewer from "./views/OfficeViewer";
 export default {
   data() {
     return {
@@ -41,7 +35,8 @@ export default {
     Rename,
     TextEdit,
     Preview,
-    Upload
+    Upload,
+    OfficeViewer,
   },
   mounted() {
     // 设置模块高度

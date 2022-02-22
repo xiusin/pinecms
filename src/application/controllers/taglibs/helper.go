@@ -49,7 +49,7 @@ func getOrmSess(table ...string) *xorm.Session {
 	if len(table) == 0 {
 		table = []string{"articles"}
 	}
-	return pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(controllers.GetTableName(table[0]))
+	return helper.GetORM().Table(controllers.GetTableName(table[0]))
 }
 
 func getCategoryOrm() *xorm.Session {

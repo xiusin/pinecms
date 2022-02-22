@@ -126,7 +126,7 @@ export default {
      * 添加音频资源
      */
     setSource(i) {
-      HTTP.get(this.$store.getters["fm/settings/baseUrl"] + "stream-file", {
+      HTTP.get("stream_file", {
         params: {
           disk: this.selectedDisk,
           path: this.audioFiles[i].path

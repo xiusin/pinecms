@@ -105,7 +105,7 @@ HTTP.interceptors.response.use(
         };
         // 显示提醒
         // EventBus.$emit("addNotification", message);
-        if (message.status == "danger") {
+        if (message.status === "danger") {
           Notification.error({
             title: "失败",
             message: message.message

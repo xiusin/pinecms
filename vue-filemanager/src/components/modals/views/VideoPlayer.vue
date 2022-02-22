@@ -37,7 +37,7 @@ export default {
       //     type: `audio/${this.videoFile.extension}`,
       //   }],
       // };
-      HTTP.get(this.$store.getters["fm/settings/baseUrl"] + "stream-file", {
+      HTTP.get("stream_file", { // this.$store.getters["fm/settings/baseUrl"] +
         params: {
           disk: this.selectedDisk,
           path: this.videoFile.path

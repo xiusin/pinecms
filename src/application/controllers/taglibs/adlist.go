@@ -6,11 +6,8 @@ import (
 	"strings"
 
 	"github.com/CloudyKit/jet"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"xorm.io/xorm"
 )
 
 /**
@@ -33,14 +30,14 @@ func AdList(args jet.Arguments) reflect.Value {
 	if order == "" {
 		order = "listorder desc"
 	}
-	orm := pine.Make(controllers.ServiceXorm).(*xorm.Engine).OrderBy(order)
+	orm := helper.GetORM().OrderBy(order)
 	// 获取广告位信息
 	var pos = args.Get(1)
 	switch pos.Type().String() {
 	case "string":
 		if len(pos.String()) > 0 {
 			advPos := &tables.AdvertSpace{}
-			exists, _ := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(advPos).Where("name = ?", pos.String()).Get(advPos)
+			exists, _ := helper.GetORM().Table(advPos).Where("name = ?", pos.String()).Get(advPos)
 			if !exists {
 				return reflect.ValueOf([]tables.Advert{})
 			}

@@ -25,5 +25,6 @@ func Server() {
 		pine.WithServerName("xiusin/pinecms"),
 		pine.WithoutStartupLog(true),
 		pine.WithCookie(true),
+		pine.WithMaxMultipartMemory(100 * 1024 * 1024),
 	)
 }

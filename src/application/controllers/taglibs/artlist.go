@@ -16,7 +16,6 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"xorm.io/xorm"
 )
 
 /**
@@ -125,7 +124,7 @@ func ArcList(args jet.Arguments) reflect.Value {
 	if modelID == 0 {
 		modelID = 1
 	}
-	exists, _ := pine.Make(controllers.ServiceXorm).(*xorm.Engine).Table(model).ID(modelID).Get(model)
+	exists, _ := helper.GetORM().Table(model).ID(modelID).Get(model)
 	if !exists {
 		panic(fmt.Sprintf("模型ID%d不存在", modelID))
 	}
