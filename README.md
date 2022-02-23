@@ -7,17 +7,20 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 > 前端仓库: <https://github.com/xiusin/pinecms-web.git> <br/>
 > 目前程序正在持续迭代开发中，提供开发期间的数据库文件`resources/pinecms.sql`, 后期数据库结构变更比较大。<br>
 
-> 推荐一个自己写的Redis管理工具, 支持Web端: https://github.com/xiusin/redis-web-manager.git
+> 推荐一个自己写的Redis管理工具, 支持Web端: <https://github.com/xiusin/redis-web-manager.git>
 
 # 编译部署 #
+
 ## 下载并编译 ##
 
 ---
+
 ```markdown
  git clone https://github.com/xiusin/pinecms.git
  cd pinecms
  go build -o pinecms
 ```
+
 ---
 
 ## 配置 ##
@@ -42,7 +45,6 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 6. 访问后端登陆页面
     > 访问 `http://localhost:2019/admin/` 默认账号密码 `用户名: admin 密码: 123456`
-
 
 # 内置模块 #
 
@@ -149,11 +151,9 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 # Doing #
 
 - 权限系统完善到按钮级别
-- 系统内部BUG修复，图片处理
-- 图片系统以及md5处理
+- 系统内部BUG修复
 - cms系统完善表单字段自定义配置（可自定义模型页面），搜索字段配置（不使用高级搜索表单）
 - 插件公共页面配置 （.so下载，源代码下载）
-- 插件允许暴露公共前端页面
 - 微信插件
   - 素材管理
   - 自动回复素材功能
@@ -167,11 +167,11 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - Casbin: <https://zhuanlan.zhihu.com/p/148353743>
 - 菜单表增加perms字段， 可以配置权限标识，可以配置节点类型为权限。
 - <http://relation-graph.com/#/demo/scene-network> 组织架构显示
-- 动态构建表单: <https://eddyzhang1986.github.io/antd-jsonschema-form/> 
-- http://fundemo.funadmin.com/2KmvVJA8dU.php/index/index.html
-- https://github.com/wangyuan389/mall-cook 低代码商城搭建平台
+- 动态构建表单: <https://eddyzhang1986.github.io/antd-jsonschema-form/>
+- <http://fundemo.funadmin.com/2KmvVJA8dU.php/index/index.html>
+- <https://github.com/wangyuan389/mall-cook> 低代码商城搭建平台
 - 路由注解 (低)
-- http://fast-crud.docmirror.cn/element/#/crud/basis/value-change 
+- <http://fast-crud.docmirror.cn/element/#/crud/basis/value-change>
 
 <!-- 参考CMS: http://demo2.wooadmin.cn/run -->
 <!-- http://pigx.pig4cloud.com/#/mp/wxaccountfans/index -->

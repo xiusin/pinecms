@@ -3,6 +3,7 @@ package backend
 import (
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm"
 )
 
@@ -12,7 +13,7 @@ type AttachmentController struct {
 
 func (c *AttachmentController) Construct() {
 	c.SearchFields = []SearchFieldDsl{
-		{Field: "`type`", Op: "="},
+		//{Field: "`type`", Op: "="},
 	}
 	c.Table = &tables.Attachments{}
 	c.Entries = &[]*tables.Attachments{}
@@ -34,6 +35,30 @@ func (c *AttachmentController) before(act int, params interface{}) error {
 		if cid > 0 {
 			params.(*xorm.Session).Where("classify_id = ?", cid)
 		}
+		params.(*xorm.Session).Desc("id")
 	}
 	return nil
+}
+
+func (c *AttachmentController) PostAdd() {
+	if err := c.BindParse(); err != nil {
+		helper.Ajax(err.Error(), 1, c.Ctx())
+		return
+	}
+
+	md5, _ := c.Input().GetString("md5")
+	if len(md5) == 0 {
+		helper.Ajax("缺少必要的MD5参数", 1, c.Ctx())
+		return
+	}
+	data := &tables.Attachments{}
+
+	if exist, _ := c.Orm.Where("md5 = ?", md5).Get(data); exist {
+		helper.Ajax(data, 0, c.Ctx())
+		return
+	} else if err := c.add(); err == nil  {
+		helper.Ajax(c.Table, 0, c.Ctx())
+	} else {
+		helper.Ajax(err, 1, c.Ctx())
+	}
 }

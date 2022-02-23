@@ -269,9 +269,9 @@ func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 
 	table := table{Props: nil, Columns: []column{}, UpsetComps: []interface{}{}}
 
-	modelTableCacheKey := "model_table_"+strconv.Itoa(mid)
+	modelTableCacheKey := "model_table_" + strconv.Itoa(mid)
 
-	//cacher.Delete(modelTableCacheKey)
+	cacher.Delete(modelTableCacheKey)
 
 	err = cacher.Remember(modelTableCacheKey, &table, func() (interface{}, error) {
 		var fieldDefines []*tables.DocumentModelField
@@ -295,7 +295,6 @@ func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 				Prop:                field.TableField,
 				Label:               field.FormName,
 				Width:               field.FieldLen,
-				Dict:                nil,
 				Sortable:            field.Sortable,
 				ShowOverflowTooltip: true,
 				Align:               "left",
@@ -308,9 +307,11 @@ func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 				listColumn.MinWidth = field.ListWidth
 			}
 
-			if len(field.Datasource) > 0 {
-
+			// 有设置字典类型
+			if len(field.DictKey) > 0 {
+				listColumn.Dict = []dictItem{}
 			}
+
 			if len(field.Component) > 0 {
 				var component = map[string]interface{}{}
 				if err := json.Unmarshal([]byte(field.Component), &component); err == nil {
@@ -319,10 +320,14 @@ func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 					listColumn.Component = field.Component
 				}
 			} else if len(fieldDefineMap[field.FieldType].ListComp) > 0 {
-				listColumn.Component = fieldDefineMap[field.FieldType].ListComp
+					vv := map[string]interface{}{}
+					json.Unmarshal([]byte(fieldDefineMap[field.FieldType].ListComp), &vv)
+					listColumn.Component = vv
 			}
 
-			table.Columns = append(table.Columns, listColumn)
+			if field.ListVisible {
+				table.Columns = append(table.Columns, listColumn)
+			}
 
 			var props = map[string]interface{}{}
 			_ = json.Unmarshal([]byte(fieldDefineMap[field.FieldType].Props), &props)
@@ -334,18 +339,10 @@ func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 				field.FieldLen = 24
 			}
 
-			comp = map[string]interface{}{
-				"prop":      field.TableField,
-				"label":     field.FormName,
-				"span":      field.Span,
-				"component": comp,
-			}
+			comp = map[string]interface{}{"prop": field.TableField, "label": field.FormName, "span": field.Span, "component": comp}
 
 			if field.Required {
-				comp["rules"] = map[string]interface{}{
-					"required": true,
-					"message":  field.RequiredTips,
-				}
+				comp["rules"] = map[string]interface{}{"required": true, "message": field.RequiredTips}
 			}
 			table.UpsetComps = append(table.UpsetComps, comp)
 		}

@@ -49,8 +49,8 @@ func (c *AdminRoleController) PostAdd() {
 		return
 	}
 	if _, err := c.Orm.Transaction(func(session *xorm.Session) (interface{}, error) {
-		if !c.add() {
-			return nil, errors.New("新增数据失败")
+		if err := c.add(); err != nil  {
+			return nil, err
 		}
 		t := c.Table.(*tables.AdminRole)
 		id := t.Id

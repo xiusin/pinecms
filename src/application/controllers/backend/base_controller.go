@@ -27,14 +27,16 @@ const (
 )
 
 type SearchFieldDsl struct {
-	Field    string                           // 字段
-	Op       string                           // 操作字符	默认为 =
-	DataExp  string                           // 数据匹配格式 匹配值=$? 如 LIKE %$?% 默认=$?
-	SkipFn   func(interface{}) bool           // 校验某些值不作为筛选条件如： 0， false不筛选状态
+	Field    string                              // 字段
+	Op       string                              // 操作字符	默认为 =
+	DataExp  string                              // 数据匹配格式 匹配值=$? 如 LIKE %$?% 默认=$?
+	SkipFn   func(interface{}) bool              // 校验某些值不作为筛选条件如： 0， false不筛选状态
 	CallBack func(*xorm.Session, ...interface{}) // 替换callback 如果设置, 将绝对忽略Field Op DataExp的设置 匹配值=$?
 }
 
 type BaseController struct {
+	LastErr error // 最后一次错误对象
+
 	SearchFields   []SearchFieldDsl // 设置可以搜索的字段 接收或匹配params的字段
 	BindType       uint             // 表单绑定类型
 	KeywordsSearch []SearchFieldDsl // 关键字搜索字段 用于关键字匹配字段
@@ -233,25 +235,24 @@ func (c *BaseController) PostAdd() {
 			return
 		}
 	}
-	if c.add() {
+	if err := c.add(); err != nil {
 		if c.OpAfter != nil {
 			if err := c.OpAfter(OpAdd, c.Table); err != nil {
 				helper.Ajax(err.Error(), 1, c.Ctx())
 				return
 			}
 		}
-		helper.Ajax("新增数据成功", 0, c.Ctx())
+		if len(c.Ctx().Response.Body()) == 0 {
+			helper.Ajax(c.Table, 0, c.Ctx())
+		}
 	} else {
-		helper.Ajax("新增数据失败", 1, c.Ctx())
+		helper.Ajax(err, 1, c.Ctx())
 	}
 }
 
-func (c *BaseController) add() bool {
-	result, err := c.Orm.InsertOne(c.Table)
-	if err != nil {
-		pine.Logger().Error("新增记录失败", err)
-	}
-	return result > 0
+func (c *BaseController) add() error {
+	_, err := c.Orm.InsertOne(c.Table)
+	return err
 }
 
 func (c *BaseController) PostUpdate() {
@@ -277,7 +278,11 @@ func (c *BaseController) PostEdit() {
 				return
 			}
 		}
-		helper.Ajax("修改数据成功", 0, c.Ctx())
+		if len(c.Ctx().Response.Body()) == 0 {
+			helper.Ajax("修改数据成功", 0, c.Ctx())
+		}
+	} else if c.LastErr != nil {
+		helper.Ajax(c.LastErr.Error(), 1, c.Ctx())
 	} else {
 		helper.Ajax("修改数据失败", 1, c.Ctx())
 	}
@@ -324,7 +329,9 @@ func (c *BaseController) PostDelete() {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
 	}
-	helper.Ajax("删除成功", 0, c.Ctx())
+	if len(c.Ctx().Response.Body()) == 0 {
+		helper.Ajax("删除成功", 0, c.Ctx())
+	}
 }
 
 func (c *BaseController) GetInfo() {
@@ -347,7 +354,9 @@ func (c *BaseController) GetInfo() {
 				helper.Ajax(err, 1, c.Ctx())
 			}
 		}
-		helper.Ajax(c.Table, 0, c.Ctx())
+		if len(c.Ctx().Response.Body()) == 0 {
+			helper.Ajax(c.Table, 0, c.Ctx())
+		}
 	}
 }
 

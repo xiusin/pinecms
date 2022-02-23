@@ -26,7 +26,7 @@ func (c *PublicController) GetMenu() {
 
 func (c *PublicController) PostUpload() {
 	cfg, _ := config.SiteConfig()
-	uploader, uploadDir := getStorageEngine(cfg), helper.NowDate("Ymd")
+	uploader, uploadDir := getStorageEngine(cfg), helper.NowDate("20060102")
 	mf, err := c.Ctx().MultipartForm()
 	if err != nil {
 		c.Logger().Error("上传文件失败", err)
@@ -45,9 +45,11 @@ func (c *PublicController) PostUpload() {
 			return
 		}
 		defer f.Close()
-
 		md5hash := md5.New()
+
 		io.Copy(md5hash, f) // 不能使用readAll 会读空buffer
+		f.Seek(0, 0) // 读取文件内容后指针会保留在最后一位, 需要seek到首行
+
 		md5sum := fmt.Sprintf("%x", md5hash.Sum(nil))
 		attach := &tables.Attachments{}
 		c.Orm.Where("md5 = ?", md5sum).Get(attach)

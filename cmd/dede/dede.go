@@ -185,7 +185,8 @@ func importChannelType() {
 					fieldDsl.Default = defs[0]
 				}
 				fieldDsl.ListOrder = int64(autoIndex)
-				fieldDsl.Datasource = dataSource
+				fmt.Println("导入程序生成dataSource无法入库", dataSource)
+				//fieldDsl.Datasource = dataSource
 				id, err := pineOrm.InsertOne(fieldDsl)
 				if id == 0 {
 					panic(fmt.Sprintf("插入模型失败: %d: %s", id, err))

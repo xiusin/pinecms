@@ -1,11 +1,8 @@
 package backend
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"strings"
-
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
@@ -52,12 +49,6 @@ func (c *TableController) before(act int, params interface{}) error {
 		}
 	} else if OpAdd == act || OpEdit == act {
 		data := params.(*tables.DocumentModelDsl)
-		if strings.HasPrefix(data.Datasource, "[") || strings.HasPrefix(data.Datasource, "{") {
-			var dataSourceJson interface{}
-			if err := json.Unmarshal([]byte(data.Datasource), &dataSourceJson); err != nil {
-				return fmt.Errorf("数据源格式错误： %s", err.Error())
-			}
-		}
 		sess := c.Orm.Where("table_field = ?", data.TableField).Where("mid = ?", data.Mid)
 		if OpEdit == act {
 			sess.Where("id <> ?", data.Id)

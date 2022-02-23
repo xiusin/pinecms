@@ -1,7 +1,5 @@
 package tables
 
-import "strings"
-
 type DocumentModelDsl struct {
 	Id             int64      `json:"id" xorm:"id pk autoincr"`
 	Mid            int64      `json:"mid" xorm:"comment('模型ID') int(5)"`
@@ -10,9 +8,7 @@ type DocumentModelDsl struct {
 	TableField     string     `json:"table_field" xorm:"comment('表字段') varchar(50)"`
 	ListOrder      int64      `xorm:"listorder comment('排序值')" json:"listorder"`
 	Required       bool       `json:"required"  xorm:"comment('是否必填') tinyint(1)"`
-	IsDict         bool       `json:"is_dict"  xorm:"comment('字典数据源') tinyint(1)"`
 	DictKey        string     `json:"dict_key" xorm:"comment('字典分类name,启用is_dict后需设置此字段') varchar(100)"`
-	Datasource     string     `json:"datasource" xorm:"comment('数据源，链接或json') text"`
 	RequiredTips   string     `json:"required_tips"  xorm:"comment('必填字段信息') varchar(100)"`
 	Validator      string     `json:"validator"  xorm:"comment('验证器或规则') varchar(100)"`
 	Default        string     `json:"default"  xorm:"comment('默认值') varchar(100)"` //默认值
@@ -33,19 +29,6 @@ type DocumentModelDsl struct {
 	DeletedAt      *LocalTime `xorm:"deleted" json:"deleted_at"`
 }
 
-// Datasource is_dict
-// json
-// url
-//
-
-func (c *DocumentModelDsl) getDataSource() interface{} {
-	// 查看分类情况
-	if len(strings.TrimSpace(c.Datasource)) == 0 { // 没有设置数据字典
-
-	}
-
-	return nil
-}
 
 type ModelDslFields []DocumentModelDsl
 
