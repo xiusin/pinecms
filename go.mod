@@ -16,6 +16,7 @@ require (
 	github.com/go-playground/validator/v10 v10.7.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gokeeptech/gktemplate v0.0.9
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/securecookie v1.1.1
 	github.com/jlaffaye/ftp v0.0.0-20220201222555-02685330ee35
 	github.com/kataras/go-mailer v0.1.0
@@ -30,6 +31,7 @@ require (
 	github.com/sonyarouje/simdb v0.1.0
 	github.com/spf13/cobra v1.2.1
 	github.com/takama/daemon v1.0.0
+	github.com/tencentyun/cos-go-sdk-v5 v0.7.33
 	github.com/traefik/yaegi v0.11.2
 	github.com/valyala/fasthttp v1.33.0
 	github.com/xiusin/logger v0.0.10-0.20220103084022-9cb8378d9b03
@@ -66,7 +68,6 @@ require (
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/goccy/go-json v0.8.1 // indirect
-	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
@@ -99,7 +100,6 @@ require (
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/syndtr/goleveldb v1.0.0 // indirect
-	github.com/tencentyun/cos-go-sdk-v5 v0.7.33 // indirect
 	github.com/tklauser/go-sysconf v0.3.7 // indirect
 	github.com/tklauser/numcpus v0.2.3 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
