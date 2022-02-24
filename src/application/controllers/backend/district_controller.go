@@ -86,3 +86,10 @@ func (c *DistrictController) PostImport() {
 	c.Orm.Exec("rename table district to " + controllers.GetTableName("district") + ";")
 	helper.Ajax("导入数据库成功", 0, c.Ctx())
 }
+
+func (c *DistrictController) GetSelect()  {
+	parentId, _ := c.Input().GetString("parent_id")
+	c.Orm.Where("parent_id = ?", parentId).OrderBy("`order`").Find(c.Entries)
+
+	helper.Ajax(c.Entries, 0, c.Ctx())
+}

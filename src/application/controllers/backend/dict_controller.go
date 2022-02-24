@@ -2,7 +2,6 @@ package backend
 
 import (
 	"errors"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 )
@@ -75,7 +74,7 @@ func (c *DictController) after(act int, param interface{}) error {
 	return nil
 }
 
-func (c *DictController) GetSelect(cacher cache.AbstractCache) {
+func (c *DictController) GetSelect() {
 	cid, _ := c.Ctx().GetInt64("cid")
 	if cid == 0 {
 		helper.Ajax("请传入字典分类ID", 1, c.Ctx())

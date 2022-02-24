@@ -58,7 +58,6 @@ func (c *DictCategoryController) before(act int, param interface{}) error {
 	return nil
 }
 
-// GetSelect 下拉列表
 func (c *DictCategoryController) GetSelect() {
 	_ = c.Orm.Where("status = 1").Find(c.Entries)
 	m := c.Entries.(*[]*tables.DictCategory)
