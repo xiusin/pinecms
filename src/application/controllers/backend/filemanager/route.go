@@ -6,7 +6,7 @@ import (
 	"github.com/xiusin/pine"
 )
 
-//go:embed dist
+////go:embed dist
 var assets embed.FS
 
 func InitRouter(app *pine.Application, router *pine.Router) {
