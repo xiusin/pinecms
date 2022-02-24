@@ -1,7 +1,9 @@
 package storage
 
 import (
+	"bytes"
 	"context"
+	"crypto/tls"
 	"fmt"
 	"github.com/tencentyun/cos-go-sdk-v5"
 	"io"
@@ -23,18 +25,29 @@ type CosUploader struct {
 	urlPrefix string
 }
 
-func NewCosUploader(config map[string]string) *CosUploader {
+var _ Uploader = (*CosUploader)(nil)
 
-	u, _ := url.Parse(config["COS_BASE_HOST"]) // "https://pinecms-125126195911124.cos.ap-beijing.myqcloud.com"
+func NewCosUploader(config map[string]string) *CosUploader {
+	u, err := url.Parse(config["COS_BASE_HOST"])
+	if err != nil {
+		panic(err)
+	}
 	b := &cos.BaseURL{BucketURL: u}
 
-	client := cos.NewClient(b, &http.Client{Transport: &cos.AuthorizationTransport{SecretID: config["COS_SECRET_ID"], SecretKey: config["COS_SECRET_KEY"]}})
+	client := cos.NewClient(b, &http.Client{
+		Transport: &cos.AuthorizationTransport{
+			SecretID:  config["COS_SECRET_ID"],
+			SecretKey: config["COS_SECRET_KEY"],
+			Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}},
+		},
+	})
 
-	return &CosUploader{
-		Client:    client,
-		host:      config["OSS_HOST"],
-		urlPrefix: strings.Trim(config["UPLOAD_URL_PREFIX"], "/"),
+	serverHost := config["COS_SERVER_HOST"]
+	if len(serverHost) == 0 {
+		serverHost = config["COS_BASE_HOST"]
 	}
+
+	return &CosUploader{Client: client, host: serverHost, urlPrefix: strings.Trim(config["UPLOAD_URL_PREFIX"], "/")}
 }
 
 func (s *CosUploader) Remove(name string) error {
@@ -69,12 +82,8 @@ func (s *CosUploader) Upload(storageName string, LocalFile io.Reader) (string, e
 }
 
 func (s *CosUploader) List(dir string) ([]File, error) {
-
-	list, _, err := s.Bucket.Get(context.Background(), &cos.BucketGetOptions{
-		Prefix:    strings.Trim(s.getObjectName(dir), "/") + "/",
-		Delimiter: "/",
-		MaxKeys:   200,
-	})
+	scanPath := strings.Trim(s.getObjectName(dir), "/") + "/"
+	list, _, err := s.Client.Bucket.Get(context.Background(), &cos.BucketGetOptions{Prefix: scanPath, Delimiter: "/", MaxKeys: 200})
 
 	if err != nil {
 		return nil, err
@@ -85,6 +94,9 @@ func (s *CosUploader) List(dir string) ([]File, error) {
 	}
 
 	for _, object := range list.Contents {
+		if scanPath == object.Key {
+			continue
+		}
 		t, _ := time.Parse("2006-01-02 15:04:05", object.LastModified)
 
 		files = append(files, File{
@@ -101,7 +113,7 @@ func (s *CosUploader) List(dir string) ([]File, error) {
 }
 
 func (s *CosUploader) GetEngineName() string {
-	return "oss存储"
+	return "cos存储"
 }
 
 func (s *CosUploader) Content(name string) ([]byte, error) {
@@ -115,7 +127,8 @@ func (s *CosUploader) Content(name string) ([]byte, error) {
 }
 
 func (s *CosUploader) Rename(oldname, newname string) error {
-	_, _, err := s.Object.Copy(context.Background(), s.getObjectName(newname), s.getObjectName(oldname), nil)
+	sourceUrl := s.BaseURL.BucketURL.Host + "/" + s.getObjectName(oldname)
+	_, _, err := s.Object.Copy(context.Background(), s.getObjectName(newname), sourceUrl, nil)
 	if err == nil {
 		s.Object.Delete(context.Background(), s.getObjectName(oldname))
 	}
@@ -123,11 +136,15 @@ func (s *CosUploader) Rename(oldname, newname string) error {
 }
 
 func (s *CosUploader) Mkdir(dir string) error {
-	return nil
+	var byteBuffer bytes.Buffer
+
+	_, err := s.Client.Object.Put(context.Background(), s.getObjectName(dir)+"/", &byteBuffer, nil)
+	return err
 }
 
 func (s *CosUploader) Rmdir(dir string) error {
-	return nil
+	_, err := s.Object.Delete(context.Background(), s.getObjectName(dir)+"/")
+	return err
 }
 
 func (s *CosUploader) getObjectName(name string) string {
@@ -144,11 +161,12 @@ func init() {
 				err = fmt.Errorf("%s", err)
 			}
 		}()
-		cfg, err := config.SiteConfig()
-		if err != nil {
+
+		if cfg, err := config.SiteConfig(); err != nil {
 			return nil, err
+		} else {
+			engine = NewCosUploader(cfg)
+			return engine, nil
 		}
-		engine = NewCosUploader(cfg)
-		return engine, nil
 	}, false)
 }

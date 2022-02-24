@@ -27,6 +27,8 @@ type FtpUploader struct {
 	conn         func() error
 }
 
+var _ Uploader = (*FtpUploader)(nil)
+
 func NewFtpUploader(opt map[string]string) *FtpUploader {
 	timeout, _ := strconv.Atoi(opt["FTP_CONN_TIMEOUT"])
 	if timeout == 0 {

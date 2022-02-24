@@ -78,11 +78,13 @@ type Engine struct {
 func EngineList() []Engine {
 	return []Engine{
 		{"本地存储", func(opt map[string]string) storage.Uploader {
-			cnf, _ := config.SiteConfig()
-			return storage.NewFileUploader(cnf)
+			return storage.NewFileUploader(opt)
 		}},
-		{"Oss对象存储", func(opt map[string]string) storage.Uploader {
+		{"Oss存储", func(opt map[string]string) storage.Uploader {
 			return storage.NewOssUploader(opt)
+		}},
+		{"Cos存储", func(opt map[string]string) storage.Uploader {
+			return storage.NewCosUploader(opt)
 		}},
 		{"FTP存储", func(opt map[string]string) storage.Uploader {
 			return di.MustGet(serviceFtpStorage).(storage.Uploader) // 由于限制链接数, 全局提供单例模式
@@ -94,7 +96,7 @@ func GetUserUploader(u *tables.FileManagerAccount) storage.Uploader {
 	if u == nil {
 		return nil
 	}
-	u.Engine = "FTP存储"
+	u.Engine = "Cos存储"
 	for _, v := range EngineList() {
 		if v.Name == u.Engine {
 			cnf, _ := config.SiteConfig()

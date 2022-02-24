@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -23,33 +24,12 @@ type OssUploader struct {
 	urlPrefix string
 }
 
-func (s *OssUploader) Remove(name string) error {
-	name = s.getObjectName(name)
-	if exist, err := s.bucket.IsObjectExist(name); err != nil {
-		return err
-	} else if !exist {
-		return fmt.Errorf("object %s not exists", name)
-	}
-	return s.bucket.DeleteObject(name)
-}
-
-func (s *OssUploader) GetFullUrl(name string) string {
-	return fmt.Sprintf("%s/%s", strings.TrimRight(s.host, "/"), s.getObjectName(name))
-}
-
-func (s *OssUploader) Exists(name string) (bool, error) {
-	return s.bucket.IsObjectExist(s.getObjectName(name))
-}
-
-func checkIsValidConf(config map[string]string) {
-	if config["OSS_ENDPOINT"] == "" || config["OSS_KEYID"] == "" ||
-		config["OSS_KEYSECRET"] == "" || config["OSS_BUCKET"] == "" {
-		panic(fmt.Errorf("请配置OSS信息"))
-	}
-}
+var _ Uploader = (*OssUploader)(nil)
 
 func NewOssUploader(config map[string]string) *OssUploader {
-	checkIsValidConf(config)
+
+	// TODO OSS_ENDPOINT 和 OSS_HOST 和 OSS_BUCKET 是否可以同cos一样利用parseurl获取
+
 	client, err := oss.New(config["OSS_ENDPOINT"], config["OSS_KEYID"], config["OSS_KEYSECRET"])
 	if err != nil {
 		panic(err)
@@ -131,15 +111,35 @@ func (s *OssUploader) Rename(oldname, newname string) error {
 }
 
 func (s *OssUploader) Mkdir(dir string) error {
-	return nil
+	var byteBuffer bytes.Buffer
+
+	return s.bucket.PutObject(s.getObjectName(dir) + "/", &byteBuffer, nil)
 }
 
 func (s *OssUploader) Rmdir(dir string) error {
-	return nil
+	return s.bucket.DeleteObject(s.getObjectName(dir) + "/")
 }
 
 func (s *OssUploader) getObjectName(name string) string {
 	return s.urlPrefix + "/" + name
+}
+
+func (s *OssUploader) Remove(name string) error {
+	name = s.getObjectName(name)
+	if exist, err := s.bucket.IsObjectExist(name); err != nil {
+		return err
+	} else if !exist {
+		return fmt.Errorf("object %s not exists", name)
+	}
+	return s.bucket.DeleteObject(name)
+}
+
+func (s *OssUploader) GetFullUrl(name string) string {
+	return fmt.Sprintf("%s/%s", strings.TrimRight(s.host, "/"), s.getObjectName(name))
+}
+
+func (s *OssUploader) Exists(name string) (bool, error) {
+	return s.bucket.IsObjectExist(s.getObjectName(name))
 }
 
 func init() {

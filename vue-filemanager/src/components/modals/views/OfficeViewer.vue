@@ -1,7 +1,7 @@
 <template >
   <div class="modal-content modal-folder">
-    <el-dialog :visible="showModal" width="90%" style="min-height: 500px" :before-close="handleClose">
-      <iframe v-if="fullUrl" :src="'//view.officeapps.live.com/op/view.aspx?src=' + fullUrl" width="100%" height="100%" style="border: none" />
+    <el-dialog ref="elDialog" :visible="showModal" height="100vh" :fullscreen="true" :before-close="handleClose" custom-class="officeViewer" :destroy-on-close="true">
+      <iframe v-if="fullUrl" :src="'//view.officeapps.live.com/op/view.aspx?src=' + fullUrl" width="100%" style="border: none; height: calc(100% - 1px)" />
     </el-dialog>
   </div>
 </template>
@@ -26,6 +26,9 @@ export default {
   },
   mounted() {
     this.getFullUrl()
+    this.$nextTick(() => function () {
+      this.$refs.elDialog[0].$el.firstChild.style.height = '90%'
+    });
   },
   methods: {
     getFullUrl: function () {
@@ -38,8 +41,16 @@ export default {
   }
 };
 </script>
-<style >
-.el-dialog__header {
-  padding: 0;
-}
+<style lang="scss">
+  .officeViewer >>> .el-dialog__header {
+    padding: 0;
+  }
+  .officeViewer >>> .el-dialog__body {
+    padding: 0;
+    overflow: hidden;
+    overflow-y: auto;
+  }
+  .el-dialog >>> .el-dialog__body {
+    height: 100%;
+  }
 </style>

@@ -19,6 +19,8 @@ type FileUploader struct {
 	baseDir string
 }
 
+var _ Uploader = (*FileUploader)(nil)
+
 func NewFileUploader(opt map[string]string) *FileUploader {
 	return &FileUploader{
 		host:    opt["SITE_URL"],
@@ -108,7 +110,6 @@ func init() {
 		if err != nil {
 			return nil, err
 		}
-		checkIsValidConf(cfg)
 		return NewFileUploader(cfg), nil
 	}, false)
 }

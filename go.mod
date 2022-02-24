@@ -31,7 +31,7 @@ require (
 	github.com/sonyarouje/simdb v0.1.0
 	github.com/spf13/cobra v1.2.1
 	github.com/takama/daemon v1.0.0
-	github.com/tencentyun/cos-go-sdk-v5 v0.7.33
+	github.com/tencentyun/cos-go-sdk-v5 v0.7.34-0.20220223071506-9cc16ad671b7
 	github.com/traefik/yaegi v0.11.2
 	github.com/valyala/fasthttp v1.33.0
 	github.com/xiusin/logger v0.0.10-0.20220103084022-9cb8378d9b03
@@ -56,6 +56,7 @@ require (
 	github.com/bits-and-blooms/bitset v1.2.1 // indirect
 	github.com/bits-and-blooms/bloom v1.0.1-0.20210513151749-57921726402d // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b // indirect
+	github.com/clbanning/mxj v1.8.4 // indirect
 	github.com/cubewise-code/go-mime v0.0.0-20200519001935-8c5762b177d8 // indirect
 	github.com/dgrr/http2 v0.3.4 // indirect
 	github.com/dlclark/regexp2 v1.4.0 // indirect
@@ -90,6 +91,7 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
+	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/mozillazg/go-httpheader v0.3.0 // indirect

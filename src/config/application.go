@@ -123,7 +123,10 @@ func parseConfig(path string, out interface{}) {
 func SiteConfig() (map[string]string, error) {
 	xorm, cache := helper.GetORM(), helper.AbstractCache()
 	var settingData = map[string]string{}
-	if err := cache.GetWithUnmarshal(controllers.CacheSetting, &settingData); err != nil {
+
+	cache.Delete(controllers.CacheSetting) // TODO 开发时实时删除
+
+	err := cache.Remember(controllers.CacheSetting, &settingData, func() (interface{}, error) {
 		var settings []tables.Setting
 		err := xorm.Find(&settings)
 		if err != nil {
@@ -134,11 +137,9 @@ func SiteConfig() (map[string]string, error) {
 				settingData[strings.ToUpper(v.Key)] = v.Value
 			}
 		}
-		if err = cache.SetWithMarshal(controllers.CacheSetting, &settingData); err != nil {
-			return nil, err
-		}
-	}
-	return settingData, nil
+		return &settingData, nil
+	})
+	return settingData, err
 }
 
 func init() {
