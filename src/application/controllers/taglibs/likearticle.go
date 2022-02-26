@@ -46,7 +46,7 @@ func LikeArticle(args jet.Arguments) reflect.Value {
 	}
 	categoryTable := getCategoryTable()
 	sess.And(strings.Join(cond, " OR "), keywords...)
-	sess.Join("LEFT", categoryTable, categoryTable+".catid = "+modelTable+".catid")
+	sess.Join("LEFT", categoryTable, categoryTable+".id = "+modelTable+".catid")
 	sess.Select(fmt.Sprintf("%s.*, %s.catname as typename", modelTable, categoryTable))
 	list, _ := sess.Limit(limit).Desc(modelTable + ".id").QueryString()
 	helper.HandleArtListInfo(list, titlelen)

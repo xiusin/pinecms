@@ -35,7 +35,7 @@ func (c *IndexController) List(pageFilePath string) {
 	if page < 1 {
 		page = 1
 	}
-	total, _ := getOrmSess(category.Model).In("catid", models.NewCategoryModel().GetNextCategoryOnlyCatids(tid, true)).Count()
+	total, _ := getOrmSess(category.Model).In("id", models.NewCategoryModel().GetNextCategoryOnlyCatids(tid, true)).Count()
 	tpl := "list_" + category.Model.Table + ".jet" // default tpl
 	if len(category.Model.FeTplList) > 0 {         // model tpl
 		tpl = category.Model.FeTplList
@@ -46,8 +46,7 @@ func (c *IndexController) List(pageFilePath string) {
 	_ = os.MkdirAll(filepath.Dir(pageFilePath), os.ModePerm)
 	f, err := os.Create(pageFilePath)
 	if err != nil {
-		pine.Logger().Error(err)
-		c.Ctx().Abort(http.StatusInternalServerError, "Open template file failed")
+		c.Ctx().Abort(http.StatusInternalServerError, err.Error())
 		return
 	}
 	defer f.Close()
@@ -63,7 +62,7 @@ func (c *IndexController) List(pageFilePath string) {
 		TypeID    int64
 		ArtCount  int64
 		ModelName string
-		QP        map[string][]string
+		QP        map[string]interface{}
 		PageNum   int64
 	}{
 		Field:     category,
@@ -71,11 +70,10 @@ func (c *IndexController) List(pageFilePath string) {
 		ArtCount:  total,
 		PageNum:   int64(page),
 		ModelName: category.Model.Table,
-		QP:        c.Ctx().GetData(),
+		QP:        c.Ctx().All(),
 	})
 	if err != nil {
-		pine.Logger().Error(err)
-		c.Ctx().Abort(http.StatusInternalServerError, "Render template failed")
+		c.Ctx().Abort(http.StatusInternalServerError, err.Error())
 		return
 	}
 	data, _ := ioutil.ReadFile(pageFilePath)

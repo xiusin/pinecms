@@ -15,6 +15,8 @@ func Server() {
 	pine.SetControllerDefaultAction("Index")
 	router.InitApiRouter(app)
 	router.InitStatics(app)
+
+	// 优先级放到最下面, 内部托管所有无法匹配的路由
 	router.InitRouter(app)
 
 	go plugins.Init()

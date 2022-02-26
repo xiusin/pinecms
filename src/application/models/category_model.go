@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"log"
 	"path/filepath"
 	"runtime"
@@ -42,9 +43,10 @@ func NewCategoryModel() *CategoryModel {
 	return di.MustGet(&CategoryModel{}).(*CategoryModel)
 }
 
+
 func (c *CategoryModel) GetPosArr(id int64) []tables.Category {
 	category := tables.Category{Catid: id}
-	exists, err := c.orm.Get(&category)
+	exists, err := helper.GetORM().Get(&category)
 	if !exists {
 		panic(fmt.Sprintf("分类:%d不存在: %s", id, err))
 	}
@@ -53,7 +55,7 @@ func (c *CategoryModel) GetPosArr(id int64) []tables.Category {
 		links = append(links, category)
 		parentid := category.Parentid
 		category = tables.Category{Catid: parentid}
-		c.orm.Get(&category)
+		helper.GetORM().Get(&category)
 	}
 	links = append(links, category)
 	var reverse = func(s []tables.Category) []tables.Category {

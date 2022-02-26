@@ -2,26 +2,19 @@ package frontend
 
 import (
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
-	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
-	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
-	"regexp"
 	"strconv"
 	"strings"
-	"time"
-	"xorm.io/xorm"
 )
 
-func (c *IndexController) Bootstrap(orm *xorm.Engine, cacheHandler cache.AbstractCache) {
+func (c *IndexController) Bootstrap() {
 	conf, _ := config.SiteConfig()
 	// todo 开启前端资源缓存 304
 	// todo 拦截存在静态文件的问题, 不过最好交给nginx等服务器转发
-	c.statistics(cacheHandler)
 	if conf["SITE_DEBUG"] == "" || conf["SITE_DEBUG"] == "关闭" {
 		pageName := c.Ctx().Params().Get("pagename") // 必须包含.html, 在nginx要注意如果以/结尾的path需要追加index.html
 		if pageName == "" {
@@ -106,36 +99,3 @@ func (c *IndexController) Bootstrap(orm *xorm.Engine, cacheHandler cache.Abstrac
 	}
 }
 
-// 统计数据
-func (c *IndexController) statistics(cacheHandler cache.AbstractCache) {
-	ck := "pinecms_statistics"
-	val := c.Ctx().GetCookie(ck)
-
-	today := time.Now().In(helper.GetLocation()).Format("01-02")
-	if len(val) == 0 || val != today {
-		c.Ctx().SetCookie(ck, today, 48*3600)
-		var statistics = map[string]uint8{}
-		_ = cacheHandler.GetWithUnmarshal(controllers.CacheStatistics, &statistics)
-		if _, ok := statistics[today]; !ok {
-			statistics[today] = 1
-		} else {
-			statistics[today] += 1
-		}
-		_ = cacheHandler.SetWithMarshal(controllers.CacheStatistics, &statistics)
-		var defaultRefers = map[string]int{"baidu": 0, "google": 0, "so": 0, "bing": 0, "sougou": 0, "other": 0}
-		var refers = map[string]int{}
-		// 访问来源
-		referer := string(c.Ctx().Referer())
-		matchs := regexp.MustCompile("^https?://.*(baidu|google|so|bing|sougou).(com|cn)").FindAllStringSubmatch(referer, 1)
-		_ = cacheHandler.GetWithUnmarshal(controllers.CacheRefer, &refers)
-		if len(matchs) > 0 {
-			if len(refers) == 0 {
-				refers = defaultRefers
-			}
-			refers[matchs[0][1]] += 1
-		} else {
-			refers["other"] += 1
-		}
-		_ = cacheHandler.SetWithMarshal(controllers.CacheRefer, &refers)
-	}
-}

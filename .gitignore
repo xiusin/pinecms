@@ -34,3 +34,4 @@ pinecms-web
 dist
 pinecms-web-ui
 *_test.go
+example

@@ -17,13 +17,14 @@ import (
 )
 
 func (c *IndexController) Search(orm *xorm.Engine) {
-	keywords := c.Ctx().GetString("keywords", c.Ctx().GetString("q"))
-	keywords = c.Ctx().GetString("keyword", keywords)
+	q, _ := c.Ctx().GetString("q")
+	keywords, _ := c.Ctx().GetString("keywords", q)
+	keywords, _ = c.Ctx().GetString("keyword", keywords)
 	page, _ := c.Ctx().GetInt("page", 1)
 	channeltype, _ := c.Ctx().GetInt("channeltype", 0)
 	typeid, _ := c.Ctx().GetInt("typeid", 0)
 	kwType, _ := c.Ctx().GetInt("kwtype", 0)
-	orderby := c.Ctx().GetString("orderby")
+	orderby, _ := c.Ctx().GetString("orderby")
 
 	if regexp.MustCompile("^[_A-Z0-9a-z]+$").MatchString(orderby) == false {
 		orderby = ""
@@ -32,14 +33,14 @@ func (c *IndexController) Search(orm *xorm.Engine) {
 		page = 1
 	}
 
-	searchType := c.Ctx().GetString("searchtype")
+	searchType, _ := c.Ctx().GetString("searchtype")
 
 	if len(keywords) < 2 {
 		pine.Logger().Error("关键字太短")
 		return
 	}
 
-	startTime := c.Ctx().GetString("starttime")
+	startTime, _ := c.Ctx().GetString("starttime")
 	// 如果是数字
 	if regexp.MustCompile("^/d+$").MatchString(startTime) {
 		// 换算为天数
@@ -204,14 +205,14 @@ func (c *IndexController) Search(orm *xorm.Engine) {
 		ArtCount    int64
 		ModelName   string
 		TopCategory *tables.Category
-		QP          map[string][]string
+		QP          map[string]interface{}
 		PageNum     int64
 		ListFunc    func(int64) []map[string]string
 	}{
 		ArtCount:  int64(total),
 		PageNum:   int64(page),
 		ModelName: tableName,
-		QP:        c.Ctx().GetData(),
+		QP:        c.Ctx().Input().All(),
 		ListFunc:  fn}); err != nil {
 		panic(err)
 	}

@@ -1,6 +1,219 @@
-{{import"tags.jet"}}<!doctypehtml><html><head><metahttp-equiv="Content-Type"content="text/html;charset=utf-8"/><metahttp-equiv="X-UA-Compatible"content="IE=9;IE=8;IE=7;IE=EDGE"><title>{{.Field["title"]}}_{{global["site_name"]}}</title><metaname="keywords"content="{{.Field["keywords"]}}"/><metaname="description"content="{{.Field["description"]}}"/><metaname="MobileOptimized"content="240"/><linkrel="shortcuticon"href="/favicon.ico"/><linkhref="/assets/example/css/stylev2.1.css"rel="stylesheet"type="text/css"><linkhref="/assets/example/css/block.css"rel="stylesheet"type="text/css"/><scriptsrc="/assets/example/js/ua.js"type="text/javascript"></script><scriptsrc="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script><scriptsrc="/assets/example/js/v2/jquery-cookie.js"></script><scripttype="text/javascript"src="/assets/example/js/7hot.js"></script><scriptlanguage="javascript"type="text/javascript"src="{dede:global.cfg_cmsurl/}/include/dedeajax2.js"></script><scriptlanguage="javascript"type="text/javascript"><!--functionpostBadGood(ftype,fid){vartaget_obj=document.getElementById(ftype+fid);varsaveid=GetCookie('badgoodid');if(saveid!=null){varsaveids=saveid.split(',');varhasid=false;saveid='';j=1;for(i=saveids.length-1;i>=0;i--){if(saveids[i]==fid&&hasid)continue;else{if(saveids[i]==fid&&!hasid)hasid=true;saveid+=(saveid==''?saveids[i]:','+saveids[i]);j++;if(j==10&&hasid)break;if(j==9&&!hasid)break;}}if(hasid){alert('您刚才已表决过了喔！');returnfalse;}elsesaveid+=','+fid;SetCookie('badgoodid',saveid,1);}else{SetCookie('badgoodid',fid,1);}myajax=newDedeAjax(taget_obj,false,false,'','','');myajax.SendGet2("{dede:fieldname='phpurl'/}/feedback.php?aid="+fid+"&action="+ftype+"&fid="+fid);}functiongetDigg(aid){vartaget_obj=document.getElementById('newdigg');myajax=newDedeAjax(taget_obj,false,false,'','','');myajax.SendGet2("{dede:global.cfg_phpurl/}/digg_ajax.php?id="+aid);DedeXHTTP=null;}--></script></head><bodyclass="singlewin8">{{include"head.jet"}}<divid="wrapper"><divclass="contentfl"><divclass="current_nav">{{yieldposition()}}</div><divclass="post_title"><h1>{{.Field["title"]}}</h1><spanclass="pt_infopre1">{{format_time(.Field["pubtime"],"2006-01-0215:04")}}出处：{{.Field["from_url"]}}<spanid="hitcount">人气：{{.Field["visit_count"]}}</span><ahref="#commentDiv"class="pti_comm">评论（<spanid="commentnum">0</span>）</a></span></div><divclass="con-recom"><!--文章内容页广告位1-->{{yieldmyad(name="article1")}}</div><divclass="post_content"id="paragraph"><scriptsrc="/assets/example/js/v2/content_set.js"></script><pclass="content_copyright"><aclass="s_tag"href="{{global["site_url"]}}"target="_blank">{{global["site_name"]}}</a>（<aclass="s_tag"href="{dede:global.cfg_basehost/}"target="_blank">{{global["site_url"]}}</a>）：{{.Field["title"]}}</p>{{.Field["content"]|unsafe}}</div><divclass="con-recom"><divclass="bx-recom4"></div><divclass="bx-recom4"><!--文章内容页广告位2-->{{yieldmyad(name="article2")}}</div></div><divclass="related_post"><h2>上一页下一页</h2><ulclass="list_1">{{yieldprenext()}}</ul><!--相关文章--><divclass="related_post"><h2>相关文章</h2><ulclass="list_1">{{yieldlikearticle(row=10)content}}<li><atarget="_blank"href="{{field["arcurl"]}}"title="{{field["fulltitle"]}}">{{field["title"]}}</a><spanclass="date">{{format_time(field["pubtime"],"01.02")}}</li>{{end}}</ul></div></div><!--contentEnd--></div><!--侧边区域--><divclass="sidebar">{{include"right.jet"}}</div></div><!--wrapperEnd--><divclass="bx-recom">{{yieldmyad(name="footer")}}</div></div><divid="ft">{{include"footer.jet"}}<scriptsrc="/assets/example/js/v2/common.js"></script></body></html>1231231<!--文章内容页广告位1-->{{yieldmyad(name="article1")}}</div><divclass="post_content"id="paragraph"><scriptsrc="/assets/example/js/v2/content_set.js"></script><pclass="content_copyright"><aclass="s_tag"href="{{global["site_url"]}}"target="_blank">{{global["site_name"]}}</a>（<aclass="s_tag"href="{dede:global.cfg_basehost/}"target="_blank">{{global["site_url"]}}</a>）：{{.Field["title"]}}</p>{{.Field["content"]|unsafe}}</div><divclass="con-recom"><divclass="bx-recom4"></div><divclass="bx-recom4"><!--文章内容页广告位2-->{{yieldmyad(name="article2")}}</div></div><divclass="related_post"><h2>上一页下一页</h2><ulclass="list_1">{{yieldprenext()}}</ul><!--相关文章--><divclass="related_post"><h2>相关文章</h2><ulclass="list_1">{{yieldlikearticle(row=10)content}}<li><atarget="_blank"href="{{field["arcurl"]}}"title="{{field["fulltitle"]}}">{{field["title"]}}</a><spanclass="date">{{format_time(field["pubtime"],"01.02")}}</li>{{end}}</ul></div></div><!--contentEnd--></div><!--侧边区域--><divclass="sidebar">{{include"right.jet"}}</div></div><!--wrapperEnd--><divclass="bx-recom">{{yieldmyad(name="footer")}}</div></div><divid="ft">{{include"footer.jet"}}<scriptsrc="/assets/example/js/v2/common.js"></script></body></html>12312312312312313ow=10)content}}<li><atarget="_blank"href="{{field["arcurl"]}}"title="{{field["fulltitle"]}}">{{field["title"]}}</a><spanclass="date">{{format_time(field["pubtime"],"01.02")}}</li>{{end}}</ul></div></div><!--contentEnd--></div><!--侧边区域--><divclass="sidebar">{{include"right.jet"}}</div></div><!--wrapperEnd--><divclass="bx-recom">{{yieldmyad(name="footer")}}</div></div><divid="ft">{{include"footer.jet"}}<scriptsrc="/assets/example/js/v2/common.js"></script></body></html>QWEQWEQWEQWEQWEWQ"}}</div></div>  <!-- wrapper End -->
- <div class="bx-recom">{{ yield myad(name = "footer") }}</div>
- </div>
-            <div id="ft">{{ include "footer.jet"}}
-                <script src="/assets/example/js/v2/common.js"></script>
-</body></html>
+{{ import "tags.jet" }}
+
+<!doctype html>
+<html>
+<head>
+    <title>{{global["site_name"]}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE">
+    <meta name="description" content="{{global["site_description"]}}"/>
+    <meta name="keywords" content="{{global["site_keywords"]}}"/>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+    <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="/rss/"/>
+    <link href="/assets/example/css/stylev2.1.css" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" href="/favicon.ico"/>
+    <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+    <script src="/assets/example/js/v2/jquery-cookie.js"></script>
+
+</head>
+<body class="index hello">
+{{include "head_index.jet"}}
+<div class="con-block">
+    <div class="lf">
+        <div class="bx1">
+            <div id='coin-slider'>
+                {{yield artlist(flag="f", modelid=1) content}}
+                <item data="{{field["arcurl"]}}" target="_blank"><img src='{{field["flash"]}}' width="250" height="320"> <span>{{field["title"]}}</span></item>
+                {{end}}
+            </div>
+        </div>
+        <div class="bx2">
+            <div class="bx-title">最新推荐</div>
+            <ul>
+            {{yield artlist(flag="c", row=5) content}}
+                <li><a href="{{field["arcurl"]}}"><img src="{{field["thumb"]}}" width="36" height="36"/></a>
+                    <p class="pro-name"><a href="{{field["arcurl"]}}" target="_blank" title="{{field["title"]}}">{{field["title"]}}</a>
+                    </p>
+                    <p>发布时间：{{format_time(field["pubtime"], "2006.01.02")}}</p></li>
+            {{end}}
+            </ul>
+        </div>
+        <div class="bx-recom2">
+            <!-- 首页左侧广告位1 -->
+            {{yield myad(name="left1")}}
+        </div>
+        <div class="bx-recom2">
+            <!-- 首页左侧广告位1 -->
+            {{yield myad(name="left2")}}
+        </div>
+    </div>
+    <div class="rt">
+        <div class="focus_area">
+            <div class="focus">
+                <div class="block-title">焦点关注</div>
+                <ul>
+                    {{yield artlist(flag="h", limit=2, offset=1, orderby="pubtime", titlelen=20) content}}
+                    <li><a href="{{field["arcurl"]}}" target="_blank"><img src="{{field["thumb"]}}" width="58"
+                                                                       height="58"/></a>
+                        <h2 class="focus-title"><a href="{{field["arcurl"]}}" target="_blank" title="{{field["fulltitle"]}}">{{field["title"]}}</a>
+                        </h2>
+                        <p>{{cn_substr(field["description"], 110)}}</p>
+                    </li>
+                    {{end}}
+
+
+                </ul>
+            </div>
+            <div class="zhuant">
+                <div class="block-title">特别推荐</div>
+                <ul>
+                    {{yield artlist(flag="a", row=6, orderby="pubtime") content}}
+                    <li><a href="{{field["arcurl"]}}" title="{{field["fulltitle"]}}" target="_blank">{{field["title"]}}</a></li>
+                    {{end}}
+                </ul>
+            </div>
+        </div>
+        <div class="nlst">
+            <div class="ct">
+                <ul>
+                    <li><a href="javascript:;" class="current">最新更新</a></li>
+                    <li><a href="javascript:;">最热排行</a></li>
+                </ul>
+                <span>今日更新文章<strong>32</strong>篇</span>
+            </div>
+            <div class="lst lst-1 new-list">
+                <div class="block new-list-1">
+                    <ul>
+                        {{yield artlist(noflag="h", row=9, titlelen=20) content}}
+                            <li class="new"><span class="date">{{format_time(field["pubtime"],"02日") }}</span><span class="title"><a target="_blank" href="{{field["arcurl"]}}" title="{{field["fulltitle"]}}">{{field["title"]}}</a></span></li>
+                        {{end}}
+                    </ul>
+ <ul>
+                        {{yield artlist(noflag="h", offset=9, row=9, titlelen=20) content}}
+                            <li class="new"><span class="date">{{format_time(field["pubtime"],"02日") }}</span><span class="title"><a target="_blank" href="{{field["arcurl"]}}" title="{{field["title"]}}">{{field["title"]}}</a></span></li>
+                        {{end}}
+                    </ul>
+
+ <ul>
+                        {{yield artlist(noflag="h", offset=18, row=9, titlelen=20) content}}
+                            <li class="new"><span class="date">{{format_time(field["pubtime"],"02日") }}</span><span class="title"><a target="_blank" href="{{field["arcurl"]}}" title="{{field["title"]}}">{{field["title"]}}</a></span></li>
+                        {{end}}
+                    </ul>
+ <ul>
+                        {{yield artlist(noflag="h", offset=27, row=9, titlelen=20) content}}
+                            <li class="new"><span class="date">{{format_time(field["pubtime"],"02日") }}</span><span class="title"><a target="_blank" href="{{field["arcurl"]}}" title="{{field["title"]}}">{{field["title"]}}</a></span></li>
+                        {{end}}
+                    </ul>
+ <ul>
+                        {{yield artlist(noflag="h", offset=36, row=9, titlelen=20) content}}
+                            <li class="new"><span class="date">{{format_time(field["pubtime"],"02日") }}</span><span class="title"><a target="_blank" href="{{field["arcurl"]}}" title="{{field["title"]}}">{{field["title"]}}</a></span></li>
+                        {{end}}
+                    </ul>
+ <ul>
+                        {{yield artlist(noflag="h", offset=45, row=9, titlelen=20) content}}
+                            <li class="new"><span class="date">{{format_time(field["pubtime"],"02日") }}</span><span class="title"><a target="_blank" href="{{field["arcurl"]}}" title="{{field["title"]}}">{{field["title"]}}</a></span></li>
+                        {{end}}
+                    </ul>
+                </div>
+{*                <div class="page_nav"><span class="page_num"> <a href="javascript:void(0)" class="current">1</a></span></div>*}
+            </div>
+            <div class="lst lst-2 hot-list" style="display:none;">
+                <div class="bx">
+                    <h4>48小时阅读榜</h4>
+                    <ul>
+                        {{yield artlist(typeid=0,orderby="visit_count", titlelen=20, row=12, subday=2) content}}
+                            <li><span>{{autoindex}}</span><a title="{{field["fulltitle"]}}" target="_blank" href="{{field["arcurl"]}}">{{field["title"]}}</a></li>
+                        {{end}}
+                    </ul>
+                </div>
+                <div class="bx">
+                    <h4>周榜</h4>
+                    <ul>
+                        {{yield artlist(typeid=0,orderby="visit_count", titlelen=20, row=12, subday=7) content}}
+                            <li><span>{{autoindex}}</span><a title="{{field["fulltitle"]}}" target="_blank" href="{{field["arcurl"]}}">{{field["title"]}}</a></li>
+                        {{end}}
+                    </ul>
+                </div>
+                <div class="bx">
+                    <h4>热评榜</h4>
+                    <ul>
+                        {{yield artlist(typeid=0,orderby="rand", titlelen=20, row=12) content}}
+                        <li><span>{{autoindex}}</span><a title="{{field["fulltitle"]}}" target="_blank" href="{{field["arcurl"]}}">{{field["title"]}}</a></li>
+                        {{end}}
+                    </ul>
+                </div>
+                <div class="bx">
+                    <h4>月榜</h4>
+                    <ul>
+                        {{yield artlist(typeid=0,orderby="visit_count", titlelen=20, row=12, subday=30) content}}
+                              <li><span>{{autoindex}}</span><a title="{{field["fulltitle"]}}" target="_blank" href="{{field["arcurl"]}}">{{field["title"]}}</a></li>
+                        {{end}}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="bx-recom">
+    <!-- 首页中部广告位 -->
+    {{yield myad(name="center")}}
+</div>
+</div>
+<div class="con_2">
+    <div class="img_listbox">
+        <!-- 壁纸之家 -->
+        <h2>
+            <span class="block_cate">
+            {{yield type(typeid=7) content}}
+                <span class="block_cate">
+                      <a class="news_more" href='{{field.Url}}' title="{{field.Catname}}">{{field.Catname}}</a>
+                </span>
+                <span class="more"><a href="{{field.Url}}" target="_blank">更多...</a></span>
+            {{end}}
+            </span>
+        </h2>
+        <ul>
+{*            {dede:arclist typeid=7 row=7 orderby=pubdate type='image.' imgwidth='100' imgheight='100'}*}
+            {{yield artlist(typeid=7, row=7, orderby="pubtime") content}}
+            <li><a title="{{field["fulltitle"]}}" target="_blank" href="{{field["arcurl"]}}"><img src="{{field["thumb"]}}" height="100" width="100" /> </a><span><a
+                            title="{{field["fulltitle"]}}" target="_blank" href="{{field["arcurl"]}}">{{field["title"]}}</a></span>
+            </li>
+            {{end}}
+{*            {/dede:arclist}*}
+        </ul>
+    </div>
+
+    {{yield channelartlist(typeid="1,2,5,6") content}}
+    <div class="listbox">
+        <h2><span class="block_cate"><a href="{{field.Url}}" target="_blank">{{field.Catname}}</a></span><span
+                    class="more"><a href="{{field.Url}}" target="_blank">更多...</a></span></h2>
+        <ul>
+            {{yield artlist(row=12, titlelen=25) content}}
+                <li class="new"><span class="date">{{format_time(field["pubtime"], "02日")}}</span><span class="title"><a target="_blank" href="{{field["arcurl"]}}" title="{{field["fulltitle"]}}">{{field["title"]}}</a></span></li>
+            {{end}}
+        </ul>
+    </div>
+
+{{end}}
+
+</div>
+<div id="ft">   <!-- 链接 -->
+    <div class="lk pre1">
+        <div class="bx2"><p><strong>友情链接（欢迎PR>=6的业界知名网站交换链接）</strong></p>
+            <p>
+                {{yield flink(row=24) content}}<a href="{{field.Url}}" target="_blank">{{field.Name}}</a>{{end}}
+            </p>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    {{include "footer.jet"}}
+
+    <script src="/assets/example/js/v2/common.js"></script>
+
+    <script src="/assets/example/js/v2/coin-slider.min.js"></script>
+    <script>$('#coin-slider').coinslider({width: 250,height: 320,spw: 3,sph: 2,effect: 'random',delay: 6000});</script>
+</body>
+</html>

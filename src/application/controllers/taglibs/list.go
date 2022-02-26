@@ -71,7 +71,7 @@ func List(args jet.Arguments) reflect.Value {
 	ids := m.GetNextCategoryOnlyCatids(catid, true)
 	sess := getOrmSess(tableName).Where(modelTable+".deleted_time IS NULL").Where(modelTable+".status = 1").In(modelTable+".catid", ids).Limit(int(pagesize), int(offset)).OrderBy(orderBy)
 	defer sess.Close()
-	sess.Join("LEFT", categoryTable, categoryTable+".catid = "+modelTable+".catid")
+	sess.Join("LEFT", categoryTable, categoryTable+".id = "+modelTable+".catid")
 	sess.Select(fmt.Sprintf("%s.*, %s.catname as typename", modelTable, categoryTable))
 	list, _ := sess.QueryString()
 	helper.HandleArtListInfo(list, titlelen)

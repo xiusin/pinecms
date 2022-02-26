@@ -1,0 +1,31 @@
+{{ import "tags.jet" }}
+
+<li class="sb_list">
+<div class="bx">
+<!-- 右侧广告位1 -->
+{{yield myad(name="right1")}}
+</div>        
+</li>        <li class="sb_list">
+<div class="right_con post_right_con">     <div class="hotnews_list">        <div class="hidden_line"></div>        <div class="hn_title">本类最热新闻</div>        <ul class="ulcl">
+      {{yield artlist(row=2, orderby="visit_count") content}}
+      <li class="list_pic"><a href="{{field["arcurl"]}}" target="_blank" class="hn_img"><img src="{{field["thumb"]}}" /></a><a title="{{field["fulltitle"]}}" target="_blank" href="{{field["arcurl"]}}" class="list_title">{{field["title"]}}</a>      </li>
+       {{end}}
+       {{yield artlist(offset=2, row=10, orderby="visit_count") content}}
+   <li class="hn_li"><a title="{{field["fulltitle"]}}" target="_blank" href="{{field["arcurl"]}}">&bull; {{field["title"]}}</a></li>
+        {{end}}
+      </ul>    </div></div>
+      </li>        <li class="sb_list">        
+      <div class="bx">
+<!-- 右侧广告位2 -->
+        {{yield myad(name="right2")}}
+      </div>
+      </li>
+    </ul>      <ul id="crf1"><li class="sb_list">    <div class="bx" >
+<!-- 右侧悬浮广告位1 -->
+{{yield myad(name="right3")}}
+</div></li>          <li class="sb_list">        
+<div class="bx">
+<!-- 右侧悬浮广告位2 -->
+{{yield myad(name="right4")}}
+
+               </div>    </li>                        </ul>    </div>

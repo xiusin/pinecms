@@ -44,7 +44,7 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 
 	var cats []tables.Category
 
-	orm.Limit(_row).Select("catid, parentid, catname, type, model_id, description, thumb, url").Asc("listorder").Find(&cats)
+	orm.Limit(_row).Select("id, parentid, catname, type, model_id, description, thumb, url").Asc("listorder").Find(&cats)
 
 	if len(cats) == 0 {
 		return defaultArrReturnVal

@@ -133,7 +133,7 @@ func ArcList(args jet.Arguments) reflect.Value {
 
 	modelTable := controllers.GetTableName(model.Table)
 	sess := getOrmSess(model.Table).
-		Join("LEFT", categoryTable, categoryTable+".catid = "+modelTable+".catid").
+		Join("LEFT", categoryTable, categoryTable+".id = "+modelTable+".catid").
 		Where(modelTable + ".deleted_time IS NULL").Where(modelTable + ".status = 1")
 	defer sess.Close()
 	if isRand {

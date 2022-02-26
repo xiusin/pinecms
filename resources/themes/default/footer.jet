@@ -1,0 +1,13 @@
+<div class="if">
+    <div class="bx1">
+        <a href="/about/" target="_blank"><strong>关于我们</strong></a><span class="v">|</span>
+        <a href="/contact/" target="_blank"><strong>联系我们</strong></a><span class="v">|</span>
+        <a href="/join/" target="_blank"><strong>加入我们</strong></a><span class="v">|</span>
+        <a href="/tougao/" target="_blank"><strong>投稿反馈</strong></a>
+    </div>
+        <div class="bx2">
+        <p>{{global["site_copyright"]}}</p>
+        <p>{{global["site_icp"]}}</p>
+        </div>
+    </div>
+</div>

@@ -15,7 +15,7 @@ func Flink(args jet.Arguments) reflect.Value {
 	}
 	defer func() {
 		if err := recover(); err != nil {
-			pine.Logger().Error("Flink Failed")
+			pine.Logger().Warning(err)
 		}
 	}()
 	orm := helper.GetORM()
@@ -30,14 +30,14 @@ func Flink(args jet.Arguments) reflect.Value {
 	idparam := args.Get(1).String()
 	if len(idparam) != 0 {
 		ids := strings.Split(idparam, ",")
-		sess.In("linkid", ids)
+		sess.In("id", ids)
 	}
 
 	sort := args.Get(2).String()
 	if len(sort) != 0 {
 		sess.OrderBy(sort)
 	} else {
-		sess.Desc("linkid")
+		sess.Desc("id")
 	}
 	data := []tables.Link{}
 	if err := sess.Find(&data); err != nil {

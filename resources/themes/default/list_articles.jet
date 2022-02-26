@@ -1,0 +1,58 @@
+{{ import "tags.jet" }}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE">
+<title>{{.Field.Catname}}_{{global["site_name"]}}</title>
+<meta name="keywords" content="" />
+<meta name="description" content="{{.Field.Description}}" />
+<link href="/assets/example/css/stylev2.1.css" rel="stylesheet" type="text/css">
+<link href="/assets/example/css/block.css" rel="stylesheet" type="text/css" />
+<link rel="shortcut icon" href="/favicon.ico"/>
+<script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+<script src="/assets/example/js/v2/jquery-cookie.js"></script>
+<script type="text/javascript" src="/assets/example/js/7hot.js"></script>
+</head>
+<body class="category">
+{{include "head.jet"}}
+<div id="wrapper">    <div class="content fl">
+<div class="current_nav">
+<span class="cate_current">当前分类：</span>
+<h1>{{yield position()}}</h1>
+</div>
+<div class="cate_list">
+<ul class="ulcl">
+
+    {{yield list(pagesize=20, titlelen=20) content}}
+    <li><a href="{{field["arcurl"]}}" target="_blank" class="list_thumbnail"><img src="{{field["thumb"]}}" width="100" height="100"></a>            <div class="block">
+     <h2><a href="{{field["arcurl"]}}" target="_blank">{{field["fulltitle"]}}</a><span class="state other">{{format_time(field["pubtime"], "01月02日")}}</span></h2>
+     <div class="memo"><p>{{field["description"]}}</p></div>               </div>          </li>
+   {{end}}
+
+                  </ul>      </div>      <div class="page_nav"> <span class="page_num">                  <div id="Pager" class="pagenew"><div></div><div class="pagenew">
+
+    {{yield pagelist()}}
+ &nbsp;&nbsp;<input type="text" value="1" name="Pager_input" id="Pager_input" onkeydown="ANP_keydown(event,&#39;Pager_btn&#39;);" />
+    <input type="Button" name="Pager" id="Pager_btn" value="  " onclick="if(ANP_checkInput(&#39;Pager_input&#39;,259)){ANP_goToPage(document.getElementById(&#39;Pager_input&#39;));}" />
+</div></div> </span></div>    </div>    <!-- content End -->
+ <!-- 侧边区域 -->
+<div class="sidebar">
+      <ul>
+        <li class="sb_list sbb">
+                   <div class="tags_title"> "{{yield toptype() content}}{{field.Catname}}{{end}}"所有分类</div>
+                  <ul class="side_tags sub_ul">
+                    {{yield channel(type="son") content}}
+                        {{sql = "SELECT COUNT(*) total FROM #@_articles WHERE status=1 AND deleted_time IS NULL AND catid=" + field.Catid }}
+                        <li><a href="{{field.Url}}">{{field.Catname}} ({{yield query(sql=sql) content}}{{field["total"]}}{{end}})</a></li>
+                    {{end}}
+                </ul>
+             </li>
+</ul>
+{{include "right.jet"}}
+            <!-- sidebar End -->   </div>  <!-- wrapper End --> </div><!-- con End --> <!-- 头部区域 结束 -->
+            </div>
+            <div id="ft">
+            <!-- 页脚 -->
+{{include "footer.jet"}}
+<script src="/assets/example/js/v2/common.js"></script>
+</body>
+</html>
+

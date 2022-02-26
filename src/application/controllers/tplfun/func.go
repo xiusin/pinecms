@@ -20,12 +20,12 @@ func format(str string) string {
 }
 
 func FormatTime(args jet.Arguments) reflect.Value {
-	t, err := time.Parse("2006-01-02T15:04:05Z", args.Get(0).String())
+	arg := strings.ReplaceAll("T", " ", args.Get(0).String())
+	arg = strings.ReplaceAll("Z", "", arg)
+	t, err := time.Parse("2006-01-02 15:04:05", arg)
 	if err != nil {
-		pine.Logger().Error(err)
 		return reflect.ValueOf("")
 	}
-
 	format := "2006-01-02 15:04:05"
 	if args.NumOfArguments() > 1 {
 		format = args.Get(1).String()
