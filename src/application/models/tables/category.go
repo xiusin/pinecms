@@ -21,7 +21,7 @@ type Category struct {
 	UrlPrefix   string         `xorm:"-" json:"url_prefix"`
 	CreatedAt   LocalTime      `json:"created_at" xorm:"created"`
 	UpdatedAt   LocalTime      `json:"updated_at" xorm:"updated"`
-	DeletedAt   LocalTime      `json:"deleted_at" xorm:"deleted"`
+	//DeletedAt   *LocalTime      `json:"deleted_at" xorm:"deleted"`
 	Active      bool           `xorm:"-"`
 	HasSon      bool           `xorm:"-"`
 	Model       *DocumentModel `xorm:"-" json:"model"`

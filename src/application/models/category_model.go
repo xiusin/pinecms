@@ -126,24 +126,21 @@ func (c *CategoryModel) GetWithDirForBE(dir string) *tables.Category {
 
 func (c *CategoryModel) GetAll(withCache bool) []tables.Category {
 	var categories []tables.Category
-	if withCache {
-		err := c.cache.GetWithUnmarshal(controllers.CacheCategories, &categories)
-		if err != nil || len(categories) == 0 {
-			c.orm.Asc("listorder").Desc("catid").Find(&categories)
-			err := c.cache.SetWithMarshal(controllers.CacheCategories, &categories)
-			if err != nil {
-				pine.Logger().Error(err)
-			}
-		}
-	} else {
-		c.orm.Asc("listorder").Desc("catid").Find(&categories)
+	if !withCache {
+		_ = helper.AbstractCache().Delete(controllers.CacheCategories)
 	}
+	_ = helper.AbstractCache().Remember(controllers.CacheCategories, &categories, func() (interface{}, error) {
+		if err := c.orm.Asc("listorder").Desc("id").Find(&categories); err != nil {
+			pine.Logger().Error("查询语句错误", err)
+		}
+		return &categories, nil
+	})
 	return categories
 }
 
 func (c *CategoryModel) GetNextCategory(parentid int64) []tables.Category {
 	var categories []tables.Category
-	c.orm.Where("parentid=?", parentid).Asc("listorder").Desc("catid").Find(&categories)
+	c.orm.Where("parentid=?", parentid).Asc("listorder").Desc("id").Find(&categories)
 	if len(categories) != 0 {
 		for _, v := range categories {
 			categories = append(categories, c.GetNextCategory(v.Catid)...)
@@ -166,7 +163,7 @@ func (c *CategoryModel) GetNextCategoryOnlyCatids(parentid int64, withSelf bool)
 
 func (c *CategoryModel) GetSelectTree(parentid int64) []map[string]interface{} {
 	categorys := new([]tables.Category)
-	err := c.orm.Where("parentid = ?", parentid).OrderBy("`listorder` ASC,`catid` DESC").Find(categorys)
+	err := c.orm.Where("parentid = ?", parentid).OrderBy("`listorder` ASC,`id` DESC").Find(categorys)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -290,7 +287,7 @@ func (c *CategoryModel) AddCategory(category tables.Category) bool {
 }
 
 func (c *CategoryModel) UpdateCategory(category *tables.Category) bool {
-	res, err := c.orm.Where("catid=?", category.Catid).Update(category)
+	res, err := c.orm.Where("id=?", category.Catid).Update(category)
 	if err != nil || res == 0 {
 		pine.Logger().Error("CategoryModel::UpdateCategory", err, res)
 		return false

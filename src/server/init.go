@@ -1,7 +1,8 @@
 package server
 
 import (
-	"github.com/xiusin/pine/cache/providers/pleveldb"
+	"github.com/allegro/bigcache/v3"
+	"github.com/xiusin/pine/cache/providers/pbigcache"
 	"io"
 	"os"
 	"path/filepath"
@@ -38,7 +39,7 @@ func InitApp() {
 }
 
 func InitCache() {
-	cacheHandler = pleveldb.New(config.App().CacheDb, nil)
+	cacheHandler = pbigcache.New(bigcache.DefaultConfig(time.Hour))
 	theme, _ := cacheHandler.Get(controllers.CacheTheme)
 	if len(theme) > 0 {
 		conf.View.Theme = string(theme)
@@ -47,6 +48,7 @@ func InitCache() {
 	sess := sessions.New(cacheProvider.NewStore(cacheHandler), &sessions.Config{CookieName: conf.Session.Name, Expires: conf.Session.Expires})
 	di.Instance(sess)
 }
+
 
 func InitDI() {
 	helper.Inject(controllers.ServiceApplication, app)
@@ -85,7 +87,7 @@ func initLoggerService() di.BuildHandler {
 func initJetEngine() *pjet.PineJet {
 	jetEngine := pjet.New(conf.View.FeDirname, ".jet", conf.View.Reload)
 	jetEngine.AddPath("resources/taglibs/")
-
+	jetEngine.SetDevelopmentMode(true)
 	tags := map[string]jet.Func{
 		"flink":          taglibs.Flink,
 		"type":           taglibs.Type,

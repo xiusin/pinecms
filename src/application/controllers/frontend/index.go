@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 func (c *IndexController) Index() {
@@ -32,5 +33,7 @@ func (c *IndexController) Index() {
 		return
 	}
 	data, _ := ioutil.ReadFile(pageFilePath)
+	startTime := time.Now()
 	c.Ctx().WriteHTMLBytes(data)
+	pine.Logger().Debug("渲染模板总耗时", time.Now().Sub(startTime))
 }

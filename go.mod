@@ -7,6 +7,7 @@ require (
 	github.com/alecthomas/chroma v0.9.4
 	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0
 	github.com/aliyun/aliyun-oss-go-sdk v2.1.9+incompatible
+	github.com/allegro/bigcache/v3 v3.0.1
 	github.com/arl/statsviz v0.4.0
 	github.com/casbin/casbin/v2 v2.40.3
 	github.com/casbin/xorm-adapter v1.0.1-0.20191120030838-267478260350
@@ -34,7 +35,7 @@ require (
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.34-0.20220223071506-9cc16ad671b7
 	github.com/traefik/yaegi v0.11.2
 	github.com/valyala/fasthttp v1.33.0
-	github.com/xiusin/logger v0.0.10-0.20220103084022-9cb8378d9b03
+	github.com/xiusin/logger v0.0.10-0.20220129022857-69c2a6f6a736
 	github.com/xiusin/pine v0.0.0-20220224020025-5572dae54a29
 	github.com/xiusin/reload v0.0.0-20211215091741-ab993ba2e9d2
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2

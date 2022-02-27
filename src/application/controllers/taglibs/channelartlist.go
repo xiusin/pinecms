@@ -17,6 +17,7 @@ topid 记录当前所处页面的tid
 {{channellist = channelartlist(typeid, row, topid, sons, active)}}
 */
 func ChannelArtList(args jet.Arguments) reflect.Value {
+	fmt.Println("ChannelArtList", args)
 	if !checkArgType(&args) {
 		return defaultArrReturnVal
 	}

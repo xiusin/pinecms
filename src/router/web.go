@@ -10,7 +10,6 @@ import (
 
 func InitStatics(app *pine.Application) {
 	for _, static := range config.App().Statics {
-		pine.Logger().Debug("注册静态资源路由", static.Route, "->", filepath.FromSlash(static.Path))
 		app.Static(static.Route, filepath.FromSlash(static.Path), 1)
 	}
 }

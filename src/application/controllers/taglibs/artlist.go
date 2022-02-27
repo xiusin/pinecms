@@ -1,6 +1,7 @@
 package taglibs
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -43,159 +44,167 @@ artlist(typeid, offset, row, orderby, modelid, page, keyword, flag, noflag, titl
 */
 
 func ArcList(args jet.Arguments) reflect.Value {
-	if !checkArgType(&args) {
-		return defaultArrReturnVal
-	}
-	//getall := args.Get(10).Bool()
-	orderway := args.Get(11).String()
-	subday := int(args.Get(12).Float())
-	catid := args.Get(0)
-	var ids []string
-	if isNumber(catid) {
-		ids = append(ids, fmt.Sprintf("%d", int(getNumber(catid))))
-	} else {
-		ids = strings.Split(catid.String(), ",")
-	}
-	offset := getNumber(args.Get(1))
-	limit := getNumber(args.Get(2))
-	if limit == 0 { // 没有设置分页条数, 使用系统默认分页数目
-		conf, _ := config.SiteConfig()
-		t, _ := strconv.Atoi(conf["SITE_PAGE_SIZE"])
-		limit = int64(t)
-		if limit == 0 {
-			limit = 15
+	var list = []map[string]string{}
+	helper.AbstractCache().Remember("pinecms:tag:arclist:" + getTagHash(args), &list, func() (interface{}, error) {
+		if !checkArgType(&args) {
+			return &list, nil
 		}
-		if offset == 0 { // 如果没传递offset那么就根据系统分页计算偏移量
-			offset = (getNumber(args.Get(5)) - 1) * limit
-		}
-	}
-
-	orderBy := args.Get(3).String()
-	if orderway == "" {
-		orderway = "desc"
-	}
-	if orderBy == "" {
-		orderBy = "listorder"
-	}
-	var isRand bool
-	if orderBy == "rand" {
-		isRand = true
-		if strings.ToLower(config.DB().Db.DbDriver) == "mysql" {
-			orderBy = "RAND()"
+		startTime := time.Now()
+		orderway := args.Get(11).String()
+		subday := int(args.Get(12).Float())
+		catid := args.Get(0)
+		var ids []string
+		if isNumber(catid) {
+			ids = append(ids, fmt.Sprintf("%d", int(getNumber(catid))))
 		} else {
-			orderBy = "RANDOM()"
+			ids = strings.Split(catid.String(), ",")
 		}
-	} else {
-		orderBy = fmt.Sprintf("%s %s", orderBy, orderway)
-	}
+		offset := getNumber(args.Get(1))
+		limit := getNumber(args.Get(2))
+		if limit == 0 { // 没有设置分页条数, 使用系统默认分页数目
+			conf, _ := config.SiteConfig()
+			t, _ := strconv.Atoi(conf["SITE_PAGE_SIZE"])
+			limit = int64(t)
+			if limit == 0 {
+				limit = 15
+			}
+			if offset == 0 { // 如果没传递offset那么就根据系统分页计算偏移量
+				offset = (getNumber(args.Get(5)) - 1) * limit
+			}
+		}
 
-	model := &tables.DocumentModel{}
-	var modelID int64
-	m := models.NewCategoryModel()
-	if len(ids) == 0 || ids[0] == "0" { // 没有设置typeid直接查看模型ID
-		modelID = getNumber(args.Get(4))
-	} else if len(ids) > 1 { // 设置多个id以第一个ID查找对应模型
-		catid, _ := strconv.Atoi(ids[0])
-		catgory, err := m.GetCategoryFByIdForBE(int64(catid))
-		if err != nil {
-			panic("无法查找分类" + strings.Join(ids, ",") + "的信息:" + err.Error())
+		orderBy := args.Get(3).String()
+		if orderway == "" {
+			orderway = "desc"
 		}
-		for _, v := range ids {
-			catID, _ := strconv.Atoi(v)
-			soncats := m.GetNextCategoryOnlyCatids(int64(catID), false)
+		if orderBy == "" {
+			orderBy = "listorder"
+		}
+		var isRand bool
+		if orderBy == "rand" {
+			isRand = true
+			if strings.ToLower(config.DB().Db.DbDriver) == "mysql" {
+				orderBy = "RAND()"
+			} else {
+				orderBy = "RANDOM()"
+			}
+		} else {
+			orderBy = fmt.Sprintf("%s %s", orderBy, orderway)
+		}
+
+		model := &tables.DocumentModel{}
+		var modelID int64
+		m := models.NewCategoryModel()
+		if len(ids) == 0 || ids[0] == "0" { // 没有设置typeid直接查看模型ID
+			modelID = getNumber(args.Get(4))
+		} else if len(ids) > 1 { // 设置多个id以第一个ID查找对应模型
+			catid, _ := strconv.Atoi(ids[0])
+			catgory, err := m.GetCategoryFByIdForBE(int64(catid))
+			if err != nil {
+				panic(errors.New("无法查找分类" + strings.Join(ids, ",") + "的信息:" + err.Error()))
+			}
+			for _, v := range ids {
+				catID, _ := strconv.Atoi(v)
+				soncats := m.GetNextCategoryOnlyCatids(int64(catID), false)
+				for _, v := range soncats {
+					ids = append(ids, fmt.Sprintf("%d", v))
+				}
+			}
+			modelID = catgory.Model.Id
+		} else if len(ids) == 1 { // 设置了单个类型并且获取所有下级子类&& ids[0] != "0" && getall
+			firstCatID := getNumber(catid)
+			soncats := m.GetNextCategoryOnlyCatids(firstCatID, false)
 			for _, v := range soncats {
 				ids = append(ids, fmt.Sprintf("%d", v))
 			}
+			// 读取模型ID
+			catgory, err := m.GetCategoryFByIdForBE(firstCatID)
+			if err != nil {
+				panic(errors.New("无法查找分类" + strings.Join(ids, ",") + "的信息:" + err.Error()))
+
+			}
+			modelID = catgory.Model.Id
 		}
-		modelID = catgory.Model.Id
-	} else if len(ids) == 1 { // 设置了单个类型并且获取所有下级子类&& ids[0] != "0" && getall
-		firstCatID := getNumber(catid)
-		soncats := m.GetNextCategoryOnlyCatids(firstCatID, false)
-		for _, v := range soncats {
-			ids = append(ids, fmt.Sprintf("%d", v))
+		if modelID == 0 {
+			modelID = 1
 		}
-		// 读取模型ID
-		catgory, err := m.GetCategoryFByIdForBE(firstCatID)
+		exists, _ := helper.GetORM().Table(model).ID(modelID).Get(model)
+		if !exists {
+			panic(fmt.Errorf("模型ID%d不存在", modelID))
+		}
+
+		categoryTable := controllers.GetTableName("category")
+
+		modelTable := controllers.GetTableName(model.Table)
+		sess := getOrmSess(model.Table).
+			Join("LEFT", categoryTable, categoryTable+".id = "+modelTable+".catid").
+			Where(modelTable + ".deleted_time IS NULL").Where(modelTable + ".status = 1")
+		defer sess.Close()
+		if isRand {
+			sess.OrderBy(orderBy)
+		} else {
+			sess.OrderBy(modelTable + "." + orderBy)
+		}
+		if ids[0] != "0" {
+			sess.In(modelTable+".catid", ids)
+		}
+
+		if subday > 0 {
+			sess.Where(modelTable+".pubtime > ?", time.Now().AddDate(0, 0, -subday).In(helper.GetLocation()).Format("2006-01-02"))
+		}
+
+		if keywords := strings.Split(args.Get(6).String(), ","); len(keywords) > 0 {
+			var conds []builder.Cond
+			for _, v := range keywords {
+				if v == "" {
+					continue
+				}
+				conds = append(conds, builder.Expr(fmt.Sprintf("%s.keywords LIKE ?", modelTable), "%"+v+"%"))
+			}
+			sess.Where(builder.Or(conds...))
+		}
+
+		if flags := strings.Split(args.Get(7).String(), ","); len(flags) > 0 {
+			var conds []builder.Cond
+			for _, v := range flags {
+				if v == "" {
+					continue
+				}
+				conds = append(conds, builder.Expr(fmt.Sprintf("%s.flag LIKE ?", modelTable), "%"+v+"%"))
+			}
+			sess.Where(builder.Or(conds...))
+		}
+
+		if noflags := strings.Split(args.Get(8).String(), ","); len(noflags) > 0 {
+			var conds []builder.Cond
+			for _, v := range noflags {
+				if v == "" {
+					continue
+				}
+				conds = append(conds, builder.Expr(fmt.Sprintf("%s.flag NOT LIKE ?", modelTable), "%"+v+"%"))
+			}
+			sess.Where(builder.Or(conds...))
+		}
+
+		titlelen := getNumber(args.Get(9))
+
+		if limit > 0 {
+			sess.Limit(int(limit), int(offset))
+		}
+
+		sess.Select(fmt.Sprintf("%s.*, %s.catname as typename", modelTable, categoryTable))
+
+		var err error
+		list, err = sess.QueryString()
 		if err != nil {
-			panic("无法查找分类" + strings.Join(ids, ",") + "的信息:" + err.Error())
+			pine.Logger().Error(sess.LastSQL())
+			return &list, err
 		}
-		modelID = catgory.Model.Id
-	}
-	if modelID == 0 {
-		modelID = 1
-	}
-	exists, _ := helper.GetORM().Table(model).ID(modelID).Get(model)
-	if !exists {
-		panic(fmt.Sprintf("模型ID%d不存在", modelID))
-	}
+		// 重写URL
+		helper.HandleArtListInfo(list, int(titlelen))
+		pine.Logger().Debug("arclist 标签渲染耗时", time.Now().Sub(startTime))
+		return &list, err
+	})
 
-	categoryTable := controllers.GetTableName("category")
-
-	modelTable := controllers.GetTableName(model.Table)
-	sess := getOrmSess(model.Table).
-		Join("LEFT", categoryTable, categoryTable+".id = "+modelTable+".catid").
-		Where(modelTable + ".deleted_time IS NULL").Where(modelTable + ".status = 1")
-	defer sess.Close()
-	if isRand {
-		sess.OrderBy(orderBy)
-	} else {
-		sess.OrderBy(modelTable + "." + orderBy)
-	}
-	if ids[0] != "0" {
-		sess.In(modelTable+".catid", ids)
-	}
-
-	if subday > 0 {
-		sess.Where(modelTable+".pubtime > ?", time.Now().AddDate(0, 0, -subday).In(helper.GetLocation()).Format("2006-01-02"))
-	}
-
-	if keywords := strings.Split(args.Get(6).String(), ","); len(keywords) > 0 {
-		var conds []builder.Cond
-		for _, v := range keywords {
-			if v == "" {
-				continue
-			}
-			conds = append(conds, builder.Expr(fmt.Sprintf("%s.keywords LIKE ?", modelTable), "%"+v+"%"))
-		}
-		sess.Where(builder.Or(conds...))
-	}
-
-	if flags := strings.Split(args.Get(7).String(), ","); len(flags) > 0 {
-		var conds []builder.Cond
-		for _, v := range flags {
-			if v == "" {
-				continue
-			}
-			conds = append(conds, builder.Expr(fmt.Sprintf("%s.flag LIKE ?", modelTable), "%"+v+"%"))
-		}
-		sess.Where(builder.Or(conds...))
-	}
-
-	if noflags := strings.Split(args.Get(8).String(), ","); len(noflags) > 0 {
-		var conds []builder.Cond
-		for _, v := range noflags {
-			if v == "" {
-				continue
-			}
-			conds = append(conds, builder.Expr(fmt.Sprintf("%s.flag NOT LIKE ?", modelTable), "%"+v+"%"))
-		}
-		sess.Where(builder.Or(conds...))
-	}
-
-	titlelen := getNumber(args.Get(9))
-
-	if limit > 0 {
-		sess.Limit(int(limit), int(offset))
-	}
-
-	sess.Select(fmt.Sprintf("%s.*, %s.catname as typename", modelTable, categoryTable))
-
-	list, err := sess.QueryString()
-	if err != nil {
-		pine.Logger().Error(sess.LastSQL())
-		panic(err)
-	}
-	// 重写URL
-	helper.HandleArtListInfo(list, int(titlelen))
 	return reflect.ValueOf(list)
 }

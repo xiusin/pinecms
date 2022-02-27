@@ -29,7 +29,4 @@ upload:
 
 statics:
   - { route: "/assets/", path: "./resources/assets/"}
-  - { route: "/fonts/", path: "./admin/dist/fonts/"}
-  - { route: "/images/", path: "./admin/dist/images/"}
-  - { route: "/theme/", path: "./admin/dist/theme/"}
   - { route: "/uploads/", path: "./resources/assets/uploads/"}

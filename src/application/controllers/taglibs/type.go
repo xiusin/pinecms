@@ -12,6 +12,8 @@ import (
 )
 
 func Type(args jet.Arguments) reflect.Value {
+	fmt.Println("arclist")
+
 	if !checkArgType(&args) {
 		return defaultArrReturnVal
 	}

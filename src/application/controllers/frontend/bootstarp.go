@@ -1,17 +1,22 @@
 package frontend
 
 import (
+	"github.com/valyala/fasthttp"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/config"
 	"io/ioutil"
-	"net/http"
 	"path/filepath"
 	"strconv"
 	"strings"
 )
 
 func (c *IndexController) Bootstrap() {
+	defer func() {
+		if err := recover(); err != nil {
+			c.Ctx().Abort(fasthttp.StatusInternalServerError, err.(error).Error())
+		}
+	}()
 	conf, _ := config.SiteConfig()
 	// todo 开启前端资源缓存 304
 	// todo 拦截存在静态文件的问题, 不过最好交给nginx等服务器转发
@@ -26,7 +31,7 @@ func (c *IndexController) Bootstrap() {
 		absFilePath := filepath.Join(conf["SITE_STATIC_PAGE_DIR"], pageName)
 		if byts, err := ioutil.ReadFile(absFilePath); err != nil {
 			pine.Logger().Error(err)
-			c.Ctx().Abort(http.StatusNotFound)
+			c.Ctx().Abort(fasthttp.StatusNotFound)
 		} else {
 			c.Ctx().Render().ContentType(pine.ContentTypeHTML)
 			pine.Logger().Print("render file ", absFilePath)
@@ -77,15 +82,15 @@ func (c *IndexController) Bootstrap() {
 					return
 				}
 			}
-			c.Ctx().Abort(http.StatusNotFound)
-			c.Logger().Debug("地址内容无法匹配", c.Ctx().Path())
+			c.Ctx().Abort(fasthttp.StatusNotFound)
+			c.Logger().Debug("1:地址内容无法匹配", c.Ctx().Path())
 			return
 		}
 		// 匹配所有内容
 		prefix := models.NewCategoryModel().GetUrlPrefix(cat.Catid)
 		if !strings.HasPrefix(pageName, prefix) {
-			c.Logger().Debug("地址前缀无法匹配", c.Ctx().Path())
-			c.Ctx().Abort(http.StatusNotFound)
+			c.Logger().Debug("2:地址前缀无法匹配", c.Ctx().Path())
+			c.Ctx().Abort(fasthttp.StatusNotFound)
 			return
 		}
 		c.Ctx().Params().Set("tid", strconv.Itoa(int(cat.Catid)))
@@ -98,4 +103,3 @@ func (c *IndexController) Bootstrap() {
 		}
 	}
 }
-

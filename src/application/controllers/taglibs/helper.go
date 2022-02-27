@@ -1,6 +1,9 @@
 package taglibs
 
 import (
+	"crypto/md5"
+	"encoding/json"
+	"fmt"
 	"github.com/CloudyKit/jet"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -58,4 +61,16 @@ func getCategoryOrm() *xorm.Session {
 
 func getCategoryTable() string {
 	return controllers.GetTableName("category")
+}
+
+func getTagHash(args jet.Arguments) string {
+	var arr []interface{}
+	for i := 0; i < args.NumOfArguments(); i++ {
+		arr = append(arr, args.Get(i).Interface())
+	}
+	byts, _ := json.Marshal(&arr)
+	md := md5.New()
+	md.Write(byts)
+
+	return fmt.Sprintf("%x", md.Sum(nil))
 }

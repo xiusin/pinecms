@@ -16,10 +16,10 @@ func Server() {
 	router.InitApiRouter(app)
 	router.InitStatics(app)
 
+	go plugins.Init()
+
 	// 优先级放到最下面, 内部托管所有无法匹配的路由
 	router.InitRouter(app)
-
-	go plugins.Init()
 
 	app.Run(
 		pine.Addr(fmt.Sprintf("%s:%d", "127.0.0.1", conf.Port)),

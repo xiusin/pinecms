@@ -1,6 +1,7 @@
 package taglibs
 
 import (
+	"fmt"
 	"github.com/CloudyKit/jet"
 	"github.com/xiusin/pinecms/src/application/models"
 	"reflect"
@@ -11,6 +12,8 @@ import (
  * 作用：获取当前页面面包屑只可适用于列表页和详情页
  */
 func TopType(args jet.Arguments) reflect.Value {
+	fmt.Println("arclist")
+
 	if !checkArgType(&args) {
 		return defaultArrReturnVal
 	}
