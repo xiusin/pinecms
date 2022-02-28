@@ -25,7 +25,7 @@ const CasbinModelConf = "resources/configs/rbac_models.conf"
 
 func InitApiRouter(app *pine.Application) {
 	if config.IsDebug() {
-		app.Use(middleware.Demo(), middleware.Cors(app), requestLog.RequestRecorder())
+		app.Use(middleware.Demo(), middleware.Cors(), requestLog.RequestRecorder())
 	}
 	app.Use(middleware.Pprof(), middleware.SetGlobalConfigData(), apidoc.New(app, nil), middleware.StatesViz(app))
 

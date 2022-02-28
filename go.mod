@@ -21,7 +21,7 @@ require (
 	github.com/gorilla/securecookie v1.1.1
 	github.com/jlaffaye/ftp v0.0.0-20220201222555-02685330ee35
 	github.com/kataras/go-mailer v0.1.0
-	github.com/mitchellh/go-homedir v1.0.0
+	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mojocn/base64Captcha v1.3.5
 	github.com/pkg/sftp v1.10.1
 	github.com/rivo/tview v0.0.0-20210624165335-29d673af0ce2
@@ -36,7 +36,7 @@ require (
 	github.com/traefik/yaegi v0.11.2
 	github.com/valyala/fasthttp v1.33.0
 	github.com/xiusin/logger v0.0.10-0.20220129022857-69c2a6f6a736
-	github.com/xiusin/pine v0.0.0-20220224020025-5572dae54a29
+	github.com/xiusin/pine v0.0.0-20220228094826-647d9c6d15aa
 	github.com/xiusin/reload v0.0.0-20211215091741-ab993ba2e9d2
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	golang.org/x/crypto v0.0.0-20220131195533-30dcbda58838
@@ -110,7 +110,7 @@ require (
 	github.com/valyala/fastrand v1.1.0 // indirect
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
-	golang.org/x/sys v0.0.0-20220224120231-95c6836cb0e7 // indirect
+	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect

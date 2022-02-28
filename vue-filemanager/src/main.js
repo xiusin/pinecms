@@ -158,13 +158,14 @@ HTTP.interceptors.response.use(
     }
     // 设置错误消息
     store.commit("fm/messages/setError", errorMessage);
-    // 显示提示
-    this.$notify.error({
-      title: "错误",
-      message: errorNotificationMessage.message
-    });
-    // EventBus.$emit("addNotification", errorNotificationMessage);
-
+    if (this && this.$notify) {
+      // 显示提示
+      this.$notify.error({
+        title: "错误",
+        message: errorNotificationMessage.message
+      });
+      // EventBus.$emit("addNotification", errorNotificationMessage);
+    }
     return Promise.reject(error);
   }
 );

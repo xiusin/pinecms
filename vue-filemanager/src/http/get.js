@@ -11,15 +11,15 @@ export default {
 
     /**
      * 退出
-     * @returns 
+     * @returns
      */
     logout() {
         return HTTP.get('logout');
     },
     /**
      * 校验用户名
-     * @param {String} name 
-     * @returns 
+     * @param {String} name
+     * @returns
      */
     findUsername(name) {
         return HTTP.get('validate-name', {
@@ -31,8 +31,8 @@ export default {
 
     /**
      * 查找文件创建者
-     * @param {Stirng} filePath 
-     * @returns 
+     * @param {Stirng} filePath
+     * @returns
      */
     findAuthor(filePath) {
         return HTTP.get('file-author', {
@@ -65,8 +65,8 @@ export default {
     },
     /**
      * 获取目录
-     * @param {*} disk 
-     * @param {*} path 
+     * @param {*} disk
+     * @param {*} path
      */
     tree(disk, path) {
         return HTTP.get('tree', {
@@ -157,8 +157,8 @@ export default {
 
     /**
      * 图片缩略图链接
-     * @param {*} disk 
-     * @param {*} path 
+     * @param {*} disk
+     * @param {*} path
      */
     thumbnailLink(disk, path) {
         return HTTP.get('thumbnails_link', {

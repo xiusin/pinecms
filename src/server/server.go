@@ -18,7 +18,7 @@ func Server() {
 
 	go plugins.Init()
 
-	// 优先级放到最下面, 内部托管所有无法匹配的路由
+	// 内部托管任意路由
 	router.InitRouter(app)
 
 	app.Run(

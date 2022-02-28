@@ -16,7 +16,7 @@ export default {
       // axios headers
       headers: {
         "X-Requested-With": "XMLHttpRequest",
-        Authorization: `cfk ${window.localStorage.getItem("user-token")}`,
+        Authorization: window.localStorage.getItem("user-token") ? `cfk ${window.localStorage.getItem("user-token")}` : null,
       },
       // axios default URL
       baseUrl: "",
