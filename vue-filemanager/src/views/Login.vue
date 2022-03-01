@@ -44,17 +44,25 @@
         </div>
       </el-col>
       <el-col :span="12" style="height: 100%">
-        <div class="login-bg"></div>
+        <div class="login-bg">
+          <monaco-with-tree
+              :files="files"
+              :default-open-files="defaultOpenFiles"
+              :get-file-content="getFileContent"
+          />
+        </div>
       </el-col>
     </el-row>
   </div>
 </template>
 <script>
 import POST from "@/http/post";
+import MonacoWithTree from 'monaco-with-tree';
 export default {
   name: "Login",
   components: {
     // AmEditor
+    MonacoWithTree
   },
   data() {
     const reg = new RegExp('[\\\\/:*?"<>|]');
@@ -68,6 +76,8 @@ export default {
       }
     };
     return {
+      files: ['package.json',  'README.md', 'index.js', 'src/test.js', 'src/index.js', 'public/index.html'],
+      defaultOpenFiles: ['package.json'],
       formLabelAlign: {
         account: "",
         pwd: ""
@@ -84,6 +94,9 @@ export default {
     this.getAccount();
   },
   methods: {
+    getFileContent(filePath) {
+      return [`${filePath}-left`, `${filePath}-right`];
+    },
     submitForm() {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
