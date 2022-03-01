@@ -172,6 +172,7 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - 路由注解 (低)
 - <http://fast-crud.docmirror.cn/element/#/crud/basis/value-change>
 
+[comment]: <> (https://www.dowebok.com/demo/6918/)
 <!-- 参考CMS: http://demo2.wooadmin.cn/run -->
 <!-- http://pigx.pig4cloud.com/#/mp/wxaccountfans/index -->
 <!-- 热门语言卡片 -->

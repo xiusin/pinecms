@@ -170,8 +170,7 @@ export default {
   position: relative;
   height: 100%;
   width: 100%;
-  // background-image: url("../assets/register.jpg");
-  background-image: url("https://525-save.oss-cn-zhangjiakou.aliyuncs.com/%E6%96%87%E6%A1%A3/register.jpg");
+  background-image: url("../assets/register.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   display: flex;
@@ -197,8 +196,7 @@ export default {
     }
     .content {
       width: 480px;
-      height: 540px;
-      border-radius: 10px;
+      height: 500px;
       background: rgba(255, 255, 255, 0.9);
       box-shadow: rgba(0, 0, 0, 0.3) 0 0 50px;
       padding: 30px 39px 39px 39px;
@@ -239,8 +237,5 @@ p {
 }
 ::v-deep .el-button {
   width: 100%;
-  height: 50px;
-
-  border-radius: 50px;
 }
 </style>

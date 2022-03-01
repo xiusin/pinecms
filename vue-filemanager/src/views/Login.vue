@@ -145,9 +145,6 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-[class*=el-col-] {
-  height: 100%;
-}
 .login-bg {
   height: 100%;
   width: 100%;
@@ -181,7 +178,7 @@ export default {
       background: rgba(255, 255, 255, 0.2);
       width: 352px;
       height: 405px;
-      margin-top: calc(50% - 200px);
+      margin-top: calc(50% - 190px);
       margin-left: calc(50% - 176px);
       box-shadow: rgba(0, 0, 0, 0.3) 0 0 50px;
       padding: 0 20px 20px 20px;
