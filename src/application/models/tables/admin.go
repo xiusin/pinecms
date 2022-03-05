@@ -19,6 +19,7 @@ type Admin struct {
 	LevelId       uint       `json:"level_id"`
 	DepartmentId  uint       `json:"department_id"`
 	Birthday      *LocalTime `json:"birthday"`
+	Sex           uint       `json:"sex"`
 
 	RoleIdList []int64 `json:"roleIdList" xorm:"json roles"`
 }
