@@ -55,6 +55,7 @@ func InitApiRouter(app *pine.Application) {
 		{Prefix: "/ad/space", Handler: new(backend.AdSpaceController)},
 		{Prefix: "/department", Handler: new(backend.DepartmentController)},
 		{Prefix: "/position", Handler: new(backend.PositionController)},
+		{Prefix: "/level", Handler: new(backend.LevelController)},
 		{Prefix: "/stat", Handler: new(backend.StatController)},
 		{Prefix: "/plugin", Handler: new(backend.PluginController)},
 		{Prefix: "/tags", Handler: new(backend.TagsController)},

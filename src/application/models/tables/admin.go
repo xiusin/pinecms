@@ -15,6 +15,9 @@ type Admin struct {
 	RoleName      string `json:"roleName" xorm:"-"`
 	Phone         string `json:"phone"`
 	Status        uint   `json:"status"`
+	PositionId    uint   `json:"position_id"`
+	LevelId       uint   `json:"level_id"`
+	DepartmentId  uint   `json:"department_id"`
 
 	RoleIdList []int64 `json:"roleIdList" xorm:"json roles"`
 }

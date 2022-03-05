@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -109,6 +110,7 @@ func InitDB(conf ...*DbConf) *xorm.Engine {
 		configure.Engine = _orm
 		helper.Inject(controllers.ServiceXorm, _orm)
 		helper.Inject(controllers.ServiceTablePrefix, configure.Db.DbPrefix)
+		_orm.Sync2(&tables.Level{})
 	})
 	return configure.Engine
 }

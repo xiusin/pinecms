@@ -2,6 +2,7 @@ package backend
 
 import (
 	"fmt"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 	"reflect"
 	"strconv"
 	"strings"
@@ -55,6 +56,12 @@ type BaseController struct {
 	apidoc.Entity
 	ApiEntityName string
 
+	SelectOp     func(*xorm.Session)
+	SelectListKV struct {
+		Key   string
+		Value string
+	}
+
 	pine.Controller
 }
 
@@ -64,6 +71,12 @@ func (c *BaseController) Construct() {
 	c.TableStructKey = "Id"
 	c.Orm = helper.GetORM()
 	c.AppId = "admin"
+
+	c.SelectListKV = struct {
+		Key   string
+		Value string
+	}{Key: "Id", Value: "Name"}
+
 	if c.apiEntities == nil {
 		c.apiEntities = map[string]apidoc.Entity{ // 内置一个模板, 配合ApiEntityName使用
 			"__inner": {}, // 重写时不要附加此参数
@@ -246,7 +259,7 @@ func (c *BaseController) PostAdd() {
 			helper.Ajax(c.Table, 0, c.Ctx())
 		}
 	} else {
-		helper.Ajax(err, 1, c.Ctx())
+		helper.Ajax(c.Table, 0, c.Ctx())
 	}
 }
 
@@ -398,4 +411,30 @@ func (c *BaseController) setApiEntity() {
 		}
 	}
 	apidoc.SetApiEntity(c.Ctx(), &apiEntity)
+}
+
+func (c *BaseController) GetSelect() {
+	var kv = []tables.KV{}
+
+	if c.Entries != nil {
+		sess := c.Orm.NewSession()
+		defer sess.Close()
+		if c.SelectOp != nil {
+			c.SelectOp(sess)
+		}
+
+		sess.Find(c.Entries)
+		// 反射类型
+		val := reflect.ValueOf(c.Entries)
+		length := val.Elem().Len()
+		for i := 0; i < length; i++ {
+			item := val.Elem().Index(i)
+			kv = append(kv, tables.KV{
+				Value: item.FieldByName(c.SelectListKV.Key).Interface(),
+				Label: item.FieldByName(c.SelectListKV.Value).String(),
+			})
+		}
+	}
+
+	helper.Ajax(kv, 0, c.Ctx())
 }
