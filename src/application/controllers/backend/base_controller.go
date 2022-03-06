@@ -56,7 +56,9 @@ type BaseController struct {
 	apidoc.Entity
 	ApiEntityName string
 
-	SelectOp     func(*xorm.Session)
+	SelectOp    func(*xorm.Session)      // 选择方法列表
+	UniqCheckOp func(int, *xorm.Session) // 唯一性校验构建SQL方法
+
 	SelectListKV struct {
 		Key   string
 		Value string
@@ -238,10 +240,24 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 }
 
 func (c *BaseController) PostAdd() {
+
+	if c.UniqCheckOp != nil {
+		sess := c.Orm.NewSession()
+		defer sess.Close()
+
+		c.UniqCheckOp(OpAdd, sess)
+		if exist, _ := sess.Exist(c.Table); exist {
+			helper.Ajax("有重复记录, 新增失败", 1, c.Ctx())
+			return
+		}
+	}
+
 	if err := c.BindParse(); err != nil {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
 	}
+
+
 	if c.OpBefore != nil {
 		if err := c.OpBefore(OpAdd, c.Table); err != nil {
 			helper.Ajax(err.Error(), 1, c.Ctx())
@@ -273,6 +289,19 @@ func (c *BaseController) PostUpdate() {
 }
 
 func (c *BaseController) PostEdit() {
+
+	if c.UniqCheckOp != nil {
+		sess := c.Orm.NewSession()
+		defer sess.Close()
+
+		c.UniqCheckOp(OpEdit, sess)
+		fmt.Println(sess.Exist(c.Table))
+		if exist, _ := sess.Exist(c.Table); exist {
+			helper.Ajax("有重复记录, 修改失败", 1, c.Ctx())
+			return
+		}
+	}
+
 	if err := c.BindParse(); err != nil {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return

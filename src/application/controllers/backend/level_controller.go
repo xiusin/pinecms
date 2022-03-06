@@ -2,6 +2,7 @@ package backend
 
 import (
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"xorm.io/xorm"
 )
 
 type LevelController struct {
@@ -17,5 +18,17 @@ func (c *LevelController) Construct() {
 	c.BaseController.Construct()
 	c.KeywordsSearch = []SearchFieldDsl{
 		{Field: "name", Op: "="},
+	}
+	c.SelectOp = func(session *xorm.Session) {
+		session.Where("status = ?", 1)
+	}
+
+	c.UniqCheckOp = func(i int, session *xorm.Session) {
+		entity := c.Table.(*tables.Level)
+		if i == OpAdd {
+			session.Where("name = ?", entity.Name)
+		} else {
+			session.Where("name = ?", entity.Name).Where("id <> ?", entity.Id)
+		}
 	}
 }
