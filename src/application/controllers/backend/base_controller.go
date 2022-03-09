@@ -2,6 +2,7 @@ package backend
 
 import (
 	"fmt"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 	"reflect"
 	"strconv"
 	"strings"
@@ -55,6 +56,14 @@ type BaseController struct {
 	apidoc.Entity
 	ApiEntityName string
 
+	SelectOp    func(*xorm.Session)      // 选择方法列表
+	UniqCheckOp func(int, *xorm.Session) // 唯一性校验构建SQL方法
+
+	SelectListKV struct {
+		Key   string
+		Value string
+	}
+
 	pine.Controller
 }
 
@@ -64,6 +73,12 @@ func (c *BaseController) Construct() {
 	c.TableStructKey = "Id"
 	c.Orm = helper.GetORM()
 	c.AppId = "admin"
+
+	c.SelectListKV = struct {
+		Key   string
+		Value string
+	}{Key: "Id", Value: "Name"}
+
 	if c.apiEntities == nil {
 		c.apiEntities = map[string]apidoc.Entity{ // 内置一个模板, 配合ApiEntityName使用
 			"__inner": {}, // 重写时不要附加此参数
@@ -225,10 +240,24 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 }
 
 func (c *BaseController) PostAdd() {
+
+	if c.UniqCheckOp != nil {
+		sess := c.Orm.NewSession()
+		defer sess.Close()
+
+		c.UniqCheckOp(OpAdd, sess)
+		if exist, _ := sess.Exist(c.Table); exist {
+			helper.Ajax("有重复记录, 新增失败", 1, c.Ctx())
+			return
+		}
+	}
+
 	if err := c.BindParse(); err != nil {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
 	}
+
+
 	if c.OpBefore != nil {
 		if err := c.OpBefore(OpAdd, c.Table); err != nil {
 			helper.Ajax(err.Error(), 1, c.Ctx())
@@ -246,7 +275,7 @@ func (c *BaseController) PostAdd() {
 			helper.Ajax(c.Table, 0, c.Ctx())
 		}
 	} else {
-		helper.Ajax(err, 1, c.Ctx())
+		helper.Ajax(c.Table, 0, c.Ctx())
 	}
 }
 
@@ -260,6 +289,19 @@ func (c *BaseController) PostUpdate() {
 }
 
 func (c *BaseController) PostEdit() {
+
+	if c.UniqCheckOp != nil {
+		sess := c.Orm.NewSession()
+		defer sess.Close()
+
+		c.UniqCheckOp(OpEdit, sess)
+		fmt.Println(sess.Exist(c.Table))
+		if exist, _ := sess.Exist(c.Table); exist {
+			helper.Ajax("有重复记录, 修改失败", 1, c.Ctx())
+			return
+		}
+	}
+
 	if err := c.BindParse(); err != nil {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
@@ -398,4 +440,30 @@ func (c *BaseController) setApiEntity() {
 		}
 	}
 	apidoc.SetApiEntity(c.Ctx(), &apiEntity)
+}
+
+func (c *BaseController) GetSelect() {
+	var kv = []tables.KV{}
+
+	if c.Entries != nil {
+		sess := c.Orm.NewSession()
+		defer sess.Close()
+		if c.SelectOp != nil {
+			c.SelectOp(sess)
+		}
+
+		sess.Find(c.Entries)
+		// 反射类型
+		val := reflect.ValueOf(c.Entries)
+		length := val.Elem().Len()
+		for i := 0; i < length; i++ {
+			item := val.Elem().Index(i)
+			kv = append(kv, tables.KV{
+				Value: item.FieldByName(c.SelectListKV.Key).Interface(),
+				Label: item.FieldByName(c.SelectListKV.Value).String(),
+			})
+		}
+	}
+
+	helper.Ajax(kv, 0, c.Ctx())
 }

@@ -22,7 +22,7 @@ func (c *UserController) Construct() {
 
 	c.SearchFields = []SearchFieldDsl{
 		{Field: "departmentIds", CallBack: func(session *xorm.Session, i ...interface{}) {
-			session.Where(builder.In("dept_id", i))
+			session.Where(builder.In("department_id", i))
 		}},
 	}
 
