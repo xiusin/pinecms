@@ -5,6 +5,10 @@ import App from './App.vue'
 import fm from './store'
 import HTTP from './http/axios'
 
+import 'image-preview-vue/lib/imagepreviewvue.css'
+
+import './css/element-variables.scss'
+
 import {
   Button,
   Container,
@@ -35,7 +39,6 @@ import {
   DropdownMenu,
   DropdownItem
 } from 'element-ui'
-import 'image-preview-vue/lib/imagepreviewvue.css'
 Vue.use(Vuex);
 Vue.component(Button.name, Button); // 或者 VUe.use(Button)
 Vue.component(Container.name, Container)

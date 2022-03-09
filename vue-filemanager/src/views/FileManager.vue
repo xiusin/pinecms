@@ -6,24 +6,24 @@
       <Cropper :showCropper="showCropper" :imgSrc="imgSrc" />
     </template>
 
-    <el-header height="62px" class="navbar">
-      <el-row :gutter="20">
-        <el-col :xs="3" :sm="3" :md="3" :lg="3" :xl="3" class="logo">
-          <img src="../assets/cloudDisk.svg" />
-          <span>Pine云盘</span>
-        </el-col>
-        <el-col :xs="6" :sm="6" :md="10" :lg="16" :xl="18" class="drive">
-          <el-radio-group v-model="currentDrive" @change="setCurrentDrive">
-            <el-radio-button label="public">公盘</el-radio-button>
-            <el-radio-button label="private">私盘</el-radio-button>
-          </el-radio-group>
-          <div id="tp-weather-widget"></div>
-        </el-col>
-        <el-col :xs="15" :sm="15" :md="11" :lg="5" :xl="3" class="user">
-          <User />
-        </el-col>
-      </el-row>
-    </el-header>
+<!--    <el-header height="62px" class="navbar">-->
+<!--      <el-row :gutter="20">-->
+<!--        <el-col :xs="3" :sm="3" :md="3" :lg="3" :xl="3" class="logo">-->
+<!--          <img src="../assets/cloudDisk.svg" />-->
+<!--          <span>Pine云盘</span>-->
+<!--        </el-col>-->
+<!--        <el-col :xs="6" :sm="6" :md="10" :lg="16" :xl="18" class="drive">-->
+<!--&lt;!&ndash;          <el-radio-group v-model="currentDrive" @change="setCurrentDrive">&ndash;&gt;-->
+<!--&lt;!&ndash;            <el-radio-button label="public">公盘</el-radio-button>&ndash;&gt;-->
+<!--&lt;!&ndash;            <el-radio-button label="private">私盘</el-radio-button>&ndash;&gt;-->
+<!--&lt;!&ndash;          </el-radio-group>&ndash;&gt;-->
+<!--          <div id="tp-weather-widget"></div>-->
+<!--        </el-col>-->
+<!--        <el-col :xs="15" :sm="15" :md="11" :lg="5" :xl="3" class="user">-->
+
+<!--        </el-col>-->
+<!--      </el-row>-->
+<!--    </el-header>-->
 
     <el-container class="content">
       <el-aside width="200px">
@@ -126,7 +126,7 @@ import { mapState } from "vuex";
 import EventBus from "../eventBus";
 // Components
 import Navbar from "@/components/blocks/Navbar.vue";
-import User from "@/components/blocks/User.vue";
+// import User from "@/components/blocks/User.vue";
 import FolderTree from "@/components/tree/FolderTree.vue";
 import InfoBlock from "@/components/blocks/InfoBlock.vue";
 import ContextMenu from "@/components/blocks/ContextMenu.vue";
@@ -161,7 +161,7 @@ export default {
     GridView,
     Modal,
     Cropper,
-    User
+    // User
   },
   methods: {
     /**
@@ -403,7 +403,6 @@ export default {
 }
 
 .el-container.container {
-  // height: calc(100% - 62px);
   height: inherit;
   &:after {
     content: "";
@@ -473,8 +472,8 @@ export default {
     }
   }
   ::v-deep .el-container.content {
-    height: calc(100% - 62px);
-    margin-top: 62px;
+    /*height: calc(100% - 62px);*/
+    /*margin-top: 62px;*/
     .el-aside {
       padding-top: 10px;
       position: relative;

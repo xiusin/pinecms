@@ -45,11 +45,11 @@
       </el-col>
       <el-col :span="12" style="height: 100%">
         <div class="login-bg">
-          <monaco-with-tree
-              :files="files"
-              :default-open-files="defaultOpenFiles"
-              :get-file-content="getFileContent"
-          />
+<!--          <monaco-with-tree-->
+<!--              :files="files"-->
+<!--              :default-open-files="defaultOpenFiles"-->
+<!--              :get-file-content="getFileContent"-->
+<!--          />-->
         </div>
       </el-col>
     </el-row>
@@ -57,12 +57,11 @@
 </template>
 <script>
 import POST from "@/http/post";
-import MonacoWithTree from 'monaco-with-tree';
 export default {
   name: "Login",
   components: {
     // AmEditor
-    MonacoWithTree
+    // MonacoWithTree
   },
   data() {
     const reg = new RegExp('[\\\\/:*?"<>|]');

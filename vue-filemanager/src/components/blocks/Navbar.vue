@@ -1,13 +1,13 @@
 <template >
   <el-row type="flex" class="row-bg" justify="space-between" :gutter="20">
     <el-col :span="8">
-      <el-button type="primary" size="small" title="选择文件上传" @click.native="showModal('Upload')">
+      <el-button type="primary" size="mini" title="选择文件上传" @click.native="showModal('Upload')">
         <i class="fa fa-lg fa-cloud-upload-alt"></i>
         <span class="action-text">&nbsp;上传</span>
       </el-button>
       <el-button
         type="primary"
-        size="small"
+        size="mini"
         title="新建文件夹"
         plain
         @click.native="showModal('NewFolder')"
@@ -17,7 +17,7 @@
       </el-button>
       <el-button
         type="primary"
-        size="small"
+        size="mini"
         title="新建文件"
         plain
         @click.native="showModal('NewFile')"
@@ -30,7 +30,7 @@
       <div v-show="selectedItems.length || clipboard.type">
         <el-button
           type="primary"
-          size="small"
+          size="mini"
           title="复制"
           plain
           :disabled="!isAnyItemSelected"
@@ -52,7 +52,7 @@
         </el-button>
         <el-button
           type="primary"
-          size="small"
+          size="mini"
           title="粘贴"
           plain
           :disabled="!clipboardType || (!authorIsUser&&this.selectedDisk == 'public')"
@@ -62,7 +62,7 @@
           <span class="action-text">&nbsp;粘贴</span>
         </el-button>
         <el-button
-          size="small"
+          size="mini"
           title="删除"
           plain
           :disabled="!isAnyItemSelected || (!itemAuthor&&acl&&selectedItemAcl)"
