@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"reflect"
-	"strconv"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
@@ -56,10 +55,10 @@ type BaseController struct {
 	apidoc.Entity
 	ApiEntityName string
 
-	SelectOp    func(*xorm.Session)      // 选择方法列表
-	UniqCheckOp func(int, *xorm.Session) // 唯一性校验构建SQL方法
+	SelectOp    func(*xorm.Session)      // select下拉列表条件构建函数, 一般用于过滤指定值的数据
+	UniqCheckOp func(int, *xorm.Session) // 唯一性校验构建SQL方法 一般用于删除或关停等校验是否有关联数据使用阻止关闭
 
-	SelectListKV struct {
+	SelectListKV struct {		// select 下拉列表kv字段设置 需要设置为struct属性
 		Key   string
 		Value string
 	}
@@ -123,7 +122,7 @@ func (c *BaseController) PostList() {
 
 		if c.OpBefore != nil {
 			if err := c.OpBefore(OpList, query); err != nil {
-				helper.Ajax("获取列表异常: "+err.Error(), 1, c.Ctx())
+				helper.Ajax(err.Error(), 1, c.Ctx())
 			}
 		}
 
@@ -134,12 +133,12 @@ func (c *BaseController) PostList() {
 		}
 		if err != nil {
 			pine.Logger().Error(err)
-			helper.Ajax("获取列表异常: "+err.Error(), 1, c.Ctx())
+			helper.Ajax(err.Error(), 1, c.Ctx())
 			return
 		}
 		if c.OpAfter != nil {
 			if err := c.OpAfter(OpList, &p); err != nil {
-				helper.Ajax("获取列表异常: "+err.Error(), 1, c.Ctx())
+				helper.Ajax(err.Error(), 1, c.Ctx())
 			}
 		}
 
@@ -293,9 +292,7 @@ func (c *BaseController) PostEdit() {
 	if c.UniqCheckOp != nil {
 		sess := c.Orm.NewSession()
 		defer sess.Close()
-
 		c.UniqCheckOp(OpEdit, sess)
-		fmt.Println(sess.Exist(c.Table))
 		if exist, _ := sess.Exist(c.Table); exist {
 			helper.Ajax("有重复记录, 修改失败", 1, c.Ctx())
 			return
@@ -387,7 +384,7 @@ func (c *BaseController) GetInfo() {
 	}
 	exist, err := c.Orm.Where(c.TableKey+"=?", id).Get(c.Table)
 	if err != nil {
-		helper.Ajax("获取"+strconv.Itoa(id)+"信息失败: "+err.Error(), 1, c.Ctx())
+		helper.Ajax(err.Error(), 1, c.Ctx())
 	} else if !exist {
 		helper.Ajax("获取详情信息失败", 1, c.Ctx())
 	} else {

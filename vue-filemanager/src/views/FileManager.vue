@@ -466,7 +466,7 @@ export default {
         width: 20px;
         border-bottom: 2px solid #409eff;
         position: absolute;
-        bottom: 0px;
+        bottom: 0;
         left: 28px;
       }
     }
