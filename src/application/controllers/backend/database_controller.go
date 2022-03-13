@@ -54,6 +54,7 @@ func (c *DatabaseController) Manager(orm *xorm.Engine, cache cache.AbstractCache
 				"total":   total,
 				"engine":  mataData.StoreEngine,
 				"comment": mataData.Comment,
+				"charset": mataData.Charset,
 			})
 		}(mataData)
 	}

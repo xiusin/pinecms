@@ -169,10 +169,12 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - 动态构建表单: <https://eddyzhang1986.github.io/antd-jsonschema-form/>
 - <http://fundemo.funadmin.com/2KmvVJA8dU.php/index/index.html>
 - <https://github.com/wangyuan389/mall-cook> 低代码商城搭建平台
-- 路由注解 (低)
 - <http://fast-crud.docmirror.cn/element/#/crud/basis/value-change>
+- https://www.npmjs.com/package/dc-search-table
+- https://github.com/huzhushan/vue3-pro-table
 
 [comment]: <> (https://www.dowebok.com/demo/6918/)
+  
 <!-- 参考CMS: http://demo2.wooadmin.cn/run -->
 <!-- http://pigx.pig4cloud.com/#/mp/wxaccountfans/index -->
 <!-- 热门语言卡片 -->

@@ -25,6 +25,10 @@ func (c *AdminRoleController) Construct() {
 	c.BaseController.Construct()
 	c.OpBefore = c.before
 	c.OpAfter = c.after
+	c.SelectListKV = struct {
+		Key   string
+		Value string
+	}{Key: "Id", Value: "Rolename"}
 }
 
 func (c *AdminRoleController) before(opType int, param interface{}) error {
