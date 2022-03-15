@@ -31,7 +31,7 @@ func InitApiRouter(app *pine.Application) {
 
 	casbin :=  middleware.Casbin(config.InitDB(), CasbinModelConf)
 
-	admin := app.Group("/v2", middleware.VerifyJwtToken("/v2/public", "/v2/api"), casbin)
+	admin := app.Group("/v2", middleware.VerifyJwtToken(), casbin)
 
 	InitModuleRouter(admin, app)
 

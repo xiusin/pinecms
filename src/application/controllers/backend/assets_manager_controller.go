@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/xiusin/pine/di"
@@ -47,10 +48,15 @@ func (c *AssetsManagerController) getTempList(dir string) []map[string]interface
 	var files []map[string]interface{}
 	_ = filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		f, _ := d.Info()
+		cutset := "/"
+		if runtime.GOOS == "windows" {
+			cutset = "\\"
+		}
+
 		if strings.HasSuffix(f.Name(), ".jet") {
 			files = append(files, map[string]interface{}{
-				"id":      strings.TrimLeft(strings.TrimPrefix(path, dir), "/"),
-				"name":    strings.TrimLeft(strings.TrimPrefix(path, dir), "/"),
+				"id":      strings.TrimLeft(strings.TrimPrefix(path, dir), cutset),
+				"name":    strings.TrimLeft(strings.TrimPrefix(path, dir), cutset),
 				"size":    f.Size(),
 				"updated": f.ModTime().In(helper.GetLocation()).Format(helper.TimeFormat),
 			})

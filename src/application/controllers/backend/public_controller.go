@@ -20,8 +20,28 @@ type PublicController struct {
 }
 
 func (c *PublicController) GetMenu() {
-	menus := models.NewMenuModel().GetAll()
-	helper.Ajax(pine.H{"menus": menus}, 0, c.Ctx())
+	// 基于用户过滤菜单
+	roleId := c.Ctx().Value("roleid")
+
+	role := &tables.AdminRole{}
+	// 获取对于权限配置的菜单
+	c.Orm.Where("id = ?", roleId).Cols("menu_ids").Get(role)
+
+	menus := models.NewMenuModel().GetAll(role.MenuIdList)
+	var perms = map[string]struct{}{}
+	for _, menu := range menus {
+		permArr := strings.Split(menu.Perms, ",")
+		for _, s := range permArr {
+			if len(s) > 0 {
+				perms[s] = struct{}{}
+			}
+		}
+	}
+	permsValues := []string{}
+	for i := range perms {
+		permsValues = append(permsValues, i)
+	}
+	helper.Ajax(pine.H{"menus": menus, "perms": permsValues}, 0, c.Ctx())
 }
 
 func (c *PublicController) PostUpload() {

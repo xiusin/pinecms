@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"strconv"
@@ -29,12 +28,11 @@ func (m MenuModel) GetTree(menus []tables.Menu, parentid int64) []tables.Menu {
 	return res
 }
 
-func (m MenuModel) GetAll() []tables.Menu {
+func (m MenuModel) GetAll(menuIdList []int64) []tables.Menu {
 	menus := []tables.Menu{}
-	if err := m.orm.Asc("listorder").Desc("id").Find(&menus); err != nil {
-		pine.Logger().Debug("请求菜单错误", err)
+	if len(menuIdList) > 0 {
+		m.orm.Asc("listorder").In("id", menuIdList).Desc("id").Find(&menus)
 	}
-
 	return menus
 }
 

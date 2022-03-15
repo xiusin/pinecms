@@ -14,10 +14,12 @@ import (
 
 // VerifyJwtToken 验证jwt
 // excludePrefix 需要排除认证的路由前缀
-func VerifyJwtToken(excludePrefix ...string) pine.Handler {
+func VerifyJwtToken() pine.Handler {
 	return func(ctx *pine.Context) {
 		uri := ctx.Path()
-		if !strings.Contains(uri, "login") && !strings.Contains(uri, "/public/") && !strings.Contains(uri, "thumb") {
+		if !strings.Contains(uri, "login") &&
+			!strings.Contains(uri, "captcha") &&
+			!strings.Contains(uri, "thumb") {
 			token := ctx.Header("Authorization")
 			if token == "" {
 				token, _ = ctx.GetString("token")
@@ -32,12 +34,13 @@ func VerifyJwtToken(excludePrefix ...string) pine.Handler {
 			}
 
 			ctx.SetUserValue("adminid", pl.AdminId)
+			ctx.SetUserValue("roleid", pl.RoleID)
 
 			if strings.Contains(uri, "user/info") {
 				ctx.QueryArgs().Set("id", fmt.Sprintf("%d", pl.AdminId))
 			}
 			if !strings.Contains(uri, "/log/list") {
-				go di.MustGet(&xorm.Engine{}).(*xorm.Engine).Insert(&tables.RequestLog{
+				di.MustGet(&xorm.Engine{}).(*xorm.Engine).Insert(&tables.RequestLog{
 					Uri:      string(ctx.RequestURI()),
 					Userid:   pl.AdminId,
 					Params:   string(ctx.PostBody()),

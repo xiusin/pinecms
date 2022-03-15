@@ -36,13 +36,9 @@ func Casbin(engine *xorm.Engine, conf string) pine.Handler {
 	addPolicyHandler := addPolicy(engine, enforcer, _locker)
 	addPolicyHandler()
 
-	di.Set(controllers.ServiceCasbinAddPolicy, func(builder di.AbstractBuilder) (interface{}, error) {
-		return addPolicyHandler, nil
-	}, true)
+	di.Instance(controllers.ServiceCasbinAddPolicy, addPolicyHandler)
 
 	return func(ctx *pine.Context) {
-		ctx.Next()
-		return
 		adminId := ctx.Value("adminid")
 		if adminId != nil {
 			var admin = &tables.Admin{}
