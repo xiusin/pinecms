@@ -35,6 +35,7 @@ func VerifyJwtToken() pine.Handler {
 
 			ctx.SetUserValue("adminid", pl.AdminId)
 			ctx.SetUserValue("roleid", pl.RoleID)
+			pine.Logger().Warningf("%+v", pl)
 
 			if strings.Contains(uri, "user/info") {
 				ctx.QueryArgs().Set("id", fmt.Sprintf("%d", pl.AdminId))

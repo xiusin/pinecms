@@ -22,10 +22,11 @@ type PublicController struct {
 func (c *PublicController) GetMenu() {
 	// 基于用户过滤菜单
 	roleId := c.Ctx().Value("roleid")
-
+	c.Logger().Print("roleid", roleId)
 	role := &tables.AdminRole{}
 	// 获取对于权限配置的菜单
 	c.Orm.Where("id = ?", roleId).Cols("menu_ids").Get(role)
+	c.Logger().Print("role", role)
 
 	menus := models.NewMenuModel().GetAll(role.MenuIdList)
 	var perms = map[string]struct{}{}

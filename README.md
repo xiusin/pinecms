@@ -83,9 +83,13 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 > 接口文档仓库: <https://github.com/xiusin/pinecms-apidoc-ui.git>
 
-![接口文档详情](./images/apidoc-detail.png)
+<table>
+	<tr>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/apidoc-detail.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/apidoc-debug.png"/></td>
+    </tr>	 
+</table>
 
-![接口文档调试](./images/apidoc-debug.png)
 
 ## 插件系统 ##
 
@@ -93,60 +97,31 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 系统可以动态扫描插件目录,自动发现并可以热加载进系统.  
 也可以导入第三方人员开发的扩展动态库(受限于系统和版本,后面会提供编译个版本的docker镜像)
 
-- 插件系统界面
-![插件系统界面](./images/plugin.png)
+## 系统截图
+<table>
+    <tr>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/plugin.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/stat.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/model.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/presql.png"/></td>
+    </tr>
+    <tr>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/field_list.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/add_field.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/crud.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/wechat-account.png"/></td>
+    </tr>
+	<tr>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/wechat-member.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/wechat-menu.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/wechat-template.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/wechat-member.png"/></td>
+    </tr>	 
+	<tr>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/wechat-menu.png"/></td>
+    </tr>	 
+</table>
 
-## 服务器监控 ##
-
-> 常用的系统资源监控, 以及环境检测
-
-![服务器监控界面](./images/stat.png)
-
-## 模型配置 ##
-
-- 模型列表
-
-> 模型管理界面
-
-![模型列表界面](./images/model.png)
-  
-- 模型变更SQL
-
-> 当模型变更时,会检测变更生成执行SQL, 需要手动操作
-
-![模型变更SQL](./images/presql.png)
-
-- 模型字段界面
-![模型字段界面](./images/field_list.png)
-  
-- 添加字段界面
-
-> 内置CMS常用字段, 可以设置表单显示, 列表显示, 可搜索字段, 搜索类型
-
-![添加模型字段](./images/add_field.png)
-
-- CRUD命令
-
-> 允许直接从表创建crud模块, 根据表字段自动解析form, 区别于cms是此命令仅适用于开发区间
-
-![crud命令](./images/crud.png)
-
-## 微信模块 ##
-
-- 账号授权
-![账号授权](./images/wechat-account.png)
-  
-- 会员管理
-![会员管理](./images/wechat-member.png)
-  
-- 菜单管理
-![菜单管理](./images/wechat-menu.png)
-  
-- 消息管理
-![消息管理](./images/wechat-msg.png)
-  
-- 模板管理
-![消息模板](./images/wechat-template.png)
 
 # Doing #
 
