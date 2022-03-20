@@ -3,7 +3,7 @@ package tables
 type Admin struct {
 	Userid        int64      `xorm:"pk autoincr 'id'" json:"id"`
 	Username      string     `json:"username"`
-	Password      string     `json:"-"`
+	Password      string     `json:"password"`
 	Roleid        int64      `json:"roleid" xorm:"-"`
 	Encrypt       string     `json:"-"`
 	Lastloginip   string     `json:"lastloginip"`

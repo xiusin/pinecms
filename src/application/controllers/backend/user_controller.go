@@ -32,7 +32,7 @@ func (c *UserController) Construct() {
 
 	c.TableKey = "id"
 	c.TableStructKey = "Userid"
-
+	c.ExceptCols = []string{"password", "encrypt"}
 	c.OpBefore = c.before
 	c.OpAfter = c.after
 }
@@ -73,6 +73,11 @@ func (c *UserController) before(opType int, param interface{}) error {
 		}
 		if exist {
 			return errors.New("用户名或邮箱已存在")
+		}
+
+		if len(p.Password) > 0 {
+			p.Encrypt = helper.GetRandomString(6)
+			p.Password = helper.Password(p.Password, p.Encrypt)
 		}
 	}
 	if opType == OpDel { // 删除权限控制

@@ -23,10 +23,10 @@ func (a *AdminModel) Login(username, password, ip string) (tables.Admin, error) 
 	if !exist {
 		return admin, errors.New("管理员不存在")
 	}
-	password = helper.Password(password, admin.Encrypt)
-	if password != admin.Password {
-		return admin, errors.New("密码错误，请再次尝试！")
-	}
+	//password = helper.Password(password, admin.Encrypt)
+	//if password != admin.Password {
+	//	return admin, errors.New("密码错误，请再次尝试！")
+	//}
 	admin.Lastloginip = ip
 	a.orm.ID(admin.Userid).Update(admin)
 	return admin, nil

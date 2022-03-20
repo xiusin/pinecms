@@ -58,7 +58,6 @@ func (c *LoginController) Login() {
 		},
 		Id:        admin.Userid,
 		AdminId:   admin.Userid,
-		RoleID:    admin.Roleid,
 		AdminName: admin.Username,
 	}
 	if token, err := jwt.Sign(pl, hs); err != nil {
@@ -66,7 +65,6 @@ func (c *LoginController) Login() {
 	} else {
 		helper.Ajax(pine.H{
 			"role_name":  "超级管理员",
-			"role_id":    admin.Roleid,
 			"admin_id":   admin.Userid,
 			"id":         admin.Userid,
 			"admin_name": admin.Username,

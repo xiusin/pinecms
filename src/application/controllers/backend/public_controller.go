@@ -20,13 +20,15 @@ type PublicController struct {
 }
 
 func (c *PublicController) GetMenu() {
-	// 基于用户过滤菜单
-	roleId := c.Ctx().Value("roleid")
-	c.Logger().Print("roleid", roleId)
+	var admin = &tables.Admin{}
+	if exist, _ := c.Orm.Where("id = ?", c.Ctx().Value("adminid")).Get(admin); !exist {
+		helper.Ajax("用户不存在", 1, c.Ctx())
+		return
+	}
 	role := &tables.AdminRole{}
-	// 获取对于权限配置的菜单
-	c.Orm.Where("id = ?", roleId).Cols("menu_ids").Get(role)
-	c.Logger().Print("role", role)
+
+	// 根据分配的权限读取菜单信息
+	c.Orm.In("id", admin.RoleIdList).Cols("menu_ids").Get(role)
 
 	menus := models.NewMenuModel().GetAll(role.MenuIdList)
 	var perms = map[string]struct{}{}
@@ -69,7 +71,7 @@ func (c *PublicController) PostUpload() {
 		md5hash := md5.New()
 
 		io.Copy(md5hash, f) // 不能使用readAll 会读空buffer
-		f.Seek(0, 0) // 读取文件内容后指针会保留在最后一位, 需要seek到首行
+		f.Seek(0, 0)        // 读取文件内容后指针会保留在最后一位, 需要seek到首行
 
 		md5sum := fmt.Sprintf("%x", md5hash.Sum(nil))
 		attach := &tables.Attachments{}

@@ -48,7 +48,6 @@ func Casbin(engine *xorm.Engine, conf string) pine.Handler {
 			if exist && len(pathString) >= 3 && pathString[0] == "v2" {
 				roles := admin.RoleIdList
 				var passable bool
-				ctx.Logger().Print("pathString", pathString)
 				for _, role := range roles {
 					passable, _ = enforcer.Enforce(fmt.Sprintf("%d", role), pathString[1], pathString[2])
 					if passable {
