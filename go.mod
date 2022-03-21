@@ -34,12 +34,12 @@ require (
 	github.com/takama/daemon v1.0.0
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.34-0.20220223071506-9cc16ad671b7
 	github.com/traefik/yaegi v0.11.2
-	github.com/valyala/fasthttp v1.33.0
+	github.com/valyala/fasthttp v1.34.0
 	github.com/xiusin/logger v0.0.10-0.20220129022857-69c2a6f6a736
 	github.com/xiusin/pine v0.0.0-20220228094826-647d9c6d15aa
 	github.com/xiusin/reload v0.0.0-20211215091741-ab993ba2e9d2
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
-	golang.org/x/crypto v0.0.0-20220131195533-30dcbda58838
+	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
 	golang.org/x/text v0.3.7
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6
 	gopkg.in/yaml.v2 v2.4.0
@@ -81,7 +81,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kataras/tablewriter v0.0.0-20180708051242-e063d29b7c23 // indirect
-	github.com/klauspost/compress v1.14.4 // indirect
+	github.com/klauspost/compress v1.15.0 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/landoop/tableprinter v0.0.0-20201125135848-89e81fc956e7 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
