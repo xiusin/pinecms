@@ -2,6 +2,7 @@ package backend
 
 import (
 	"fmt"
+	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"reflect"
 	"strings"
@@ -46,6 +47,9 @@ type BaseController struct {
 	P           listParam
 	apiEntities map[string]apidoc.Entity
 
+	ExceptCols []string // 排除数据表字段不读取
+	Cols       []string // 仅读取指定表字段
+
 	TableKey       string // 表主键
 	TableStructKey string // 表结构体主键字段 主要用于更新逻辑反射数据
 
@@ -58,7 +62,7 @@ type BaseController struct {
 	SelectOp    func(*xorm.Session)      // select下拉列表条件构建函数, 一般用于过滤指定值的数据
 	UniqCheckOp func(int, *xorm.Session) // 唯一性校验构建SQL方法 一般用于删除或关停等校验是否有关联数据使用阻止关闭
 
-	SelectListKV struct {		// select 下拉列表kv字段设置 需要设置为struct属性
+	SelectListKV struct { // select 下拉列表kv字段设置 需要设置为struct属性
 		Key   string
 		Value string
 	}
@@ -125,6 +129,8 @@ func (c *BaseController) PostList() {
 				helper.Ajax(err.Error(), 1, c.Ctx())
 			}
 		}
+
+		c.buildQueryCols(query)
 
 		if p.Size == 0 {
 			err = query.Find(c.Entries)
@@ -256,7 +262,6 @@ func (c *BaseController) PostAdd() {
 		return
 	}
 
-
 	if c.OpBefore != nil {
 		if err := c.OpBefore(OpAdd, c.Table); err != nil {
 			helper.Ajax(err.Error(), 1, c.Ctx())
@@ -281,6 +286,42 @@ func (c *BaseController) PostAdd() {
 func (c *BaseController) add() error {
 	_, err := c.Orm.InsertOne(c.Table)
 	return err
+}
+
+func (c *BaseController) buildQueryCols(sess *xorm.Session) {
+	if len(c.Cols) > 0 {
+		sess.Cols(c.Cols...)
+	} else if len(c.ExceptCols) > 0 {
+		tableName := c.Orm.TableName(c.Table)
+		var fields = []string{}
+		if err := helper.AbstractCache().Remember(fmt.Sprintf(controllers.CacheTableNameFields, tableName), &fields, func() (interface{}, error) {
+			concat, err := c.Orm.QueryString(`select group_concat(COLUMN_NAME SEPARATOR ',') as fields from information_schema.COLUMNS where table_name = '` + tableName + `'`)
+			if err != nil {
+				c.Ctx().Logger().Warning("读取数据表"+tableName+"表字段失败", err)
+			}
+			fields := strings.Split(concat[0]["fields"], ",")
+			return &fields, nil
+		}, 3600); err != nil {
+			c.Ctx().Logger().Warning("缓存表"+tableName+"字段失败", err)
+		}
+
+		cols := []string{}
+
+		for _, s := range fields {
+			var skip bool
+			for _, col := range c.ExceptCols {
+				if col == s {
+					skip = true
+					break
+				}
+			}
+			if !skip {
+				cols = append(cols, s)
+			}
+		}
+		fmt.Println(fields, cols)
+		sess.Cols(cols...)
+	}
 }
 
 func (c *BaseController) PostUpdate() {
@@ -336,7 +377,10 @@ func (c *BaseController) edit() bool {
 		c.Logger().Error("无法匹配字段", c.TableStructKey)
 		return false
 	}
-	result, _ := c.Orm.AllCols().Where(c.TableKey+"=?", val.Interface()).Update(c.Table)
+	result, err := c.Orm.AllCols().Where(c.TableKey+"=?", val.Interface()).Update(c.Table)
+	if err != nil {
+		c.Logger().Warning("更新错误", err.Error())
+	}
 	return result > 0
 }
 
@@ -382,7 +426,11 @@ func (c *BaseController) GetInfo() {
 	if len(c.TableKey) == 0 {
 		c.TableKey = "id"
 	}
-	exist, err := c.Orm.Where(c.TableKey+"=?", id).Get(c.Table)
+	query := c.Orm.Where(c.TableKey+"=?", id)
+
+	c.buildQueryCols(query)
+
+	exist, err := query.Get(c.Table)
 	if err != nil {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 	} else if !exist {

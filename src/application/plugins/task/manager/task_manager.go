@@ -94,7 +94,7 @@ func (tm *taskManager) Cron() {
 }
 
 func taskScript(service string) string {
-	return filepath.Join(tm.scriptPath, service+".gsh")
+	return filepath.Join(tm.scriptPath, service+".sh")
 }
 
 //RegisterTask 注册任务到任务管理对象

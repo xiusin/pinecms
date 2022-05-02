@@ -149,6 +149,9 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - https://github.com/huzhushan/vue3-pro-table
 
 [comment]: <> (https://www.dowebok.com/demo/6918/)
+
+[comment]: <> (- 暂时隐藏: 资源管理模块)
+
   
 <!-- 参考CMS: http://demo2.wooadmin.cn/run -->
 <!-- http://pigx.pig4cloud.com/#/mp/wxaccountfans/index -->

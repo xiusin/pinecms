@@ -66,7 +66,7 @@ func (c *PublicController) PostUpload() {
 		md5hash := md5.New()
 
 		io.Copy(md5hash, f) // 不能使用readAll 会读空buffer
-		f.Seek(0, 0) // 读取文件内容后指针会保留在最后一位, 需要seek到首行
+		f.Seek(0, 0)        // 读取文件内容后指针会保留在最后一位, 需要seek到首行
 
 		md5sum := fmt.Sprintf("%x", md5hash.Sum(nil))
 		attach := &tables.Attachments{}

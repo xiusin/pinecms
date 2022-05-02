@@ -28,7 +28,7 @@ func DirTree(dir string) []DirInfo {
 			ms = append(ms, s)
 		} else {
 			ext := strings.ToLower(filepath.Ext(f.Name()))
-			if ext != ".css" && ext != ".js" && ext != ".jet" && ext != ".html" && ext != ".htm" && ext != ".gsh" {
+			if ext != ".css" && ext != ".js" && ext != ".jet" && ext != ".html" && ext != ".htm" && ext != ".sh" {
 				continue
 			}
 			ms = append(ms, DirInfo{

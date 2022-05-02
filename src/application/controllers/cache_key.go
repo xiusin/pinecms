@@ -17,6 +17,7 @@ const CacheCategoryContentPrefix = "pinecms.content.%d_%d"
 const CacheModelTablePrefix = "pinecms.model.table.%d"
 const CacheMysqlVersion = "pinecms.mysql.version"
 const CacheAdminRoles = "pinecms.admin.roles"
+const CacheTableNameFields = "pinecms.orm.tbl.%s.fields"
 const CacheAdminRolesList = "pinecms.admin.roles.%d"
 const CacheTableNames = "pinecms.orm.table.name"
 
