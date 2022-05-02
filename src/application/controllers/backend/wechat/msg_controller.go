@@ -5,7 +5,9 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"strings"
 	"time"
+	"xorm.io/xorm"
 )
 
 type WechatMagController struct {
@@ -16,7 +18,7 @@ func (c *WechatMagController) Construct() {
 	c.Table = &tables.WechatLog{}
 	c.Entries = &[]tables.WechatLog{}
 	c.BaseController.Construct()
-
+	c.OpBefore = c.before
 	c.OpAfter = c.after
 }
 
@@ -55,6 +57,22 @@ func (c *WechatMagController) PostReply() {
 	})
 
 	helper.Ajax("回复成功", 0, c.Ctx())
+}
+
+func (c *WechatMagController) before(act int, params interface{}) error {
+	if act == backend.OpList {
+		sess := params.(*xorm.Session)
+		if msgType, ok := c.P.Param["msg_type"]; ok && len(msgType.(string)) > 0 {
+			types := strings.Split(msgType.(string), ",")
+			sess.In("msg_type", types)
+		}
+
+		if timeZone, ok := c.P.Param["time_zone"]; ok && len(timeZone.(string)) > 0 {
+			sess.Where("created_at >= ?", timeZone)
+		}
+
+	}
+	return nil
 }
 
 func (c *WechatMagController) after(act int, params interface{}) error {

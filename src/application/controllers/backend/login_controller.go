@@ -58,20 +58,18 @@ func (c *LoginController) Login() {
 		},
 		Id:        admin.Userid,
 		AdminId:   admin.Userid,
-		RoleID:    admin.Roleid,
+		RoleID:    admin.RoleIdList,
 		AdminName: admin.Username,
 	}
 	if token, err := jwt.Sign(pl, hs); err != nil {
 		helper.Ajax("登录失败", 1, c.Ctx())
 	} else {
 		helper.Ajax(pine.H{
-			"role_name":  "超级管理员",
-			"role_id":    admin.Roleid,
+			"role_id":    admin.RoleIdList,
 			"admin_id":   admin.Userid,
 			"id":         admin.Userid,
 			"admin_name": admin.Username,
 			"token":      string(token),
 		}, 0, c.Ctx())
 	}
-
 }

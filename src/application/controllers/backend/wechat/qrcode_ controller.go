@@ -6,6 +6,7 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"time"
+	"xorm.io/xorm"
 )
 
 type WechatQrcodeController struct {
@@ -19,6 +20,18 @@ func (c *WechatQrcodeController) Construct() {
 	c.SearchFields = []backend.SearchFieldDsl{
 		{Field: "appid"},
 	}
+
+	c.OpBefore = func(act int, intf interface{}) error {
+		if act == backend.OpList {
+			sess := intf.(*xorm.Session)
+
+			if appid, ok := c.P.Param["appid"]; ok && len(appid.(string)) > 0 {
+				sess.Where("appid = ?", appid)
+			}
+		}
+		return nil
+	}
+
 	c.OpAfter = c.after
 }
 

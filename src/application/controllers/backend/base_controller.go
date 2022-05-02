@@ -42,9 +42,9 @@ type BaseController struct {
 	KeywordsSearch []SearchFieldDsl // 关键字搜索字段 用于关键字匹配字段
 	Table          interface{}      // 传入Table结构体引用
 	Entries        interface{}      // 传入Table结构体的切片
-	Orm            *xorm.Engine
-	p              listParam
-	apiEntities    map[string]apidoc.Entity
+	Orm         *xorm.Engine
+	P           listParam
+	apiEntities map[string]apidoc.Entity
 
 	TableKey       string // 表主键
 	TableStructKey string // 表结构体主键字段 主要用于更新逻辑反射数据
@@ -158,10 +158,10 @@ func (c *BaseController) PostList() {
 }
 
 func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, error) {
-	if err := parseParam(c.Ctx(), &c.p); err != nil {
+	if err := parseParam(c.Ctx(), &c.P); err != nil {
 		pine.Logger().Warning("解析参数错误", err)
 	}
-	if len(c.KeywordsSearch) > 0 && c.p.Keywords != "" { // 关键字搜索
+	if len(c.KeywordsSearch) > 0 && c.P.Keywords != "" { // 关键字搜索
 		var whereBuilder []string
 		var whereLikeBind []interface{}
 		for _, v := range c.KeywordsSearch {
@@ -176,9 +176,9 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 					v.DataExp = "$?"
 				}
 				whereBuilder = append(whereBuilder, fmt.Sprintf("%s %s ?", v.Field, v.Op))
-				whereLikeBind = append(whereLikeBind, strings.ReplaceAll(v.DataExp, "$?", c.p.Keywords))
+				whereLikeBind = append(whereLikeBind, strings.ReplaceAll(v.DataExp, "$?", c.P.Keywords))
 			} else {
-				v.CallBack(query, c.p.Keywords)
+				v.CallBack(query, c.P.Keywords)
 			}
 		}
 		wl := len(whereBuilder)
@@ -186,13 +186,13 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 			query.Where(strings.Join(whereBuilder, " OR "), whereLikeBind...)
 		}
 	}
-	if c.SearchFields != nil && len(c.p.Params) > 0 {
+	if c.SearchFields != nil && len(c.P.Params) > 0 {
 		for _, v := range c.SearchFields {
 			if v.Field == "" {
 				continue
 			}
 
-			if val, exists := c.p.Params[strings.ReplaceAll(v.Field, "`", "")]; exists {
+			if val, exists := c.P.Params[strings.ReplaceAll(v.Field, "`", "")]; exists {
 				if v.SkipFn != nil && v.SkipFn(val) {
 					continue
 				}
@@ -228,14 +228,14 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 			}
 		}
 	}
-	if len(c.p.OrderField) > 0 {
-		if c.p.Sort == "desc" {
-			query.Desc(c.p.OrderField)
+	if len(c.P.OrderField) > 0 {
+		if c.P.Sort == "desc" {
+			query.Desc(c.P.OrderField)
 		} else {
-			query.Asc(c.p.OrderField)
+			query.Asc(c.P.OrderField)
 		}
 	}
-	return &c.p, nil
+	return &c.P, nil
 }
 
 func (c *BaseController) PostAdd() {
@@ -416,7 +416,7 @@ func (c *BaseController) setApiEntity() {
 	if apiEntity.ApiParam == nil {
 		switch key {
 		case "list":
-			apiEntity.ApiParam = &c.p
+			apiEntity.ApiParam = &c.P
 		case "edit", "add":
 			apiEntity.ApiParam = c.Table
 		case "delete":
