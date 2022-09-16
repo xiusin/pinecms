@@ -23,7 +23,5 @@ func InitInstall(app *pine.Application, urlPrefix, dir string) {
 		if err := orm.Sync2(&tables.SSHServer{}, &tables.SSHUser{}); err != nil {
 			pine.Logger().Warning(err)
 		}
-
-		pine.Logger().Debug("初始化WEBSSH安装成功")
 	})
 }

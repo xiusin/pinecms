@@ -1,7 +1,7 @@
 db:
   dsn: "root:+3ak9,XhB&oD@tcp(127.0.0.1:3306)/pinecms?charset=utf8mb4"
   prefix: "pinecms_"
-  driver: "mysql"
+  driver: "mysql" # 目前只支持Mysql
 
 orm:
   show_sql: true

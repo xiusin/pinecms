@@ -1,14 +1,16 @@
 package cmd
 
 import (
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/spf13/cobra"
+	"github.com/xiusin/logger"
 	"github.com/xiusin/pinecms/src/config"
 	"os"
 	"time"
 )
 
-var initFilePath = "resources/data.sql"
+var initFilePath = "resources/pinecms.sql"
 
 var initCmd = &cobra.Command{
 	Use:   "init",
@@ -18,10 +20,13 @@ var initCmd = &cobra.Command{
 		var submitted bool
 		var db config.DbConf
 		if db.Inited() {
-			panic("项目已初始化")
+			logger.Error("项目已初始化")
+			return
 		}
-		if _, err := os.Stat(""); os.IsNotExist(err) {
-			panic("缺少初始数据库文件" + initFilePath)
+
+		if _, err := os.Stat(initFilePath); os.IsNotExist(err) {
+			logger.Error("缺少初始数据库文件" + initFilePath)
+			return
 		}
 
 		db.Db.Conf.Port = "3306"
@@ -29,6 +34,7 @@ var initCmd = &cobra.Command{
 		db.Db.DbDriver = "mysql"
 
 		pages := tview.NewPages()
+		pages.SetBackgroundColor(tcell.ColorDefault)
 		connForm := tview.NewForm().
 			AddInputField("服务器地址", db.Db.Conf.ServeIp, 20, nil, func(text string) {
 				db.Db.Conf.ServeIp = text
@@ -86,8 +92,8 @@ var initCmd = &cobra.Command{
 			}).
 			SetButtonsAlign(tview.AlignCenter)
 
-		connForm.SetBorder(true).SetTitle("  PineCms初始化 ").SetTitleAlign(tview.AlignCenter)
-		flex := tview.NewFlex().AddItem(Center(38, 17, connForm), 0, 3, true)
+		connForm.SetBorder(true).SetTitle("  PineCms Initializer	 ").SetTitleAlign(tview.AlignCenter)
+		flex := tview.NewFlex().AddItem(Center(40, 18, connForm), 0, 3, true)
 		pages.AddPage("base", flex, true, true)
 		if err := app.SetRoot(pages, true).EnableMouse(true).Run(); err != nil {
 			panic(err)

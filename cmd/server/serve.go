@@ -12,7 +12,6 @@ var ServeCmd = &cobra.Command{
 }
 
 func init() {
-	ServeCmd.AddCommand(devCmd)
 	ServeCmd.AddCommand(installCmd)
 	ServeCmd.AddCommand(removeCmd)
 	ServeCmd.AddCommand(runCmd)

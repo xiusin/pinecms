@@ -1,10 +1,14 @@
 package wechat
 
 import (
-	"github.com/valyala/fasthttp"
 	"net/http"
+
+	"github.com/valyala/fasthttp"
 )
 
+/**
+实现Response的响应对象
+*/
 type wechatResponseWrapper struct {
 	*fasthttp.RequestCtx
 }

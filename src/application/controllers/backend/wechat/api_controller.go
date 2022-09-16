@@ -3,16 +3,25 @@ package wechat
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/silenceper/wechat/v2/officialaccount/message"
 	"github.com/valyala/fasthttp/fasthttpadaptor"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"net/http"
-	"time"
 	"xorm.io/xorm"
 )
 
+/**
+对接微信服务器Api函数
+主要功能:
+	1. 处理菜单事件
+	2. 处理订阅事件
+	3. 处理消息
+	4. 处理订单回调等
+*/
 func msgHandler(ctx *pine.Context) {
 	defer func() {
 		if err := recover(); err != nil {
@@ -29,6 +38,7 @@ func msgHandler(ctx *pine.Context) {
 
 	account, _ := GetOfficialAccount(appid)
 
+	// 将fasthttp请求转换为http请求
 	req := &http.Request{}
 	if err := fasthttpadaptor.ConvertRequest(ctx.RequestCtx, req, true); err != nil {
 		ctx.Abort(500, "无法转换请求: "+err.Error())

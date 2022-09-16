@@ -124,7 +124,7 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 
 # Doing #
-
+- 简化模块：废弃模板编辑，资源管理模块等功能
 - 权限系统完善到按钮级别
 - 系统内部BUG修复
 - cms系统完善表单字段自定义配置（可自定义模型页面），搜索字段配置（不使用高级搜索表单）
@@ -135,7 +135,6 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
   - 客服消息
 
 # TODO #
-
 - Bleve 全文检索 （插件提供）
 - 页面编辑器: <https://github.com/lljj-x/vue-json-schema-form>
 - <http://goframe.ele.rxthink.cn/tool/generate>
@@ -148,11 +147,9 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 - https://www.npmjs.com/package/dc-search-table
 - https://github.com/huzhushan/vue3-pro-table
 
+
 [comment]: <> (https://www.dowebok.com/demo/6918/)
 
-[comment]: <> (- 暂时隐藏: 资源管理模块)
-
-  
  ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=xiusin/pinecms&type=Date)](https://star-history.com/#xiusin/pinecms&Date)

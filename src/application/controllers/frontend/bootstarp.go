@@ -1,17 +1,20 @@
 package frontend
 
 import (
-	"github.com/valyala/fasthttp"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pinecms/src/application/models"
-	"github.com/xiusin/pinecms/src/config"
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/valyala/fasthttp"
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/application/models"
+	"github.com/xiusin/pinecms/src/config"
 )
 
 func (c *IndexController) Bootstrap() {
+	fmt.Println("BootStrap Route", string(c.Ctx().RequestURI()))
 	defer func() {
 		if err := recover(); err != nil {
 			c.Ctx().Abort(fasthttp.StatusInternalServerError, err.(error).Error())
@@ -48,9 +51,14 @@ func (c *IndexController) Bootstrap() {
 		var last string
 		var fileName string
 		var isDetail bool
+		// 如果地址内包含 .html 认为是需要请求静态页面
 		if strings.HasSuffix(pageName, ".html") {
+			// 获取目录名
 			last = urlPartials[len(urlPartials)-2]
+
+			// 获取文件名
 			fileName = urlPartials[len(urlPartials)-1]
+
 			// 分析页码
 			if strings.HasPrefix(fileName, "index_") {
 				fileInfo := strings.Split(fileName, "_") // index_2.html => 某个分类的第二页

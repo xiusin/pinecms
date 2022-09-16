@@ -5,14 +5,15 @@ import (
 	"github.com/xiusin/pinecms/cmd/crud"
 	"github.com/xiusin/pinecms/cmd/dede"
 	"github.com/xiusin/pinecms/cmd/plugin"
-	"github.com/xiusin/pinecms/cmd/server"
+	servCmd "github.com/xiusin/pinecms/cmd/server"
 	"github.com/xiusin/pinecms/cmd/version"
-	config "github.com/xiusin/pinecms/src/server"
+	"github.com/xiusin/pinecms/src/config"
+	"github.com/xiusin/pinecms/src/server"
 )
 
-// http://www.network-science.de/ascii/ Font: stop
 var rootCmd = &cobra.Command{
-	Use: "pinecms",
+	Use:               "pinecms",
+	CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true, DisableNoDescFlag: true},
 	Long: `       _                             
       (_)                            
  ____  _ ____   ____ ____ ____   ___ 
@@ -20,6 +21,11 @@ var rootCmd = &cobra.Command{
 | | | | | | | ( (/ ( (___| | | |___ |
 | ||_/|_|_| |_|\____)____)_|_|_(___/ 
 |_|     		      version: ` + version.Version,
+
+	Run: func(cmd *cobra.Command, args []string) {
+		config.InitDB()
+		server.Server()
+	},
 }
 
 func Execute() {
@@ -32,10 +38,10 @@ func init() {
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(plugin.Cmd)
 	rootCmd.AddCommand(version.Cmd)
-	rootCmd.AddCommand(server.ServeCmd)
+	rootCmd.AddCommand(servCmd.ServeCmd)
 	rootCmd.AddCommand(crud.Cmd)
 	rootCmd.AddCommand(menuCmd)
 	rootCmd.AddCommand(dede.Cmd)
 
-	config.InitApp()
+	server.InitApp()
 }

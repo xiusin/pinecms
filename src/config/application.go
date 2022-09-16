@@ -15,7 +15,7 @@ import (
 )
 
 const dbYml = "resources/configs/database.yml"
-const appYml = "resources/configs/application.yml"
+const appYaml = "resources/configs/application.yml"
 
 type Config struct {
 	Debug   bool     `yaml:"debug"`
@@ -141,7 +141,7 @@ func SiteConfig() (map[string]string, error) {
 }
 
 func init() {
-	parseConfig(appYml, config)
+	parseConfig(appYaml, config)
 	config.init()
 	_ = os.MkdirAll(config.LogPath, os.ModePerm)
 }

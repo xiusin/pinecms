@@ -52,7 +52,6 @@ func InitInstall(app *pine.Application, urlPrefix, dir string) {
 				pine.Logger().Warning("新增用户失败", err)
 			}
 		}
-		pine.Logger().Debug("初始化FileManager安装成功")
 
 		di.Set(serviceFtpStorage, func(builder di.AbstractBuilder) (interface{}, error) {
 			cfg, _ := config.SiteConfig()

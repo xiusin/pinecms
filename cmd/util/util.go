@@ -1,7 +1,6 @@
 package util
 
 import (
-	"io/ioutil"
 	"os"
 	"strings"
 )
@@ -15,7 +14,7 @@ func ScanDir(dir string, ignoreDirs []string) (list []struct {
 	Path  string
 	IsDir bool
 }, err error) {
-	fs, err := ioutil.ReadDir(dir)
+	fs, err := os.ReadDir(dir)
 	if err != nil {
 		return
 	}

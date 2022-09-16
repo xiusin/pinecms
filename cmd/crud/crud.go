@@ -59,18 +59,17 @@ var Cmd = &cobra.Command{
 状态:-1=禁用,0=待审核,1=正常:el-checkbox 
 `,
 	Run: func(cmd *cobra.Command, args []string) {
+		logger.GetDefault().SetReportCaller(false)
 		InitDB()
 		if !IsDebug() {
-			logger.SetReportCaller(false)
 			logger.Print("非Debug模式，不支持 crud 命令")
 			return
 		}
 		table, _ := cmd.Flags().GetString("table")
 		force, _ := cmd.Flags().GetBool("force") // 强制创建
 		onlyInfo, _ := cmd.Flags().GetBool("info")
-		frontendPath, _ := cmd.Flags().GetString("fepath")
+		frontendPath, _ := cmd.Flags().GetString("path")
 		if len(table) == 0 {
-			logger.Print("请输入表名")
 			_ = cmd.Help()
 			return
 		}

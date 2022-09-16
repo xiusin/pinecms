@@ -18,6 +18,8 @@ import (
 	"xorm.io/xorm"
 )
 
+// AssetsManagerController
+//Deprecated:  废弃
 type AssetsManagerController struct {
 	BaseController
 	conf *config.Config
