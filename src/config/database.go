@@ -57,7 +57,7 @@ type DbConf struct {
 	Redis        redisConf `yaml:"redis"`
 }
 
-func (t *DbConf) Inited() bool {
+func (t *DbConf) Initialized() bool {
 	_, err := os.Stat(dbYml)
 	return err == nil
 }
