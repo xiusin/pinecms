@@ -14,6 +14,7 @@ require (
 	github.com/fasthttp/websocket v1.5.0
 	github.com/fatih/structs v1.1.0
 	github.com/gbrlsnchs/jwt/v3 v3.0.0
+	github.com/gdamore/tcell/v2 v2.3.11
 	github.com/go-playground/validator/v10 v10.7.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gokeeptech/gktemplate v0.0.9
@@ -40,7 +41,7 @@ require (
 	github.com/xiusin/reload v0.0.0-20211215091741-ab993ba2e9d2
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	golang.org/x/crypto v0.0.0-20220131195533-30dcbda58838
-	golang.org/x/text v0.3.7
+	golang.org/x/text v0.7.0
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6
 	gopkg.in/yaml.v2 v2.4.0
 	xorm.io/builder v0.3.9
@@ -65,7 +66,6 @@ require (
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
-	github.com/gdamore/tcell/v2 v2.3.11 // indirect
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
@@ -109,8 +109,8 @@ require (
 	github.com/valyala/fastjson v1.6.3 // indirect
 	github.com/valyala/fastrand v1.1.0 // indirect
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
-	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
-	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
+	golang.org/x/image v0.5.0 // indirect
+	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
