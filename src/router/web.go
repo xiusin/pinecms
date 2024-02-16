@@ -1,8 +1,9 @@
 package router
 
 import (
-	"github.com/xiusin/pinecms/src/application/controllers/frontend"
 	"path/filepath"
+
+	"github.com/xiusin/pinecms/src/application/controllers/frontend"
 
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/config"
@@ -15,6 +16,5 @@ func InitStatics(app *pine.Application) {
 }
 
 func InitRouter(app *pine.Application) {
-	// 前端路由注册
 	app.Handle(new(frontend.IndexController))
 }

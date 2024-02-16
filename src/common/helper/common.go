@@ -37,7 +37,7 @@ func GetLocation() *time.Location {
 	return location
 }
 
-//GetRootPath 获取项目根目录 (即 main.go的所在位置)
+// GetRootPath 获取项目根目录 (即 main.go的所在位置)
 func GetRootPath(relPath ...string) string {
 	pwd, _ := os.Getwd()
 	if len(relPath) > 0 {
@@ -53,7 +53,7 @@ func GetCallerFuncName() string {
 	return runtime.FuncForPC(pc[0]).Name() + ":"
 }
 
-//Krand 随机字符串
+// Krand 随机字符串
 func Krand(size int, kind int) []byte {
 	ikind, kinds, result := kind, [][]int{{10, 48}, {26, 97}, {26, 65}}, make([]byte, size)
 	isAll := kind > 2 || kind < 0
@@ -67,14 +67,14 @@ func Krand(size int, kind int) []byte {
 	return result
 }
 
-//GetMd5 md5加密字符串
+// GetMd5 md5加密字符串
 func GetMd5(str string) string {
 	md := md5.New()
 	md.Write([]byte(str))
 	return hex.EncodeToString(md.Sum(nil))
 }
 
-//Ajax Ajax返回数据给前端
+// Ajax Ajax返回数据给前端
 func Ajax(msg interface{}, errcode int64, this *pine.Context) {
 	if errcode == 0 {
 		errcode = 1000
@@ -100,23 +100,23 @@ func Ajax(msg interface{}, errcode int64, this *pine.Context) {
 	_ = this.Render().JSON(data)
 }
 
-//GetTimeStamp 获取时间戳
+// GetTimeStamp 获取时间戳
 func GetTimeStamp() int {
 	timestamp := time.Now().In(location).Unix()
 	return int(timestamp)
 }
 
-//NowDate 当前时间 Y m d H:i:s
+// NowDate 当前时间 Y m d H:i:s
 func NowDate(str string) string {
 	return time.Now().In(location).Format(str)
 }
 
-//Password 生成密码
+// Password 生成密码
 func Password(password, encrypt string) string {
 	return GetMd5(GetMd5(password) + encrypt)
 }
 
-//IsFalse 检测字段是否为 空 0 nil
+// IsFalse 检测字段是否为 空 0 nil
 func IsFalse(args ...interface{}) bool {
 	for _, v := range args {
 		switch v.(type) {

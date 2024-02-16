@@ -1,7 +1,7 @@
 package helper
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -14,7 +14,7 @@ type DirInfo struct {
 }
 
 func DirTree(dir string) []DirInfo {
-	fileInfos, _ := ioutil.ReadDir(dir)
+	fileInfos, _ := os.ReadDir(dir)
 	var ms []DirInfo
 	for _, f := range fileInfos {
 		fullPath := filepath.Join(dir, f.Name())

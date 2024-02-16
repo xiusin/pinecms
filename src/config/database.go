@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"sync"
@@ -72,7 +71,7 @@ func (t *DbConf) BuildYaml() error {
 	t.Db.Dsn = t.buildDsn()
 	out, err := yaml.Marshal(t)
 	helper.PanicErr(err)
-	return ioutil.WriteFile(dbYml, out, os.ModePerm)
+	return os.WriteFile(dbYml, out, os.ModePerm)
 }
 
 type orm struct {

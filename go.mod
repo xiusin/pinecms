@@ -1,6 +1,6 @@
 module github.com/xiusin/pinecms
 
-go 1.17
+go 1.18
 
 require (
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
@@ -14,6 +14,7 @@ require (
 	github.com/fasthttp/websocket v1.5.0
 	github.com/fatih/structs v1.1.0
 	github.com/gbrlsnchs/jwt/v3 v3.0.0
+	github.com/gdamore/tcell/v2 v2.3.11
 	github.com/go-playground/validator/v10 v10.7.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gokeeptech/gktemplate v0.0.9
@@ -65,7 +66,6 @@ require (
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
-	github.com/gdamore/tcell/v2 v2.3.11 // indirect
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect

@@ -2,11 +2,11 @@ package plugin
 
 import (
 	"fmt"
-	"github.com/xiusin/reload/util"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/xiusin/reload/util"
 
 	"github.com/spf13/cobra"
 )
@@ -30,10 +30,10 @@ var buildPluginCmd = &cobra.Command{
 
 		configJson := filepath.Join(sourcePluginDir, name, configName)
 
-		if conf, err := ioutil.ReadFile(configJson); err != nil {
+		if conf, err := os.ReadFile(configJson); err != nil {
 			panic(err)
 		} else {
-			if err := ioutil.WriteFile(filepath.Join(buildPluginDir, configName), conf, os.ModePerm); err != nil {
+			if err := os.WriteFile(filepath.Join(buildPluginDir, configName), conf, os.ModePerm); err != nil {
 				panic(err)
 			}
 		}

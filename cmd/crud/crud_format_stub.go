@@ -18,7 +18,6 @@ func FormatEnum(field string, opts []map[string]interface{}, item map[string]int
 	}
 	topCode = append(topCode, `let _`+field+` =`+string(enumsInfo)+`;`)
 	item["tpl"] = "<%=formatterEnum(data." + field + ", _" + field + ")%>"
-	//item["tpl"] = `<%= ` + string(enumsInfo) + `[data.` + field + `] %>`
 }
 
 func FormatSet(field string, opts []map[string]interface{}, item map[string]interface{}) {

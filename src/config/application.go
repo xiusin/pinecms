@@ -1,7 +1,6 @@
 package config
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -110,7 +109,7 @@ func parseConfig(path string, out interface{}) {
 	if err != nil {
 		panic(err)
 	}
-	fileContent, err := ioutil.ReadFile(absPath)
+	fileContent, err := os.ReadFile(absPath)
 	if err != nil {
 		panic(err)
 	}
