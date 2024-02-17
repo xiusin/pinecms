@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/cobra"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 const outputPluginDir = "plugins"
@@ -107,7 +107,6 @@ var makePluginCmd = &cobra.Command{
 			Page: "页面简介,可以是html和markdown",
 		}
 		pluginDir := filepath.Join(sourcePluginDir, name)
-
 		_ = os.MkdirAll(pluginDir, os.ModePerm)
 
 		sourcePluginPath := filepath.Join(pluginDir, name+".go")
@@ -116,16 +115,13 @@ var makePluginCmd = &cobra.Command{
 			panic(errors.New("已存在同名插件, 请换个名称"))
 		}
 
-		uuidCode := uuid.NewV4().String()
+		source := strings.ReplaceAll(strings.Replace(sourceTpl, "[$uuid]", uuid.NewV4().String(), 1), "[$s]", name)
 
-		source := strings.ReplaceAll(strings.Replace(sourceTpl, "[$uuid]", uuidCode, 1), "[$s]", name)
+		helper.PanicErr(os.WriteFile(sourcePluginPath, []byte(source), os.ModePerm))
 
-		if err := ioutil.WriteFile(sourcePluginPath, []byte(source), os.ModePerm); err != nil {
-			panic(err)
-		}
 		configPath := filepath.Join(pluginDir, configName)
 		conf, _ := json.MarshalIndent(config, "", "    ")
-		if err := ioutil.WriteFile(configPath, conf, os.ModePerm); err != nil {
+		if err := os.WriteFile(configPath, conf, os.ModePerm); err != nil {
 			_ = os.RemoveAll(pluginDir)
 			panic(err)
 		}

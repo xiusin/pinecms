@@ -1,12 +1,13 @@
 package taglibs
 
 import (
+	"reflect"
+	"strings"
+
 	"github.com/CloudyKit/jet"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"reflect"
-	"strings"
 )
 
 func Flink(args jet.Arguments) reflect.Value {
@@ -27,9 +28,9 @@ func Flink(args jet.Arguments) reflect.Value {
 		sess.Limit(row)
 	}
 
-	idparam := args.Get(1).String()
-	if len(idparam) != 0 {
-		ids := strings.Split(idparam, ",")
+	idParam := args.Get(1).String()
+	if len(idParam) != 0 {
+		ids := strings.Split(idParam, ",")
 		sess.In("id", ids)
 	}
 
@@ -40,8 +41,6 @@ func Flink(args jet.Arguments) reflect.Value {
 		sess.Desc("id")
 	}
 	data := []tables.Link{}
-	if err := sess.Find(&data); err != nil {
-		panic(err)
-	}
+	helper.PanicErr(sess.Find(&data))
 	return reflect.ValueOf(data)
 }

@@ -1,9 +1,10 @@
 package taglibs
 
 import (
-	"github.com/xiusin/pinecms/src/common/helper"
 	"reflect"
 	"strings"
+
+	"github.com/xiusin/pinecms/src/common/helper"
 
 	"github.com/CloudyKit/jet"
 	"github.com/xiusin/pine"
@@ -32,9 +33,7 @@ func Query(args jet.Arguments) reflect.Value {
 	conf := config.DB()
 	if strings.HasPrefix(query, "SELECT") || strings.HasPrefix(query, "select") {
 		rest, err := sess.QueryString(strings.ReplaceAll(query, "#@_", conf.Db.DbPrefix))
-		if err != nil {
-			panic(err)
-		}
+		helper.PanicErr(err)
 		if rest != nil {
 			return reflect.ValueOf(rest)
 		}

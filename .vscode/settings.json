@@ -1,8 +1,16 @@
 {
     "cSpell.words": [
+        "byts",
+        "cacher",
         "dede",
         "errcode",
+        "gktemplate",
+        "interp",
+        "pinecms",
+        "Sess",
         "tcell",
-        "tview"
+        "tview",
+        "xorm",
+        "Yaegi"
     ]
 }

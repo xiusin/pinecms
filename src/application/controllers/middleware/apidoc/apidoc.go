@@ -8,9 +8,11 @@ import (
 
 	"github.com/sonyarouje/simdb"
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
-/**
+/*
+*
 1. 可以自定义字段备注， 比如想要修改部分字段备注
 2. 修改接口信息， 为响应字段添加备注
 */
@@ -24,9 +26,8 @@ func New(app *pine.Application, config *Config) pine.Handler {
 	os.Mkdir(config.DataPath, os.ModePerm)
 
 	var err error
-	if simdbDriver, err = simdb.New(config.DataPath); err != nil {
-		panic(err)
-	}
+	simdbDriver, err = simdb.New(config.DataPath)
+	helper.PanicErr(err)
 
 	app.ANY(config.RoutePrefix+"/:action", func(ctx *pine.Context) {
 		if !config.Enable {

@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/reload/util"
 
 	"github.com/spf13/cobra"
@@ -24,18 +25,14 @@ var buildPluginCmd = &cobra.Command{
 		_ = os.MkdirAll(buildPluginDir, os.ModePerm)
 
 		scriptName := filepath.Join(sourcePluginDir, name, name+".go")
-		if _, err := os.Stat(scriptName); err != nil {
-			panic(err)
-		}
 
-		configJson := filepath.Join(sourcePluginDir, name, configName)
+		_, err := os.Stat(scriptName)
+		helper.PanicErr(err)
 
-		if conf, err := os.ReadFile(configJson); err != nil {
-			panic(err)
+		if conf, err := os.ReadFile(filepath.Join(sourcePluginDir, name, configName)); err != nil {
+			helper.PanicErr(err)
 		} else {
-			if err := os.WriteFile(filepath.Join(buildPluginDir, configName), conf, os.ModePerm); err != nil {
-				panic(err)
-			}
+			helper.PanicErr(os.WriteFile(filepath.Join(buildPluginDir, configName), conf, os.ModePerm))
 		}
 
 		outPluginName := filepath.Join(buildPluginDir, name+".so")
@@ -45,9 +42,8 @@ var buildPluginCmd = &cobra.Command{
 		buildCmd.Env = os.Environ()
 		buildCmd.Dir = util.AppPath()
 
-		if err := buildCmd.Run(); err != nil {
-			panic(err)
-		}
+		helper.PanicErr(buildCmd.Run())
+
 		fmt.Println("构建插件", outPluginName, "成功")
 	},
 }

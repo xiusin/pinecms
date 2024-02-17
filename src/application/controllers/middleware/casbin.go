@@ -2,9 +2,10 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/valyala/fasthttp"
 	"strings"
 	"sync"
+
+	"github.com/valyala/fasthttp"
 
 	"github.com/casbin/casbin/v2"
 	xd "github.com/casbin/xorm-adapter"
@@ -19,13 +20,9 @@ import (
 func Casbin(engine *xorm.Engine, conf string) pine.Handler {
 	var _locker = &sync.Mutex{}
 	adapter, err := xd.NewAdapterByEngine(engine)
-	if err != nil {
-		panic(err)
-	}
+	helper.PanicErr(err)
 	enforcer, err := casbin.NewEnforcer(helper.GetRootPath(conf), adapter)
-	if err != nil {
-		panic(err)
-	}
+	helper.PanicErr(err)
 	di.Set(controllers.ServiceCasbinEnforcer, func(builder di.AbstractBuilder) (interface{}, error) {
 		return enforcer, nil
 	}, true)

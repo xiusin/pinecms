@@ -1,9 +1,11 @@
 package server
 
 import (
+	"runtime"
+
 	"github.com/spf13/cobra"
 	"github.com/takama/daemon"
-	"runtime"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 var ServeCmd = &cobra.Command{
@@ -24,8 +26,6 @@ func init() {
 		daemonKind = daemon.UserAgent
 	}
 	srv, err := daemon.New("pinecms", "pinecms 内容管理系统服务", daemonKind)
-	if err != nil {
-		panic(err)
-	}
+	helper.PanicErr(err)
 	serv = &Service{Daemon: srv}
 }

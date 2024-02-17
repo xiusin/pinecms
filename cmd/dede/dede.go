@@ -4,14 +4,16 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"github.com/spf13/cobra"
-	"github.com/xiusin/logger"
-	"github.com/xiusin/pinecms/src/application/models/tables"
-	"github.com/xiusin/pinecms/src/config"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/spf13/cobra"
+	"github.com/xiusin/logger"
+	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
+	"github.com/xiusin/pinecms/src/config"
 	"xorm.io/core"
 	"xorm.io/xorm"
 )
@@ -156,10 +158,7 @@ func importChannelType() {
 			if regexp.MustCompile("<field*").MatchString(field) {
 				autoIndex++
 				var f DedeXMLField
-				err := xml.Unmarshal([]byte(field), &f)
-				if err != nil {
-					panic(err)
-				}
+				helper.PanicErr(xml.Unmarshal([]byte(field), &f))
 				f.Field = regexp.MustCompile("<field:([^\\s]+) ").FindStringSubmatch(field)[1]
 				if mf, ok := tableFieldMaps[f.Field]; ok {
 					f.Field = mf
@@ -216,10 +215,10 @@ func transDocument(modelTableName string, data *tables.DocumentModel, modelField
 	} else {
 		querySql = fmt.Sprintf("SELECT * FROM %s WHERE channel=%d", channel["maintable"], data.Id)
 	}
+
 	archives, err := dedeOrm.QueryString(querySql)
-	if err != nil {
-		panic(err.Error() + ": " + querySql)
-	}
+	helper.PanicErr(err, querySql)
+
 	for _, archive := range archives {
 		var fs []string
 		var vs []interface{}
@@ -264,9 +263,7 @@ func transDocument(modelTableName string, data *tables.DocumentModel, modelField
 		// 入库
 		vs = append([]interface{}{"INSERT INTO `" + modelTableName + "` (" + strings.Join(fs, ", ") + ") VALUES (" + placeholders + ");"}, vs...)
 		_, err := pineOrm.Exec(vs...)
-		if err != nil {
-			panic(err)
-		}
+		helper.PanicErr(err)
 	}
 }
 
@@ -303,9 +300,7 @@ func importArcType() {
 			arctype["reid"], arctype["topid"], arctype["channeltype"], arctype["typename"],
 			arctype["keywords"], arctype["description"], url, arctype["sortrank"],
 			pineDir, "", ismenu, arctype["templist"], arctype["temparticle"])
-		if err != nil {
-			panic(err)
-		}
+		helper.PanicErr(err)
 		if lid, _ := res.LastInsertId(); lid == 0 {
 			panic("插入分类数据失败")
 		}
@@ -458,7 +453,5 @@ func GenSQLFromSQLite3(mid int64, dedeMainTable, tableName string, hasFields map
 	querySQL += "\n);"
 	querySQL = regexp.MustCompile(" +").ReplaceAllString(querySQL, " ")
 	_, err := pineOrm.Exec(querySQL)
-	if err != nil {
-		panic(err.Error() + ":" + dedeMainTable)
-	}
+	helper.PanicErr(err, dedeMainTable)
 }

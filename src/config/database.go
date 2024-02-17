@@ -99,7 +99,7 @@ func InitDB(conf ...*DbConf) *xorm.Engine {
 		helper.PanicErr(err)
 		_orm.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, configure.Db.DbPrefix))
 		_orm.SetLogger(log.NewSimpleLogger(helper.NewOrmLogFile(config.LogPath)))
-		helper.PanicErr(_orm.Ping())
+ 		helper.PanicErr(_orm.Ping())
 
 		_orm.ShowSQL(configure.Orm.ShowSql)
 		_orm.TZLocation = helper.GetLocation()

@@ -5,7 +5,6 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"github.com/tencentyun/cos-go-sdk-v5"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -14,8 +13,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tencentyun/cos-go-sdk-v5"
+
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
 )
 
@@ -29,9 +31,8 @@ var _ Uploader = (*CosUploader)(nil)
 
 func NewCosUploader(config map[string]string) *CosUploader {
 	u, err := url.Parse(config["COS_BASE_HOST"])
-	if err != nil {
-		panic(err)
-	}
+	helper.PanicErr(err)
+
 	b := &cos.BaseURL{BucketURL: u}
 
 	client := cos.NewClient(b, &http.Client{

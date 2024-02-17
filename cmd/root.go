@@ -7,6 +7,7 @@ import (
 	"github.com/xiusin/pinecms/cmd/plugin"
 	servCmd "github.com/xiusin/pinecms/cmd/server"
 	"github.com/xiusin/pinecms/cmd/version"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
 	"github.com/xiusin/pinecms/src/server"
 )
@@ -29,9 +30,7 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		panic(err)
-	}
+	helper.PanicErr(rootCmd.Execute())
 }
 
 func init() {

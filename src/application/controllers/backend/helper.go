@@ -3,11 +3,12 @@ package backend
 import (
 	"errors"
 	"fmt"
+	"reflect"
+	"strings"
+
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/common/storage"
-	"reflect"
-	"strings"
 
 	"github.com/xiusin/pinecms/src/application/controllers"
 )
@@ -69,9 +70,7 @@ func ArrayColMap(arr interface{}, col string) map[interface{}]interface{} {
 	if val.Kind() != reflect.Slice {
 		panic(errors.New("ArrayCol第一个参数必须为切片类型"))
 	}
-	var cols []interface{}
 	for i := 0; i < val.Len(); i++ {
-		cols = append(cols)
 		maps[val.Index(i).FieldByName(col).Interface()] = val.Index(i).Interface()
 	}
 	return maps

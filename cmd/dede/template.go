@@ -371,7 +371,5 @@ func (p *Parser) Start() {
 `), p.data...)
 	// 生成文件
 	os.MkdirAll(filepath.Dir(p.dst), os.ModePerm)
-	if err := ioutil.WriteFile(p.dst, p.data, os.ModePerm); err != nil {
-		panic(err)
-	}
+	helper.PanicErr(os.WriteFile(p.dst, p.data, os.ModePerm))
 }

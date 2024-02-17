@@ -106,17 +106,11 @@ func App() *Config {
 
 func parseConfig(path string, out interface{}) {
 	absPath, err := filepath.Abs(path)
-	if err != nil {
-		panic(err)
-	}
+	helper.PanicErr(err)
 	fileContent, err := os.ReadFile(absPath)
-	if err != nil {
-		panic(err)
-	}
+	helper.PanicErr(err)
 	err = yaml.Unmarshal(fileContent, out)
-	if err != nil {
-		panic(err)
-	}
+	helper.PanicErr(err)
 }
 
 func SiteConfig() (map[string]string, error) {

@@ -4,15 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pinecms/cmd/util"
-	. "github.com/xiusin/pinecms/src/config"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/cmd/util"
+	"github.com/xiusin/pinecms/src/common/helper"
+	. "github.com/xiusin/pinecms/src/config"
 	"xorm.io/xorm/schemas"
 
 	"github.com/xwb1989/sqlparser"
@@ -102,16 +104,12 @@ var Cmd = &cobra.Command{
 				}
 			}
 		}
-		if err = genTableFileAndFrontendFile(onlyInfo, table, tableDir+table+goExt, frontendPath); err != nil {
-			panic(err)
-		}
-		if err = genControllerFile(onlyInfo, controllerName, table, controllerPath); err != nil {
-			panic(err)
-		}
-		byts, err := ioutil.ReadFile(routerFile)
-		if err != nil {
-			panic(err)
-		}
+
+		helper.PanicErr(genTableFileAndFrontendFile(onlyInfo, table, tableDir+table+goExt, frontendPath))
+		helper.PanicErr(genControllerFile(onlyInfo, controllerName, table, controllerPath))
+
+		byts, err := os.ReadFile(routerFile)
+		helper.PanicErr(err)
 		controllerNamespace := `"github.com/xiusin/pinecms/src/application/controllers/backend"`
 		pineNamespace := `"github.com/xiusin/pine"`
 		holder := "// holder"
@@ -119,7 +117,7 @@ var Cmd = &cobra.Command{
 			byts = bytes.Replace(byts, []byte(pineNamespace), []byte(pineNamespace+"\r\n\t"+controllerNamespace), 1)
 		}
 		byts = bytes.Replace(byts, []byte(holder), []byte(holder+"\r\n\t"+`backendRouter.Handle(new(backend.`+controllerName+`), "/`+util.SnakeString(table)+`")`), 1)
-		ioutil.WriteFile(routerFile, byts, os.ModePerm)
+		os.WriteFile(routerFile, byts, os.ModePerm)
 		logger.Print("创建模块文件成功, 已注册路由信息至: " + routerFile)
 	},
 }
@@ -186,9 +184,7 @@ func genTableFileAndFrontendFile(print bool, tableName, tablePath, frontendPath 
 	})
 	stmt, err := sqlparser.Parse(createSQL)
 	var tableStruct string
-	if err != nil {
-		panic(err)
-	}
+	helper.PanicErr(err)
 	switch stmt := stmt.(type) {
 	case *sqlparser.DDL:
 		if stmt.TableSpec == nil {
@@ -245,7 +241,7 @@ func genTableFileAndFrontendFile(print bool, tableName, tablePath, frontendPath 
 
 	content := strings.ReplaceAll(tableTpl, "[struct]", tableStruct)
 	if !print {
-		err = ioutil.WriteFile(tablePath, []byte(content), os.ModePerm)
+		err = os.WriteFile(tablePath, []byte(content), os.ModePerm)
 	}
 	if err == nil {
 		logger.Print("创建文件： " + tablePath)

@@ -8,6 +8,7 @@ import (
 	"github.com/rivo/tview"
 	"github.com/spf13/cobra"
 	"github.com/xiusin/logger"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
 )
 
@@ -100,9 +101,8 @@ var initCmd = &cobra.Command{
 		connForm.SetBorder(true).SetTitle("PineCms Initializer").SetTitleAlign(tview.AlignCenter)
 		flex := tview.NewFlex().AddItem(Center(40, 18, connForm), 0, 3, true)
 		pages.AddPage("base", flex, true, true)
-		if err := app.SetRoot(pages, true).EnableMouse(true).Run(); err != nil {
-			panic(err)
-		}
+
+		helper.PanicErr(app.SetRoot(pages, true).EnableMouse(true).Run())
 	},
 }
 

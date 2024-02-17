@@ -2,6 +2,7 @@ package wechat
 
 import (
 	"errors"
+
 	"github.com/silenceper/wechat/v2"
 	"github.com/silenceper/wechat/v2/officialaccount"
 	offConfig "github.com/silenceper/wechat/v2/officialaccount/config"
@@ -32,13 +33,13 @@ func GetOfficialAccount(appid string) (*officialaccount.OfficialAccount, *tables
 }
 
 func SaveCacheMaterialListKey(key string, cacher cache.AbstractCache) {
-	var cacheKeys []string
-	cacher.GetWithUnmarshal(CacheKeyWechatMaterialListKeys, &cacheKeys)
-	for _, cacheKey := range cacheKeys {
+	var keys []string
+	cacher.GetWithUnmarshal(CacheKeyWechatMaterialListKeys, &keys)
+	for _, cacheKey := range keys {
 		if cacheKey == key {
 			return
 		}
 	}
-	cacheKeys = append(cacheKeys, key)
-	cacher.SetWithMarshal(CacheKeyWechatMaterialListKeys, &cacheKeys, CacheTimeSecs)
+	keys = append(keys, key)
+	cacher.SetWithMarshal(CacheKeyWechatMaterialListKeys, &keys, CacheTimeSecs)
 }

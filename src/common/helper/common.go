@@ -197,9 +197,7 @@ func SendEmail(opt *EmailOpt, conf map[string]string) error {
 
 func NewOrmLogFile(path string) *os.File {
 	f, err := os.OpenFile(filepath.Join(path, "orm.log"), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		panic(err)
-	}
+	PanicErr(err)
 	return f
 }
 
@@ -312,8 +310,12 @@ func HandleArtListInfo(list []map[string]string, titlelen int) {
 }
 
 // PanicErr 抛出异常
-func PanicErr(err error) {
+func PanicErr(err error, msg ...string) {
 	if err != nil {
-		panic(err)
+		if len(msg) == 0 {
+			panic(err)
+		} else {
+			panic(fmt.Sprintf("%s: %s", err, msg[0]))
+		}
 	}
 }

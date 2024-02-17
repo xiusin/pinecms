@@ -1,7 +1,6 @@
 package taglibs
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -45,7 +44,7 @@ artlist(typeid, offset, row, orderby, modelid, page, keyword, flag, noflag, titl
 
 func ArcList(args jet.Arguments) reflect.Value {
 	var list = []map[string]string{}
-	helper.AbstractCache().Remember("pinecms:tag:arclist:" + getTagHash(args), &list, func() (interface{}, error) {
+	helper.AbstractCache().Remember("pinecms:tag:arclist:"+getTagHash(args), &list, func() (interface{}, error) {
 		if !checkArgType(&args) {
 			return &list, nil
 		}
@@ -100,9 +99,7 @@ func ArcList(args jet.Arguments) reflect.Value {
 		} else if len(ids) > 1 { // 设置多个id以第一个ID查找对应模型
 			catid, _ := strconv.Atoi(ids[0])
 			catgory, err := m.GetCategoryFByIdForBE(int64(catid))
-			if err != nil {
-				panic(errors.New("无法查找分类" + strings.Join(ids, ",") + "的信息:" + err.Error()))
-			}
+			helper.PanicErr(err, "无法查找分类"+strings.Join(ids, ",")+"的信息")
 			for _, v := range ids {
 				catID, _ := strconv.Atoi(v)
 				soncats := m.GetNextCategoryOnlyCatids(int64(catID), false)
@@ -119,10 +116,7 @@ func ArcList(args jet.Arguments) reflect.Value {
 			}
 			// 读取模型ID
 			catgory, err := m.GetCategoryFByIdForBE(firstCatID)
-			if err != nil {
-				panic(errors.New("无法查找分类" + strings.Join(ids, ",") + "的信息:" + err.Error()))
-
-			}
+			helper.PanicErr(err, "无法查找分类"+strings.Join(ids, ",")+"的信息")
 			modelID = catgory.Model.Id
 		}
 		if modelID == 0 {

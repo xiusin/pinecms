@@ -2,9 +2,11 @@ package template
 
 import (
 	"fmt"
-	"github.com/gokeeptech/gktemplate"
 	"io"
 	"strings"
+
+	"github.com/gokeeptech/gktemplate"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 type GkTemplate struct {
@@ -23,9 +25,7 @@ func NewGkTemplate(conf *GkTemplateConf) *GkTemplate {
 	if conf == nil {
 		conf = &GkTemplateConf{"pinecms", "{", "}", "resources/themes", ".html"}
 	}
-	if err := gktemplate.LoadDir(strings.TrimRight(conf.Path, "/") + "/*" + conf.Ext); err != nil {
-		panic(err)
-	}
+	helper.PanicErr(gktemplate.LoadDir(strings.TrimRight(conf.Path, "/") + "/*" + conf.Ext))
 	return &GkTemplate{conf}
 }
 

@@ -14,6 +14,7 @@ import (
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
 )
 
@@ -31,13 +32,10 @@ func NewOssUploader(config map[string]string) *OssUploader {
 	// TODO OSS_ENDPOINT 和 OSS_HOST 和 OSS_BUCKET 是否可以同cos一样利用parseurl获取
 
 	client, err := oss.New(config["OSS_ENDPOINT"], config["OSS_KEYID"], config["OSS_KEYSECRET"])
-	if err != nil {
-		panic(err)
-	}
+	helper.PanicErr(err)
 	bucket, err := client.Bucket(config["OSS_BUCKET"])
-	if err != nil {
-		return nil
-	}
+	helper.PanicErr(err)
+
 	return &OssUploader{
 		client:    client,
 		bucket:    bucket,
@@ -113,7 +111,7 @@ func (s *OssUploader) Rename(oldname, newname string) error {
 func (s *OssUploader) Mkdir(dir string) error {
 	var byteBuffer bytes.Buffer
 
-	return s.bucket.PutObject(s.getObjectName(dir) + "/", &byteBuffer, nil)
+	return s.bucket.PutObject(s.getObjectName(dir)+"/", &byteBuffer, nil)
 }
 
 func (s *OssUploader) Rmdir(dir string) error {

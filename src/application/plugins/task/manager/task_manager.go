@@ -51,10 +51,10 @@ func TaskManager() *taskManager {
 	return tm
 }
 
-func (tm *taskManager) CheckErr(err error, msg string, panicErr bool, extra ...interface{}) {
+func (tm *taskManager) CheckErr(err error, msg string, _panic bool, extra ...interface{}) {
 	if err != nil {
 		tm.logger.Error(err, msg, extra...)
-		if panicErr {
+		if _panic {
 			panic(err)
 		}
 	}
@@ -97,7 +97,7 @@ func taskScript(service string) string {
 	return filepath.Join(tm.scriptPath, service+".sh")
 }
 
-//RegisterTask 注册任务到任务管理对象
+// RegisterTask 注册任务到任务管理对象
 func RegisterTask(id int64, task *table.TaskInfo) {
 	tm.Lock()
 	defer tm.Unlock()
@@ -215,7 +215,7 @@ func TaskJobFunc(info *table.TaskInfo) func() {
 	}
 }
 
-//RemoveTask 移除任务
+// RemoveTask 移除任务
 func RemoveTask(task *table.TaskInfo) {
 	tm.Lock()
 	defer tm.Unlock()

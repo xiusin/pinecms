@@ -2,9 +2,11 @@ package taglibs
 
 import (
 	"fmt"
+	"reflect"
+
 	"github.com/CloudyKit/jet"
 	"github.com/xiusin/pinecms/src/application/models"
-	"reflect"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 /**
@@ -19,14 +21,10 @@ func TopType(args jet.Arguments) reflect.Value {
 	}
 	typeid := getNumber(args.Get(0))
 	cat, err := models.NewCategoryModel().GetCategoryFByIdForBE(typeid)
-	if err != nil {
-		panic(err)
-	}
+	helper.PanicErr(err)
 	if cat.Topid != 0 {
 		cat, err = models.NewCategoryModel().GetCategoryFByIdForBE(cat.Topid)
-		if err != nil {
-			panic(err)
-		}
+		helper.PanicErr(err)
 	}
 	cat.Content = ""
 	cat.Page = nil

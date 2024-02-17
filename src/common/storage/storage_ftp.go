@@ -15,6 +15,7 @@ import (
 
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
 )
 
@@ -56,9 +57,7 @@ func NewFtpUploader(opt map[string]string) *FtpUploader {
 		return nil
 	}
 
-	if err := uploader.conn(); err != nil {
-		panic(err)
-	}
+	helper.PanicErr(uploader.conn())
 
 	pine.RegisterOnInterrupt(func() {
 		uploader.client.Logout()
