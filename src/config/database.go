@@ -83,10 +83,12 @@ type orm struct {
 
 var configure = &DbConf{}
 
+// Orm 获取Orm对象
 func Orm() *xorm.Engine {
 	return helper.GetORM()
 }
 
+// InitDB 初始化DB
 func InitDB(conf ...*DbConf) *xorm.Engine {
 	configure.Do(func() {
 		if len(conf) > 0 {
@@ -112,6 +114,7 @@ func InitDB(conf ...*DbConf) *xorm.Engine {
 	return configure.Engine
 }
 
+// DB 获取配置
 func DB() *DbConf {
 	return configure
 }
