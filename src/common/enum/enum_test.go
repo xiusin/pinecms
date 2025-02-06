@@ -1,6 +1,9 @@
 package enum
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 type Ttt struct {
 	CustomValue Type[string] `enum:"name_custom_value"`
@@ -8,5 +11,7 @@ type Ttt struct {
 }
 
 func TestEnum(t *testing.T) {
-	New[Ttt](nil)
+	vv := New[Ttt](nil)
+
+	fmt.Println(vv.CustomValue)
 }

@@ -5,30 +5,21 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"unsafe"
 )
 
 // TypeContract 枚举值类型接口
 type TypeContract interface {
-	SetEnumValue(value any)
-	String() string
+	Value() string
 }
 
 // Type 枚举值类型
 type Type[T any] struct {
-	// ~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 |
-	// 	~float32 | ~float64 | ~string | ~bool
 	value *T
 }
 
-// SetEnumValue 设置枚举值类型
-func (t Type[T]) SetEnumValue(value any) {
-	t.value = value.(*T)
-	fmt.Printf("%p\n", t.value)
-
-}
-
 func (t Type[T]) String() string {
-	return fmt.Sprintf("%v", t.value)
+	return fmt.Sprintf("%v", *t.value)
 }
 
 // New 枚举值类型
@@ -54,40 +45,44 @@ func New[T any](t *T) *T {
 			continue
 		}
 
-		// 转换为枚举类型定义
-		//  fv.Call()
-		// fmt.Println(any(&fvi).(TypeContract))
-
-		// fvt, ok := (any(fv.Interface())).(TypeContract)
-		// if !ok {
-		// 	continue
-		// }
-
-		method := fv.MethodByName("SetEnumValue") // 假设你要调用的方法名是 SetEnumValue
-		if !method.IsValid() {
-			continue
-		}
+		rf := reflect.Indirect(fv).FieldByName("value")
+		ptr := unsafe.Pointer(rf.UnsafeAddr())
 
 		fieldValue := field.Tag.Get("enum")
 		switch valueType.Type.Elem().Kind() {
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			// fvt.SetEnumValue(&i)
-
-		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			// fvt.SetEnumValue(&i)
+		case reflect.Int:
+			*(**int)(ptr) = toPtr(i + 1)
+		case reflect.Int8:
+			*(**int8)(ptr) = toPtr(int8(i + 1))
+		case reflect.Int16:
+			*(**int16)(ptr) = toPtr(int16(i + 1))
+		case reflect.Int32:
+			*(**int32)(ptr) = toPtr(int32(i + 1))
+		case reflect.Int64:
+			*(**int64)(ptr) = toPtr(int64(i + 1))
+		case reflect.Uint:
+			*(**uint)(ptr) = toPtr(uint(i + 1))
+		case reflect.Uint8:
+			*(**uint8)(ptr) = toPtr(uint8(i + 1))
+		case reflect.Uint16:
+			*(**uint16)(ptr) = toPtr(uint16(i + 1))
+		case reflect.Uint32:
+			*(**uint32)(ptr) = toPtr(uint32(i + 1))
+		case reflect.Uint64:
+			*(**uint64)(ptr) = toPtr(uint64(i + 1))
 		case reflect.String:
 			if fieldValue == "" {
 				fieldValue = field.Name
 			}
-			method.Call([]reflect.Value{reflect.ValueOf(&fieldValue)})
-
-			fmt.Println(t)
+			*(**string)(ptr) = toPtr(fieldValue)
 		default:
-
 			panic("enum value type not support: " + valueType.Type.String())
 		}
-
 	}
 	return t
 
+}
+
+func toPtr[T any](v T) *T {
+	return &v
 }
