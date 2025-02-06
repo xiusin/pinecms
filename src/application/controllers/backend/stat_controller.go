@@ -1,7 +1,6 @@
 package backend
 
 import (
-	"github.com/xiusin/pine/contracts"
 	"io"
 	cnet "net"
 	"net/http"
@@ -10,10 +9,10 @@ import (
 	"time"
 
 	"github.com/bytedance/sonic"
-	"github.com/shirou/gopsutil/cpu"
-	"github.com/shirou/gopsutil/disk"
-	"github.com/shirou/gopsutil/mem"
-	"github.com/shirou/gopsutil/net"
+	"github.com/shirou/gopsutil/v4/cpu"
+	"github.com/shirou/gopsutil/v4/disk"
+	"github.com/shirou/gopsutil/v4/mem"
+	"github.com/shirou/gopsutil/v4/net"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/cmd/version"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -98,7 +97,7 @@ type StatController struct {
 	pine.Controller
 }
 
-func (_ *StatController) InitOS() (o Os) {
+func (*StatController) InitOS() (o Os) {
 	o.GOOS = runtime.GOOS
 	o.NumCPU = runtime.NumCPU()
 	o.Compiler = runtime.Compiler
@@ -107,46 +106,48 @@ func (_ *StatController) InitOS() (o Os) {
 	return o
 }
 
-func (_ *StatController) InitCPU() (c Cpu, err error) {
-	if cores, err := cpu.Counts(false); err != nil {
+func (*StatController) InitCPU() (c Cpu, err error) {
+	cores, err := cpu.Counts(false)
+	if err != nil {
 		return c, err
-	} else {
-		c.Cores = cores
 	}
-	if cpus, err := cpu.Percent(time.Duration(200)*time.Millisecond, true); err != nil {
+	c.Cores = cores
+
+	cpus, err := cpu.Percent(time.Duration(200)*time.Millisecond, true)
+	if err != nil {
 		return c, err
-	} else {
-		c.Cpus = cpus
 	}
+	c.Cpus = cpus
 	c.CpuPercent, _ = cpu.Percent(time.Duration(200)*time.Millisecond, false)
 	return c, nil
 }
 
-func (_ *StatController) InitRAM() (r Rrm, err error) {
-	if u, err := mem.VirtualMemory(); err != nil {
+func (*StatController) InitRAM() (r Rrm, err error) {
+	u, err := mem.VirtualMemory()
+	if err != nil {
 		return r, err
-	} else {
-		r.UsedMB = int(u.Used) / MB
-		r.TotalMB = int(u.Total) / MB
-		r.UsedPercent = int(u.UsedPercent)
 	}
+	r.UsedMB = int(u.Used) / MB
+	r.TotalMB = int(u.Total) / MB
+	r.UsedPercent = int(u.UsedPercent)
 	return r, nil
 }
 
-func (_ *StatController) InitDisk() (d Disk, err error) {
-	if u, err := disk.Usage("/"); err != nil {
+func (*StatController) InitDisk() (d Disk, err error) {
+	u, err := disk.Usage("/")
+
+	if err != nil {
 		return d, err
-	} else {
-		d.UsedMB = int(u.Used) / MB
-		d.UsedGB = int(u.Used) / GB
-		d.TotalMB = int(u.Total) / MB
-		d.TotalGB = int(u.Total) / GB
-		d.UsedPercent = int(u.UsedPercent)
 	}
+	d.UsedMB = int(u.Used) / MB
+	d.UsedGB = int(u.Used) / GB
+	d.TotalMB = int(u.Total) / MB
+	d.TotalGB = int(u.Total) / GB
+	d.UsedPercent = int(u.UsedPercent)
 	return d, nil
 }
 
-func (_ *StatController) InitNet() (useages []*Net, err error) {
+func (*StatController) InitNet() (useages []*Net, err error) {
 	nv, err := net.IOCounters(false)
 	if err != nil {
 		return
@@ -159,7 +160,7 @@ func (_ *StatController) InitNet() (useages []*Net, err error) {
 	return
 }
 
-func (_ StatController) GetLocalIP() (ip string, err error) {
+func (*StatController) GetLocalIP() (ip string, err error) {
 	addrs, err := cnet.InterfaceAddrs()
 	if err != nil {
 		return
@@ -180,7 +181,7 @@ func (_ StatController) GetLocalIP() (ip string, err error) {
 	return
 }
 
-func (_ StatController) GetOutIp() (*IPLocate, error) {
+func (*StatController) GetOutIp() (*IPLocate, error) {
 	if outIp == nil {
 		client := &http.Client{
 			Transport: &http.Transport{
@@ -215,7 +216,7 @@ func (_ StatController) GetOutIp() (*IPLocate, error) {
 	return outIp, nil
 }
 
-func (stat *StatController) GetData(orm *xorm.Engine, cacher contracts.Cache) {
+func (stat *StatController) GetData(orm *xorm.Engine) {
 	var s Server
 
 	var wg sync.WaitGroup

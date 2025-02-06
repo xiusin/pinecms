@@ -32,7 +32,7 @@ require (
 	github.com/rivo/tview v0.0.0-20210624165335-29d673af0ce2
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/satori/go.uuid v1.2.0
-	github.com/shirou/gopsutil v3.21.11+incompatible
+	github.com/shirou/gopsutil/v4 v4.25.1
 	github.com/silenceper/wechat/v2 v2.1.6
 	github.com/sonyarouje/simdb v0.1.0
 	github.com/spf13/cast v1.6.0
@@ -74,12 +74,13 @@ require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dlclark/regexp2 v1.11.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
+	github.com/ebitengine/purego v0.8.2 // indirect
 	github.com/elastic/elastic-transport-go/v8 v8.5.0 // indirect
 	github.com/fatih/color v1.17.0 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-ole/go-ole v1.2.6 // indirect
+	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-redis/redis/v8 v8.11.5 // indirect
@@ -102,6 +103,7 @@ require (
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
+	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/magefile/mage v1.11.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
@@ -113,6 +115,7 @@ require (
 	github.com/mozillazg/go-httpheader v0.4.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/riverqueue/river/riverdriver v0.13.0 // indirect
 	github.com/riverqueue/river/rivershared v0.13.0 // indirect
 	github.com/riverqueue/river/rivertype v0.13.0 // indirect
@@ -120,14 +123,14 @@ require (
 	github.com/savsgio/gotils v0.0.0-20220201163454-d252f0a44d5b // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/testify v1.9.0 // indirect
+	github.com/stretchr/testify v1.10.0 // indirect
 	github.com/syndtr/goleveldb v1.0.0 // indirect
 	github.com/tidwall/gjson v1.18.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
-	github.com/tklauser/go-sysconf v0.3.7 // indirect
-	github.com/tklauser/numcpus v0.2.3 // indirect
+	github.com/tklauser/go-sysconf v0.3.12 // indirect
+	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fastjson v1.6.4 // indirect
@@ -141,7 +144,7 @@ require (
 	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/net v0.31.0 // indirect
 	golang.org/x/oauth2 v0.20.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/term v0.26.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
