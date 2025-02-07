@@ -36,7 +36,7 @@ require (
 	github.com/silenceper/wechat/v2 v2.1.6
 	github.com/sonyarouje/simdb v0.1.0
 	github.com/spf13/cast v1.6.0
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.1
 	github.com/takama/daemon v1.0.0
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.47
 	github.com/traefik/yaegi v0.11.2
