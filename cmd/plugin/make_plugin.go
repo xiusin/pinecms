@@ -25,12 +25,14 @@ import (
 	"sync"
 )
 
+// go语言限制，需要构建插件版本与宿主版本一致
+
 type [$s] struct {
 	sync.Once
-	orm       *xorm.Engine
-	app       *pine.Application
-	prefix    string
-	isInstall bool
+	orm			*xorm.Engine
+	app			*pine.Application
+	prefix		 string
+	isInstall	bool
 }
 
 func (p *[$s]) Name() string {
@@ -96,7 +98,7 @@ type Config struct {
 var makePluginCmd = &cobra.Command{
 	Use:   "make",
 	Short: "创建一个新的插件以及配置文件",
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, _ []string) {
 		name, _ := cmd.Flags().GetString("name")
 		if len(name) == 0 {
 			_ = cmd.Usage()

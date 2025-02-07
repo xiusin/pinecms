@@ -36,7 +36,7 @@ require (
 	github.com/silenceper/wechat/v2 v2.1.6
 	github.com/sonyarouje/simdb v0.1.0
 	github.com/spf13/cast v1.6.0
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.1
 	github.com/takama/daemon v1.0.0
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.47
 	github.com/traefik/yaegi v0.11.2
@@ -119,7 +119,7 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/savsgio/gotils v0.0.0-20220201163454-d252f0a44d5b // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/spf13/pflag v1.0.6 // indirect
 	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/syndtr/goleveldb v1.0.0 // indirect
 	github.com/tidwall/gjson v1.18.0 // indirect

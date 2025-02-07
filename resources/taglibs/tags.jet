@@ -1,7 +1,7 @@
 {* artlist *}
 {{block artlist(typeid=0, offset=0, row=0,orderby="listorder", orderway="desc", keyword="", modelid ="", channelid="",flag="",noflag="", titlelen=0, getall=false, subday=0)  }}
     {{if typeid == 0 }} {* 如果没有设置typeid *}
-        {{ if isset(.TypeID) }}{{typeid = .TypeID }}{{end}} {*读取是否存在全局.Typeid, (一般适用与分类页面)*}
+        {{ if isset(.TypeID) }}{{typeid = .TypeID }}{{end}} {*读取是否存在全局.Typeid, (一般适用于分类页面)*}
         {{if typeid == 0 && isset(__refID) && __refID > -1}}{{typeid = __refID}}{{end}}{*判断是否在嵌套标签内*}
     {{end}}
     {{if typeid == -1 }}{{typeid = 0}}{{end}} {*公共位置需要指定typeid*}
