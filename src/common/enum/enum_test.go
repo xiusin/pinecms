@@ -10,8 +10,12 @@ type Ttt struct {
 	KeyAsValue  Type[string]
 }
 
-func TestEnum(t *testing.T) {
-	vv := New[Ttt](nil)
+var vv = New[Ttt](nil)
 
-	fmt.Println(vv.CustomValue)
+func TestEnum(_ *testing.T) {
+	EnumAsParam(vv.CustomValue)
+}
+
+func EnumAsParam(dist TypeContract[string]) {
+	fmt.Println(dist.Value())
 }

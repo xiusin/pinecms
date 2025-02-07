@@ -2,15 +2,14 @@
 package enum
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 	"unsafe"
 )
 
 // TypeContract 枚举值类型接口
-type TypeContract interface {
-	Value() string
+type TypeContract[T any] interface {
+	Value() T
 }
 
 // Type 枚举值类型
@@ -18,8 +17,8 @@ type Type[T any] struct {
 	value *T
 }
 
-func (t Type[T]) String() string {
-	return fmt.Sprintf("%v", *t.value)
+func (t Type[T]) Value() T {
+	return *t.value
 }
 
 // New 枚举值类型
