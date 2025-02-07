@@ -43,14 +43,14 @@ func (p *PineZincSearch) Index(index string, doc map[string]any) (string, error)
 }
 
 func NewZincSearch() ISearch {
-	cfg := config.App().Search
+	cfg := config.DB()
 	ctx := context.WithValue(context.Background(), client.ContextBasicAuth, client.BasicAuth{
-		UserName: cfg.Username,
-		Password: cfg.Password,
+		UserName: cfg.Elastic.UserName,
+		Password: cfg.Elastic.Password,
 	})
 	configuration := client.NewConfiguration()
 	configuration.Servers = client.ServerConfigurations{
-		client.ServerConfiguration{URL: cfg.Url},
+		client.ServerConfiguration{URL: cfg.Elastic.Url},
 	}
 	return &PineZincSearch{client: client.NewAPIClient(configuration), ctx: ctx}
 }

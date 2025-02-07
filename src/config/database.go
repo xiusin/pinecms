@@ -23,21 +23,27 @@ type Db struct {
 }
 
 type dbInfo struct {
-	ServeIp  string
-	Port     string
-	Username string
-	Password string
-	Name     string
+	ServeIp  string `yaml:"serve_ip"`
+	Port     string `yaml:"port"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+	Name     string `yaml:"name"`
+}
+
+type elasticConf struct {
+	Url      string `yaml:"url"`
+	UserName string `yaml:"username"`
+	Password string `yaml:"password"`
 }
 
 type redisConf struct {
-	Host        string `json:"host"`
-	Port        int    `json:"port"`
-	Password    string `json:"password"`
-	Index       int    `json:"index"`
-	MaxActive   int    `json:"max_active"`
-	MaxIdle     int    `json:"max_idle"`
-	IdleTimeout int    `json:"idle_timeout"`
+	Host        string `yaml:"host"`
+	Port        int    `yaml:"port"`
+	Password    string `yaml:"password"`
+	Index       int    `yaml:"index"`
+	MaxActive   int    `yaml:"max_active"`
+	MaxIdle     int    `yaml:"max_idle"`
+	IdleTimeout int    `yaml:"idle_timeout"`
 }
 
 func (t *dbInfo) Check() bool {
@@ -51,9 +57,10 @@ func (t *dbInfo) Check() bool {
 type DbConf struct {
 	*xorm.Engine `yaml:"-"`
 	sync.Once    `yaml:"-"`
-	Db           Db        `yaml:"db"`
-	Orm          orm       `yaml:"orm"`
-	Redis        redisConf `yaml:"redis"`
+	Db           Db          `yaml:"db"`
+	Orm          orm         `yaml:"orm"`
+	Redis        redisConf   `yaml:"redis"`
+	Elastic      elasticConf `yaml:"elastic"`
 }
 
 func (t *DbConf) Initialized() bool {

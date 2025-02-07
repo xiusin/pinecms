@@ -43,12 +43,6 @@ type Config struct {
 		Route string `yaml:"route"`
 		Path  string `yaml:"path"`
 	} `yaml:"statics"`
-
-	Search struct {
-		Username string `yaml:"username"`
-		Password string `yaml:"password"`
-		Url      string `yaml:"url"`
-	} `yaml:"search"`
 }
 
 type SessConf struct {

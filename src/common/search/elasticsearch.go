@@ -122,11 +122,11 @@ func (e *ElasticSearch) Delete(index string, id string) error {
 }
 
 func NewElasticSearch() ISearch {
-	cfg := config.App().Search
+	cfg := config.DB()
 	es8, err := elasticsearch8.NewClient(elasticsearch8.Config{
-		Addresses: []string{cfg.Url},
-		Username:  cfg.Username,
-		Password:  cfg.Password,
+		Addresses: []string{cfg.Elastic.Url},
+		Username:  cfg.Elastic.UserName,
+		Password:  cfg.Elastic.Password,
 	})
 	helper.PanicErr(err)
 	return &ElasticSearch{client: es8}

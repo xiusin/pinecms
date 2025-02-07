@@ -17,3 +17,8 @@ redis:
   max_active: 100
   max_idle: 5
   idle_timeout: 60
+
+elastic:
+  url: "http://127.0.0.1:9200"
+  username: "elastic"
+  password: "elastic"
