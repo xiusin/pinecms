@@ -38,3 +38,4 @@ __debug*
 *.gen.go
 data/_metadata.bolt
 .history/
+*.DS_Store

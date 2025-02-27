@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
@@ -274,6 +275,13 @@ func PanicErr(err error, msg ...string) {
 			panic(err)
 		}
 		panic(fmt.Sprintf("%s: %s", err, msg[0]))
+	}
+}
+
+// Recover 捕捉执行协程的异常
+func Recover() {
+	if err := recover(); err != nil {
+		pine.Logger().Error(fmt.Sprintf("%v", err), "stack", string(debug.Stack()))
 	}
 }
 

@@ -198,6 +198,7 @@ func (p *pluginManager) Download(name string) {
 	}
 
 	go func() {
+		defer helper.Recover()
 		url := fmt.Sprintf("%s/%s/%s/%s/%s%s", p.remoteDomain, runtime.GOOS, runtime.GOARCH, runtime.Version(), name, ".tar.gz")
 		client := &http.Client{}
 		client.Timeout = time.Second * 60 * 10

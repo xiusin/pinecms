@@ -117,6 +117,7 @@ var Cmd = &cobra.Command{
 		byts = bytes.Replace(byts, []byte(holder), []byte(holder+"\r\n\t"+`backendRouter.Handle(new(backend.`+controllerName+`), "/`+util.SnakeString(table)+`")`), 1)
 		os.WriteFile(routerFile, byts, os.ModePerm)
 		pine.Logger().Info("创建模块文件成功, 已注册路由信息至: " + routerFile)
+		pine.Logger().Info("[❎] TODO: ast自动生成文件,参照tests/ast_test.go")
 	},
 }
 
