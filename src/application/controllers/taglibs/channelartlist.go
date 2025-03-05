@@ -42,7 +42,7 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 		orm = getCategoryOrm().Where("parentid = ?", _typeid)
 	}
 
-	_topid := getNumber(args.Get(2)) // 当前页面的ID
+	_topId := getNumber(args.Get(2)) // 当前页面的ID
 
 	var cats []tables.Category
 
@@ -69,7 +69,7 @@ func ChannelArtList(args jet.Arguments) reflect.Value {
 				cat1s := m.GetPosArr(v.Catid)
 				cats[k].Url = fmt.Sprintf("/%s/", m.GetUrlPrefixWithCategoryArr(cat1s))
 				for _, v := range cat1s {
-					if v.Catid == _topid {
+					if v.Catid == _topId {
 						cats[k].Active = true
 						break
 					}

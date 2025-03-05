@@ -3,6 +3,7 @@ package util
 import (
 	"os"
 	"strings"
+	"slices"
 )
 
 func AppPath() string {
@@ -44,12 +45,7 @@ func ScanDir(dir string, ignoreDirs []string) (list []struct {
 }
 
 func InSlice(needle string, haystacks []string) bool {
-	for _, d := range haystacks {
-		if needle == d {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(haystacks, needle)
 }
 
 func Replace(str, old, new string) string {
