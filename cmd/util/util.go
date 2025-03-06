@@ -2,8 +2,8 @@ package util
 
 import (
 	"os"
-	"strings"
 	"slices"
+	"strings"
 )
 
 func AppPath() string {
@@ -47,16 +47,11 @@ func ScanDir(dir string, ignoreDirs []string) (list []struct {
 func InSlice(needle string, haystacks []string) bool {
 	return slices.Contains(haystacks, needle)
 }
-
-func Replace(str, old, new string) string {
-	return strings.ReplaceAll(str, old, new)
-}
-
 func SnakeString(s string) string {
 	data := make([]byte, 0, len(s)*2)
 	j := false
 	num := len(s)
-	for i := 0; i < num; i++ {
+	for i := range num {
 		d := s[i]
 		if i > 0 && d >= 'A' && d <= 'Z' && j {
 			data = append(data, '_')

@@ -11,7 +11,7 @@ import (
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"xorm.io/xorm"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 /*
@@ -52,7 +52,6 @@ func msgHandler(ctx *pine.Context) {
 		return
 	}
 
-	orm := ctx.Value("orm").(*xorm.Engine)
 	srv.SetMessageHandler(func(msg *message.MixMessage) *message.Reply {
 		var rules []*tables.WechatMsgReplyRule
 		var msgData any
@@ -63,7 +62,7 @@ func msgHandler(ctx *pine.Context) {
 			"(INSTR(?, match_value) > 0 AND  exact_match = 0)) AND appid = '" + appid +
 			"' AND status = 1 ORDER BY exact_match DESC, id DESC LIMIT 1"
 
-		orm.SQL(fmt.Sprintf(baseSql, controllers.GetTableName("wechat_msg_reply_rule")), msg.Content, msg.Content).Find(&rules)
+		_ = helper.GetORM().SQL(fmt.Sprintf(baseSql, controllers.GetTableName("wechat_msg_reply_rule")), msg.Content, msg.Content).Find(&rules)
 
 		if len(rules) == 0 || len(rules[0].ReplyContent) == 0 {
 			return nil
@@ -73,7 +72,7 @@ func msgHandler(ctx *pine.Context) {
 
 		if message.MsgTypeMiniprogrampage == message.MsgType(rule.ReplyType) || message.MsgTypeMusic == message.MsgType(rule.ReplyType) || message.MsgTypeVideo == message.MsgType(rule.ReplyType) {
 			replyMsg = &WechatMsg{}
-			sonic.Unmarshal([]byte(rule.ReplyContent), replyMsg)
+			_ = sonic.Unmarshal([]byte(rule.ReplyContent), replyMsg)
 		} else if message.MsgTypeNews == message.MsgType(rule.ReplyType) {
 			replyMsg = []*message.Article{}
 			err = sonic.Unmarshal([]byte(rule.ReplyContent), &replyMsg)
@@ -114,7 +113,7 @@ func msgHandler(ctx *pine.Context) {
 	}
 
 	if srv.RequestMsg != nil {
-		orm.InsertOne(&tables.WechatLog{
+		_, _ = helper.GetORM().InsertOne(&tables.WechatLog{
 			AppId:     appid,
 			OpenId:    string(srv.RequestMsg.FromUserName),
 			MsgType:   string(srv.RequestMsg.MsgType),

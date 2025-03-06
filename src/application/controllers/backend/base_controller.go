@@ -319,14 +319,7 @@ func (c *BaseController) buildQueryCols(sess *xorm.Session) {
 		cols := []string{}
 
 		for _, s := range fields {
-			var skip bool
-			for _, col := range c.ExceptCols {
-				if col == s {
-					skip = true
-					break
-				}
-			}
-			if !skip {
+			if !slices.Contains(c.ExceptCols, s) {
 				cols = append(cols, s)
 			}
 		}

@@ -35,6 +35,7 @@
         "editor.quickSuggestions": {
             "strings": true
         },
+        "editor.fontFamily": "'Envy Code R VS','Hack','Droid Sans Mono',Menlo, Monaco, 'Courier New', monospace",
         "editor.suggest.showWords": true,
         "editor.lineHeight": 1.5,
         "gopls": {
@@ -103,7 +104,9 @@
             "sess",
             "Sess",
             "Sqls",
+            "takama",
             "tcell",
+            "Topid",
             "tplfun",
             "tview",
             "vmap",

@@ -123,8 +123,7 @@ func (t *SQLTable) toXorm(print bool, tableName string, frontendPath string) str
 
 		labelName, elFieldType, elProps := getLabelAndFieldTypeAndProps(col, coreCol)
 
-		tableItem := map[string]any{"prop": tableField, "label": labelName} // 列表字段
-
+		tableItem := map[string]any{"prop": tableField, "label": labelName}               // 列表字段
 		comp := map[string]any{"name": elFieldType, "props": elProps}                     // 渲染组件
 		item := map[string]any{"prop": tableField, "label": labelName, "component": comp} // upsert 组件
 

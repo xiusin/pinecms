@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	"github.com/takama/daemon"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
 	"github.com/xiusin/pinecms/src/server"
 )
@@ -37,6 +38,7 @@ func (service *Service) Manage(args []string, usage string) (string, error) {
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 
 	go func() {
+		defer helper.Recover()
 		config.InitDB()
 		fmt.Println("start server...")
 		server.Server()

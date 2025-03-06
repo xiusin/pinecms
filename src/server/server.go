@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/securecookie"
 	"github.com/xiusin/pine"
@@ -25,8 +26,8 @@ func Server() {
 		pine.Addr(fmt.Sprintf("%s:%d", "127.0.0.1", conf.Port)),
 		pine.WithCookieTranscoder(securecookie.New([]byte(conf.HashKey), []byte(conf.BlockKey))),
 		pine.WithServerName("xiusin/pinecms"),
-		pine.WithoutStartupLog(true),
+		pine.WithoutStartupLog(false),
 		pine.WithCookie(true),
-		pine.WithMaxMultipartMemory(100 * 1024 * 1024),
+		pine.WithMaxMultipartMemory(100*1024*1024),
 	)
 }
