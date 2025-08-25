@@ -7,10 +7,11 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/bytedance/sonic"
 	"github.com/go-playground/validator/v10"
-	"xorm.io/xorm"
-
 	"github.com/xiusin/pine"
+	"xorm.io/builder"
+	"xorm.io/xorm"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -18,6 +19,11 @@ import (
 )
 
 var validate = validator.New()
+var allowedFunctions = map[string]bool{
+	"LOWER": true,
+	"UPPER": true,
+	"DATE":  true,
+}
 
 const (
 	BindTypeJson = iota
@@ -174,10 +180,131 @@ func (c *BaseController) PostList() {
 	}
 }
 
+// buildCondition 递归构建builder.Cond
+// 这里的实现是后续步骤, 先简单实现一个基础版本
+func (c *BaseController) buildCondition(data any) (builder.Cond, error) {
+	condMap, ok := data.(map[string]any)
+	if !ok {
+		return nil, errors.New("无效的条件格式")
+	}
+
+	// Check if it's a Filter or a FilterGroup
+	if _, isGroup := condMap["conditions"]; isGroup {
+		var group FilterGroup
+		jsonBytes, _ := sonic.Marshal(condMap)
+		if err := sonic.Unmarshal(jsonBytes, &group); err != nil {
+			return nil, fmt.Errorf("无法解析筛选条件组: %w", err)
+		}
+		return c.buildGroupCondition(&group)
+	} else {
+		var filter Filter
+		jsonBytes, _ := sonic.Marshal(condMap)
+		if err := sonic.Unmarshal(jsonBytes, &filter); err != nil {
+			return nil, fmt.Errorf("无法解析筛选条件: %w", err)
+		}
+		return c.buildFilterCondition(&filter)
+	}
+}
+
+// buildGroupCondition 构建一个builder.Cond
+func (c *BaseController) buildGroupCondition(group *FilterGroup) (builder.Cond, error) {
+	op := strings.ToUpper(group.Op)
+	if op != "AND" && op != "OR" {
+		return nil, fmt.Errorf("无效的逻辑操作符: %s", group.Op)
+	}
+
+	if len(group.Conditions) == 0 {
+		return nil, nil
+	}
+
+	var conditions []builder.Cond
+	for _, condData := range group.Conditions {
+		cond, err := c.buildCondition(condData)
+		if err != nil {
+			return nil, err
+		}
+		if cond != nil {
+			conditions = append(conditions, cond)
+		}
+	}
+
+	if len(conditions) == 0 {
+		return nil, nil
+	}
+
+	if op == "OR" {
+		return builder.Or(conditions...), nil
+	}
+	return builder.And(conditions...), nil
+}
+
+// buildFilterCondition 构建一个builder.Cond
+func (c *BaseController) buildFilterCondition(filter *Filter) (builder.Cond, error) {
+	if filter.Field == "" {
+		return nil, errors.New("筛选条件缺少字段")
+	}
+
+	fieldExpr := fmt.Sprintf("`%s`", filter.Field)
+	if filter.Function != "" {
+		f := strings.ToUpper(filter.Function)
+		if _, ok := allowedFunctions[f]; !ok {
+			return nil, fmt.Errorf("不支持的筛选函数: %s", filter.Function)
+		}
+		// ILIKE在下面特殊处理
+		if f != "LOWER" && f != "UPPER" {
+			fieldExpr = fmt.Sprintf("%s(%s)", f, fieldExpr)
+		}
+	}
+
+	op := strings.ToUpper(filter.Op)
+	if op == "" {
+		op = "="
+	}
+
+	switch op {
+	case "IN":
+		return builder.In(filter.Field, filter.Value), nil
+	case "NOT IN":
+		return builder.NotIn(filter.Field, filter.Value), nil
+	case "BETWEEN":
+		valSlice, ok := filter.Value.([]any)
+		if !ok || len(valSlice) != 2 {
+			return nil, fmt.Errorf("BETWEEN 操作符需要一个包含两个元素的数组")
+		}
+		return builder.Between{Col: filter.Field, LessVal: valSlice[0], MoreVal: valSlice[1]}, nil
+	case "NOT BETWEEN":
+		valSlice, ok := filter.Value.([]any)
+		if !ok || len(valSlice) != 2 {
+			return nil, fmt.Errorf("NOT BETWEEN 操作符需要一个包含两个元素的数组")
+		}
+		return builder.Not{builder.Between{Col: filter.Field, LessVal: valSlice[0], MoreVal: valSlice[1]}}, nil
+	case "LIKE":
+		return builder.Like{filter.Field, fmt.Sprintf("%%%v%%", filter.Value)}, nil
+	case "ILIKE":
+		valueStr := strings.ToLower(fmt.Sprintf("%v", filter.Value))
+		return builder.Expr(fmt.Sprintf("LOWER(`%s`) LIKE ?", filter.Field), fmt.Sprintf("%%%s%%", valueStr)), nil
+	case "=", "<>", ">", "<", ">=", "<=":
+		return builder.Expr(fmt.Sprintf("%s %s ?", fieldExpr, op), filter.Value), nil
+	default:
+		return nil, fmt.Errorf("不支持的操作符: %s", op)
+	}
+}
+
 func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, error) {
 	if err := parseParam(c.Ctx(), &c.P); err != nil {
 		pine.Logger().Warn("解析参数错误", err)
 	}
+
+	if c.P.Filters != nil {
+		cond, err := c.buildGroupCondition(c.P.Filters)
+		if err != nil {
+			return nil, err
+		}
+		if cond != nil {
+			query.Where(cond)
+		}
+	}
+
 	if len(c.KeywordsSearch) > 0 && c.P.Keywords != "" { // 关键字搜索
 		var whereBuilder []string
 		var whereLikeBind []any

@@ -14,12 +14,6 @@ type DictController struct {
 func (c *DictController) Construct() {
 	c.Group = "字典管理"
 	c.SubGroup = "字典列表管理"
-	c.KeywordsSearch = []SearchFieldDsl{
-		{Field: "value", Op: "LIKE", DataExp: "%$?%"},
-		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
-	}
-	c.SearchFields = []SearchFieldDsl{{Field: "status"}, {Field: "cid"}}
-
 	c.Table = &tables.Dict{}
 	c.Entries = &[]*tables.Dict{}
 	c.ApiEntityName = "字典属性"

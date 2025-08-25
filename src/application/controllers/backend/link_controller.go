@@ -7,9 +7,6 @@ type LinkController struct {
 }
 
 func (c *LinkController) Construct() {
-	c.KeywordsSearch = []SearchFieldDsl{
-		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
-	}
 	c.Table = &tables.Link{}
 	c.Entries = &[]tables.Link{}
 	c.ApiEntityName = "友链"

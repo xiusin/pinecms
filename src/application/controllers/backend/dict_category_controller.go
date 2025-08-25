@@ -14,13 +14,6 @@ type DictCategoryController struct {
 func (c *DictCategoryController) Construct() {
 	c.AppId = "admin"
 	c.Group = "字典管理"
-	c.KeywordsSearch = []SearchFieldDsl{
-		{Field: "key", Op: "LIKE", DataExp: "%$?%"},
-		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
-	}
-	c.SearchFields = []SearchFieldDsl{
-		{Field: "status"},
-	}
 	c.Table = &tables.DictCategory{}
 	c.Entries = &[]*tables.DictCategory{}
 	c.ApiEntityName = "字典分类"

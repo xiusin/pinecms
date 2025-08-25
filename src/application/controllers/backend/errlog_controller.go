@@ -12,9 +12,6 @@ type ErrorLogController struct {
 
 func (c *ErrorLogController) Construct() {
 	c.Group = "系统日志"
-	c.KeywordsSearch = []SearchFieldDsl{
-		{Field: "message", Op: "LIKE", DataExp: "%$?%"},
-	}
 	c.Table = &tables.Log{}
 	c.Entries = &[]tables.Log{}
 	c.apiEntities = map[string]apidoc.Entity{

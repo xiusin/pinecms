@@ -7,9 +7,6 @@ type TagsController struct {
 }
 
 func (c *TagsController) Construct() {
-	c.KeywordsSearch = []SearchFieldDsl{
-		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
-	}
 	c.Table = &tables.Tags{}
 	c.Entries = &[]*tables.Tags{}
 	c.ApiEntityName = "标签"

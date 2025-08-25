@@ -14,10 +14,6 @@ func (c *AdController) Construct() {
 	c.Table = &tables.Advert{}
 	c.Entries = &[]tables.Advert{}
 
-	c.KeywordsSearch = []SearchFieldDsl{
-		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
-	}
-
 	c.AppId = "admin"
 	c.Group = "广告管理"
 	c.SubGroup = "广告管理"

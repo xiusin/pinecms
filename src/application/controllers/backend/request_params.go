@@ -22,4 +22,19 @@ type listParam struct {
 	Export     bool           `json:"_isExport" api:"remark:是否导出"`                    // 是否导出
 	Params     map[string]any `json:"params" api:"remark:额外参数用于非配置字段导出"`              // 额外附加参数
 	Param      map[string]any `json:"param" api:"remark:cl-filter组件参数"`               // 额外附加参数
+	Filters    *FilterGroup   `json:"filters,omitempty" api:"remark:结构化筛选参数"`         // 结构化筛选参数
+}
+
+// FilterGroup 定义了一组筛选条件
+type FilterGroup struct {
+	Op         string `json:"op" api:"remark:逻辑操作符 AND 或 OR"`
+	Conditions []any  `json:"conditions" api:"remark:条件,可以是Filter或FilterGroup"`
+}
+
+// Filter 定义了单个筛选条件
+type Filter struct {
+	Field    string `json:"field" api:"remark:筛选字段"`
+	Function string `json:"function,omitempty" api:"remark:函数"`
+	Op       string `json:"op" api:"remark:筛选操作符"`
+	Value    any    `json:"value" api:"remark:筛选值"`
 }

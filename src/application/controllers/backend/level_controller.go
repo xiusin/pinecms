@@ -16,9 +16,6 @@ func (c *LevelController) Construct() {
 	c.SubGroup = "职级管理"
 	c.ApiEntityName = "职级"
 	c.BaseController.Construct()
-	c.KeywordsSearch = []SearchFieldDsl{
-		{Field: "name", Op: "="},
-	}
 	c.SelectOp = func(session *xorm.Session) {
 		session.Where("status = ?", 1)
 	}

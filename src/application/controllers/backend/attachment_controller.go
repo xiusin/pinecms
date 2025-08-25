@@ -14,9 +14,6 @@ type AttachmentController struct {
 }
 
 func (c *AttachmentController) Construct() {
-	c.SearchFields = []SearchFieldDsl{
-		//{Field: "`type`", Op: "="},
-	}
 	c.Table = &tables.Attachments{}
 	c.Entries = &[]*tables.Attachments{}
 	c.Group = "系统配置"

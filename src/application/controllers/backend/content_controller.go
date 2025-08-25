@@ -24,14 +24,6 @@ type ContentController struct {
 
 func (c *ContentController) Construct() {
 	c.Group = "内容管理"
-	c.KeywordsSearch = []SearchFieldDsl{
-		{Field: "title", Op: "LIKE", DataExp: "%$?%"},
-		{Field: "keyword", Op: "LIKE", DataExp: "%$?%"},
-		{Field: "description", Op: "LIKE", DataExp: "%$?%"},
-	}
-	c.SearchFields = []SearchFieldDsl{
-		{Op: "=", Field: "status"},
-	}
 	c.Entries = &[]*tables.DocumentModel{}
 	c.ApiEntityName = "内容"
 	c.BaseController.Construct()

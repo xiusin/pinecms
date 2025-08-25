@@ -17,18 +17,6 @@ type UserController struct {
 }
 
 func (c *UserController) Construct() {
-	c.KeywordsSearch = []SearchFieldDsl{
-		{Field: "username", Op: "LIKE", DataExp: "%$?%"},
-		{Field: "email", Op: "LIKE", DataExp: "%$?%"},
-		{Field: "realname", Op: "LIKE", DataExp: "%$?%"},
-	}
-
-	c.SearchFields = []SearchFieldDsl{
-		{Field: "departmentIds", CallBack: func(session *xorm.Session, i ...any) {
-			session.Where(builder.In("department_id", i))
-		}},
-	}
-
 	c.Orm = helper.GetORM()
 	c.Table = &tables.Admin{}
 	c.Entries = &[]*tables.Admin{}
