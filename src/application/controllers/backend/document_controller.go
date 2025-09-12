@@ -131,22 +131,55 @@ func (c *DocumentController) before(act int, params any) error {
 
 func (c *DocumentController) after(act int, params any) error {
 	if act == OpAdd {
+		session := c.Orm.NewSession()
+		defer session.Close()
+		err := session.Begin()
+		if err != nil {
+			return err
+		}
 		var fields tables.ModelDslFields
-		_ = c.Orm.Where("mid = 0").Find(&fields)
+		_ = session.Where("mid = 0").Find(&fields)
 		// 生成固定类型的字段
 		for _, field := range fields {
 			field.Id = 0
 			field.Mid = c.Table.(*tables.DocumentModel).Id
 			t := tables.LocalTime(time.Now())
 			field.UpdatedAt = &t
-			_, err := c.Orm.InsertOne(field)
+			_, err := session.InsertOne(field)
 			if err != nil {
-				c.Logger().Error(err.Error())
+				session.Rollback()
+				return err
 			}
 		}
+		return session.Commit()
 	}
-	if act == OpDel { // TODO 删除指定字段列表
-
+	if act == OpDel {
+		session := c.Orm.NewSession()
+		defer session.Close()
+		err := session.Begin()
+		if err != nil {
+			return err
+		}
+		modelID := params.(*idParams).Ids[0]
+		doc := models.NewDocumentModel().GetByID(modelID)
+		if doc == nil {
+			return nil // 可能已经被删除了
+		}
+		tableName := controllers.GetTableName(doc.Table)
+		fields := models.NewDocumentFieldDslModel().GetList(modelID)
+		for _, field := range fields {
+			_, err := session.Exec(fmt.Sprintf("ALTER TABLE `%s` DROP COLUMN `%s`", tableName, field.TableField))
+			if err != nil {
+				session.Rollback()
+				return err
+			}
+		}
+		_, err = session.Where("mid = ?", modelID).Delete(&tables.DocumentModelField{})
+		if err != nil {
+			session.Rollback()
+			return err
+		}
+		return session.Commit()
 	}
 	return nil
 }
@@ -164,6 +197,7 @@ func (c *DocumentController) GetSelect() {
 	helper.Ajax(kv, 0, c.Ctx())
 }
 
+// GetSql generates the SQL for creating or altering a model's table.
 func (c *DocumentController) GetSql(orm *xorm.Engine) {
 	modelID, _ := c.Ctx().Input().GetInt64("mid")
 	model := models.NewDocumentModel()
@@ -192,6 +226,10 @@ func (c *DocumentController) GetSql(orm *xorm.Engine) {
 	var fieldStrs []string
 	querySQL := ""
 	tableName := controllers.GetTableName(dm.Table)
+	if !regexp.MustCompile("^[a-zA-Z0-9_]+$").MatchString(tableName) {
+		helper.Ajax("无效的表名", 1, c.Ctx())
+		return
+	}
 	if ok, _ := orm.IsTableExist(tableName); ok {
 		querySQL = "ALTER TABLE `" + tableName + "` "
 		existsFields, _ = orm.QueryString("select * from information_schema.columns where TABLE_NAME='" + tableName + "' and  table_schema = '" + tableSchema + "'")
@@ -204,6 +242,10 @@ func (c *DocumentController) GetSql(orm *xorm.Engine) {
 				}
 			}
 			if !exists {
+				if !regexp.MustCompile("^[a-zA-Z0-9_]+$").MatchString(field.TableField) {
+					helper.Ajax("无效的字段名: "+field.TableField, 1, c.Ctx())
+					return
+				}
 				colType, ok := c.sqlFieldTypeMap[fieldTypes[field.FieldType].Type]
 				if !ok {
 					colType = fieldTypes[field.FieldType].Type
@@ -222,6 +264,10 @@ func (c *DocumentController) GetSql(orm *xorm.Engine) {
 		querySQL += fmt.Sprintf("\t`%s` %s %s %s %s %s,\n", "id", "int", "NOT NULL", "", "auto_increment", `COMMENT "ID自增字段"`)
 
 		for _, field := range fields {
+			if !regexp.MustCompile("^[a-zA-Z0-9_]+$").MatchString(field.TableField) {
+				helper.Ajax("无效的字段名: "+field.TableField, 1, c.Ctx())
+				return
+			}
 			colType, ok := c.sqlFieldTypeMap[fieldTypes[field.FieldType].Type]
 			if !ok {
 				colType = fieldTypes[field.FieldType].Type

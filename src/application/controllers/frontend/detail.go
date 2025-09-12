@@ -52,7 +52,13 @@ func (c *IndexController) Detail(pathname string) {
 		}
 		article = result[0]
 		article["typename"] = category.Catname
-		article["typelink"] = fmt.Sprintf("/%s/", m.GetUrlPrefixWithCategoryArr(m.GetPosArr(tid)))
+		posArr, err := m.GetPosArr(tid)
+		if err != nil {
+			pine.Logger().Error(err.Error())
+			c.Ctx().Abort(http.StatusNotFound)
+			return
+		}
+		article["typelink"] = fmt.Sprintf("/%s/", m.GetUrlPrefixWithCategoryArr(posArr))
 		article["click"] = article["visit_count"]
 		_ = cacher.SetWithMarshal(cacheKey, &article)
 	}

@@ -40,14 +40,22 @@ func (c *CategoryController) before(act int, params any) error {
 		if len(ids.Ids) > 1 {
 			return errors.New("分类不支持批量删除")
 		}
-		ok, _ := c.Orm.In("parent_id", ids.Ids).Exist(c.Table)
+		ok, err := c.Orm.In("parent_id", ids.Ids).Exist(c.Table)
+		if err != nil {
+			return err
+		}
 		if ok {
 			return errors.New("有下级分类，不可删除")
 		}
 		cat := models.NewCategoryModel().GetCategory(ids.Ids[0])
+		if cat == nil {
+			return errors.New("分类不存在")
+		}
 		document := models.NewDocumentModel().GetByID(cat.ModelId)
 		if document == nil || document.Id <= 0 {
-			models.NewCategoryModel().DeleteById(cat.Catid)
+			if err := models.NewCategoryModel().DeleteById(cat.Catid); err != nil {
+				return err
+			}
 			if cat.Type == 1 {
 				models.NewPageModel().DelPage(cat.Catid)
 			}
@@ -75,6 +83,9 @@ func (c *CategoryController) before(act int, params any) error {
 		}
 		if cat.Parentid != 0 {
 			parentCat := models.NewCategoryModel().GetCategory(cat.Parentid)
+			if parentCat == nil {
+				return errors.New("父分类不存在")
+			}
 			if cat.Topid > 0 {
 				cat.Topid = parentCat.Topid
 			} else {
@@ -91,7 +102,11 @@ func (c *CategoryController) before(act int, params any) error {
 }
 
 func (c *CategoryController) GetSelect() {
-	_ = c.Orm.OrderBy("listorder").Find(c.Entries)
+	err := c.Orm.OrderBy("listorder").Find(c.Entries)
+	if err != nil {
+		helper.Ajax(err, 1, c.Ctx())
+		return
+	}
 	m := c.Entries.(*[]*tables.Category)
 	var kv []tables.KV
 	for _, model := range *m {

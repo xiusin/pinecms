@@ -25,8 +25,6 @@ type CategoryModel struct {
 	cache contracts.Cache
 }
 
-var ErrCategoryNotExists = errors.New("category not exists")
-
 func init() {
 	model := &CategoryModel{}
 	di.Set(model, func(_ di.AbstractBuilder) (i any, err error) {
@@ -45,11 +43,15 @@ func NewCategoryModel() *CategoryModel {
 	return di.MustGet(&CategoryModel{}).(*CategoryModel)
 }
 
-func (c *CategoryModel) GetPosArr(id int64) []tables.Category {
+func (c *CategoryModel) GetPosArr(id int64) ([]tables.Category, error) {
 	category := tables.Category{Catid: id}
 	exists, err := helper.GetORM().Get(&category)
+	if err != nil {
+		pine.Logger().Error("getting category %d failed: %s", id, err.Error())
+		return nil, ErrInternal
+	}
 	if !exists {
-		panic(fmt.Sprintf("分类:%d不存在: %s", id, err))
+		return nil, ErrCategoryNotFound
 	}
 	var links []tables.Category
 	for category.Parentid != 0 {
@@ -65,8 +67,9 @@ func (c *CategoryModel) GetPosArr(id int64) []tables.Category {
 		}
 		return s
 	}
-	return reverse(links)
+	return reverse(links), nil
 }
+// GetTree generates a tree of categories.
 func (c *CategoryModel) GetTree(categories []tables.Category, parentid int64) []map[string]any {
 	var res = []map[string]any{}
 	if len(categories) != 0 {
@@ -125,29 +128,39 @@ func (c *CategoryModel) GetWithDirForBE(dir string) *tables.Category {
 	return nil
 }
 
-func (c *CategoryModel) GetAll(cache bool) []tables.Category {
+func (c *CategoryModel) GetAll(cache bool) ([]tables.Category, error) {
 	var categories []tables.Category
 	if !cache {
-		_ = helper.Cache().Delete(controllers.CacheCategories)
+		if err := helper.Cache().Delete(controllers.CacheCategories); err != nil {
+			pine.Logger().Error("deleting categories cache failed: %s", err.Error())
+		}
 	}
 	err := helper.Cache().Remember(controllers.CacheCategories, &categories, func() (any, error) {
-		_ = c.orm.Asc("listorder").Desc("id").Find(&categories)
+		err := c.orm.Asc("listorder").Desc("id").Find(&categories)
+		if err != nil {
+			pine.Logger().Error("getting all categories failed: %s", err.Error())
+			return nil, ErrInternal
+		}
 		return &categories, nil
 	})
 
 	if err != nil {
-		pine.Logger().Error("解析json错误", err)
+		pine.Logger().Error("remembering categories cache failed: %s", err.Error())
+		return nil, ErrInternal
 	}
-	return categories
+	return categories, nil
 }
 
-func (c *CategoryModel) GetCategoryMap(cache bool) map[int64]tables.Category {
-	categories := c.GetAll(cache)
+func (c *CategoryModel) GetCategoryMap(cache bool) (map[int64]tables.Category, error) {
+	categories, err := c.GetAll(cache)
+	if err != nil {
+		return nil, err
+	}
 	m := map[int64]tables.Category{}
 	for _, v := range categories {
 		m[v.Catid] = v
 	}
-	return m
+	return m, nil
 }
 
 func (c *CategoryModel) GetNextCategory(parentid int64) []tables.Category {
@@ -173,23 +186,28 @@ func (c *CategoryModel) GetNextCategoryOnlyCatids(parentid int64, withSelf bool)
 	return ids
 }
 
-func (c *CategoryModel) GetSelectTree(parentid int64) []map[string]any {
+func (c *CategoryModel) GetSelectTree(parentid int64) ([]map[string]any, error) {
 	categories := new([]tables.Category)
 	err := c.orm.Where("parentid = ?", parentid).OrderBy("`listorder` ASC,`id` DESC").Find(categories)
 	if err != nil {
-		log.Println(err.Error())
+		pine.Logger().Error("getting category select tree for parent %d failed: %s", parentid, err.Error())
+		return nil, ErrInternal
 	}
 	maps := []map[string]any{}
 	if len(*categories) > 0 {
 		for _, v := range *categories {
+			children, err := c.GetSelectTree(v.Catid)
+			if err != nil {
+				return nil, err
+			}
 			maps = append(maps, map[string]any{
 				"value":    v.Catid,
 				"label":    v.Catname,
-				"children": c.GetSelectTree(v.Catid),
+				"children": children,
 			})
 		}
 	}
-	return maps
+	return maps, nil
 }
 
 // 取得内容管理右部分类tree结构
@@ -209,12 +227,16 @@ func (c *CategoryModel) GetContentRightCategoryTree(categories []tables.Category
 	return maps
 }
 
-func (c *CategoryModel) DeleteById(id int64) bool {
+func (c *CategoryModel) DeleteById(id int64) error {
 	res, err := c.orm.Delete(tables.Category{Catid: id})
-	if err != nil || res == 0 {
-		return false
+	if err != nil {
+		pine.Logger().Error("deleting category %d failed: %s", id, err.Error())
+		return ErrInternal
 	}
-	return true
+	if res == 0 {
+		return ErrCategoryNotFound
+	}
+	return nil
 }
 
 func (c *CategoryModel) GetCategory(id int64) *tables.Category {
@@ -240,15 +262,19 @@ func (c *CategoryModel) GetCategoryFByIdForBE(id int64) (category *tables.Catego
 	err = c.cache.GetWithUnmarshal(cacheKey, category)
 	if err != nil {
 		exists, err = c.orm.ID(id).Get(category)
-		if err != nil || !exists {
-			if err == nil {
-				err = ErrCategoryNotExists
-			}
-			category = nil
-			return
+		if err != nil {
+			pine.Logger().Error("getting category %d failed: %s", id, err.Error())
+			return nil, ErrInternal
+		}
+		if !exists {
+			return nil, ErrCategoryNotFound
 		}
 		category.Page = NewPageModel().GetPage(id)
-		category.UrlPrefix = c.GetUrlPrefix(id)
+		prefix, err := c.GetUrlPrefix(id)
+		if err != nil {
+			return nil, err
+		}
+		category.UrlPrefix = prefix
 		c.cache.SetWithMarshal(cacheKey, category)
 	}
 	if category.Type == 0 {
@@ -259,6 +285,7 @@ func (c *CategoryModel) GetCategoryFByIdForBE(id int64) (category *tables.Catego
 	}
 	return category, nil
 }
+// GetUrlPrefixWithCategoryArr generates the URL prefix for a category from an array of its ancestors.
 func (c *CategoryModel) GetUrlPrefixWithCategoryArr(cats []tables.Category) string {
 	var urlPrefix string
 	cur := cats[len(cats)-1]
@@ -285,26 +312,32 @@ func (c *CategoryModel) GetUrlPrefixWithCategoryArr(cats []tables.Category) stri
 	return urlPrefix
 }
 
-func (c *CategoryModel) GetUrlPrefix(id int64) string {
-	return c.GetUrlPrefixWithCategoryArr(c.GetPosArr(id))
+func (c *CategoryModel) GetUrlPrefix(id int64) (string, error) {
+	arr, err := c.GetPosArr(id)
+	if err != nil {
+		return "", err
+	}
+	return c.GetUrlPrefixWithCategoryArr(arr), nil
 }
-func (c *CategoryModel) AddCategory(category tables.Category) bool {
+func (c *CategoryModel) AddCategory(category tables.Category) error {
 	_, err := c.orm.Insert(&category)
 	if err != nil {
-		pine.Logger().Error("AddCategoryError", err)
-		return false
+		pine.Logger().Error("adding category failed: %s", err.Error())
+		return ErrInsertFailed
 	}
-
-	return true
+	return nil
 }
 
-func (c *CategoryModel) UpdateCategory(category *tables.Category) bool {
+func (c *CategoryModel) UpdateCategory(category *tables.Category) error {
 	res, err := c.orm.Where("id=?", category.Catid).Update(category)
-	if err != nil || res == 0 {
-		pine.Logger().Error("CategoryModel::UpdateCategory", err, res)
-		return false
+	if err != nil {
+		pine.Logger().Error("updating category %d failed: %s", category.Catid, err.Error())
+		return ErrUpdateFailed
 	}
-	return true
+	if res == 0 {
+		return ErrCategoryNotFound
+	}
+	return nil
 }
 
 // 判断是否是子分类

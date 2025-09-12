@@ -80,21 +80,25 @@ func (d *DocumentModel) GetWithTableNameForBE(name string) *tables.DocumentModel
 
 func (d *DocumentModel) DeleteByID(id int64) (bool, error) {
 	total, err := d.orm.Where("model_id = ?", id).Count(&tables.Category{})
-	if err != nil || total > 0 {
-		return false, errors.New("模型已经被使用, 请删除使用分类后再执行删除操作")
+	if err != nil {
+		pine.Logger().Error("checking for categories using model %d failed: %s", id, err.Error())
+		return false, ErrInternal
+	}
+	if total > 0 {
+		return false, ErrModelInUse
 	}
 	if _, err := d.orm.Transaction(func(session *xorm.Session) (i any, err error) {
 		i, err = d.orm.ID(id).Delete(&tables.DocumentModel{})
 		if err != nil {
-			pine.Logger().Error(err.Error())
-			return nil, err
+			pine.Logger().Error("deleting document model %d failed: %s", id, err.Error())
+			return nil, ErrInternal
 		}
 		if i == 0 {
-			return nil, errors.New("删除了0条模型记录,错误表现") // 删除了0条记录, 返回失败
+			return nil, ErrModelNotFound
 		}
 		if !NewDocumentFieldDslModel().DeleteByMID(id) {
 			pine.Logger().Error(fmt.Sprintf("删除数据模型ID: %d 成功, 删除关联字段失败, 回滚数据", id))
-			return nil, fmt.Errorf("删除数据模型ID: %d 成功, 删除关联字段失败, 回滚数据", id)
+			return nil, ErrInternal
 		}
 		icache := di.MustGet(controllers.ServiceICache).(contracts.Cache)
 		key := fmt.Sprintf(controllers.CacheDocumentModelPrefix, id)

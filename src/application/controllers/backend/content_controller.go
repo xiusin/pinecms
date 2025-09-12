@@ -113,12 +113,19 @@ func (c *ContentController) PostAdd() {
 		return
 	}
 	c.Table = controllers.GetTableName(document.Table) // 设置表名
-	query := c.Orm.Table(c.Table)
 
 	var data = map[string]any{}
 	_ = c.Ctx().BindJSON(&data)
 	data["created_time"] = helper.NowDate(helper.TimeFormat)
 	data["updated_time"] = helper.NowDate(helper.TimeFormat)
+
+	session := c.Orm.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		helper.Ajax("开启事务失败: "+err.Error(), 1, c.Ctx())
+		return
+	}
 
 	fields := make([]string, 0, len(data))
 	args := make([]any, 0, len(data))
@@ -127,19 +134,26 @@ func (c *ContentController) PostAdd() {
 		args = append(args, v)
 	}
 	sql := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", c.Table, strings.Join(fields, ","), strings.TrimRight(strings.Repeat("?,", len(data)), ","))
-	result, err := query.Exec(append([]any{sql}, args...)...)
-	if err == nil {
-		id, _ := result.LastInsertId()
-		data["id"] = id
-		eid, err := di.MustGet(controllers.ServiceSearchName).(search.ISearch).Index("document", data)
-		if err != nil {
-			pine.Logger().Error("数据入search失败", err, "id: ", id)
-		}
-		c.Orm.Table(controllers.GetTableName("search_m_a_e")).Insert(map[string]any{"mid": mid, "aid": id, "eid": eid})
-		helper.Ajax("更新内容成功", 0, c.Ctx())
-	} else {
+	result, err := session.Exec(append([]any{sql}, args...)...)
+	if err != nil {
+		session.Rollback()
 		helper.Ajax("更新内容失败: "+err.Error(), 1, c.Ctx())
+		return
 	}
+	id, _ := result.LastInsertId()
+	data["id"] = id
+	eid, err := di.MustGet(controllers.ServiceSearchName).(search.ISearch).Index("document", data)
+	if err != nil {
+		pine.Logger().Error("数据入search失败", err, "id: ", id)
+	}
+	_, err = session.Table(controllers.GetTableName("search_m_a_e")).Insert(map[string]any{"mid": mid, "aid": id, "eid": eid})
+	if err != nil {
+		session.Rollback()
+		helper.Ajax("更新内容失败: "+err.Error(), 1, c.Ctx())
+		return
+	}
+	session.Commit()
+	helper.Ajax("更新内容成功", 0, c.Ctx())
 }
 
 // PostEdit 编辑内容
@@ -159,7 +173,6 @@ func (c *ContentController) PostEdit() {
 		return
 	}
 	c.Table = controllers.GetTableName(document.Table) // 设置表名
-	query := c.Orm.Table(c.Table)
 
 	var data = map[string]any{}
 	helper.PanicErr(c.Ctx().BindJSON(&data))
@@ -170,26 +183,43 @@ func (c *ContentController) PostEdit() {
 		delete(data, "pubtime")
 	}
 	data["updated_time"] = helper.NowDate(helper.TimeFormat)
-	_, err := query.Where("id = ?", id).Where("mid = ?", mid).Where("catid = ?", catid).AllCols().Update(&data)
-	if err == nil {
-		engine := di.MustGet(controllers.ServiceSearchName).(search.ISearch)
-		var s tables.SearchMAE
-		ok, _ := c.Orm.Table(controllers.GetTableName("search_m_a_e")).Where("mid = ? and aid = ?", mid, id).Get(&s)
-		if ok {
-			err = engine.Update("document", s.Eid, data)
-		} else {
-			var index string
-			index, err = engine.Index("document", data)
-			c.Orm.Table(controllers.GetTableName("search_m_a_e")).Insert(map[string]any{"mid": mid, "aid": id, "eid": index})
-		}
 
-		if err != nil {
-			pine.Logger().Error("保存数据到search失败", err)
-		}
-		helper.Ajax("更新内容成功", 0, c.Ctx())
-	} else {
-		helper.Ajax("更新内容失败: "+err.Error(), 1, c.Ctx())
+	session := c.Orm.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		helper.Ajax("开启事务失败: "+err.Error(), 1, c.Ctx())
+		return
 	}
+
+	_, err = session.Table(c.Table).Where("id = ?", id).Where("mid = ?", mid).Where("catid = ?", catid).AllCols().Update(&data)
+	if err != nil {
+		session.Rollback()
+		helper.Ajax("更新内容失败: "+err.Error(), 1, c.Ctx())
+		return
+	}
+
+	engine := di.MustGet(controllers.ServiceSearchName).(search.ISearch)
+	var s tables.SearchMAE
+	ok, _ := session.Table(controllers.GetTableName("search_m_a_e")).Where("mid = ? and aid = ?", mid, id).Get(&s)
+	if ok {
+		err = engine.Update("document", s.Eid, data)
+	} else {
+		var index string
+		index, err = engine.Index("document", data)
+		if err == nil {
+			_, err = session.Table(controllers.GetTableName("search_m_a_e")).Insert(map[string]any{"mid": mid, "aid": id, "eid": index})
+		}
+	}
+
+	if err != nil {
+		session.Rollback()
+		pine.Logger().Error("保存数据到search失败", err)
+		helper.Ajax("更新内容失败: "+err.Error(), 1, c.Ctx())
+		return
+	}
+	session.Commit()
+	helper.Ajax("更新内容成功", 0, c.Ctx())
 }
 
 func (c *ContentController) GetInfo() {
@@ -235,26 +265,39 @@ func (c *ContentController) PostDelete() {
 		return
 	}
 	c.Table = controllers.GetTableName(document.Table)
-	idArr := []string{"0"}
-	for _, id := range ids.Ids {
-		idArr = append(idArr, strconv.Itoa(int(id)))
-	}
-	ret, err := c.Orm.Exec("DELETE FROM `" + c.Table.(string) + "` WHERE `" + c.TableKey + "` IN (" + strings.Join(idArr, ",") + ")")
+
+	session := c.Orm.NewSession()
+	defer session.Close()
+	err := session.Begin()
 	if err != nil {
+		helper.Ajax("开启事务失败: "+err.Error(), 1, c.Ctx())
+		return
+	}
+
+	ret, err := session.Table(c.Table).In(c.TableKey, ids.Ids).Delete(c.Table)
+	if err != nil {
+		session.Rollback()
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
 	}
-	if rowNum, _ := ret.RowsAffected(); rowNum == 0 {
+	if ret == 0 {
+		session.Rollback()
 		helper.Ajax("删除失败", 1, c.Ctx())
 		return
 	}
 	engine := di.MustGet(controllers.ServiceSearchName).(search.ISearch)
 	var s []tables.SearchMAE
-	c.Orm.Table(controllers.GetTableName("search_m_a_e")).Where("mid = ?", mid).In("aid", idArr).Find(&s)
+	session.Table(controllers.GetTableName("search_m_a_e")).Where("mid = ?", mid).In("aid", ids.Ids).Find(&s)
 	for _, v := range s {
 		engine.Delete("document", v.Eid)
-		c.Orm.Table(controllers.GetTableName("search_m_a_e")).Where("mid = ?", mid).In("aid", idArr).Delete()
+		_, err = session.Table(controllers.GetTableName("search_m_a_e")).Where("mid = ?", mid).In("aid", ids.Ids).Delete()
+		if err != nil {
+			session.Rollback()
+			helper.Ajax("删除失败: "+err.Error(), 1, c.Ctx())
+			return
+		}
 	}
+	session.Commit()
 	helper.Ajax("删除成功", 0, c.Ctx())
 }
 
