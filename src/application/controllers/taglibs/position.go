@@ -25,30 +25,34 @@ func Position(args jet.Arguments) reflect.Value {
 }
 
 func getCategoryPos(tid int64) string {
-	var position []string
-	var res string
-	var data = struct {
-		Arr []tables.Category
-		Pos string
-	}{}
+	var pos string
 	key := fmt.Sprintf(controllers.CacheCategoryPosPrefix, tid)
 	icache := di.MustGet(controllers.ServiceICache).(contracts.Cache)
-	err := icache.GetWithUnmarshal(key, &data)
+	err := icache.Get(key, &pos)
 	if err != nil {
 		m := models.NewCategoryModel()
-		data.Arr = m.GetPosArr(tid)
-		for _, cat := range data.Arr {
+		arr, err := m.GetPosArr(tid)
+		if err != nil {
+			pine.Logger().Error(err)
+			return ""
+		}
+		var position []string
+		for _, cat := range arr {
 			if cat.Type != 2 {
-				position = append(position, "<a href='"+m.GetUrlPrefix(cat.Catid)+"'>"+cat.Catname+"</a>")
+				prefix, err := m.GetUrlPrefix(cat.Catid)
+				if err != nil {
+					pine.Logger().Error(err)
+					return ""
+				}
+				position = append(position, "<a href='"+prefix+"'>"+cat.Catname+"</a>")
 			} else {
 				position = append(position, "<a href='"+cat.Url+"'>"+cat.Catname+"</a>")
 			}
 		}
-		if len(data.Arr) > 0 {
-			res = strings.Join(position, " > ")
-			data.Pos = res
-			_ = icache.SetWithMarshal(key, res)
+		if len(arr) > 0 {
+			pos = strings.Join(position, " > ")
+			_ = icache.Set(key, pos, 0)
 		}
 	}
-	return data.Pos
+	return pos
 }

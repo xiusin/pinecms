@@ -63,15 +63,24 @@ func Channel(args jet.Arguments) reflect.Value {
 			}
 		}
 
-		orm.Find(&arr)
+		err := orm.Find(&arr)
+		if err != nil {
+			return &arr, err
+		}
 
 		if len(arr) == 0 && _type == "son" && _reid != 0 {
 			//如果用子栏目模式，当没有子栏目时显示同级栏目
-			getCategoryOrm().Limit(_row).Asc("listorder").Where("parentid = ?", _reid).Find(&arr)
+			err = getCategoryOrm().Limit(_row).Asc("listorder").Where("parentid = ?", _reid).Find(&arr)
+			if err != nil {
+				return &arr, err
+			}
 		}
 		for k, v := range arr {
 			if v.Type != 2 {
-				cat1s := m.GetPosArr(v.Catid)
+				cat1s, err := m.GetPosArr(v.Catid)
+				if err != nil {
+					return &arr, err
+				}
 				arr[k].Url = fmt.Sprintf("/%s/", m.GetUrlPrefixWithCategoryArr(cat1s))
 			}
 		}

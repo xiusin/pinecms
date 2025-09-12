@@ -13,42 +13,56 @@ import (
 )
 
 func LikeArticle(args jet.Arguments) reflect.Value {
-	defer func() {
-		if err := recover(); err != nil {
-			pine.Logger().Error(fmt.Sprintf("likearticle Failed %s", err))
+	var list = []map[string]string{}
+	helper.Cache().Remember("pinecms:tag:likearticle:"+getTagHash(args), &list, func() (any, error) {
+		if !checkArgType(&args) {
+			return &list, nil
 		}
-	}()
-	if !checkArgType(&args) {
-		return defaultArrReturnVal
-	}
-	var kws = []string{args.Get(1).String(), args.Get(2).String(), args.Get(3).String()}
-	limit := int(getNumber(args.Get(0)))
-	catid := getNumber(args.Get(4))
-	titlelen := int(getNumber(args.Get(6)))
-	var keywords []any
-	if limit < 1 {
-		limit = 10
-	}
-	var cond []string
-	m := models.NewCategoryModel()
-	category, _ := m.GetCategoryFByIdForBE(catid)
-	modelTable := controllers.GetTableName(category.Model.Table)
-	sess := getOrmSess(category.Model.Table).Where(modelTable+".id <> ?", getNumber(args.Get(5)))
-	for _, kw := range kws {
-		splitKeywords := strings.Split(kw, ",")
-		for _, keyword := range splitKeywords {
-			if keyword == "" {
-				continue
+		var kws = []string{args.Get(1).String(), args.Get(2).String(), args.Get(3).String()}
+		limit := int(getNumber(args.Get(0)))
+		catid := getNumber(args.Get(4))
+		titlelen := int(getNumber(args.Get(6)))
+		if limit < 1 {
+			limit = 10
+		}
+		m := models.NewCategoryModel()
+		category, err := m.GetCategoryFByIdForBE(catid)
+		if err != nil {
+			pine.Logger().Error(err)
+			return &list, err
+		}
+		modelTable := controllers.GetTableName(category.Model.Table)
+		sess := getOrmSess(category.Model.Table)
+		defer sess.Close()
+
+		b := builder.Select("a.*", "c.catname as typename").From(modelTable, "a").
+			LeftJoin(getCategoryTable(), "c", "c.id = a.catid").
+			Where(builder.Neq{"a.id": getNumber(args.Get(5))})
+
+		var keywordConds []builder.Cond
+		for _, kw := range kws {
+			splitKeywords := strings.Split(kw, ",")
+			for _, keyword := range splitKeywords {
+				if keyword == "" {
+					continue
+				}
+				trimmedKeyword := "%" + strings.Trim(keyword, "") + "%"
+				keywordConds = append(keywordConds, builder.Like{"a.keywords", trimmedKeyword})
+				keywordConds = append(keywordConds, builder.Like{"a.title", trimmedKeyword})
+				keywordConds = append(keywordConds, builder.Like{"a.tags", trimmedKeyword})
 			}
-			cond = append(cond, fmt.Sprintf("%s.keywords LIKE ? OR %s.title LIKE ? OR %s.tags LIKE ?", modelTable, modelTable, modelTable))
-			keywords = append(keywords, "%"+strings.Trim(keyword, "")+"%", "%"+strings.Trim(keyword, "")+"%", "%"+strings.Trim(keyword, "")+"%")
 		}
-	}
-	categoryTable := getCategoryTable()
-	sess.And(strings.Join(cond, " OR "), keywords...)
-	sess.Join("LEFT", categoryTable, categoryTable+".id = "+modelTable+".catid")
-	sess.Select(fmt.Sprintf("%s.*, %s.catname as typename", modelTable, categoryTable))
-	list, _ := sess.Limit(limit).Desc(modelTable + ".id").QueryString()
-	helper.HandleArtListInfo(list, titlelen)
+		if len(keywordConds) > 0 {
+			b.Where(builder.Or(keywordConds...))
+		}
+
+		list, err = sess.QueryString(b.Limit(limit).Desc("a.id"))
+		if err != nil {
+			pine.Logger().Error(err)
+			return &list, err
+		}
+		helper.HandleArtListInfo(list, titlelen)
+		return &list, nil
+	})
 	return reflect.ValueOf(list)
 }

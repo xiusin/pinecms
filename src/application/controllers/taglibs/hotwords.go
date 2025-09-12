@@ -8,14 +8,13 @@ import (
 )
 
 func Tags(args jet.Arguments) reflect.Value {
-	if !checkArgType(&args) {
-		return defaultArrReturnVal
-	}
-	defer func() {
-		if err := recover(); err != nil {
-			pine.Logger().Error("HotWords Failed", err)
+	var tags = []string{}
+	helper.Cache().Remember("pinecms:tag:tags:"+getTagHash(args), &tags, func() (any, error) {
+		if !checkArgType(&args) {
+			return &tags, nil
 		}
-	}()
-	tags := strings.Split(args.Get(0).String(), ",")
+		tags = strings.Split(args.Get(0).String(), ",")
+		return &tags, nil
+	})
 	return reflect.ValueOf(tags)
 }

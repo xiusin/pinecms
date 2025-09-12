@@ -161,19 +161,6 @@ func (c *DocumentController) after(act int, params any) error {
 			return err
 		}
 		modelID := params.(*idParams).Ids[0]
-		doc := models.NewDocumentModel().GetByID(modelID)
-		if doc == nil {
-			return nil // 可能已经被删除了
-		}
-		tableName := controllers.GetTableName(doc.Table)
-		fields := models.NewDocumentFieldDslModel().GetList(modelID)
-		for _, field := range fields {
-			_, err := session.Exec(fmt.Sprintf("ALTER TABLE `%s` DROP COLUMN `%s`", tableName, field.TableField))
-			if err != nil {
-				session.Rollback()
-				return err
-			}
-		}
 		_, err = session.Where("mid = ?", modelID).Delete(&tables.DocumentModelField{})
 		if err != nil {
 			session.Rollback()

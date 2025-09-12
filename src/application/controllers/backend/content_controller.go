@@ -290,12 +290,12 @@ func (c *ContentController) PostDelete() {
 	session.Table(controllers.GetTableName("search_m_a_e")).Where("mid = ?", mid).In("aid", ids.Ids).Find(&s)
 	for _, v := range s {
 		engine.Delete("document", v.Eid)
-		_, err = session.Table(controllers.GetTableName("search_m_a_e")).Where("mid = ?", mid).In("aid", ids.Ids).Delete()
-		if err != nil {
-			session.Rollback()
-			helper.Ajax("删除失败: "+err.Error(), 1, c.Ctx())
-			return
-		}
+	}
+	_, err = session.Table(controllers.GetTableName("search_m_a_e")).Where("mid = ?", mid).In("aid", ids.Ids).Delete()
+	if err != nil {
+		session.Rollback()
+		helper.Ajax("删除失败: "+err.Error(), 1, c.Ctx())
+		return
 	}
 	session.Commit()
 	helper.Ajax("删除成功", 0, c.Ctx())

@@ -19,24 +19,29 @@ import (
  * 	sql SQL语句，只用于select类型语句
  */
 func Query(args jet.Arguments) reflect.Value {
-	if !checkArgType(&args) {
-		return defaultArrReturnVal
-	}
-	defer func() {
-		if err := recover(); err != nil {
-			pine.Logger().Error("Query Failed", err)
+	var rest = []map[string]string{}
+	helper.Cache().Remember("pinecms:tag:query:"+getTagHash(args), &rest, func() (any, error) {
+		if !checkArgType(&args) {
+			return &rest, nil
 		}
-	}()
-	sess := helper.GetORM()
-	query := strings.Trim(args.Get(0).String(), " \n\t")
-	// 只允许查询操作
-	conf := config.DB()
-	if strings.HasPrefix(query, "SELECT") || strings.HasPrefix(query, "select") {
-		rest, err := sess.QueryString(strings.ReplaceAll(query, "#@_", conf.Db.DbPrefix))
-		helper.PanicErr(err)
-		if rest != nil {
-			return reflect.ValueOf(rest)
+		sess := helper.GetORM()
+		query := strings.Trim(args.Get(0).String(), " \n\t")
+		// 只允许查询操作
+		conf := config.DB()
+		if !strings.HasPrefix(strings.ToLower(query), "select") {
+			return &rest, pine.NewError("只允许执行SELECT查询")
 		}
-	}
-	return reflect.ValueOf([]map[string]string{})
+		if strings.Contains(strings.ToLower(query), "into") {
+			return &rest, pine.NewError("不允许执行INTO查询")
+		}
+		var err error
+		rest, err = sess.QueryString(strings.ReplaceAll(query, "#@_", conf.Db.DbPrefix))
+		if err != nil {
+			pine.Logger().Error(err)
+			return &rest, err
+		}
+		return &rest, nil
+	})
+
+	return reflect.ValueOf(rest)
 }

@@ -80,7 +80,9 @@ var dedeTplCmd = &cobra.Command{
 				dst:  filepath.Join(themePath, strings.Replace(relativeFilePath, ext, ".jet", 1)),
 				src:  relativeFilePath,
 			}
-			parser.Start()
+			if err := parser.Start(); err != nil {
+				pine.Logger().Error(err.Error())
+			}
 			return nil
 		})
 		if err != nil {
@@ -231,98 +233,88 @@ func (p *Parser) parseDedeBlockTags() {
 		}
 		fs[1] = regexp.MustCompile(`\s+`).ReplaceAllString(fs[1], " ")
 		var pineTagAttrs []string
-		var tag string
-		var block bool
-		switch fs[0] {
-		case "type":
-			block = true
-			tag = fs[0]
-		case "likeart": // likearticle
-			block = true
-			tag = fs[0]
-		case "arclist":
-			block = true
-			tag = "artlist"
-		case "list":
-			block = true
-			tag = "list"
-		case "flink":
-			block = true
-			tag = "flink"
-		case "channel":
-			block = true
-			tag = "channel"
+		tag, ok := p.getPineTag(fs[0])
+		if !ok {
+			return i
+		}
+
+		if tag == "channel" {
 			fs[1] = regexp.MustCompile(`currentstyle="(?s:.+?)"`).ReplaceAllStringFunc(fs[1], func(s string) string {
 				pineTagAttrs = append(pineTagAttrs, strings.ReplaceAll(s, "\n", ""))
 				return ""
 			})
-		case "channelartlist":
-			block = true
-			tag = "channelartlist"
-		case "prenext":
-			block = true
-			tag = fs[0]
-		default:
-			return i
 		}
+		pineTagAttrs = append(pineTagAttrs, p.parseAttrs(fs[1])...)
 
-		attrs := strings.Split(fs[1], " ")
-		prevAttr := ""
-		for _, attr := range attrs {
-			if attr == "" {
-				continue
-			}
-			if !strings.Contains(attr, "=") { //
-				prevAttr = attr
-				continue
-			}
-			if strings.HasPrefix(attr, "=") {
-				attr = prevAttr + attr
-				prevAttr = ""
-			}
-			attrkv := strings.Split(attr, "=")
-			k := attrkv[0]
-			v := strings.Trim(attrkv[1], `'"`)
-			if strings.HasPrefix(k, "att") {
-				pineTagAttrs = append(pineTagAttrs, `flag="`+v+`"`)
-			} else if strings.Contains(k, "id") {
-				if strings.Contains(v, ",") || !regexp.MustCompile("^\\d+$").MatchString(v) {
-					pineTagAttrs = append(pineTagAttrs, k+`="`+v+`"`)
-				} else {
-					pineTagAttrs = append(pineTagAttrs, k+`=`+v)
-				}
-			} else if strings.Contains(k, "len") || k == "row" {
-				pineTagAttrs = append(pineTagAttrs, k+`=`+v)
-			} else if k == "limit" {
-				if strings.Contains(v, ",") {
-					vv := strings.Split(v, ",")
-					pineTagAttrs = append(pineTagAttrs, `row=`+vv[1]+``)
-					pineTagAttrs = append(pineTagAttrs, `offset=`+vv[0]+``)
-				} else {
-					pineTagAttrs = append(pineTagAttrs, `offset=`+v)
-				}
-			} else if k == "orderby" {
-				switch v {
-				case "hot", "click":
-					v = "visit_count"
-				case "pubdate":
-					v = "pubtime"
-				}
-				pineTagAttrs = append(pineTagAttrs, k+`="`+v+`"`)
-			} else {
-				pineTagAttrs = append(pineTagAttrs, k+`="`+v+`"`)
-			}
-		}
-
-		if block && tag != "" {
-			pine.Logger().Info("%s 替换标签内容 \n%s \n↓\n%s\n\n", p.src, string(i), `{{yield `+tag+`(`+strings.Join(pineTagAttrs, ", ")+`) content}}`)
-			return []byte(`{{yield ` + tag + `(` + strings.Join(pineTagAttrs, ", ") + `) content}}`)
-		}
-		return nil
+		pine.Logger().Info("%s 替换标签内容 \n%s \n↓\n%s\n\n", p.src, string(i), `{{yield `+tag+`(`+strings.Join(pineTagAttrs, ", ")+`) content}}`)
+		return []byte(`{{yield ` + tag + `(` + strings.Join(pineTagAttrs, ", ") + `) content}}`)
 	})
 
 	// 结尾标签直接替换
 	p.data = regexp.MustCompile("{/dede:(type|likeart|arclist|channel|channelartlist|prenext|flink|list)}").ReplaceAll(p.data, []byte("{{end}}"))
+}
+
+func (p *Parser) getPineTag(dedeTag string) (string, bool) {
+	switch dedeTag {
+	case "type", "likeart", "list", "flink", "channel", "channelartlist", "prenext":
+		return dedeTag, true
+	case "arclist":
+		return "artlist", true
+	default:
+		return "", false
+	}
+}
+
+func (p *Parser) parseAttrs(attrsStr string) []string {
+	var pineTagAttrs []string
+	attrs := strings.Split(attrsStr, " ")
+	prevAttr := ""
+	for _, attr := range attrs {
+		if attr == "" {
+			continue
+		}
+		if !strings.Contains(attr, "=") {
+			prevAttr = attr
+			continue
+		}
+		if strings.HasPrefix(attr, "=") {
+			attr = prevAttr + attr
+			prevAttr = ""
+		}
+		attrkv := strings.Split(attr, "=")
+		k := attrkv[0]
+		v := strings.Trim(attrkv[1], `'"`)
+		if strings.HasPrefix(k, "att") {
+			pineTagAttrs = append(pineTagAttrs, `flag="`+v+`"`)
+		} else if strings.Contains(k, "id") {
+			if strings.Contains(v, ",") || !regexp.MustCompile("^\\d+$").MatchString(v) {
+				pineTagAttrs = append(pineTagAttrs, k+`="`+v+`"`)
+			} else {
+				pineTagAttrs = append(pineTagAttrs, k+`=`+v)
+			}
+		} else if strings.Contains(k, "len") || k == "row" {
+			pineTagAttrs = append(pineTagAttrs, k+`=`+v)
+		} else if k == "limit" {
+			if strings.Contains(v, ",") {
+				vv := strings.Split(v, ",")
+				pineTagAttrs = append(pineTagAttrs, `row=`+vv[1]+``)
+				pineTagAttrs = append(pineTagAttrs, `offset=`+vv[0]+``)
+			} else {
+				pineTagAttrs = append(pineTagAttrs, `offset=`+v)
+			}
+		} else if k == "orderby" {
+			switch v {
+			case "hot", "click":
+				v = "visit_count"
+			case "pubdate":
+				v = "pubtime"
+			}
+			pineTagAttrs = append(pineTagAttrs, k+`="`+v+`"`)
+		} else {
+			pineTagAttrs = append(pineTagAttrs, k+`="`+v+`"`)
+		}
+	}
+	return pineTagAttrs
 }
 
 // 解析标签内部field 如: [field:xxx /]
@@ -358,7 +350,7 @@ func (p *Parser) parseFieldsInTagBlock() {
 	})
 }
 
-func (p *Parser) Start() {
+func (p *Parser) Start() error {
 	p.parseInclude()
 	p.parseFieldsInTagBlock()
 	//{dede:global.cfg_webname/}
@@ -369,6 +361,9 @@ func (p *Parser) Start() {
 	p.data = append([]byte(`{{import "tags.jet"}}
 `), p.data...)
 	// 生成文件
-	_ = os.MkdirAll(filepath.Dir(p.dst), os.ModePerm)
-	helper.PanicErr(os.WriteFile(p.dst, p.data, os.ModePerm))
+	err := os.MkdirAll(filepath.Dir(p.dst), os.ModePerm)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(p.dst, p.data, os.ModePerm)
 }

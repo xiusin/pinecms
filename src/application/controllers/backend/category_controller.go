@@ -62,7 +62,10 @@ func (c *CategoryController) before(act int, params any) error {
 			return nil
 		}
 		sql := []any{fmt.Sprintf(c.sql, controllers.GetTableName(document.Table)), cat.Catid}
-		totals, _ := c.Orm.QueryString(sql...)
+		totals, err := c.Orm.QueryString(sql...)
+		if err != nil {
+			return err
+		}
 		var total = "0"
 		if len(totals) > 0 {
 			total = totals[0]["total"]

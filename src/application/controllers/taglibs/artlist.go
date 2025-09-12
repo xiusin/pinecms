@@ -100,7 +100,10 @@ func ArcList(args jet.Arguments) reflect.Value {
 		} else if len(ids) > 1 { // 设置多个id以第一个ID查找对应模型
 			catid, _ := strconv.Atoi(ids[0])
 			catgory, err := m.GetCategoryFByIdForBE(int64(catid))
-			helper.PanicErr(err, "无法查找分类"+strings.Join(ids, ",")+"的信息")
+			if err != nil {
+				pine.Logger().Error("无法查找分类"+strings.Join(ids, ",")+"的信息", err)
+				return &list, err
+			}
 			for _, v := range ids {
 				catID, _ := strconv.Atoi(v)
 				soncats := m.GetNextCategoryOnlyCatids(int64(catID), false)
@@ -117,7 +120,10 @@ func ArcList(args jet.Arguments) reflect.Value {
 			}
 			// 读取模型ID
 			catgory, err := m.GetCategoryFByIdForBE(firstCatID)
-			helper.PanicErr(err, "无法查找分类"+strings.Join(ids, ",")+"的信息")
+			if err != nil {
+				pine.Logger().Error("无法查找分类"+strings.Join(ids, ",")+"的信息", err)
+				return &list, err
+			}
 			modelID = catgory.Model.Id
 		}
 		if modelID == 0 {
@@ -125,26 +131,36 @@ func ArcList(args jet.Arguments) reflect.Value {
 		}
 
 		// 走缓存
-		if exists, _ := helper.GetORM().Table(model).ID(modelID).Get(model); !exists {
-			panic(fmt.Errorf("模型ID%d不存在", modelID))
+		exists, err := helper.GetORM().Table(model).ID(modelID).Get(model)
+		if err != nil {
+			pine.Logger().Error("get model %d failed: %s", modelID, err.Error())
+			return &list, err
+		}
+		if !exists {
+			pine.Logger().Error("model %d not found", modelID)
+			return &list, fmt.Errorf("模型ID%d不存在", modelID)
 		}
 
 		modelTable := controllers.GetTableName(model.Table)
 		sess := getOrmSess(model.Table)
 		defer sess.Close()
+
+		b := builder.Select(modelTable+".*", "c.catname as typename").From(modelTable, "a").
+			InnerJoin("pinecms_category", "c", "c.catid = a.catid")
+
 		if isRand {
-			sess.OrderBy(orderBy)
+			b.OrderBy(orderBy)
 		} else {
-			sess.OrderBy(modelTable + "." + orderBy)
+			b.OrderBy("a." + orderBy)
 		}
 		if ids[0] != "0" {
-			sess.In(modelTable+".catid", ids)
+			b.In("a.catid", ids)
 		}
 
-		sess.Where(modelTable + ".deleted_time IS NULL").Where(modelTable + ".status = 1")
+		b.Where(builder.IsNull{"a.deleted_time"}).Where(builder.Eq{"a.status": 1})
 
 		if subday > 0 {
-			sess.Where(modelTable+".pubtime > ?", time.Now().AddDate(0, 0, -subday).In(helper.GetLocation()).Format("2006-01-02"))
+			b.Where(builder.Gt{"a.pubtime": time.Now().AddDate(0, 0, -subday).In(helper.GetLocation()).Format("2006-01-02")})
 		}
 
 		if keywords := strings.Split(args.Get(6).String(), ","); len(keywords) > 0 {
@@ -153,9 +169,9 @@ func ArcList(args jet.Arguments) reflect.Value {
 				if v == "" {
 					continue
 				}
-				conds = append(conds, builder.Expr(fmt.Sprintf("%s.keywords LIKE ?", modelTable), "%"+v+"%"))
+				conds = append(conds, builder.Like{"a.keywords", v})
 			}
-			sess.Where(builder.Or(conds...))
+			b.Where(builder.Or(conds...))
 		}
 
 		if flags := strings.Split(args.Get(7).String(), ","); len(flags) > 0 {
@@ -164,9 +180,9 @@ func ArcList(args jet.Arguments) reflect.Value {
 				if v == "" {
 					continue
 				}
-				conds = append(conds, builder.Expr(fmt.Sprintf("%s.flag LIKE ?", modelTable), "%"+v+"%"))
+				conds = append(conds, builder.Like{"a.flag", v})
 			}
-			sess.Where(builder.Or(conds...))
+			b.Where(builder.Or(conds...))
 		}
 
 		if noflags := strings.Split(args.Get(8).String(), ","); len(noflags) > 0 {
@@ -175,36 +191,30 @@ func ArcList(args jet.Arguments) reflect.Value {
 				if v == "" {
 					continue
 				}
-				conds = append(conds, builder.Expr(fmt.Sprintf("%s.flag NOT LIKE ?", modelTable), "%"+v+"%"))
+				conds = append(conds, builder.Not{builder.Like{"a.flag", v}})
 			}
-			sess.Where(builder.Or(conds...))
+			b.Where(builder.Or(conds...))
 		}
 
 		titlelen := getNumber(args.Get(9))
 
 		if limit > 0 {
-			sess.Limit(int(limit), int(offset))
+			b.Limit(int(limit), int(offset))
 		}
 
 		var err error
-		list, err = sess.QueryString()
+		list, err = sess.QueryString(b)
 		if err != nil {
 			pine.Logger().Error(sess.LastSQL())
 			return &list, err
 		}
 
 		helper.HandleArtListInfo(list, int(titlelen))
-		cats := models.NewCategoryModel().GetCategoryMap(true)
-
-		for i, v := range list {
-			v["typename"] = cats[cast.ToInt64(v["catid"])].Catname
-			list[i] = v
-		}
 
 		_sql, args := sess.LastSQL()
 
 		pine.Logger().Debug("arclist 标签渲染耗时", time.Now().Sub(startTime), "SQL: ", _sql, args)
-		return &list, err
+		return &list, nil
 	})
 
 	return reflect.ValueOf(list)

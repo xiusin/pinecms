@@ -94,7 +94,12 @@ func (c *CategoryModel) GetTree(categories []tables.Category, parentid int64) []
 
 				var url = category.Url
 				if category.Type != 2 {
-					url = fmt.Sprintf("/%s/", c.GetUrlPrefix(category.Catid))
+					prefix, err := c.GetUrlPrefix(category.Catid)
+					if err != nil {
+						pine.Logger().Error(err)
+					} else {
+						url = fmt.Sprintf("/%s/", prefix)
+					}
 				}
 				son := map[string]any{
 					"parentid":    category.Parentid,
