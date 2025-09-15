@@ -10,6 +10,9 @@ import (
 func InitModuleRouter(backendRouter *pine.Router, app *pine.Application) {
 	filemanager.InitRouter(app, backendRouter)
 	webssh.InitRouter(app, backendRouter)
+	fmt.Println("New code added to InitModuleRouter")
+	fmt.Println("New code added to InitModuleRouter")
+	fmt.Println("New code added to InitModuleRouter")
 }
 
 func InitSubModuleRouter(app *pine.Application, admin *pine.Router) {

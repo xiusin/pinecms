@@ -3,11 +3,11 @@ package search
 type NullSearch struct {
 }
 
-func (n *NullSearch) Search(index string, query any) (any, error) {
+func (n *NullSearch) Search(index string, query SearchParams) (any, error) {
 	return nil, nil
 }
 
-func (n *NullSearch) Index(index string, doc map[string]any) (string, error) {
+func (n *NullSearch) Index(index string, id string, doc map[string]any) (string, error) {
 	return "", nil
 }
 

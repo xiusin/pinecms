@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/elastic/go-elasticsearch/v8/esapi"
+
 	elasticsearch8 "github.com/elastic/go-elasticsearch/v8"
 	"github.com/spf13/cast"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -16,24 +18,14 @@ type ElasticSearch struct {
 	client *elasticsearch8.Client
 }
 
-type SearchParams struct {
-	Index string
-	Query map[string]any
-	From  int
-	Size  int
-	Sort  []string
-	Aggs  map[string]any
-}
-
 type SearchResult struct {
 	Total int64
 	Hits  []map[string]any
 	Aggs  map[string]any
 }
 
-func (e *ElasticSearch) Search(index string, query any) (any, error) {
+func (e *ElasticSearch) Search(index string, params SearchParams) (any, error) {
 	var buf bytes.Buffer
-	params := query.(SearchParams)
 	searchBody := map[string]any{
 		"query": params.Query,
 		"from":  params.From,
@@ -88,29 +80,47 @@ func (e *ElasticSearch) Search(index string, query any) (any, error) {
 	return &result, nil
 }
 
-func (e *ElasticSearch) Index(index string, doc map[string]any) (string, error) {
+func (e *ElasticSearch) Index(index string, id string, doc map[string]any) (string, error) {
 	data, err := json.Marshal(doc)
 	if err != nil {
 		return "", err
 	}
-	resp, err := e.client.Index(index, bytes.NewReader(data))
+
+	var resp *esapi.Response
+	if id != "" {
+		resp, err = e.client.Index(index, bytes.NewReader(data), e.client.Index.WithDocumentID(id))
+	} else {
+		resp, err = e.client.Index(index, bytes.NewReader(data))
+	}
+
 	if err != nil {
 		return "", err
 	}
-
 	defer resp.Body.Close()
+
+	if resp.IsError() {
+		var errMap map[string]any
+		if err := json.NewDecoder(resp.Body).Decode(&errMap); err != nil {
+			return "", fmt.Errorf("error parsing the response body: %w", err)
+		}
+		return "", fmt.Errorf("elasticsearch error: %s", errMap["error"].(map[string]any)["reason"])
+	}
+
 	var r map[string]any
 	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
-		return "", nil
+		return "", err
 	}
 
 	return cast.ToString(r["_id"]), nil
 }
 
 func (e *ElasticSearch) Update(index string, id string, doc map[string]any) error {
-	byts, err := json.Marshal(doc)
+	updateData := map[string]any{
+		"doc": doc,
+	}
+	byts, err := json.Marshal(updateData)
 	if err != nil {
-		return nil
+		return err
 	}
 	_, err = e.client.Update(index, id, bytes.NewBuffer(byts))
 	return err
@@ -121,13 +131,15 @@ func (e *ElasticSearch) Delete(index string, id string) error {
 	return err
 }
 
-func NewElasticSearch() ISearch {
+func NewElasticSearch() (ISearch, error) {
 	cfg := config.DB()
 	es8, err := elasticsearch8.NewClient(elasticsearch8.Config{
 		Addresses: []string{cfg.Elastic.Url},
 		Username:  cfg.Elastic.UserName,
 		Password:  cfg.Elastic.Password,
 	})
-	helper.PanicErr(err)
-	return &ElasticSearch{client: es8}
+	if err != nil {
+		return nil, err
+	}
+	return &ElasticSearch{client: es8}, nil
 }

@@ -14,21 +14,30 @@ import (
 返回一组广告
 */
 func MyAd(args jet.Arguments) reflect.Value {
-	if !checkArgType(&args) {
-		return defaultSignalVal
-	}
-	id := int(getNumber(args.Get(0)))
-	name := args.Get(1).String()
-	now := time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)
-	orm := helper.GetORM().Where("status = 1").Where("start_time <= ?", now).Where("end_time >= ?", now).Select("id, name, image, link_url")
-	if id > 0 {
-		orm.ID(id)
-	}
-	if id == 0 && name != "" {
-		orm.Where("name = ?", name)
-	}
 	var advs = tables.Advert{}
-	orm.Get(&advs)
-	return reflect.ValueOf(advs)
+	cacheKey := "pinecms:tag:myad:" + getTagHash(args)
+	err := helper.Cache().Remember(cacheKey, &advs, func() (any, error) {
+		if !checkArgType(&args) {
+			return &tables.Advert{}, nil
+		}
+		id := int(getNumber(args.Get(0)))
+		name := args.Get(1).String()
+		now := time.Now().In(helper.GetLocation()).Format(helper.TimeFormat)
+		orm := helper.GetORM().Where("status = 1").Where("start_time <= ?", now).Where("end_time >= ?", now).Select("id, name, image, link_url")
+		if id > 0 {
+			orm.ID(id)
+		}
+		if id == 0 && name != "" {
+			orm.Where("name = ?", name)
+		}
 
+		var ad = tables.Advert{}
+		_, err := orm.Get(&ad)
+		return &ad, err
+	})
+
+	if err != nil {
+		pine.Logger().Error(err)
+	}
+	return reflect.ValueOf(advs)
 }

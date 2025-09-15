@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cast"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/models"
+	"github.com/xiusin/pinecms/src/config"
 
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -20,9 +21,11 @@ import (
 
 type ContentController struct {
 	BaseController
+	searchClient search.ISearch
 }
 
 func (c *ContentController) Construct() {
+	c.searchClient, _ = di.Get(controllers.ServiceSearchName).(search.ISearch)
 	c.Group = "内容管理"
 	c.KeywordsSearch = []SearchFieldDsl{
 		{Field: "title", Op: "LIKE", DataExp: "%$?%"},
@@ -142,17 +145,19 @@ func (c *ContentController) PostAdd() {
 	}
 	id, _ := result.LastInsertId()
 	data["id"] = id
-	eid, err := di.MustGet(controllers.ServiceSearchName).(search.ISearch).Index("document", data)
-	if err != nil {
-		pine.Logger().Error("数据入search失败", err, "id: ", id)
+
+	if c.searchClient != nil {
+		_, err = c.searchClient.Index(document.Table, cast.ToString(id), data)
+		if err != nil {
+			session.Rollback()
+			pine.Logger().Error("保存数据到search失败", err)
+			helper.Ajax("更新内容到搜索服务失败: "+err.Error(), 1, c.Ctx())
+			return
+		}
 	}
-	_, err = session.Table(controllers.GetTableName("search_m_a_e")).Insert(map[string]any{"mid": mid, "aid": id, "eid": eid})
-	if err != nil {
-		session.Rollback()
-		helper.Ajax("更新内容失败: "+err.Error(), 1, c.Ctx())
-		return
-	}
+
 	session.Commit()
+	helper.Cache().Flush()
 	helper.Ajax("更新内容成功", 0, c.Ctx())
 }
 
@@ -199,26 +204,17 @@ func (c *ContentController) PostEdit() {
 		return
 	}
 
-	engine := di.MustGet(controllers.ServiceSearchName).(search.ISearch)
-	var s tables.SearchMAE
-	ok, _ := session.Table(controllers.GetTableName("search_m_a_e")).Where("mid = ? and aid = ?", mid, id).Get(&s)
-	if ok {
-		err = engine.Update("document", s.Eid, data)
-	} else {
-		var index string
-		index, err = engine.Index("document", data)
-		if err == nil {
-			_, err = session.Table(controllers.GetTableName("search_m_a_e")).Insert(map[string]any{"mid": mid, "aid": id, "eid": index})
+	if c.searchClient != nil {
+		err = c.searchClient.Update(document.Table, cast.ToString(id), data)
+		if err != nil {
+			session.Rollback()
+			pine.Logger().Error("保存数据到search失败", err)
+			helper.Ajax("更新内容到搜索服务失败: "+err.Error(), 1, c.Ctx())
+			return
 		}
 	}
-
-	if err != nil {
-		session.Rollback()
-		pine.Logger().Error("保存数据到search失败", err)
-		helper.Ajax("更新内容失败: "+err.Error(), 1, c.Ctx())
-		return
-	}
 	session.Commit()
+	helper.Cache().Flush()
 	helper.Ajax("更新内容成功", 0, c.Ctx())
 }
 
@@ -285,19 +281,16 @@ func (c *ContentController) PostDelete() {
 		helper.Ajax("删除失败", 1, c.Ctx())
 		return
 	}
-	engine := di.MustGet(controllers.ServiceSearchName).(search.ISearch)
-	var s []tables.SearchMAE
-	session.Table(controllers.GetTableName("search_m_a_e")).Where("mid = ?", mid).In("aid", ids.Ids).Find(&s)
-	for _, v := range s {
-		engine.Delete("document", v.Eid)
-	}
-	_, err = session.Table(controllers.GetTableName("search_m_a_e")).Where("mid = ?", mid).In("aid", ids.Ids).Delete()
-	if err != nil {
-		session.Rollback()
-		helper.Ajax("删除失败: "+err.Error(), 1, c.Ctx())
-		return
+	if c.searchClient != nil {
+		for _, id := range ids.Ids {
+			err := c.searchClient.Delete(document.Table, cast.ToString(id))
+			if err != nil {
+				pine.Logger().Error("从search删除数据失败", err)
+			}
+		}
 	}
 	session.Commit()
+	helper.Cache().Flush()
 	helper.Ajax("删除成功", 0, c.Ctx())
 }
 
@@ -333,16 +326,16 @@ func (c *ContentController) PostPage() {
 		ret, _ = c.Orm.InsertOne(&page)
 	}
 	if ret > 0 {
-		var document = map[string]any{}
-		structs.FillMap(&page, document)
-		var s tables.SearchMAE
-		engine := di.MustGet(controllers.ServiceSearchName).(search.ISearch)
-		ok, _ := c.Orm.Table(controllers.GetTableName("search_m_a_e")).Where("mid = ? and aid = ?", 0, page.Id).Get(&s)
-		if ok {
-			engine.Update("pine_cms_system_page", s.Eid, document)
-		} else {
-			eid, _ := engine.Index("pine_cms_system_page", document)
-			c.Orm.Table(controllers.GetTableName("search_m_a_e")).Insert(map[string]any{"aid": page.Id, "eid": eid})
+		if c.searchClient != nil {
+			var document = map[string]any{}
+			structs.FillMap(&page, document)
+			err := c.searchClient.Update(tables.Page{}.TableName(), cast.ToString(page.Id), document)
+			if err != nil {
+				// 如果更新失败, 尝试重新索引
+				if _, err = c.searchClient.Index(tables.Page{}.TableName(), cast.ToString(page.Id), document); err != nil {
+					pine.Logger().Error("更新单页到search失败", err)
+				}
+			}
 		}
 		helper.Ajax("更新单页成功", 0, c.Ctx())
 	} else {

@@ -81,8 +81,17 @@ function getDigg(aid)
       <div class="related_post"><h2>上一页下一页</h2>
 
       <ul class="list_1">
-      {{yield prenext()}}
-      	</ul>
+        {{if .PrevArticle}}
+        <li><a href='{{yield detail_url(id=.PrevArticle.id, cid=.PrevArticle.catid)}}'>上一篇: {{.PrevArticle.title}}</a></li>
+        {{else}}
+        <li><a>上一篇: 没有了</a></li>
+        {{end}}
+        {{if .NextArticle}}
+        <li><a href='{{yield detail_url(id=.NextArticle.id, cid=.NextArticle.catid)}}'>下一篇: {{.NextArticle.title}}</a></li>
+        {{else}}
+        <li><a>下一篇: 没有了</a></li>
+        {{end}}
+      </ul>
 <!-- 相关文章 -->
 <div class="related_post"><h2>相关文章</h2>
 <ul class="list_1">

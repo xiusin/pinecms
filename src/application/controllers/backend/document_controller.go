@@ -130,6 +130,7 @@ func (c *DocumentController) before(act int, params any) error {
 }
 
 func (c *DocumentController) after(act int, params any) error {
+	helper.Cache().Flush()
 	if act == OpAdd {
 		session := c.Orm.NewSession()
 		defer session.Close()
@@ -304,8 +305,6 @@ func (c *DocumentController) GetTable(cacher contracts.Cache) {
 	table := table{Props: nil, Columns: []column{}, UpsetComps: []any{}}
 
 	modelTableCacheKey := "model_table_" + strconv.Itoa(mid)
-
-	cacher.Delete(modelTableCacheKey)
 
 	err = cacher.Remember(modelTableCacheKey, &table, func() (any, error) {
 		var fieldDefines []*tables.DocumentModelField

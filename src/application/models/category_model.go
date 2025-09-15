@@ -1,9 +1,7 @@
 package models
 
 import (
-	"errors"
 	"fmt"
-	"log"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -44,30 +42,35 @@ func NewCategoryModel() *CategoryModel {
 }
 
 func (c *CategoryModel) GetPosArr(id int64) ([]tables.Category, error) {
-	category := tables.Category{Catid: id}
-	exists, err := helper.GetORM().Get(&category)
+	categoryMap, err := c.GetCategoryMap(true)
 	if err != nil {
-		pine.Logger().Error("getting category %d failed: %s", id, err.Error())
-		return nil, ErrInternal
+		return nil, err
 	}
-	if !exists {
+
+	category, ok := categoryMap[id]
+	if !ok {
 		return nil, ErrCategoryNotFound
 	}
+
 	var links []tables.Category
-	for category.Parentid != 0 {
+	for {
 		links = append(links, category)
-		parentid := category.Parentid
-		category = tables.Category{Catid: parentid}
-		helper.GetORM().Get(&category)
-	}
-	links = append(links, category)
-	var reverse = func(s []tables.Category) []tables.Category {
-		for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
-			s[i], s[j] = s[j], s[i]
+		if category.Parentid == 0 {
+			break
 		}
-		return s
+		category, ok = categoryMap[category.Parentid]
+		if !ok {
+			// This indicates data inconsistency, a child points to a non-existent parent.
+			return nil, fmt.Errorf("category %d has a non-existent parent with id %d", category.Catid, category.Parentid)
+		}
 	}
-	return reverse(links), nil
+
+	// Reverse the slice to get the correct order from root to current
+	for i, j := 0, len(links)-1; i < j; i, j = i+1, j-1 {
+		links[i], links[j] = links[j], links[i]
+	}
+
+	return links, nil
 }
 // GetTree generates a tree of categories.
 func (c *CategoryModel) GetTree(categories []tables.Category, parentid int64) []map[string]any {
@@ -124,7 +127,7 @@ func (c *CategoryModel) GetTree(categories []tables.Category, parentid int64) []
 }
 
 func (c *CategoryModel) GetWithDirForBE(dir string) *tables.Category {
-	categories := c.GetAll(true)
+	categories, _ := c.GetAll(true)
 	for _, v := range categories {
 		if v.Dir == dir {
 			return &v
@@ -137,20 +140,20 @@ func (c *CategoryModel) GetAll(cache bool) ([]tables.Category, error) {
 	var categories []tables.Category
 	if !cache {
 		if err := helper.Cache().Delete(controllers.CacheCategories); err != nil {
-			pine.Logger().Error("deleting categories cache failed: %s", err.Error())
+			pine.Logger().Error("deleting categories cache failed: ", err)
 		}
 	}
 	err := helper.Cache().Remember(controllers.CacheCategories, &categories, func() (any, error) {
 		err := c.orm.Asc("listorder").Desc("id").Find(&categories)
 		if err != nil {
-			pine.Logger().Error("getting all categories failed: %s", err.Error())
+			pine.Logger().Error("getting all categories failed: ", err)
 			return nil, ErrInternal
 		}
 		return &categories, nil
 	})
 
 	if err != nil {
-		pine.Logger().Error("remembering categories cache failed: %s", err.Error())
+		pine.Logger().Error("remembering categories cache failed: ", err)
 		return nil, ErrInternal
 	}
 	return categories, nil
@@ -168,19 +171,29 @@ func (c *CategoryModel) GetCategoryMap(cache bool) (map[int64]tables.Category, e
 	return m, nil
 }
 
-func (c *CategoryModel) GetNextCategory(parentid int64) []tables.Category {
-	var categories []tables.Category
-	c.orm.Where("parentid=?", parentid).Asc("listorder").Desc("id").Find(&categories)
-	if len(categories) != 0 {
-		for _, v := range categories {
-			categories = append(categories, c.GetNextCategory(v.Catid)...)
-		}
+func (c *CategoryModel) GetNextCategory(parentid int64) ([]tables.Category, error) {
+	allCategories, err := c.GetAll(true)
+	if err != nil {
+		pine.Logger().Error(err)
+		return nil, err
 	}
-	return categories
+
+	var recursive func(parentid int64) []tables.Category
+	recursive = func(parentid int64) []tables.Category {
+		var descendants []tables.Category
+		for _, category := range allCategories {
+			if category.Parentid == parentid {
+				descendants = append(descendants, category)
+				descendants = append(descendants, recursive(category.Catid)...)
+			}
+		}
+		return descendants
+	}
+	return recursive(parentid), nil
 }
 
 func (c *CategoryModel) GetNextCategoryOnlyCatids(parentid int64, withSelf bool) []int64 {
-	categories := c.GetNextCategory(parentid)
+	categories, _ := c.GetNextCategory(parentid)
 	var ids []int64
 	if withSelf {
 		ids = append(ids, parentid)
@@ -195,7 +208,7 @@ func (c *CategoryModel) GetSelectTree(parentid int64) ([]map[string]any, error) 
 	categories := new([]tables.Category)
 	err := c.orm.Where("parentid = ?", parentid).OrderBy("`listorder` ASC,`id` DESC").Find(categories)
 	if err != nil {
-		pine.Logger().Error("getting category select tree for parent %d failed: %s", parentid, err.Error())
+		pine.Logger().Error("getting category select tree for parent %d failed: %v", parentid, err)
 		return nil, ErrInternal
 	}
 	maps := []map[string]any{}
@@ -235,7 +248,7 @@ func (c *CategoryModel) GetContentRightCategoryTree(categories []tables.Category
 func (c *CategoryModel) DeleteById(id int64) error {
 	res, err := c.orm.Delete(tables.Category{Catid: id})
 	if err != nil {
-		pine.Logger().Error("deleting category %d failed: %s", id, err.Error())
+		pine.Logger().Error("deleting category %d failed: %v", id, err)
 		return ErrInternal
 	}
 	if res == 0 {
@@ -268,7 +281,7 @@ func (c *CategoryModel) GetCategoryFByIdForBE(id int64) (category *tables.Catego
 	if err != nil {
 		exists, err = c.orm.ID(id).Get(category)
 		if err != nil {
-			pine.Logger().Error("getting category %d failed: %s", id, err.Error())
+			pine.Logger().Error("getting category %d failed: %v", id, err)
 			return nil, ErrInternal
 		}
 		if !exists {
@@ -327,7 +340,7 @@ func (c *CategoryModel) GetUrlPrefix(id int64) (string, error) {
 func (c *CategoryModel) AddCategory(category tables.Category) error {
 	_, err := c.orm.Insert(&category)
 	if err != nil {
-		pine.Logger().Error("adding category failed: %s", err.Error())
+		pine.Logger().Error("adding category failed: %v", err)
 		return ErrInsertFailed
 	}
 	return nil
@@ -336,7 +349,7 @@ func (c *CategoryModel) AddCategory(category tables.Category) error {
 func (c *CategoryModel) UpdateCategory(category *tables.Category) error {
 	res, err := c.orm.Where("id=?", category.Catid).Update(category)
 	if err != nil {
-		pine.Logger().Error("updating category %d failed: %s", category.Catid, err.Error())
+		pine.Logger().Error("updating category %d failed: %v", category.Catid, err)
 		return ErrUpdateFailed
 	}
 	if res == 0 {

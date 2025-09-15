@@ -59,7 +59,6 @@ require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
 	github.com/andybalholm/brotli v1.1.1 // indirect
-	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
 	github.com/bits-and-blooms/bitset v1.20.0 // indirect
 	github.com/bits-and-blooms/bloom v1.0.1-0.20210513151749-57921726402d // indirect
 	github.com/bmatcuk/doublestar/v4 v4.8.1 // indirect

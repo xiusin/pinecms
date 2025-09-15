@@ -24,9 +24,16 @@ func (c *CategoryController) Construct() {
 	c.SubGroup = "分类管理"
 	c.ApiEntityName = "分类"
 	c.OpBefore = c.before
+	c.OpAfter = c.after
 	c.sql = "SELECT COUNT(*) total FROM `%s` WHERE id=? and deleted_time IS NULL"
 	c.BaseController.Construct()
 	c.TableStructKey = "Catid"
+}
+
+func (c *CategoryController) after(act int, params any) error {
+	helper.Cache().Flush()
+	models.NewCategoryModel().ClearCache()
+	return nil
 }
 
 func (c *CategoryController) before(act int, params any) error {

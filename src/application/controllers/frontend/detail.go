@@ -2,18 +2,25 @@ package frontend
 
 import (
 	"fmt"
-	"github.com/xiusin/pine/contracts"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/contracts"
 	"github.com/xiusin/pine/render/engine/pjet"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 )
+
+type DetailPageCacheData struct {
+	Article     map[string]string
+	PrevArticle map[string]string
+	NextArticle map[string]string
+	Category    *tables.Category
+}
 
 func (c *IndexController) Detail(pathname string) {
 	c.setTemplateData()
@@ -28,41 +35,69 @@ func (c *IndexController) Detail(pathname string) {
 	// 直接读缓存
 	cacher := pine.Make(controllers.ServiceICache).(contracts.Cache)
 	cacheKey := fmt.Sprintf(controllers.CacheCategoryContentPrefix, tid, aid)
-	var article = map[string]string{}
-	_ = cacher.GetWithUnmarshal(cacheKey, &article)
+
+	var cacheData DetailPageCacheData
+	err = cacher.GetWithUnmarshal(cacheKey, &cacheData)
+
 	m := models.NewCategoryModel()
-	category, err := m.GetCategoryFByIdForBE(tid)
-	if err != nil {
-		pine.Logger().Error(err.Error())
-		c.Ctx().Abort(http.StatusNotFound)
-		return
-	}
-	if category.Model.Enabled == 0 {
-		pine.Logger().Warn("模型内容已被禁止查看")
-		c.Ctx().Abort(404)
-		return
-	}
-	if len(article) == 0 {
-		sess := getOrmSess(category.Model).Where("id = ?", aid).Where("catid = ?", tid).Limit(1)
-		result, err := sess.QueryString()
-		if err != nil || len(result) == 0 {
-			pine.Logger().Error(fmt.Sprintf("读取模型数据表:%s 错误: %s", category.Model.Table, err))
-			c.Ctx().Abort(http.StatusNotFound)
-			return
-		}
-		article = result[0]
-		article["typename"] = category.Catname
-		posArr, err := m.GetPosArr(tid)
+	var category *tables.Category
+	var article map[string]string
+	var prevArticle map[string]string
+	var nextArticle map[string]string
+
+	if err == nil && cacheData.Article != nil { // Cache hit
+		article = cacheData.Article
+		prevArticle = cacheData.PrevArticle
+		nextArticle = cacheData.NextArticle
+		category = cacheData.Category
+	} else { // Cache miss
+		category, err = m.GetCategoryFByIdForBE(tid)
 		if err != nil {
 			pine.Logger().Error(err.Error())
 			c.Ctx().Abort(http.StatusNotFound)
 			return
 		}
+		if category.Model.Enabled == 0 {
+			pine.Logger().Warn("模型内容已被禁止查看")
+			c.Ctx().Abort(404)
+			return
+		}
+
+		sess := getOrmSess(category.Model)
+
+		articleResult, err := sess.Clone().Where("id = ? AND catid = ?", aid, tid).Limit(1).QueryString()
+		if err != nil || len(articleResult) == 0 {
+			pine.Logger().Error(fmt.Sprintf("读取模型数据表:%s 错误: %s", category.Model.Table, err))
+			c.Ctx().Abort(http.StatusNotFound)
+			return
+		}
+		article = articleResult[0]
+		article["typename"] = category.Catname
+		posArr, _ := m.GetPosArr(tid)
 		article["typelink"] = fmt.Sprintf("/%s/", m.GetUrlPrefixWithCategoryArr(posArr))
 		article["click"] = article["visit_count"]
-		_ = cacher.SetWithMarshal(cacheKey, &article)
+
+		prevArticleResult, _ := sess.Clone().Where("id < ? AND catid = ?", aid, tid).Desc("id").Limit(1).QueryString()
+		if len(prevArticleResult) > 0 {
+			prevArticle = prevArticleResult[0]
+		}
+
+		nextArticleResult, _ := sess.Clone().Where("id > ? AND catid = ?", aid, tid).Asc("id").Limit(1).QueryString()
+		if len(nextArticleResult) > 0 {
+			nextArticle = nextArticleResult[0]
+		}
+
+		// Store everything in cache
+		cacheData = DetailPageCacheData{
+			Article:     article,
+			PrevArticle: prevArticle,
+			NextArticle: nextArticle,
+			Category:    category,
+		}
+		_ = cacher.SetWithMarshal(cacheKey, &cacheData)
 	}
-	detailUrlFunc := c.Ctx().Value("detail_url").(func(string, ...string) string)
+
+	// Now that we have all data, render the template
 	tpl := "article_" + category.Model.Table + ".jet"
 	if len(category.Model.FeTplDetail) > 0 {
 		tpl = category.Model.FeTplDetail
@@ -87,41 +122,18 @@ func (c *IndexController) Detail(pathname string) {
 	}
 
 	err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), struct {
-		Field    map[string]string
-		TypeID   int64
-		ArtID    int64
-		PrevNext func(string, tpl string) string
+		Field       map[string]string
+		PrevArticle map[string]string
+		NextArticle map[string]string
+		TypeID      int64
+		ArtID       int64
 	}{
-		Field:  article,
-		TypeID: tid,
-		ArtID:  aid,
-		PrevNext: func(conf string, tpl string) string {
-			var str string
-			confs := strings.Split(conf, ",")
-			hasNext, hasPrev := false, false
-			for _, v := range confs {
-				if !hasNext || !hasPrev {
-					var data []map[string]string
-					var titleFlag string
-					if v == "prev" || v == "pre" {
-						titleFlag, hasPrev = "上一篇: ", true
-						data, _ = getOrmSess(category.Model).Where("id < ?", aid).Desc("id").Limit(1).QueryString()
-					} else if v == "next" {
-						titleFlag, hasNext = "下一篇: ", true
-						data, _ = getOrmSess(category.Model).Where("id > ?", aid).Desc("id").Limit(1).QueryString()
-					}
-					if len(data) > 0 {
-						if tpl == "" {
-							str += "<p><a href='" + detailUrlFunc(data[0]["id"], data[0]["catid"]) + "'>" + titleFlag + ": " + data[0]["title"] + "</a></p>"
-						} else {
-							str += strings.ReplaceAll(tpl, "~arturl~", detailUrlFunc(data[0]["id"], data[0]["catid"]))
-							str = strings.ReplaceAll(str, "~title~", data[0]["title"])
-						}
-					}
-				}
-			}
-			return str
-		}})
+		Field:       article,
+		PrevArticle: prevArticle,
+		NextArticle: nextArticle,
+		TypeID:      tid,
+		ArtID:       aid,
+	})
 	if err != nil {
 		pine.Logger().Error(err.Error())
 		c.Ctx().Abort(http.StatusInternalServerError)
