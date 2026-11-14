@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"regexp"
 	"slices"
 	"strings"
 
@@ -18,6 +19,9 @@ import (
 )
 
 var validate = validator.New()
+
+// 排序字段白名单: 仅允许普通列名或 table.column, 避免排序字段被注入SQL
+var orderFieldRe = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)?$`)
 
 const (
 	BindTypeJson = iota
@@ -246,6 +250,9 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 		}
 	}
 	if len(c.P.OrderField) > 0 {
+		if !orderFieldRe.MatchString(c.P.OrderField) {
+			return nil, errors.New("排序字段不合法")
+		}
 		if c.P.Sort == "desc" {
 			query.Desc(c.P.OrderField)
 		} else {
